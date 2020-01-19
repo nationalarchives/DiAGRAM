@@ -12,6 +12,10 @@ library(shiny)
 library(rintrojs)
 library(networkD3)
 library(shinydashboard)
+library(gRbase)
+library(gRain)
+
+options(repos = BiocManager::repositories())
 
 # create main dashboard page
 dashboardPage(
@@ -19,7 +23,7 @@ dashboardPage(
   
   # Add header and title to Dashboard
   dashboardHeader(
-    title="TNA Decision Support Tool"
+    title="DiAGRAM"
   ),
   
   # Add dashboard sidebar
@@ -36,10 +40,16 @@ dashboardPage(
         icon=icon("home")
       ),
       
-      # Create Network visualisation page
-      menuItem("Structure",
-               tabName="Structure",
-               icon=icon("globe"))
+      # Create Network Info Page
+      menuItem("Network",
+               tabName="Network",
+               icon=icon("globe")),
+      
+      
+      # Create Network ajdustment page
+      menuItem("Policies",
+               tabName="Policies",
+               icon=icon("book"))
     )
   ),
   
@@ -93,17 +103,130 @@ dashboardPage(
         )
       ),
       
+      # Network Tab
       tabItem(
-        tabName="Structure",
-        column(width=8,
-               
-               box(
-                 title="Network",
-                 collapsible=TRUE,
-                 width=NULL,
+        tabName="Network",
+        h1("Network Structure"),
+        br(),
+        fluidRow(
+          column(width=4,
+                 box(
+                   title="Pollution",
+                   width=NULL,
+                   collapsible =TRUE,
+                   "This node relates to the air quality of
+                    the subjects environment. Pollution is considered",
+                   strong("high"),
+                   " if the air quality index is above ",
+                   em("151"),
+                   " over ",
+                   em("50%"),
+                   " of the time.",
+                   br(),
+                   br(),
+                   "The data used in estimating these probabilities
+                    was collected by the World Health Organisation
+                    and is stored in the ",
+                  a(href="https://www.who.int/airpollution/data/cities/en/",
+                    "Global Ambient Air Quality Database."),
+                  " This database was last updated in 2018."
+                 )
+          ),
+          column(width=4,
+                 box(
+                   title="Smoker",
+                   width=NULL,
+                   collapsible=TRUE,
+                   "This node relates to the smoking status of a subject. A
+                    subject is considered a ",
+                    strong("smoker"),
+                    " if they have smoked at least ",
+                   em("100"),
+                   " cigarettes in their lifetime and currently smoke.",
+                   br(),
+                   br(),
+                   "The data used in estimating these probabilities was provided
+                    by the UK governemnt and can be found ",
+                   a(href="https://data.gov.uk/dataset/641597ce-17a1-4056-8c55-1a619cdc57c2/statistics-on-smoking-england",
+                     "here"),
+                   ". It was last updated in 2017."
+                 )
+          ),
+          column(width=4,
+                 box(
+                   title="Cancer",
+                   width=NULL
+                 )
+          )
+        ),
+        fluidRow(
+          column(width=12,
+            box(
+              title="Network Structure",
+              collapsible=TRUE,
+              width=NULL,
+              plotOutput("NetworkStructure")
+            )
+          )
+        ),
+        fluidRow(
+          column(width=6,
+                 box(
+                   title="Xray",
+                   width=NULL
+                 )
+          ),
+          column(width=6,
+                 box(
+                   title="Dyspnoea",
+                   width=NULL
+                 )
+          )
+        )
+      ),
+      
+      # Policy Tab
+      tabItem(
+        tabName="Policies",
+        fluidRow(
+          column(width=8,
                  
-                 simpleNetworkOutput("netPlot")
-               ))
+                 # Plot the bayesian network
+                 box(
+                   title="Network",
+                   collapsible=TRUE,
+                   width=NULL,
+                   
+                   plotOutput("netPlot")
+                 )
+          )
+        ),
+        fluidRow(
+          column(width=4,
+                 box(
+                   title="Pollution",
+                   textInput("pollutionLow", h5("Low"), value=""),
+                   textInput("pollutionHigh", h5("High", value="")),
+                   width=NULL,
+                   collapsible=TRUE
+                 )
+          ),
+          column(width=4,
+                 box(
+                   title="Smoker",
+                   textInput("smokerFalse", h5("False"), value=""),
+                   textInput("smokerTrue", h5("True"), value=""),
+                   width=NULL,
+                   collapsible=TRUE
+                 ))
+
+        ),
+        fluidRow(
+          column(width=2,
+                 offset=6,
+                 actionButton("networkUpdate", "Apply Changes", width='100%')
+          )
+        )
       )
     )
   )

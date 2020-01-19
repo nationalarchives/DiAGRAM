@@ -14,28 +14,52 @@ library(graph)
 library(bnlearn)
 library(networkD3)
 library(BiocManager)
+library(Rgraphviz)
 
 options(repos = BiocManager::repositories())
 
 shinyServer(function(input, output) {
   
-  cancer.fit <- read.bif("cancer.bif")
-  dag <- as.bn(as.graphAM(cancer.fit))
+  network <- reactiveValues(cancer.fit = read.bif("cancer.bif"))
+  stable.fit <- read.bif("cancer.bif")
   
-  # Plot the d3 force directed network
-  output$netPlot <- renderSimpleNetwork({
-
-    # Get the arc directions
-    networkData <- data.frame(arcs(dag))
+  # Plot network which changes for policy inputs
+  output$netPlot <- renderPlot({
     
-    simpleNetwork(
-      networkData,
-      Source = "from",
-      Target = "to",
-      opacity = 0.75,
-      zoom = TRUE
-    )
+    first <- graphviz.chart(network$cancer.fit, type = "barprob", grid=TRUE, main="Test Network")
+    graphviz.chart(network$cancer.fit, type = "barprob", grid=TRUE, main="Test Network")
     
   })
+  
+  # plot network used on the structure tab
+  output$NetworkStructure <- renderPlot({
+    
+    first <- graphviz.chart(stable.fit, type = "barprob", grid=TRUE, main="Test Network")
+    graphviz.chart(stable.fit, type = "barprob", grid=TRUE, main="Test Network")
+    
+  })
+  
+  observeEvent(input$networkUpdate, {
+    
+    cancer.fit <- network$cancer.fit
+    
+    # update Pollution
+    pollution_prob = cancer.fit$Pollution$prob
+    pollution_prob[1] = as.numeric(input$pollutionLow)
+    pollution_prob[2] = as.numeric(input$pollutionHigh)
+    
+    cancer.fit$Pollution = pollution_prob
+    
+    # update Smoker
+    smoker_prob = cancer.fit$Smoker$prob
+    smoker_prob[1] = as.numeric(input$smokerTrue)
+    smoker_prob[2] = as.numeric(input$smokerFalse)
+    
+    cancer.fit$Smoker = smoker_prob
+    
+    network$cancer.fit = cancer.fit
+    
+  })
+  
 
 })
