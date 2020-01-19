@@ -34,8 +34,8 @@ shinyServer(function(input, output) {
   # plot network used on the structure tab
   output$NetworkStructure <- renderPlot({
     
-    first <- graphviz.chart(stable.fit, type = "barprob", grid=TRUE, main="Test Network")
-    graphviz.chart(stable.fit, type = "barprob", grid=TRUE, main="Test Network")
+    first <- graphviz.chart(stable.fit, type = "barprob", grid=TRUE, main="Cancer Network")
+    graphviz.chart(stable.fit, type = "barprob", grid=TRUE, main="Cancer Network")
     
   })
   
