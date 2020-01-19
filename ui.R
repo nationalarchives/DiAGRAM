@@ -155,7 +155,18 @@ dashboardPage(
           column(width=4,
                  box(
                    title="Cancer",
-                   width=NULL
+                   width=NULL,
+                   collapsible=TRUE,
+                   "This node relates to whether a subject as cancer or not. A subject is
+                    is considered to ",
+                    strong("have"),
+                    " cancer if a qualified medical professional has diagnosed them with cancer.",
+                   br(),
+                   br(),
+                   "The data used for this node was collected by ",
+                   a(href="https://www.cancerdata.nhs.uk",
+                     "The National Cancer Registration and Analysis Service."),
+                   "It was last updated in 2018."
                  )
           )
         ),
@@ -173,13 +184,38 @@ dashboardPage(
           column(width=6,
                  box(
                    title="Xray",
-                   width=NULL
+                   width=NULL,
+                   collapsible=TRUE,
+                   "This node represents the probability that an X-ray will come back
+                    as positive for cancer given the probability of cancer. An X-ray test
+                    is considered ",
+                   strong("positive"),
+                   "if a medical professional identifies that a subject has cancer given
+                    the images.",
+                   br(),
+                   br(),
+                   "The data used for this node was collected by ",
+                   a(href="https://www.cancerdata.nhs.uk",
+                     "The National Cancer Registration and Analysis Service."),
+                   "It was last updated in 2018."
                  )
           ),
           column(width=6,
                  box(
                    title="Dyspnoea",
-                   width=NULL
+                   width=NULL,
+                   collapsible=TRUE,
+                   "This node represents the probability that a subject will have Dysnoea
+                    given the probability that the subject has cancer. A subject is considered
+                    to ",
+                   strong("have"),
+                   " Dyspnoea if a medical professional diagnoses the subject as having the condition.",
+                   br(),
+                   br(),
+                   "The data used for this node was provided by the UK government and can be found ",
+                   a(href="https://data.gov.uk/dataset/a3790bd8-8813-4ab0-a1b1-eff0af3ae9a1/people-with-chronic-obstructive-pulmonary-disease-and-medical-research-council-dyspnoea-scale-3-referred-to-a-pulmonary-rehabilitation-programme-ccgois-2-3",
+                     "here."),
+                   "This data was last updated in 2017."
                  )
           )
         )
