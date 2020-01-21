@@ -14,6 +14,7 @@ library(networkD3)
 library(shinydashboard)
 library(gRbase)
 library(gRain)
+library(shinysky)
 
 options(repos = BiocManager::repositories())
 
@@ -224,6 +225,8 @@ dashboardPage(
       # Policy Tab
       tabItem(
         tabName="Policies",
+        h1("Policy Selection"),
+        br(),
         fluidRow(
           column(width=8,
                  
@@ -241,8 +244,7 @@ dashboardPage(
           column(width=4,
                  box(
                    title="Pollution",
-                   textInput("pollutionLow", h5("Low"), value=""),
-                   textInput("pollutionHigh", h5("High", value="")),
+                   hotable("pollutionHotable"),
                    width=NULL,
                    collapsible=TRUE
                  )
@@ -250,12 +252,21 @@ dashboardPage(
           column(width=4,
                  box(
                    title="Smoker",
-                   textInput("smokerFalse", h5("False"), value=""),
-                   textInput("smokerTrue", h5("True"), value=""),
+                   hotable("smokerHotable"),
                    width=NULL,
                    collapsible=TRUE
-                 ))
-
+                 )
+          )
+        ),
+        fluidRow(
+          column(width=8,
+                 box(
+                   title="Cancer",
+                   hotable("cancerHotable"),
+                   width=NULL,
+                   collapsible=TRUE
+                 )
+          )
         ),
         fluidRow(
           column(width=2,
