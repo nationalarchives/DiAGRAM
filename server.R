@@ -25,8 +25,11 @@ shinyServer(function(input, output) {
   network <- reactiveValues(cancer.fit = read.bif("cancer.bif"))
   stable.fit <- read.bif("cancer.bif")
   
-  # initalise original probability tables
+  # initialise policy list used for storing adjusted networks
+  policy_networks <- list()
   
+  # itialise utility dataframe
+  Utility <- reactiveValues(utility.df=tibble(name=character(), utility=numeric()))
   
   # plot network used on the structure tab
   output$NetworkStructure <- renderPlot({
@@ -65,6 +68,15 @@ shinyServer(function(input, output) {
     
   }, readOnly=FALSE)
   
+  # plot utility barchart
+  output$utilityComparison <- renderPlot({
+    
+    Utility$utility.df %>% ggplot(aes(x=name, y=utility)) + 
+                   geom_col() + 
+                   labs(title="Utility Comparison")
+    
+  })
+  
   # update network based off input changes
   observeEvent(input$networkUpdate, {
     
@@ -73,26 +85,58 @@ shinyServer(function(input, output) {
     updatedPollution <- hot.to.df(input$pollutionHotable)
     updatedCancer <- hot.to.df(input$cancerHotable)
     
+    # convert to dataframes
+    smoker.df <- as.data.frame(updatedSmoker)
+    pollution.df <- as.data.frame(updatedPollution)
+    cancer.df <- as.data.frame(updatedCancer)
+    
+    print(smoker.df)
+    
     # variable naming is a hack due to naming updates
     names(updatedSmoker)[1] <- "Var1"
     names(updatedPollution)[1] <- "Var1" 
     
     # convert dataframes to table
-    updatedSmoker <- xtabs(Prob~Var1, updatedSmoker)
-    updatedPollution <- xtabs(Prob~Var1, updatedPollution)
-    updatedCancer <- xtabs(Prob~Cancer+Smoker+Pollution, updatedCancer)
+    updatedSmokerTable <- xtabs(Prob~Var1, updatedSmoker)
+    updatedPollutionTable <- xtabs(Prob~Var1, updatedPollution)
+    updatedCancerTable <- xtabs(Prob~Cancer+Smoker+Pollution, updatedCancer)
     
     # retrieve model
     model.fit <- network$cancer.fit
     
-    model.fit$Smoker <- updatedSmoker
-    model.fit$Pollution <- updatedPollution
-    model.fit$Cancer <- updatedCancer
+    model.fit$Smoker <- updatedSmokerTable
+    model.fit$Pollution <- updatedPollutionTable
+    model.fit$Cancer <- updatedCancerTable
     
     # update reactive model
     network$cancer.fit <- model.fit
     
+    if (input$policyName != "Enter Policy Name...") {
+       
+       policy_networks[input$policyName] = model.fit
+       utility <- calculateUtility(cancer.df, smoker.df, pollution.df)
+       
+       utility.df <- Utility$utility.df
+       utility.df <- utility.df %>% add_row(name=input$policyName, utility=utility$TotalProb)
+       Utility$utility.df <- utility.df
+     }
+    
   })
+  
+  calculateUtility <- function(cancer.df, smoker.df, pollution.df){
+    
+    cancer.true <- cancer.df %>% filter(Cancer == "True")
+    cancer.prob <- cancer.true %>% 
+                   left_join(smoker.df, by="Smoker") %>% 
+                   left_join(pollution.df, by="Pollution") %>%
+                   rename(CancerProb=Prob.x,
+                          SmokerProb=Prob.y,
+                          PollutionProb=Prob) %>%
+                   mutate(SummedProb = CancerProb*SmokerProb*PollutionProb) %>%
+                   summarise(TotalProb = 1- sum(SummedProb))
+    
+    return(cancer.prob)
+  }
   
 
 })
