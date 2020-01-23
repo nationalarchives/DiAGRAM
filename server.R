@@ -50,21 +50,43 @@ shinyServer(function(input, output) {
   # Output Smoker Probability table
   output$smokerHotable <- renderHotable({
     
-    data.frame(network$cancer.fit$Smoker$prob) %>% rename(Smoker=Var1, Prob=Freq)
+    smoker.df <- data.frame(network$cancer.fit$Smoker$prob) %>%
+                 rename(Probability=Freq)
     
+    if ("Var1" %in% colnames(smoker.df)) {
+      
+      # When loaded var1 is originally given to smoker variables
+      # Once changed it does not revert back which can cause renaming errors
+      # Program cannot find Var1 because it has already been changed to smoker
+      smoker.df <- smoker.df %>% rename(Smoker=Var1)
+      
+    }
+    
+    smoker.df
+        
   }, readOnly=FALSE)
   
   # Output Pollution Probability table
   output$pollutionHotable <- renderHotable({
     
-    data.frame(network$cancer.fit$Pollution$prob) %>% rename(Pollution=Var1, Prob=Freq)
+    pollution.df <- data.frame(network$cancer.fit$Pollution$prob) %>%
+                    rename(Probability=Freq)
+    
+    # When loaded var1 is originally given to pollution variables
+    # Once changed it does not revert back which can cause renaming errors
+    # Program cannot find Var1 because it has already been changed to pollution
+    if ("Var1" %in% colnames(pollution.df)){
+      
+      pollution.df <- pollution.df %>% rename(Pollution=Var1)
+      
+    }
     
   }, readOnly=FALSE)
   
   # Output cancer probability table
   output$cancerHotable <- renderHotable({
     
-    data.frame(network$cancer.fit$Cancer$prob) %>% rename(Prob=Freq)
+    data.frame(network$cancer.fit$Cancer$prob) %>% rename(Probability=Freq)
     
   }, readOnly=FALSE)
   
@@ -80,30 +102,20 @@ shinyServer(function(input, output) {
   # update network based off input changes
   observeEvent(input$networkUpdate, {
     
-    # retrieve updated table data and convert to table
-    updatedSmoker <- hot.to.df(input$smokerHotable) 
-    updatedPollution <- hot.to.df(input$pollutionHotable)
-    updatedCancer <- hot.to.df(input$cancerHotable)
-    
-    # convert to dataframes
-    smoker.df <- as.data.frame(updatedSmoker)
-    pollution.df <- as.data.frame(updatedPollution)
-    cancer.df <- as.data.frame(updatedCancer)
-    
-    print(smoker.df)
-    
-    # variable naming is a hack due to naming updates
-    names(updatedSmoker)[1] <- "Var1"
-    names(updatedPollution)[1] <- "Var1" 
-    
+    # retrieve updated table data and convert to dataframe
+    smoker.df <- as.data.frame(hot.to.df(input$smokerHotable))
+    pollution.df <- as.data.frame(hot.to.df(input$pollutionHotable))
+    cancer.df <- as.data.frame(hot.to.df(input$cancerHotable))
+
     # convert dataframes to table
-    updatedSmokerTable <- xtabs(Prob~Var1, updatedSmoker)
-    updatedPollutionTable <- xtabs(Prob~Var1, updatedPollution)
-    updatedCancerTable <- xtabs(Prob~Cancer+Smoker+Pollution, updatedCancer)
+    updatedSmokerTable <- xtabs(Probability~Smoker, smoker.df)
+    updatedPollutionTable <- xtabs(Probability~Pollution, pollution.df)
+    updatedCancerTable <- xtabs(Probability~Cancer+Smoker+Pollution, cancer.df)
     
     # retrieve model
     model.fit <- network$cancer.fit
     
+    # updated model probabilities
     model.fit$Smoker <- updatedSmokerTable
     model.fit$Pollution <- updatedPollutionTable
     model.fit$Cancer <- updatedCancerTable
@@ -111,27 +123,32 @@ shinyServer(function(input, output) {
     # update reactive model
     network$cancer.fit <- model.fit
     
+    # Save policy
     if (input$policyName != "Enter Policy Name...") {
        
+       # Save updated model
        policy_networks[input$policyName] = model.fit
+       
+       # calculate utility score
        utility <- calculateUtility(cancer.df, smoker.df, pollution.df)
        
-       utility.df <- Utility$utility.df
-       utility.df <- utility.df %>% add_row(name=input$policyName, utility=utility$TotalProb)
-       Utility$utility.df <- utility.df
+       # update reactive utility dataframe
+       Utility$utility.df <- Utility$utility.df %>% 
+                             add_row(name=input$policyName, utility=utility$TotalProb)
      }
     
   })
   
+  # Function calculates utility
   calculateUtility <- function(cancer.df, smoker.df, pollution.df){
     
     cancer.true <- cancer.df %>% filter(Cancer == "True")
     cancer.prob <- cancer.true %>% 
                    left_join(smoker.df, by="Smoker") %>% 
                    left_join(pollution.df, by="Pollution") %>%
-                   rename(CancerProb=Prob.x,
-                          SmokerProb=Prob.y,
-                          PollutionProb=Prob) %>%
+                   rename(CancerProb=Probability.x,
+                          SmokerProb=Probability.y,
+                          PollutionProb=Probability) %>%
                    mutate(SummedProb = CancerProb*SmokerProb*PollutionProb) %>%
                    summarise(TotalProb = 1- sum(SummedProb))
     
