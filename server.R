@@ -32,6 +32,7 @@ shinyServer(function(input, output) {
   Utility <- reactiveValues(utility.df=tibble(name=character(), utility=numeric()))
   
   # plot network used on the structure tab
+  # TODO: Work out how to prevent first plot not drawing properly
   output$NetworkStructure <- renderPlot({
     
     first <- graphviz.chart(stable.fit, type = "barprob", grid=TRUE, main="Cancer Network")
@@ -50,8 +51,11 @@ shinyServer(function(input, output) {
   # Output Smoker Probability table
   output$smokerHotable <- renderHotable({
     
+    # Convert to dataframe and multiply probability by 100
+    # so it is more intuitive to non-statistical users
     smoker.df <- data.frame(network$cancer.fit$Smoker$prob) %>%
-                 rename(Probability=Freq)
+                 rename(Probability=Freq) %>%
+                 mutate(Probability=Probability*100)
     
     if ("Var1" %in% colnames(smoker.df)) {
       
@@ -70,7 +74,8 @@ shinyServer(function(input, output) {
   output$pollutionHotable <- renderHotable({
     
     pollution.df <- data.frame(network$cancer.fit$Pollution$prob) %>%
-                    rename(Probability=Freq)
+                    rename(Probability=Freq) %>%
+                    mutate(Probability=Probability*100)
     
     # When loaded var1 is originally given to pollution variables
     # Once changed it does not revert back which can cause renaming errors
@@ -86,7 +91,9 @@ shinyServer(function(input, output) {
   # Output cancer probability table
   output$cancerHotable <- renderHotable({
     
-    data.frame(network$cancer.fit$Cancer$prob) %>% rename(Probability=Freq)
+    data.frame(network$cancer.fit$Cancer$prob) %>% 
+    rename(Probability=Freq) %>%
+    mutate(Probability=Probability*100)
     
   }, readOnly=FALSE)
   
@@ -103,9 +110,13 @@ shinyServer(function(input, output) {
   observeEvent(input$networkUpdate, {
     
     # retrieve updated table data and convert to dataframe
-    smoker.df <- as.data.frame(hot.to.df(input$smokerHotable))
-    pollution.df <- as.data.frame(hot.to.df(input$pollutionHotable))
-    cancer.df <- as.data.frame(hot.to.df(input$cancerHotable))
+    # normalise probabilities between 0 and 1
+    smoker.df <- as.data.frame(hot.to.df(input$smokerHotable)) %>%
+                 mutate(Probability=Probability/100)
+    pollution.df <- as.data.frame(hot.to.df(input$pollutionHotable)) %>%
+                    mutate(Probability=Probability/100)
+    cancer.df <- as.data.frame(hot.to.df(input$cancerHotable)) %>%
+                 mutate(Probability=Probability/100)
 
     # convert dataframes to table
     updatedSmokerTable <- xtabs(Probability~Smoker, smoker.df)
