@@ -5,7 +5,7 @@
 # digital files built by the University of Warwick and The National
 # Archive.
 # 
-# @author: Stephen James Krol, University of Monash, Melbourne
+# @author: Stephen James Krol, Monash University, Melbourne
 # @email: stephen.james.krol@gmail.com
 
 library(shiny)
@@ -267,6 +267,11 @@ dashboardPage(
               column(width=12,
                      box(
                        title="Cancer",
+                       radioButtons("CancerProbTable",
+                                    "Cancer Probability Table",
+                                    c("Independent Probability Table",
+                                      "Conditional Probability Table"),
+                                    selected="Independent Probability Table"),
                        hotable("cancerHotable"),
                        width=NULL,
                        collapsible=TRUE,

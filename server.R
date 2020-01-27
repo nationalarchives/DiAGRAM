@@ -6,7 +6,7 @@
 # digital files built by the University of Warwick and The National
 # Archive.
 # 
-# @author: Stephen James Krol, University of Monash, Melbourne
+# @author: Stephen James Krol, Monash University, Melbourne
 # @email: stephen.james.krol@gmail.com
 
 library(shiny)
@@ -48,34 +48,30 @@ shinyServer(function(input, output) {
     
   })
   
-  # Output Smoker Probability table
-  output$smokerHotable <- renderHotable({
-    
-    # Convert to dataframe and multiply probability by 100
-    # so it is more intuitive to non-statistical users
-    smoker.df <- data.frame(network$cancer.fit$Smoker$prob) %>%
-                 rename(Probability=Freq) %>%
-                 mutate(Probability=Probability*100)
-    
-    if ("Var1" %in% colnames(smoker.df)) {
+  # Construct smoker probability table
+  smoker <- reactive({
+      # Convert to dataframe and multiply probability by 100
+      # so it is more intuitive to non-statistical users
+      smoker.df <- data.frame(network$cancer.fit$Smoker$prob) %>%
+                   rename(Probability=Freq)
       
-      # When loaded var1 is originally given to smoker variables
-      # Once changed it does not revert back which can cause renaming errors
-      # Program cannot find Var1 because it has already been changed to smoker
-      smoker.df <- smoker.df %>% rename(Smoker=Var1)
-      
-    }
-    
-    smoker.df
+      if ("Var1" %in% colnames(smoker.df)) {
         
-  }, readOnly=FALSE)
+        # When loaded var1 is originally given to smoker variables
+        # Once changed it does not revert back which can cause renaming errors
+        # Program cannot find Var1 because it has already been changed to smoker
+        smoker.df <- smoker.df %>% rename(Smoker=Var1)
+    
+      }
+      
+      smoker.df
+  })
   
-  # Output Pollution Probability table
-  output$pollutionHotable <- renderHotable({
+  # Construct Pollution Probability Table
+  pollution <- reactive({
     
     pollution.df <- data.frame(network$cancer.fit$Pollution$prob) %>%
-                    rename(Probability=Freq) %>%
-                    mutate(Probability=Probability*100)
+                    rename(Probability=Freq)
     
     # When loaded var1 is originally given to pollution variables
     # Once changed it does not revert back which can cause renaming errors
@@ -86,14 +82,47 @@ shinyServer(function(input, output) {
       
     }
     
+    pollution.df
+    
+  })
+  
+  # Construct Cancer Probability Table
+  cancer <- reactive({
+    
+    cancer.df <- data.frame(network$cancer.fit$Cancer$prob) %>% 
+                 rename(Probability=Freq)
+    
+    if (input$CancerProbTable =="Conditional Probability Table") {
+       cancer.df
+      
+    } else {
+      
+      cancer.false <- calculateUtility(cancer.df, smoker(), pollution())$TotalProb
+      tibble("Cancer"=c("True", "False"), "Probability"=c(1-cancer.false, cancer.false))
+      
+    }
+
+    
+  })
+  
+  # Output Smoker Probability table
+  output$smokerHotable <- renderHotable({
+    
+  smoker() %>% mutate(Probability=Probability*100)
+        
+  }, readOnly=FALSE)
+  
+  # Output Pollution Probability table
+  output$pollutionHotable <- renderHotable({
+    
+  pollution() %>% mutate(Probability=Probability*100)
+    
   }, readOnly=FALSE)
   
   # Output cancer probability table
   output$cancerHotable <- renderHotable({
-    
-    data.frame(network$cancer.fit$Cancer$prob) %>% 
-    rename(Probability=Freq) %>%
-    mutate(Probability=Probability*100)
+  
+  cancer() %>% mutate(Probability=Probability*100)
     
   }, readOnly=FALSE)
   
@@ -117,11 +146,20 @@ shinyServer(function(input, output) {
                     mutate(Probability=Probability/100)
     cancer.df <- as.data.frame(hot.to.df(input$cancerHotable)) %>%
                  mutate(Probability=Probability/100)
+    
+    # Convert independent table to conditional table to update model
+    if (input$CancerProbTable == "Independent Probability Table") {
+      cancer.true <- cancer.df %>% filter(Cancer=="True") %>% select(Probability)
+      cancer.true <- cancer.true$Probability
+      cancer.df <- convertToConditional(cancer.true, 1 - cancer.true)
+      
+    }
 
     # convert dataframes to table
     updatedSmokerTable <- xtabs(Probability~Smoker, smoker.df)
     updatedPollutionTable <- xtabs(Probability~Pollution, pollution.df)
     updatedCancerTable <- xtabs(Probability~Cancer+Smoker+Pollution, cancer.df)
+
     
     # retrieve model
     model.fit <- network$cancer.fit
@@ -164,6 +202,22 @@ shinyServer(function(input, output) {
                    summarise(TotalProb = 1- sum(SummedProb))
     
     return(cancer.prob)
+  }
+  
+  # Function converts independent cancer table to conditional cancer table
+  # TODO: make more elegant solution for more complicated network
+  convertToConditional <- function(cancer.true, cancer.false){
+    
+    cancer <- c("True", "False", "True", "False", "True", "False", "True", "False")
+    pollution <- c("low", "low", "high", "high", "low", "low", "high", "high")
+    smoker <- c("True","True","True","True", "False", "False", "False", "False")
+    Probability <- c(cancer.true, cancer.false, cancer.true, cancer.false,
+                     cancer.true, cancer.false, cancer.true, cancer.false)
+    
+    cancer.df <- tibble("Cancer"=cancer, "Pollution"=pollution,
+                        "Smoker"=smoker, "Probability"=Probability)
+    
+    return(cancer.df)
   }
   
 
