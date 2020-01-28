@@ -294,5 +294,41 @@ shinyServer(function(input, output, session) {
     return(cancer.df)
   }
   
+  # Download selected files
+  output$Download <- downloadHandler(
+
+    filename = function() {
+      paste0(input$policySelection, ".zip")
+    },
+    
+    content = function(file){
+      
+      # write model
+      if ("Model" %in% input$downloadOptions) {
+        write.bif(paste0(input$policySelection, ".bif"),
+                  Utility$policy_networks[[input$policySelection]])
+      }
+      
+      # write utility plot
+      if ("Utility Plot" %in% input$downloadOptions) {
+        png(filename=paste0(input$policySelection, ".png"))
+        print(utility.plot())
+        dev.off()
+      }
+    
+
+      
+      # create zip file to return
+      filenames <- c(paste0(input$policySelection, ".bif"),
+                     paste0(input$policySelection, ".png"))
+      
+      zip(file, filenames)
+      
+      # delete all files on server
+      for (filename in filenames){
+        file.remove(filename)
+      }
+    }
+  )
 
 })

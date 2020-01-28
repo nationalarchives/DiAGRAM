@@ -79,7 +79,7 @@ dashboardPage(
           shinydashboard::box(
             title = "Welcome",
             width = 12,
-            shiny::h2("Version 0.6.3"),
+            shiny::h2("Version 0.7.0"),
             br(),
             p("This an initial version of the decision support system
               built by the ",
@@ -350,6 +350,25 @@ dashboardPage(
               selectInput("policySelection",
                           "Select Policy",
                           choices="No policies added")
+            ),
+            box(
+              title="Download",
+              width=NULL,
+              "Select what you would like to download:",
+              br(),
+              br(),
+              checkboxGroupInput("downloadOptions",
+                                 NULL,
+                                 choices=c("Model",
+                                           "Model Plot",
+                                           "Utility Plot",
+                                           "Policy Summary")),
+              br(),
+              tags$style(HTML('#Download{background-color:green}')),
+              tags$style(HTML('#Download{color:white}')),
+              downloadButton("Download",
+                             "Download")
+              
             )
           ),
           column(
