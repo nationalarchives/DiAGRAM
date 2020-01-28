@@ -19,17 +19,19 @@ library(tidyverse)
 
 options(repos = BiocManager::repositories())
 
-shinyServer(function(input, output) {
+shinyServer(function(input, output, session) {
   
   # initialise stable plot (unchanging) and reactive plot
   network <- reactiveValues(cancer.fit = read.bif("cancer.bif"))
   stable.fit <- read.bif("cancer.bif")
   
   # initialise policy list used for storing adjusted networks
-  policy_networks <- list()
+  # policy_networks <- list()
   
   # itialise utility dataframe
-  Utility <- reactiveValues(utility.df=tibble(name=character(), utility=numeric()))
+  Utility <- reactiveValues(utility.df=tibble(name=character(),
+                                              utility=numeric()),
+                            policy_networks=list())
   
   # plot network used on the structure tab
   # TODO: Work out how to prevent first plot not drawing properly
@@ -45,6 +47,15 @@ shinyServer(function(input, output) {
     
     first <- graphviz.chart(network$cancer.fit, type = "barprob", grid=TRUE, main="Test Network")
     graphviz.chart(network$cancer.fit, type = "barprob", grid=TRUE, main="Test Network")
+    
+  })
+  
+  # Plot network for report page
+  output$ReportModel <- renderPlot({
+    
+    model.fit <- Utility$policy_networks[[input$policySelection]]
+    first <- graphviz.chart(model.fit, type = "barprob", grid=TRUE, main="Test Network")
+    graphviz.chart(model.fit, type = "barprob", grid=TRUE, main="Test Network")
     
   })
   
@@ -126,12 +137,26 @@ shinyServer(function(input, output) {
     
   }, readOnly=FALSE)
   
-  # plot utility barchart
-  output$utilityComparison <- renderPlot({
+  # create utility barchart
+  utility.plot <- reactive({
     
     Utility$utility.df %>% ggplot(aes(x=name, y=utility)) + 
-                   geom_col() + 
-                   labs(title="Utility Comparison")
+                           geom_col() + 
+                           labs(title="Utility Comparison")
+    
+  })
+  
+  # plot utility barchart for policy page
+  output$utilityComparison <- renderPlot({
+    
+    utility.plot()
+    
+  })
+  
+  # plot utility barchart for report page
+  output$utilityComparisonFinal <- renderPlot({
+    
+    utility.plot()
     
   })
   
@@ -176,7 +201,9 @@ shinyServer(function(input, output) {
     if (input$policyName != "Enter Policy Name...") {
        
        # Save updated model
-       policy_networks[input$policyName] = model.fit
+       networks <- Utility$policy_networks
+       networks[[input$policyName]] = model.fit
+       Utility$policy_networks <- networks
        
        # calculate utility score
        utility <- calculateUtility(cancer.df, smoker.df, pollution.df)
@@ -184,6 +211,15 @@ shinyServer(function(input, output) {
        # update reactive utility dataframe
        Utility$utility.df <- Utility$utility.df %>% 
                              add_row(name=input$policyName, utility=utility$TotalProb)
+       
+       # Create new policy list
+       policy.names <- Utility$utility.df %>% select(name) %>% unique()
+       
+       # update possible policy selections
+       updateSelectInput(session,
+                         "policySelection",
+                         label="Select Policy",
+                         choices=policy.names$name)
      }
     
   })

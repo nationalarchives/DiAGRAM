@@ -50,6 +50,11 @@ dashboardPage(
       # Create Network ajdustment page
       menuItem("Policies",
                tabName="Policies",
+               icon=icon("calculator")),
+      
+      # Create Report Tab
+      menuItem("Report",
+               tabName="Report",
                icon=icon("book"))
     )
   ),
@@ -302,6 +307,49 @@ dashboardPage(
               width=NULL,
               collapsible=TRUE,
               plotOutput("utilityComparison")
+            )
+          )
+        )
+      ),
+      tabItem(
+        tabName="Report",
+        h1("Report"),
+        br(),
+        fluidRow(
+          column(
+            width=4,
+            box(
+              title="Summary",
+              width=NULL,
+              textOutput("TextReport")
+            )
+          ),
+          column(
+            width=8,
+            box(
+              title="Utility Comparison",
+              width=NULL,
+              plotOutput("utilityComparisonFinal")
+            )
+          )
+        ),
+        fluidRow(
+          column(
+            width=4,
+            box(
+              title=NULL,
+              width=NULL,
+              selectInput("policySelection",
+                          "Select Policy",
+                          choices="No policies added")
+            )
+          ),
+          column(
+            width=8,
+            box(
+              title="Model",
+              width=NULL,
+              plotOutput("ReportModel")
             )
           )
         )
