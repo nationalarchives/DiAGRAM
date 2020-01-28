@@ -170,6 +170,13 @@ shinyServer(function(input, output, session) {
     
   })
   
+  # Reset network to original probabilities
+  observeEvent(input$networkReset, {
+    
+    network$cancer.fit <- stable.fit
+    
+  })
+  
   # update network based off input changes
   observeEvent(input$networkUpdate, {
     

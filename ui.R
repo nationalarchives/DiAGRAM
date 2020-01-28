@@ -285,7 +285,14 @@ dashboardPage(
               )
             ),
             fluidRow(
+              column(
+                width=4,
+                textInput("policyName",
+                          label=NULL,
+                          value="Enter Policy Name...")
+              ),
               column(width=2,
+                     style='padding:0px;',
                      tags$style(HTML('#networkUpdate{background-color:green}')),
                      tags$style(HTML('#networkUpdate{color:white}')),
                      actionButton("networkUpdate",
@@ -293,10 +300,11 @@ dashboardPage(
                                   width='100%')
               ),
               column(
-                width=4,
-                textInput("policyName",
-                          label=NULL,
-                          value="Enter Policy Name...")
+                width=2,
+                offset=4,
+                tags$style(HTML('#networkReset{width: 100%')),
+                actionButton('networkReset',
+                             'Reset')
               )
             )
           ),
