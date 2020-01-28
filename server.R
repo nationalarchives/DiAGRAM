@@ -53,9 +53,22 @@ shinyServer(function(input, output, session) {
   # Plot network for report page
   output$ReportModel <- renderPlot({
     
-    model.fit <- Utility$policy_networks[[input$policySelection]]
-    first <- graphviz.chart(model.fit, type = "barprob", grid=TRUE, main="Test Network")
-    graphviz.chart(model.fit, type = "barprob", grid=TRUE, main="Test Network")
+    if (input$policySelection != "No policies added") {
+      model.fit <- Utility$policy_networks[[input$policySelection]]
+      first <- graphviz.chart(model.fit, type = "barprob", grid=TRUE, main="Test Network")
+      graphviz.chart(model.fit, type = "barprob", grid=TRUE, main="Test Network")
+    }
+    
+  })
+
+  # Render text for summary on report page
+  output$TextReport <- renderText({
+    
+    if (dim(Utility$utility.df)[1] == 0) {
+      
+      "No Policies have been added yet."
+      
+    }
     
   })
   
