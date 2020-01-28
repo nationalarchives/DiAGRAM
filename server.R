@@ -100,16 +100,26 @@ shinyServer(function(input, output, session) {
   # Construct Cancer Probability Table
   cancer <- reactive({
     
+    # Create initial cancer dataframe
     cancer.df <- data.frame(network$cancer.fit$Cancer$prob) %>% 
                  rename(Probability=Freq)
     
     if (input$CancerProbTable =="Conditional Probability Table") {
-       cancer.df
+      # Spread the conditional table to make it easier for the user to understand
+      cancer.df %>% 
+      mutate(Probability=Probability*100) %>%
+      pivot_wider(names_from=Cancer, values_from=Probability) %>%
+      rename(`Cancer=True`=True,
+             `Cancer=False`=False)
       
     } else {
       
+      # Get probability that cancer = False
       cancer.false <- calculateUtility(cancer.df, smoker(), pollution())$TotalProb
-      tibble("Cancer"=c("True", "False"), "Probability"=c(1-cancer.false, cancer.false))
+      
+      # Use probability to create independent table
+      tibble("Cancer"=c("True", "False"), "Probability"=c(1-cancer.false, cancer.false)) %>%
+      mutate(Probability=Probability*100)
       
     }
 
@@ -133,7 +143,7 @@ shinyServer(function(input, output, session) {
   # Output cancer probability table
   output$cancerHotable <- renderHotable({
   
-  cancer() %>% mutate(Probability=Probability*100)
+  cancer()
     
   }, readOnly=FALSE)
   
@@ -169,14 +179,22 @@ shinyServer(function(input, output, session) {
                  mutate(Probability=Probability/100)
     pollution.df <- as.data.frame(hot.to.df(input$pollutionHotable)) %>%
                     mutate(Probability=Probability/100)
-    cancer.df <- as.data.frame(hot.to.df(input$cancerHotable)) %>%
-                 mutate(Probability=Probability/100)
+    cancer.df <- as.data.frame(hot.to.df(input$cancerHotable))
     
     # Convert independent table to conditional table to update model
     if (input$CancerProbTable == "Independent Probability Table") {
       cancer.true <- cancer.df %>% filter(Cancer=="True") %>% select(Probability)
-      cancer.true <- cancer.true$Probability
+      cancer.true <- cancer.true$Probability/100
       cancer.df <- convertToConditional(cancer.true, 1 - cancer.true)
+      
+    } else{
+      # Convert conditional table from wide form to long form
+      cancer.df <- cancer.df %>%
+                   rename(True=`Cancer=True`, False=`Cancer=False`) %>%
+                   pivot_longer(c(True, False),
+                                names_to="Cancer",
+                                values_to="Probability") %>%
+                   mutate(Probability=Probability/100)
       
     }
 
