@@ -315,8 +315,7 @@ shinyServer(function(input, output, session) {
         print(utility.plot())
         dev.off()
       }
-      
-      # Test commit
+    
       
       # create zip file to return
       filenames <- c(paste0(input$policySelection, ".bif"),
