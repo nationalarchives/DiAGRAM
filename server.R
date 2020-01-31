@@ -21,18 +21,17 @@ options(repos = BiocManager::repositories())
 
 shinyServer(function(input, output, session) {
   
+  # REACTIVE VALUES
   # initialise stable plot (unchanging) and reactive plot
   network <- reactiveValues(cancer.fit = read.bif("cancer.bif"))
   stable.fit <- read.bif("cancer.bif")
-  
-  # initialise policy list used for storing adjusted networks
-  # policy_networks <- list()
   
   # itialise utility dataframe
   Utility <- reactiveValues(utility.df=tibble(name=character(),
                                               utility=numeric()),
                             policy_networks=list())
   
+  # NETWORK TAB
   # plot network used on the structure tab
   # TODO: Work out how to prevent first plot not drawing properly
   output$NetworkStructure <- renderPlot({
@@ -42,60 +41,30 @@ shinyServer(function(input, output, session) {
     
   })
   
-  # Plot network which changes for policy inputs
-  output$netPlot <- renderPlot({
-    
-    first <- graphviz.chart(network$cancer.fit, type = "barprob", grid=TRUE, main="Test Network")
-    graphviz.chart(network$cancer.fit, type = "barprob", grid=TRUE, main="Test Network")
-    
-  })
-  
-  # Plot network for report page
-  output$ReportModel <- renderPlot({
-    
-    if (input$policySelection != "No policies added") {
-      model.fit <- Utility$policy_networks[[input$policySelection]]
-      first <- graphviz.chart(model.fit, type = "barprob", grid=TRUE, main="Test Network")
-      graphviz.chart(model.fit, type = "barprob", grid=TRUE, main="Test Network")
-    }
-    
-  })
-
-  # Render text for summary on report page
-  output$TextReport <- renderText({
-    
-    if (dim(Utility$utility.df)[1] == 0) {
-      
-      "No Policies have been added yet."
-      
-    }
-    
-  })
-  
   # Construct smoker probability table
   smoker <- reactive({
-      # Convert to dataframe and multiply probability by 100
-      # so it is more intuitive to non-statistical users
-      smoker.df <- data.frame(network$cancer.fit$Smoker$prob) %>%
-                   rename(Probability=Freq)
-      
-      if ("Var1" %in% colnames(smoker.df)) {
-        
-        # When loaded var1 is originally given to smoker variables
-        # Once changed it does not revert back which can cause renaming errors
-        # Program cannot find Var1 because it has already been changed to smoker
-        smoker.df <- smoker.df %>% rename(Smoker=Var1)
+    # Convert to dataframe and multiply probability by 100
+    # so it is more intuitive to non-statistical users
+    smoker.df <- data.frame(network$cancer.fit$Smoker$prob) %>%
+      rename(Probability=Freq)
     
-      }
+    if ("Var1" %in% colnames(smoker.df)) {
       
-      smoker.df
+      # When loaded var1 is originally given to smoker variables
+      # Once changed it does not revert back which can cause renaming errors
+      # Program cannot find Var1 because it has already been changed to smoker
+      smoker.df <- smoker.df %>% rename(Smoker=Var1)
+      
+    }
+    
+    smoker.df
   })
   
   # Construct Pollution Probability Table
   pollution <- reactive({
     
     pollution.df <- data.frame(network$cancer.fit$Pollution$prob) %>%
-                    rename(Probability=Freq)
+      rename(Probability=Freq)
     
     # When loaded var1 is originally given to pollution variables
     # Once changed it does not revert back which can cause renaming errors
@@ -115,15 +84,15 @@ shinyServer(function(input, output, session) {
     
     # Create initial cancer dataframe
     cancer.df <- data.frame(network$cancer.fit$Cancer$prob) %>% 
-                 rename(Probability=Freq)
+      rename(Probability=Freq)
     
     if (input$CancerProbTable =="Conditional Probability Table") {
       # Spread the conditional table to make it easier for the user to understand
       cancer.df %>% 
-      mutate(Probability=Probability*100) %>%
-      pivot_wider(names_from=Cancer, values_from=Probability) %>%
-      rename(`Cancer=True`=True,
-             `Cancer=False`=False)
+        mutate(Probability=Probability*100) %>%
+        pivot_wider(names_from=Cancer, values_from=Probability) %>%
+        rename(`Cancer=True`=True,
+               `Cancer=False`=False)
       
     } else {
       
@@ -132,10 +101,29 @@ shinyServer(function(input, output, session) {
       
       # Use probability to create independent table
       tibble("Cancer"=c("True", "False"), "Probability"=c(1-cancer.false, cancer.false)) %>%
-      mutate(Probability=Probability*100)
+        mutate(Probability=Probability*100)
       
     }
-
+    
+    
+  })
+  
+  # create utility barchart
+  utility.plot <- reactive({
+    
+    Utility$utility.df %>% ggplot(aes(x=name, y=utility)) + 
+      geom_col() + 
+      labs(title="Utility Comparison")
+    
+  })
+  
+  
+  # POLICY TAB
+  # Plot network which changes for policy inputs
+  output$netPlot <- renderPlot({
+    
+    first <- graphviz.chart(network$cancer.fit, type = "barprob", grid=TRUE, main="Test Network")
+    graphviz.chart(network$cancer.fit, type = "barprob", grid=TRUE, main="Test Network")
     
   })
   
@@ -160,24 +148,8 @@ shinyServer(function(input, output, session) {
     
   }, readOnly=FALSE)
   
-  # create utility barchart
-  utility.plot <- reactive({
-    
-    Utility$utility.df %>% ggplot(aes(x=name, y=utility)) + 
-                           geom_col() + 
-                           labs(title="Utility Comparison")
-    
-  })
-  
   # plot utility barchart for policy page
   output$utilityComparison <- renderPlot({
-    
-    utility.plot()
-    
-  })
-  
-  # plot utility barchart for report page
-  output$utilityComparisonFinal <- renderPlot({
     
     utility.plot()
     
@@ -196,9 +168,9 @@ shinyServer(function(input, output, session) {
     # retrieve updated table data and convert to dataframe
     # normalise probabilities between 0 and 1
     smoker.df <- as.data.frame(hot.to.df(input$smokerHotable)) %>%
-                 mutate(Probability=Probability/100)
+      mutate(Probability=Probability/100)
     pollution.df <- as.data.frame(hot.to.df(input$pollutionHotable)) %>%
-                    mutate(Probability=Probability/100)
+      mutate(Probability=Probability/100)
     cancer.df <- as.data.frame(hot.to.df(input$cancerHotable))
     
     # Convert independent table to conditional table to update model
@@ -210,19 +182,19 @@ shinyServer(function(input, output, session) {
     } else{
       # Convert conditional table from wide form to long form
       cancer.df <- cancer.df %>%
-                   rename(True=`Cancer=True`, False=`Cancer=False`) %>%
-                   pivot_longer(c(True, False),
-                                names_to="Cancer",
-                                values_to="Probability") %>%
-                   mutate(Probability=Probability/100)
+        rename(True=`Cancer=True`, False=`Cancer=False`) %>%
+        pivot_longer(c(True, False),
+                     names_to="Cancer",
+                     values_to="Probability") %>%
+        mutate(Probability=Probability/100)
       
     }
-
+    
     # convert dataframes to table
     updatedSmokerTable <- xtabs(Probability~Smoker, smoker.df)
     updatedPollutionTable <- xtabs(Probability~Pollution, pollution.df)
     updatedCancerTable <- xtabs(Probability~Cancer+Smoker+Pollution, cancer.df)
-
+    
     
     # retrieve model
     model.fit <- network$cancer.fit
@@ -237,30 +209,65 @@ shinyServer(function(input, output, session) {
     
     # Save policy
     if (input$policyName != "Enter Policy Name...") {
-       
-       # Save updated model
-       networks <- Utility$policy_networks
-       networks[[input$policyName]] = model.fit
-       Utility$policy_networks <- networks
-       
-       # calculate utility score
-       utility <- calculateUtility(cancer.df, smoker.df, pollution.df)
-       
-       # update reactive utility dataframe
-       Utility$utility.df <- Utility$utility.df %>% 
-                             add_row(name=input$policyName, utility=utility$TotalProb)
-       
-       # Create new policy list
-       policy.names <- Utility$utility.df %>% select(name) %>% unique()
-       
-       # update possible policy selections
-       updateSelectInput(session,
-                         "policySelection",
-                         label="Select Policy",
-                         choices=policy.names$name)
-     }
+      
+      # Save updated model
+      networks <- Utility$policy_networks
+      networks[[input$policyName]] = model.fit
+      Utility$policy_networks <- networks
+      
+      # calculate utility score
+      utility <- calculateUtility(cancer.df, smoker.df, pollution.df)
+      
+      # update reactive utility dataframe
+      Utility$utility.df <- Utility$utility.df %>% 
+        add_row(name=input$policyName, utility=utility$TotalProb)
+      
+      # Create new policy list
+      policy.names <- Utility$utility.df %>% select(name) %>% unique()
+      
+      # update possible policy selections
+      updateSelectInput(session,
+                        "policySelection",
+                        label="Select Policy",
+                        choices=policy.names$name)
+    }
     
   })
+  
+  # REPORT TAB
+  # Plot network for report page
+  output$ReportModel <- renderPlot({
+    
+    if (input$policySelection != "No policies added") {
+      model.fit <- Utility$policy_networks[[input$policySelection]]
+      first <- graphviz.chart(model.fit, type = "barprob", grid=TRUE, main="Test Network")
+      graphviz.chart(model.fit, type = "barprob", grid=TRUE, main="Test Network")
+    }
+    
+  })
+  
+  # Render text for summary on report page
+  output$TextReport <- renderText({
+    
+    if (dim(Utility$utility.df)[1] == 0) {
+      
+      "No Policies have been added yet."
+      
+    }
+    
+  })
+  
+  # plot utility barchart for report page
+  output$utilityComparisonFinal <- renderPlot({
+    
+    utility.plot()
+    
+  })
+  
+  
+  
+  
+  
   
   # Function calculates utility
   calculateUtility <- function(cancer.df, smoker.df, pollution.df){
