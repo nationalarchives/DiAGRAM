@@ -5,7 +5,7 @@ names.NA = c("Service_continuity","Trust","Permited_access",
              "System_security",  "Provenance","Findability","Digital_data_type",
              "Search_facilities", "Cataloguing","Renderability","Technical_metadata",
              "Content_metadata",  "Tools","Obsolecence","Physical_disaster",
-             "Economic/political_upheaval","Technological_upheaval",
+             "Economic_political_upheaval","Technological_upheaval",
              "Operating_environment", "Storage_life","Storage_media","Institution_type",
              "Copy_protocol","User_type","Replacement_protocol", "Preservation",
              "Processing", "Target_community")
@@ -23,8 +23,8 @@ dag.NA = set.arc(dag.NA, from = "Search_facilities", to = "Findability")
 dag.NA = set.arc(dag.NA, from = "Tools", to = "Renderability")
 dag.NA = set.arc(dag.NA, from = "Obsolecence", to = "Tools")
 dag.NA = set.arc(dag.NA, from = "Physical_disaster", to = "Operating_environment")
-dag.NA = set.arc(dag.NA, from = "Economic/political_upheaval", to = "Service_continuity")
-dag.NA = set.arc(dag.NA, from = "Economic/political_upheaval", to = "Copy_protocol")
+dag.NA = set.arc(dag.NA, from = "Economic_political_upheaval", to = "Service_continuity")
+dag.NA = set.arc(dag.NA, from = "Economic_political_upheaval", to = "Copy_protocol")
 dag.NA = set.arc(dag.NA, from = "Technological_upheaval", to = "Storage_media")
 dag.NA = set.arc(dag.NA, from = "Content_metadata", to = "Provenance")
 dag.NA = set.arc(dag.NA, from = "Content_metadata", to = "Cataloguing")
@@ -62,7 +62,7 @@ graphviz.plot(dag.NA, layout = "dot",
 # Institution_type
 prob.institution_type <- matrix(c(0.5, 0.5), ncol = 2, dimnames = list(NULL, c("True", "False")))
 
-# Economic/political_upheaval
+# Economic_political_upheaval
 prob.economic <- matrix(c(0.5, 0.5), ncol = 2, dimnames = list(NULL, c("True", "False")))
 
 # Digital_data_type
@@ -90,7 +90,7 @@ dimnames(prob.target_community) <- list("Target_community"=c("True", "False"),
 prob.copy_protocol <- c(0.5, 0.5, 0.5, 0.5)
 dim(prob.copy_protocol) <- c(2, 2)
 dimnames(prob.copy_protocol) <- list("Copy_protocol"=c("True", "False"), 
-                                     "Economic/political_upheaval"=c("True", "False"))
+                                     "Economic_political_upheaval"=c("True", "False"))
 
 # Technical_metadata
 prob.technical_metadata <- c(0.5, 0.5, 0.5, 0.5)
@@ -138,7 +138,7 @@ prob.service_continuity <- c(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
 dim(prob.service_continuity) <- c(2, 2, 2)
 dimnames(prob.service_continuity) <- list("Service_continuity"=c("True", "False"), 
                                           "Institution_type"=c("True", "False"),
-                                          "Economic/political_upheaval"=c("True", "False"))
+                                          "Economic_political_upheaval"=c("True", "False"))
 
 # Cataloguing
 prob.cataloguing <- c(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
@@ -225,7 +225,7 @@ dimnames(prob.preservation) <- list("Preservation"=c("True", "False"),
 
 model.fit <- custom.fit(dag.NA,
                         dist=list("Institution_type"=prob.institution_type,
-                                  "Economic/political_upheaval"=prob.economic,
+                                  "Economic_political_upheaval"=prob.economic,
                                   "Digital_data_type"=prob.digital_data_type,
                                   "Technological_upheaval"=prob.technical_upheaval,
                                   "Physical_disaster"=prob.physical_disaster,
