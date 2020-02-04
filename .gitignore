@@ -1,5 +1,7 @@
 .Rhistory
 .Rproj.user/
+.RData
+*.Rproj
 TNA_GUI.Rproj
 .DS_Store
 cancer.net
