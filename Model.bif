@@ -1,0 +1,234 @@
+network unknown {
+}
+variable Service_continuity {
+  type discrete [ 2 ] { True, False };
+}
+variable Trust {
+  type discrete [ 2 ] { True, False };
+}
+variable Permited_access {
+  type discrete [ 2 ] { True, False };
+}
+variable System_security {
+  type discrete [ 2 ] { True, False };
+}
+variable Provenance {
+  type discrete [ 2 ] { True, False };
+}
+variable Findability {
+  type discrete [ 2 ] { True, False };
+}
+variable Digital_data_type {
+  type discrete [ 2 ] { True, False };
+}
+variable Search_facilities {
+  type discrete [ 2 ] { True, False };
+}
+variable Cataloguing {
+  type discrete [ 2 ] { True, False };
+}
+variable Renderability {
+  type discrete [ 2 ] { True, False };
+}
+variable Technical_metadata {
+  type discrete [ 2 ] { True, False };
+}
+variable Content_metadata {
+  type discrete [ 2 ] { True, False };
+}
+variable Tools {
+  type discrete [ 2 ] { True, False };
+}
+variable Obsolecence {
+  type discrete [ 2 ] { True, False };
+}
+variable Physical_disaster {
+  type discrete [ 2 ] { True, False };
+}
+variable Economic_political_upheaval {
+  type discrete [ 2 ] { True, False };
+}
+variable Technological_upheaval {
+  type discrete [ 2 ] { True, False };
+}
+variable Operating_environment {
+  type discrete [ 2 ] { True, False };
+}
+variable Storage_life {
+  type discrete [ 2 ] { True, False };
+}
+variable Storage_media {
+  type discrete [ 2 ] { True, False };
+}
+variable Institution_type {
+  type discrete [ 2 ] { True, False };
+}
+variable Copy_protocol {
+  type discrete [ 2 ] { True, False };
+}
+variable User_type {
+  type discrete [ 2 ] { True, False };
+}
+variable Replacement_protocol {
+  type discrete [ 2 ] { True, False };
+}
+variable Preservation {
+  type discrete [ 2 ] { True, False };
+}
+variable Processing {
+  type discrete [ 2 ] { True, False };
+}
+variable Target_community {
+  type discrete [ 2 ] { True, False };
+}
+probability ( Service_continuity | Economic_political_upheaval, Institution_type ) {
+  (True, True) 0.5, 0.5;
+  (False, True) 0.5, 0.5;
+  (True, False) 0.5, 0.5;
+  (False, False) 0.5, 0.5;
+}
+probability ( Trust | Findability, Renderability ) {
+  (True, True) 0.5, 0.5;
+  (False, True) 0.5, 0.5;
+  (True, False) 0.5, 0.5;
+  (False, False) 0.5, 0.5;
+}
+probability ( Permited_access | Content_metadata ) {
+  (True) 0.5, 0.5;
+  (False) 0.5, 0.5;
+}
+probability ( System_security ) {
+  table 0.5, 0.5;
+}
+probability ( Provenance | Content_metadata ) {
+  (True) 0.5, 0.5;
+  (False) 0.5, 0.5;
+}
+probability ( Findability | Permited_access, Search_facilities, Cataloguing ) {
+  (True, True, True) 0.5, 0.5;
+  (False, True, True) 0.5, 0.5;
+  (True, False, True) 0.5, 0.5;
+  (False, False, True) 0.5, 0.5;
+  (True, True, False) 0.5, 0.5;
+  (False, True, False) 0.5, 0.5;
+  (True, False, False) 0.5, 0.5;
+  (False, False, False) 0.5, 0.5;
+}
+probability ( Digital_data_type ) {
+  table 0.5, 0.5;
+}
+probability ( Search_facilities | User_type ) {
+  (True) 0.5, 0.5;
+  (False) 0.5, 0.5;
+}
+probability ( Cataloguing | Content_metadata, Processing ) {
+  (True, True) 0.5, 0.5;
+  (False, True) 0.5, 0.5;
+  (True, False) 0.5, 0.5;
+  (False, False) 0.5, 0.5;
+}
+probability ( Renderability | Tools, Preservation ) {
+  (True, True) 0.5, 0.5;
+  (False, True) 0.5, 0.5;
+  (True, False) 0.5, 0.5;
+  (False, False) 0.5, 0.5;
+}
+probability ( Technical_metadata | Digital_data_type ) {
+  (True) 0.5, 0.5;
+  (False) 0.5, 0.5;
+}
+probability ( Content_metadata | Digital_data_type ) {
+  (True) 0.5, 0.5;
+  (False) 0.5, 0.5;
+}
+probability ( Tools | Technical_metadata, Obsolecence ) {
+  (True, True) 0.5, 0.5;
+  (False, True) 0.5, 0.5;
+  (True, False) 0.5, 0.5;
+  (False, False) 0.5, 0.5;
+}
+probability ( Obsolecence | Technical_metadata, Storage_media ) {
+  (True, True) 0.5, 0.5;
+  (False, True) 0.5, 0.5;
+  (True, False) 0.5, 0.5;
+  (False, False) 0.5, 0.5;
+}
+probability ( Physical_disaster ) {
+  table 0.5, 0.5;
+}
+probability ( Economic_political_upheaval ) {
+  table 0.5, 0.5;
+}
+probability ( Technological_upheaval ) {
+  table 0.5, 0.5;
+}
+probability ( Operating_environment | Physical_disaster, Storage_media, Processing ) {
+  (True, True, True) 0.5, 0.5;
+  (False, True, True) 0.5, 0.5;
+  (True, False, True) 0.5, 0.5;
+  (False, False, True) 0.5, 0.5;
+  (True, True, False) 0.5, 0.5;
+  (False, True, False) 0.5, 0.5;
+  (True, False, False) 0.5, 0.5;
+  (False, False, False) 0.5, 0.5;
+}
+probability ( Storage_life | Operating_environment, Storage_media, Replacement_protocol ) {
+  (True, True, True) 0.5, 0.5;
+  (False, True, True) 0.5, 0.5;
+  (True, False, True) 0.5, 0.5;
+  (False, False, True) 0.5, 0.5;
+  (True, True, False) 0.5, 0.5;
+  (False, True, False) 0.5, 0.5;
+  (True, False, False) 0.5, 0.5;
+  (False, False, False) 0.5, 0.5;
+}
+probability ( Storage_media | Technological_upheaval ) {
+  (True) 0.5, 0.5;
+  (False) 0.5, 0.5;
+}
+probability ( Institution_type ) {
+  table 0.5, 0.5;
+}
+probability ( Copy_protocol | Economic_political_upheaval ) {
+  (True) 0.5, 0.5;
+  (False) 0.5, 0.5;
+}
+probability ( User_type | Target_community ) {
+  (True) 0.5, 0.5;
+  (False) 0.5, 0.5;
+}
+probability ( Replacement_protocol ) {
+  table 0.5, 0.5;
+}
+probability ( Preservation | Service_continuity, System_security, Provenance, Storage_life ) {
+  (True, True, True, True) 0.5, 0.5;
+  (False, True, True, True) 0.5, 0.5;
+  (True, False, True, True) 0.5, 0.5;
+  (False, False, True, True) 0.5, 0.5;
+  (True, True, False, True) 0.5, 0.5;
+  (False, True, False, True) 0.5, 0.5;
+  (True, False, False, True) 0.5, 0.5;
+  (False, False, False, True) 0.5, 0.5;
+  (True, True, True, False) 0.5, 0.5;
+  (False, True, True, False) 0.5, 0.5;
+  (True, False, True, False) 0.5, 0.5;
+  (False, False, True, False) 0.5, 0.5;
+  (True, True, False, False) 0.5, 0.5;
+  (False, True, False, False) 0.5, 0.5;
+  (True, False, False, False) 0.5, 0.5;
+  (False, False, False, False) 0.5, 0.5;
+}
+probability ( Processing | Digital_data_type, Technical_metadata, Copy_protocol ) {
+  (True, True, True) 0.5, 0.5;
+  (False, True, True) 0.5, 0.5;
+  (True, False, True) 0.5, 0.5;
+  (False, False, True) 0.5, 0.5;
+  (True, True, False) 0.5, 0.5;
+  (False, True, False) 0.5, 0.5;
+  (True, False, False) 0.5, 0.5;
+  (False, False, False) 0.5, 0.5;
+}
+probability ( Target_community | Institution_type ) {
+  (True) 0.5, 0.5;
+  (False) 0.5, 0.5;
+}
