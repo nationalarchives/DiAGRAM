@@ -18,6 +18,16 @@ library(shinysky)
 
 options(repos = BiocManager::repositories())
 
+# Store node names in list to use throughout UI
+node.names <- c("Service_continuity","Trust","Permited_access",
+                "System_security",  "Provenance","Findability","Digital_data_type",
+                "Search_facilities", "Cataloguing","Renderability","Technical_metadata",
+                "Content_metadata",  "Tools","Obsolecence","Physical_disaster",
+                "Economic_political_upheaval","Technological_upheaval",
+                "Operating_environment", "Storage_life","Storage_media","Institution_type",
+                "Copy_protocol","User_type","Replacement_protocol", "Preservation",
+                "Processing", "Target_community")
+
 # create main dashboard page
 dashboardPage(
   skin="purple",
@@ -42,8 +52,8 @@ dashboardPage(
       ),
       
       # Create Network Info Page
-      menuItem("Network",
-               tabName="Network",
+      menuItem("Node Definitions",
+               tabName="Node_Definitions",
                icon=icon("globe")),
       
       
@@ -111,117 +121,42 @@ dashboardPage(
       
       # Network Tab
       tabItem(
-        tabName="Network",
-        h1("Network Structure"),
+        tabName="Node_Definitions",
+        h1("Node Definitions"),
         br(),
         fluidRow(
-          column(width=4,
-                 box(
-                   title="Pollution",
-                   width=NULL,
-                   collapsible =TRUE,
-                   "This node relates to the air quality of
-                    the subjects environment. Pollution is considered",
-                   strong("high"),
-                   " if the air quality index is above ",
-                   em("151"),
-                   " over ",
-                   em("50%"),
-                   " of the time.",
-                   br(),
-                   br(),
-                   "The data used in estimating these probabilities
-                    was collected by the World Health Organisation
-                    and is stored in the ",
-                  a(href="https://www.who.int/airpollution/data/cities/en/",
-                    "Global Ambient Air Quality Database."),
-                  " This database was last updated in 2018."
-                 )
-          ),
-          column(width=4,
-                 box(
-                   title="Smoker",
-                   width=NULL,
-                   collapsible=TRUE,
-                   "This node relates to the smoking status of a subject. A
-                    subject is considered a ",
-                    strong("smoker"),
-                    " if they have smoked at least ",
-                   em("100"),
-                   " cigarettes in their lifetime and currently smoke.",
-                   br(),
-                   br(),
-                   "The data used in estimating these probabilities was provided
-                    by the UK governemnt and can be found ",
-                   a(href="https://data.gov.uk/dataset/641597ce-17a1-4056-8c55-1a619cdc57c2/statistics-on-smoking-england",
-                     "here"),
-                   ". It was last updated in 2017."
-                 )
-          ),
-          column(width=4,
-                 box(
-                   title="Cancer",
-                   width=NULL,
-                   collapsible=TRUE,
-                   "This node relates to whether a subject as cancer or not. A subject is
-                    is considered to ",
-                    strong("have"),
-                    " cancer if a qualified medical professional has diagnosed them with cancer.",
-                   br(),
-                   br(),
-                   "The data used for this node was collected by ",
-                   a(href="https://www.cancerdata.nhs.uk",
-                     "The National Cancer Registration and Analysis Service."),
-                   "It was last updated in 2018."
-                 )
-          )
-        ),
-        fluidRow(
-          column(width=12,
+          column(
+            width=4,
             box(
-              title="Network Structure",
-              collapsible=TRUE,
+              title="Node Selection",
               width=NULL,
-              plotOutput("NetworkStructure")
+              collapsible=TRUE,
+              strong("Please select a node from the menu to view its definition."),
+              br(),
+              br(),
+              selectInput(
+                inputId="NodeDefinition",
+                label=NULL,
+                choices=node.names
+              )
+            )
+          ),
+          column(
+            width=8,
+            box(
+              title="Node Description",
+              width=NULL,
+              collapsible=TRUE
             )
           )
         ),
         fluidRow(
-          column(width=6,
+          column(width=12,
                  box(
-                   title="Xray",
-                   width=NULL,
+                   title="Network Structure",
                    collapsible=TRUE,
-                   "This node represents the probability that an X-ray will come back
-                    as positive for cancer given the probability of cancer. An X-ray test
-                    is considered ",
-                   strong("positive"),
-                   "if a medical professional identifies that a subject has cancer given
-                    the images.",
-                   br(),
-                   br(),
-                   "The data used for this node was collected by ",
-                   a(href="https://www.cancerdata.nhs.uk",
-                     "The National Cancer Registration and Analysis Service."),
-                   "It was last updated in 2018."
-                 )
-          ),
-          column(width=6,
-                 box(
-                   title="Dyspnoea",
                    width=NULL,
-                   collapsible=TRUE,
-                   "This node represents the probability that a subject will have Dysnoea
-                    given the probability that the subject has cancer. A subject is considered
-                    to ",
-                   strong("have"),
-                   " Dyspnoea if a medical professional diagnoses the subject as having the condition.",
-                   br(),
-                   br(),
-                   "The data used for this node was provided by the UK government and can be found ",
-                   a(href="https://data.gov.uk/dataset/a3790bd8-8813-4ab0-a1b1-eff0af3ae9a1/people-with-chronic-obstructive-pulmonary-disease-and-medical-research-council-dyspnoea-scale-3-referred-to-a-pulmonary-rehabilitation-programme-ccgois-2-3",
-                     "here."),
-                   "This data was last updated in 2017."
+                   plotOutput("NetworkStructure")
                  )
           )
         )
@@ -243,7 +178,6 @@ dashboardPage(
                        title="Network",
                        collapsible=TRUE,
                        width=NULL,
-                       
                        plotOutput("netPlot")
                      )
               )
