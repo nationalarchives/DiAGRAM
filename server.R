@@ -20,26 +20,19 @@ options(repos = BiocManager::repositories())
 
 shinyServer(function(input, output, session) {
   
+  # STATIC VALUES
+  stable.fit <- read.bif("Model.bif")
+  node.definitions <- read_csv("node_information.csv") %>% arrange(node_name)
+  state.definitions <- read_csv("node_states.csv")
+  
   # REACTIVE VALUES
   # initialise stable plot (unchanging) and reactive plot
   network <- reactiveValues(cancer.fit = read.bif("cancer.bif"))
-  stable.fit <- read.bif("Model.bif")
   
   # itialise utility dataframe
   Utility <- reactiveValues(utility.df=tibble(name=character(),
                                               utility=numeric()),
                             policy_networks=list())
-  
-  # NETWORK TAB
-  # plot network used on the network tab
-  output$NetworkStructure <- renderPlot({
-    graphviz.plot(stable.fit, layout = "dot",
-                  highlight = list(nodes=c("Renderability","Findability",
-                                           "Trust"), fill="lightgrey"),
-                  shape = "ellipse",
-                  render = TRUE,
-                  main="Proposed network")
-  })
   
   # Construct smoker probability table
   smoker <- reactive({
@@ -116,6 +109,74 @@ shinyServer(function(input, output, session) {
       labs(title="Utility Comparison")
     
   })
+  
+  # NODE DEFINITION TAB
+  
+  # Update node drop down list with node names
+  updateSelectInput(session,
+                    "NodeSelection",
+                    label=NULL,
+                    choices=node.definitions$node_name)
+  
+  # plot network used on the network tab
+  output$NetworkStructure <- renderPlot({
+    graphviz.plot(stable.fit, layout = "dot",
+                  highlight = list(nodes=c(input$NodeSelection), fill="lightgrey"),
+                  shape = "ellipse",
+                  render = TRUE,
+                  main="Proposed network")
+  })
+  
+  # Output node definiton text
+  output$NodeDefinition <- renderUI({
+    
+    definition <- node.definitions %>% 
+                  filter(node_name==input$NodeSelection) %>%
+                  select(node_definition) %>%
+                  as.character()
+    
+    tagList(strong("Definition: "), definition)
+    
+  })
+  
+  
+  # Output hyperlink to data source
+  output$DataLink <- renderUI({
+    
+    url <- node.definitions %>% 
+           filter(node_name==input$NodeSelection) %>%
+           select(data_source) %>%
+           as.character()
+    
+    url <- a(input$NodeSelection, href=url)
+    
+    tagList(strong("Data Source: "), url)
+    
+  })
+  
+  # Output Year of node
+  output$DataYear <- renderUI({
+    
+    year <- node.definitions %>% 
+            filter(node_name==input$NodeSelection) %>%
+            select(node_year) %>%
+            as.character()
+    
+    tagList(strong("Data last updated: "), year)
+    
+  })
+  
+  # Output node state definition table
+  output$StateDefinition <- renderTable({
+    
+    state.definitions %>%
+      filter(node_name==input$NodeSelection) %>%
+      select(-node_name) %>% 
+      rename(`Node State`=node_state,
+             `State Definition`=state_definition)
+    
+  })
+  
   
   
   # POLICY TAB

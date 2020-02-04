@@ -17,16 +17,6 @@ library(shinysky)
 
 options(repos = BiocManager::repositories())
 
-# Store node names in list to use throughout UI
-node.names <- c("Service_continuity","Trust","Permited_access",
-                "System_security",  "Provenance","Findability","Digital_data_type",
-                "Search_facilities", "Cataloguing","Renderability","Technical_metadata",
-                "Content_metadata",  "Tools","Obsolecence","Physical_disaster",
-                "Economic_political_upheaval","Technological_upheaval",
-                "Operating_environment", "Storage_life","Storage_media","Institution_type",
-                "Copy_protocol","User_type","Replacement_protocol", "Preservation",
-                "Processing", "Target_community")
-
 # create main dashboard page
 dashboardPage(
   skin="purple",
@@ -134,9 +124,9 @@ dashboardPage(
               br(),
               br(),
               selectInput(
-                inputId="NodeDefinition",
+                inputId="NodeSelection",
                 label=NULL,
-                choices=node.names
+                choices="No Nodes Available"
               )
             )
           ),
@@ -145,7 +135,19 @@ dashboardPage(
             box(
               title="Node Description",
               width=NULL,
-              collapsible=TRUE
+              collapsible=TRUE,
+              column(
+                width=6,
+                uiOutput("NodeDefinition"),
+                br(),
+                uiOutput("DataLink"),
+                br(),
+                uiOutput("DataYear")
+              ),
+              column(
+                width=6,
+                tableOutput("StateDefinition")
+              )
             )
           )
         ),
