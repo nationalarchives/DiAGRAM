@@ -1,4 +1,4 @@
-node_name,node_state,state_defintion
+node_name,node_state,state_definition
 Service_continuity,True,Insert state definition
 Service_continuity,False,Insert state definition
 Trust,True,Insert state definition
