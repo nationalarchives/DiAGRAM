@@ -78,7 +78,7 @@ dashboardPage(
           shinydashboard::box(
             title = "Welcome",
             width = 12,
-            shiny::h2("Version 0.7.0"),
+            shiny::h2("Version 0.8.0"),
             br(),
             p("This an initial version of the decision support system
               built by the ",
