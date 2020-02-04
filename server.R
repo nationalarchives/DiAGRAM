@@ -23,8 +23,8 @@ shinyServer(function(input, output, session) {
   
   # REACTIVE VALUES
   # initialise stable plot (unchanging) and reactive plot
-  network <- reactiveValues(cancer.fit = read.bif("cancer.bif"))
-  stable.fit <- read.bif("cancer.bif")
+  network <- reactiveValues(cancer.fit = read.bif("Model.bif"))
+  stable.fit <- read.bif("Model.bif")
   
   # itialise utility dataframe
   Utility <- reactiveValues(utility.df=tibble(name=character(),
@@ -117,8 +117,28 @@ shinyServer(function(input, output, session) {
     
   })
   
-  
   # POLICY TAB
+  # plot the network for visual representation
+  output$policyTabNetwork <- renderPlot({
+    graphviz.plot(network$cancer.fit,  
+                  layout = "dot",
+                  shape = "ellipse",
+                  render = TRUE)
+  })
+  
+  # list the nodes dynamically based on model instead of hardcoding
+  output$policyTabNodes <- renderUI({
+    ui_nodes <- c()
+    j <- 1
+    for(i in network$cancer.fit){
+      ui_nodes[[j]] <- fluidRow(i$node)
+      j <- j + 1
+    }
+    
+    ui_nodes
+  })
+  
+  # POLICY TAB -- OLD
   # Plot network which changes for policy inputs
   output$netPlot <- renderPlot({
     

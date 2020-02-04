@@ -46,6 +46,11 @@ dashboardPage(
                tabName="Network",
                icon=icon("globe")),
       
+      # Create Network adjusment page (addition of policies)
+      menuItem("Policy", 
+               tabName = "Policy",
+               icon=icon("calculator")),
+      
       
       # Create Network ajdustment page
       menuItem("Policies",
@@ -225,6 +230,36 @@ dashboardPage(
                  )
           )
         )
+      ),
+      tabItem(
+        tabName="Policy",
+        h1("Policy Selection"),
+        br(),
+        fluidRow(
+          column(
+            width=4,
+            box(
+              title="Nodes",
+              width=NULL,
+              uiOutput("policyTabNodes")
+            )
+          ),
+          column(
+            width=8,
+            box(
+              title="Network",
+              width=NULL,
+              plotOutput("policyTabNetwork")
+            )
+          )
+        )
+        # sidebarLayout(
+        #   sidebarPanel(h3("Nodes"), 
+        #                uiOutput("policyTabNodes")),
+        #   mainPanel(h3("Network"),
+        #             plotOutput("policyTabNetwork"))
+        # )
+        
       ),
       
       # Policy Tab
