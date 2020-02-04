@@ -1,4 +1,13 @@
 
+# The following script builds a dummy model which can be used for development.
+
+# This script was built for DiAGRAM by the University of Warwick and The National
+# Archive.
+
+# @author: Stephen James Krol, Monash University, Melbourne
+# @email: stephen.james.krol@gmail.com
+
+
 library(bnlearn)
 
 names.NA = c("Service_continuity","Trust","Permited_access",

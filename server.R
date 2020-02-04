@@ -1,11 +1,10 @@
 
 # Following script defines interactions between components displayed 
 # on the webpage.
-# 
-# This script belongs to the decision support system for preserving
-# digital files built by the University of Warwick and The National
+
+# This script was built for DiAGRAM by the University of Warwick and The National
 # Archive.
-# 
+
 # @author: Stephen James Krol, Monash University, Melbourne
 # @email: stephen.james.krol@gmail.com
 
@@ -24,7 +23,7 @@ shinyServer(function(input, output, session) {
   # REACTIVE VALUES
   # initialise stable plot (unchanging) and reactive plot
   network <- reactiveValues(cancer.fit = read.bif("cancer.bif"))
-  stable.fit <- read.bif("cancer.bif")
+  stable.fit <- read.bif("Model.bif")
   
   # itialise utility dataframe
   Utility <- reactiveValues(utility.df=tibble(name=character(),
@@ -32,13 +31,14 @@ shinyServer(function(input, output, session) {
                             policy_networks=list())
   
   # NETWORK TAB
-  # plot network used on the structure tab
-  # TODO: Work out how to prevent first plot not drawing properly
+  # plot network used on the network tab
   output$NetworkStructure <- renderPlot({
-    
-    first <- graphviz.chart(stable.fit, type = "barprob", grid=TRUE, main="Cancer Network")
-    graphviz.chart(stable.fit, type = "barprob", grid=TRUE, main="Cancer Network")
-    
+    graphviz.plot(stable.fit, layout = "dot",
+                  highlight = list(nodes=c("Renderability","Findability",
+                                           "Trust"), fill="lightgrey"),
+                  shape = "ellipse",
+                  render = TRUE,
+                  main="Proposed network")
   })
   
   # Construct smoker probability table

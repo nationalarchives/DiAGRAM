@@ -1,10 +1,9 @@
 
 # Following script defines components displayed on the webpage.
-# 
-# This script belongs to the decision support system for preserving
-# digital files built by the University of Warwick and The National
+
+# This script was built for DiAGRAM by the University of Warwick and The National
 # Archive.
-# 
+
 # @author: Stephen James Krol, Monash University, Melbourne
 # @email: stephen.james.krol@gmail.com
 
