@@ -45,10 +45,12 @@ dashboardPage(
                tabName="Node_Definitions",
                icon=icon("globe")),
       
-      # Create Network adjusment page (addition of policies)
-      menuItem("Policy", 
-               tabName = "Policy",
-               icon=icon("calculator")),
+      # Simple View Page
+      menuItem("Simple View",
+               tabName = "SimpleView",
+               menuSubItem("Customize Nodes", 
+                        tabName = "CustomizeNode")
+               ),
       
       
       # Create Network ajdustment page
@@ -167,25 +169,28 @@ dashboardPage(
           )
         )
       ),
+      
+      # Policy Tab
       tabItem(
-        tabName="Policy",
-        h1("Policy Selection"),
+        tabName="CustomizeNode",
+        h1("Policy Selection Support"),
         br(),
         fluidRow(
           column(
-            width=4,
+            width=3,
             box(
-              title="Nodes",
+              title="Nodes Checklist",
               width=NULL,
-              uiOutput("policyTabNodes")
+              checkboxGroupInput("policyTabNodesChecklist", 
+                                 label=NULL,
+                                 choices=character(0))
             )
           ),
           column(
-            width=8,
+            width=9,
             box(
-              title="Network",
               width=NULL,
-              plotOutput("policyTabNetwork")
+              uiOutput("policyTabNodesSlider")
             )
           )
         )

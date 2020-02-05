@@ -177,29 +177,28 @@ shinyServer(function(input, output, session) {
     
   })
   
-  
   # POLICY TAB
-  # plot the network for visual representation
-  output$policyTabNetwork <- renderPlot({
-    graphviz.plot(stable.fit,  
-                  layout = "dot",
-                  shape = "ellipse",
-                  render = TRUE)
-  })
+  # list the nodes checklist dynamically based on model instead of hardcoding
+  uiNodeChecklist <- nodes(stable.fit)
   
-  # list the nodes dynamically based on model instead of hardcoding
-  output$policyTabNodes <- renderUI({
-    ui_nodes <- c()
-    j <- 1
-    for(i in stable.fit){
-      ui_nodes[[j]] <- fluidRow(i$node)
-      j <- j + 1
+  # update the checklist options with nodes list
+  updateCheckboxGroupInput(session,
+                           "policyTabNodesChecklist",
+                           label=NULL,  
+                           choices = uiNodeChecklist
+  )
+  
+  output$policyTabNodesSlider <- renderUI({
+    uiNodeSlider <- c()
+    
+    i <- 1
+    for(node in input$policyTabNodesChecklist){
+      uiNodeSlider[[i]] <- fluidRow(node)
+      i <- i+1
     }
     
-    ui_nodes
+    uiNodeSlider
   })
-  
-  
   
   # Plot network which changes for policy inputs
   output$netPlot <- renderPlot({
