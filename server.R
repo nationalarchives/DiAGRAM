@@ -1,11 +1,10 @@
 
 # Following script defines interactions between components displayed 
 # on the webpage.
-# 
-# This script belongs to the decision support system for preserving
-# digital files built by the University of Warwick and The National
+
+# This script was built for DiAGRAM by the University of Warwick and The National
 # Archive.
-# 
+
 # @author: Stephen James Krol, Monash University, Melbourne
 # @email: stephen.james.krol@gmail.com
 
@@ -21,25 +20,19 @@ options(repos = BiocManager::repositories())
 
 shinyServer(function(input, output, session) {
   
+  # STATIC VALUES
+  stable.fit <- read.bif("Model.bif")
+  node.definitions <- read_csv("node_information.csv") %>% arrange(node_name)
+  state.definitions <- read_csv("node_states.csv")
+  
   # REACTIVE VALUES
   # initialise stable plot (unchanging) and reactive plot
-  network <- reactiveValues(cancer.fit = read.bif("Model.bif"))
-  stable.fit <- read.bif("Model.bif")
+  network <- reactiveValues(cancer.fit = read.bif("cancer.bif"))
   
   # itialise utility dataframe
   Utility <- reactiveValues(utility.df=tibble(name=character(),
                                               utility=numeric()),
                             policy_networks=list())
-  
-  # NETWORK TAB
-  # plot network used on the structure tab
-  # TODO: Work out how to prevent first plot not drawing properly
-  output$NetworkStructure <- renderPlot({
-    
-    first <- graphviz.chart(stable.fit, type = "barprob", grid=TRUE, main="Cancer Network")
-    graphviz.chart(stable.fit, type = "barprob", grid=TRUE, main="Cancer Network")
-    
-  })
   
   # Construct smoker probability table
   smoker <- reactive({
@@ -117,28 +110,76 @@ shinyServer(function(input, output, session) {
     
   })
   
-  # POLICY TAB
-  # plot the network for visual representation
-  output$policyTabNetwork <- renderPlot({
-    graphviz.plot(network$cancer.fit,  
-                  layout = "dot",
+  # NODE DEFINITION TAB
+  
+  # Update node drop down list with node names
+  updateSelectInput(session,
+                    "NodeSelection",
+                    label=NULL,
+                    choices=node.definitions$node_name)
+  
+  # plot network used on the network tab
+  output$NetworkStructure <- renderPlot({
+    graphviz.plot(stable.fit, layout = "dot",
+                  highlight = list(nodes=c(input$NodeSelection), fill="lightgrey"),
                   shape = "ellipse",
-                  render = TRUE)
+                  render = TRUE,
+                  main="Proposed network")
   })
   
-  # list the nodes dynamically based on model instead of hardcoding
-  output$policyTabNodes <- renderUI({
-    ui_nodes <- c()
-    j <- 1
-    for(i in network$cancer.fit){
-      ui_nodes[[j]] <- fluidRow(i$node)
-      j <- j + 1
-    }
+  # Output node definiton text
+  output$NodeDefinition <- renderUI({
     
-    ui_nodes
+    definition <- node.definitions %>% 
+                  filter(node_name==input$NodeSelection) %>%
+                  select(node_definition) %>%
+                  as.character()
+    
+    tagList(strong("Definition: "), definition)
+    
   })
   
-  # POLICY TAB -- OLD
+  
+  # Output hyperlink to data source
+  output$DataLink <- renderUI({
+    
+    url <- node.definitions %>% 
+           filter(node_name==input$NodeSelection) %>%
+           select(data_source) %>%
+           as.character()
+    
+    url <- a(input$NodeSelection, href=url)
+    
+    tagList(strong("Data Source: "), url)
+    
+  })
+  
+  # Output Year of node
+  output$DataYear <- renderUI({
+    
+    year <- node.definitions %>% 
+            filter(node_name==input$NodeSelection) %>%
+            select(node_year) %>%
+            as.character()
+    
+    tagList(strong("Data last updated: "), year)
+    
+  })
+  
+  # Output node state definition table
+  output$StateDefinition <- renderTable({
+    
+    state.definitions %>%
+      filter(node_name==input$NodeSelection) %>%
+      select(-node_name) %>% 
+      rename(`Node State`=node_state,
+             `State Definition`=state_definition)
+    
+  })
+  
+  
+  
+  # POLICY TAB
   # Plot network which changes for policy inputs
   output$netPlot <- renderPlot({
     
