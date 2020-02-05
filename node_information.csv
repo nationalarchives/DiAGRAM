@@ -1,0 +1,28 @@
+node_name,node_definition,node_year,data_source
+Service_continuity,"Continuing to provide an archival service, even with changing institutions, staff or policies.",2020,https://www.nationalarchives.gov.uk
+Trust,"A trusted digital repository is one whose mission is to provide reliable, long-term access to managed digital resources to its designated community, now and in the future.",2020,https://www.nationalarchives.gov.uk
+Permited_access,Legal and administrative rights of the digital object.,2020,https://www.nationalarchives.gov.uk
+System_security,Record is secure against malicious or accidental damage.,2020,https://www.nationalarchives.gov.uk
+Provenance,Keeping it the way the records are meant to be.,2020,https://www.nationalarchives.gov.uk
+Findability,Target community can locate record of interest in collection.,2020,https://www.nationalarchives.gov.uk
+Digital_data_type,Whether the record is born digital or digitised (or a digital surrogate).,2020,https://www.nationalarchives.gov.uk
+Search_facilities,he web tool used to access the catalogue and acquire the records.,2020,https://www.nationalarchives.gov.uk
+Cataloguing,The web tool used to access the catalogue and acquire the records.,2020,https://www.nationalarchives.gov.uk
+Renderability,Target community can access and use the digital object and its content metadata.,2020,https://www.nationalarchives.gov.uk
+Technical_metadata,"Includes technical information that applies to any file type, such as information about the software and hardware on which the digital object can be rendered or executed, or checksums and digital signatures to ensure fixity and authenticity.",2020,https://www.nationalarchives.gov.uk
+Content_metadata,"Describes the intellectual entity through properties such as author and title, and supports discovery and delivery of digital content. It may also provide an historic context, by, for example, specifying which print- based material was the original source for a digital derivative (source provenance).",2020,https://www.nationalarchives.gov.uk
+Tools,"Tools to render the digital records, inculding tools to do format migrations and emulations.",2020,https://www.nationalarchives.gov.uk
+Obsolecence,Essential hardware or software required to render the records becoming obsolete.,2020,https://www.nationalarchives.gov.uk
+Physical_disaster,A sudden accident or a natural catastrophe that causes great damage.,2020,https://www.nationalarchives.gov.uk
+Economic_political_upheaval,"Economic or political upheaval, for example financial disruption, national recession, change of focus.",2020,https://www.nationalarchives.gov.uk
+Technological_upheaval,Change in technology used in digital archiving.,2020,https://www.nationalarchives.gov.uk
+Operating_environment,"The conditions under which the records are stored, including location, environment, security etc.",2020,https://www.nationalarchives.gov.uk
+Storage_life,How long the digital record can be stored.,2020,https://www.nationalarchives.gov.uk
+Storage_media,"The type of media on which the digital records are stored e.g (hard drive disk, magnetic tape, flash drives).",2020,https://www.nationalarchives.gov.uk
+Institution_type,"Breakdown of the type of institution i.e. education, local, private, national, special....",2020,https://www.nationalarchives.gov.uk
+Copy_protocol,"The archives policies on copies of the digital record, e.g. number, diversity of storage media, geographical storage locations etc.",2020,https://www.nationalarchives.gov.uk
+User_type,Whether the visitor to the archive is new or a returning user.,2020,https://www.nationalarchives.gov.uk
+Replacement_protocol,Whether or not a storage device is replaced and when.,2020,https://www.nationalarchives.gov.uk
+Preservation,The digital record and content metadata are in tact.,2020,https://www.nationalarchives.gov.uk
+Processing,Procedures to prepare data and documentation for storage and preservation.,2020,https://www.nationalarchives.gov.uk
+Target_community,"Knowing and understanding your target community, and engaging them with your digital archive.",2020,https://www.nationalarchives.gov.uk
