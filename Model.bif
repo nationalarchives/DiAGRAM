@@ -19,7 +19,7 @@ variable Findability {
   type discrete [ 2 ] { True, False };
 }
 variable Digital_data_type {
-  type discrete [ 2 ] { True, False };
+  type discrete [ 2 ] { Digitised, Surrogate };
 }
 variable Search_facilities {
   type discrete [ 2 ] { True, False };
@@ -43,7 +43,7 @@ variable Obsolecence {
   type discrete [ 2 ] { True, False };
 }
 variable Physical_disaster {
-  type discrete [ 2 ] { True, False };
+  type discrete [ 2 ] { FLood, No_Flood };
 }
 variable Economic_political_upheaval {
   type discrete [ 2 ] { True, False };
@@ -58,13 +58,13 @@ variable Storage_life {
   type discrete [ 2 ] { True, False };
 }
 variable Storage_media {
-  type discrete [ 2 ] { True, False };
+  type discrete [ 5 ] { Tape, Optical, SSD, HDD, Cloud };
 }
 variable Institution_type {
-  type discrete [ 2 ] { True, False };
+  type discrete [ 5 ] { Government_Central, Government_Local, Charity, Private_Corporate, Higher_Education };
 }
 variable Copy_protocol {
-  type discrete [ 2 ] { True, False };
+  type discrete [ 3 ] { All, Partial, None };
 }
 variable User_type {
   type discrete [ 2 ] { True, False };
@@ -82,10 +82,16 @@ variable Target_community {
   type discrete [ 2 ] { True, False };
 }
 probability ( Service_continuity | Economic_political_upheaval, Institution_type ) {
-  (True, True) 0.5, 0.5;
-  (False, True) 0.5, 0.5;
-  (True, False) 0.5, 0.5;
-  (False, False) 0.5, 0.5;
+  (True, Government_Central) 0.5, 0.5;
+  (False, Government_Central) 0.5, 0.5;
+  (True, Government_Local) 0.5, 0.5;
+  (False, Government_Local) 0.5, 0.5;
+  (True, Charity) 0.5, 0.5;
+  (False, Charity) 0.5, 0.5;
+  (True, Private_Corporate) 0.5, 0.5;
+  (False, Private_Corporate) 0.5, 0.5;
+  (True, Higher_Education) 0.5, 0.5;
+  (False, Higher_Education) 0.5, 0.5;
 }
 probability ( Trust | Findability, Renderability ) {
   (True, True) 0.5, 0.5;
@@ -134,12 +140,12 @@ probability ( Renderability | Tools, Preservation ) {
   (False, False) 0.5, 0.5;
 }
 probability ( Technical_metadata | Digital_data_type ) {
-  (True) 0.5, 0.5;
-  (False) 0.5, 0.5;
+  (Digitised) 0.5, 0.5;
+  (Surrogate) 0.5, 0.5;
 }
 probability ( Content_metadata | Digital_data_type ) {
-  (True) 0.5, 0.5;
-  (False) 0.5, 0.5;
+  (Digitised) 0.5, 0.5;
+  (Surrogate) 0.5, 0.5;
 }
 probability ( Tools | Technical_metadata, Obsolecence ) {
   (True, True) 0.5, 0.5;
@@ -148,10 +154,16 @@ probability ( Tools | Technical_metadata, Obsolecence ) {
   (False, False) 0.5, 0.5;
 }
 probability ( Obsolecence | Technical_metadata, Storage_media ) {
-  (True, True) 0.5, 0.5;
-  (False, True) 0.5, 0.5;
-  (True, False) 0.5, 0.5;
-  (False, False) 0.5, 0.5;
+  (True, Tape) 0.5, 0.5;
+  (False, Tape) 0.5, 0.5;
+  (True, Optical) 0.5, 0.5;
+  (False, Optical) 0.5, 0.5;
+  (True, SSD) 0.5, 0.5;
+  (False, SSD) 0.5, 0.5;
+  (True, HDD) 0.5, 0.5;
+  (False, HDD) 0.5, 0.5;
+  (True, Cloud) 0.5, 0.5;
+  (False, Cloud) 0.5, 0.5;
 }
 probability ( Physical_disaster ) {
   table 0.5, 0.5;
@@ -163,35 +175,59 @@ probability ( Technological_upheaval ) {
   table 0.5, 0.5;
 }
 probability ( Operating_environment | Physical_disaster, Storage_media, Processing ) {
-  (True, True, True) 0.5, 0.5;
-  (False, True, True) 0.5, 0.5;
-  (True, False, True) 0.5, 0.5;
-  (False, False, True) 0.5, 0.5;
-  (True, True, False) 0.5, 0.5;
-  (False, True, False) 0.5, 0.5;
-  (True, False, False) 0.5, 0.5;
-  (False, False, False) 0.5, 0.5;
+  (FLood, Tape, True) 0.5, 0.5;
+  (No_Flood, Tape, True) 0.5, 0.5;
+  (FLood, Optical, True) 0.5, 0.5;
+  (No_Flood, Optical, True) 0.5, 0.5;
+  (FLood, SSD, True) 0.5, 0.5;
+  (No_Flood, SSD, True) 0.5, 0.5;
+  (FLood, HDD, True) 0.5, 0.5;
+  (No_Flood, HDD, True) 0.5, 0.5;
+  (FLood, Cloud, True) 0.5, 0.5;
+  (No_Flood, Cloud, True) 0.5, 0.5;
+  (FLood, Tape, False) 0.5, 0.5;
+  (No_Flood, Tape, False) 0.5, 0.5;
+  (FLood, Optical, False) 0.5, 0.5;
+  (No_Flood, Optical, False) 0.5, 0.5;
+  (FLood, SSD, False) 0.5, 0.5;
+  (No_Flood, SSD, False) 0.5, 0.5;
+  (FLood, HDD, False) 0.5, 0.5;
+  (No_Flood, HDD, False) 0.5, 0.5;
+  (FLood, Cloud, False) 0.5, 0.5;
+  (No_Flood, Cloud, False) 0.5, 0.5;
 }
 probability ( Storage_life | Operating_environment, Storage_media, Replacement_protocol ) {
-  (True, True, True) 0.5, 0.5;
-  (False, True, True) 0.5, 0.5;
-  (True, False, True) 0.5, 0.5;
-  (False, False, True) 0.5, 0.5;
-  (True, True, False) 0.5, 0.5;
-  (False, True, False) 0.5, 0.5;
-  (True, False, False) 0.5, 0.5;
-  (False, False, False) 0.5, 0.5;
+  (True, Tape, True) 0.5, 0.5;
+  (False, Tape, True) 0.5, 0.5;
+  (True, Optical, True) 0.5, 0.5;
+  (False, Optical, True) 0.5, 0.5;
+  (True, SSD, True) 0.5, 0.5;
+  (False, SSD, True) 0.5, 0.5;
+  (True, HDD, True) 0.5, 0.5;
+  (False, HDD, True) 0.5, 0.5;
+  (True, Cloud, True) 0.5, 0.5;
+  (False, Cloud, True) 0.5, 0.5;
+  (True, Tape, False) 0.5, 0.5;
+  (False, Tape, False) 0.5, 0.5;
+  (True, Optical, False) 0.5, 0.5;
+  (False, Optical, False) 0.5, 0.5;
+  (True, SSD, False) 0.5, 0.5;
+  (False, SSD, False) 0.5, 0.5;
+  (True, HDD, False) 0.5, 0.5;
+  (False, HDD, False) 0.5, 0.5;
+  (True, Cloud, False) 0.5, 0.5;
+  (False, Cloud, False) 0.5, 0.5;
 }
 probability ( Storage_media | Technological_upheaval ) {
-  (True) 0.5, 0.5;
-  (False) 0.5, 0.5;
+  (True) 0.2, 0.2, 0.2, 0.2, 0.2;
+  (False) 0.2, 0.2, 0.2, 0.2, 0.2;
 }
 probability ( Institution_type ) {
-  table 0.5, 0.5;
+  table 0.2, 0.2, 0.2, 0.2, 0.2;
 }
 probability ( Copy_protocol | Economic_political_upheaval ) {
-  (True) 0.5, 0.5;
-  (False) 0.5, 0.5;
+  (True) 0.4, 0.3, 0.3;
+  (False) 0.4, 0.3, 0.3;
 }
 probability ( User_type | Target_community ) {
   (True) 0.5, 0.5;
@@ -219,16 +255,23 @@ probability ( Preservation | Service_continuity, System_security, Provenance, St
   (False, False, False, False) 0.5, 0.5;
 }
 probability ( Processing | Digital_data_type, Technical_metadata, Copy_protocol ) {
-  (True, True, True) 0.5, 0.5;
-  (False, True, True) 0.5, 0.5;
-  (True, False, True) 0.5, 0.5;
-  (False, False, True) 0.5, 0.5;
-  (True, True, False) 0.5, 0.5;
-  (False, True, False) 0.5, 0.5;
-  (True, False, False) 0.5, 0.5;
-  (False, False, False) 0.5, 0.5;
+  (Digitised, True, All) 0.5, 0.5;
+  (Surrogate, True, All) 0.5, 0.5;
+  (Digitised, False, All) 0.5, 0.5;
+  (Surrogate, False, All) 0.5, 0.5;
+  (Digitised, True, Partial) 0.5, 0.5;
+  (Surrogate, True, Partial) 0.5, 0.5;
+  (Digitised, False, Partial) 0.5, 0.5;
+  (Surrogate, False, Partial) 0.5, 0.5;
+  (Digitised, True, None) 0.5, 0.5;
+  (Surrogate, True, None) 0.5, 0.5;
+  (Digitised, False, None) 0.5, 0.5;
+  (Surrogate, False, None) 0.5, 0.5;
 }
 probability ( Target_community | Institution_type ) {
-  (True) 0.5, 0.5;
-  (False) 0.5, 0.5;
+  (Government_Central) 0.5, 0.5;
+  (Government_Local) 0.5, 0.5;
+  (Charity) 0.5, 0.5;
+  (Private_Corporate) 0.5, 0.5;
+  (Higher_Education) 0.5, 0.5;
 }
