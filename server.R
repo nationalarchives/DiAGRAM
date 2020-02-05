@@ -178,8 +178,29 @@ shinyServer(function(input, output, session) {
   })
   
   
-  
   # POLICY TAB
+  # plot the network for visual representation
+  output$policyTabNetwork <- renderPlot({
+    graphviz.plot(stable.fit,  
+                  layout = "dot",
+                  shape = "ellipse",
+                  render = TRUE)
+  })
+  
+  # list the nodes dynamically based on model instead of hardcoding
+  output$policyTabNodes <- renderUI({
+    ui_nodes <- c()
+    j <- 1
+    for(i in stable.fit){
+      ui_nodes[[j]] <- fluidRow(i$node)
+      j <- j + 1
+    }
+    
+    ui_nodes
+  })
+  
+  
+  
   # Plot network which changes for policy inputs
   output$netPlot <- renderPlot({
     
