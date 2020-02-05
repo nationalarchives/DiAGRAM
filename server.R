@@ -177,17 +177,9 @@ shinyServer(function(input, output, session) {
     
   })
   
-  
   # POLICY TAB
   # list the nodes checklist dynamically based on model instead of hardcoding
-  
-  # extract the nodes from the model
-  uiNodeChecklist <- list()
-  j <- 1
-  for(i in stable.fit){
-    uiNodeChecklist[[i$node]] <- i$node
-    j <- j + 1
-  }
+  uiNodeChecklist <- nodes(stable.fit)
   
   # update the checklist options with nodes list
   updateCheckboxGroupInput(session,
@@ -199,16 +191,14 @@ shinyServer(function(input, output, session) {
   output$policyTabNodesSlider <- renderUI({
     uiNodeSlider <- c()
     
-    j <- 1
-    for(i in input$policyTabNodesChecklist){
-      uiNodeSlider[[j]] <- fluidRow(i)
-      j <- j+1
+    i <- 1
+    for(node in input$policyTabNodesChecklist){
+      uiNodeSlider[[i]] <- fluidRow(node)
+      i <- i+1
     }
     
     uiNodeSlider
   })
-  
-  
   
   # Plot network which changes for policy inputs
   output$netPlot <- renderPlot({
