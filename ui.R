@@ -167,25 +167,28 @@ dashboardPage(
           )
         )
       ),
+      
+      # Policy Tab
       tabItem(
         tabName="Policy",
         h1("Policy Selection"),
         br(),
         fluidRow(
           column(
-            width=4,
+            width=3,
             box(
-              title="Nodes",
+              title="Nodes Checklist",
               width=NULL,
-              uiOutput("policyTabNodes")
+              checkboxGroupInput("policyTabNodesChecklist", 
+                                 label=NULL,
+                                 choices=character(0))
             )
           ),
           column(
-            width=8,
+            width=9,
             box(
-              title="Network",
               width=NULL,
-              plotOutput("policyTabNetwork")
+              uiOutput("policyTabNodesSlider")
             )
           )
         )
