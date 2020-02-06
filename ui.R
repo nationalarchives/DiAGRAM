@@ -14,6 +14,8 @@ library(shinydashboard)
 library(gRbase)
 library(gRain)
 library(shinysky)
+library(shinyWidgets)
+library(shinyjs)
 
 options(repos = BiocManager::repositories())
 
@@ -48,8 +50,10 @@ dashboardPage(
       # Simple View Page
       menuItem("Simple View",
                tabName = "SimpleView",
+               menuSubItem("Customise Model",
+                           tabName="CustomiseModel"),
                menuSubItem("Customize Nodes", 
-                        tabName = "CustomizeNode")
+                            tabName = "CustomizeNode")
                ),
       
       
@@ -172,6 +176,28 @@ dashboardPage(
       
       # Policy Tab
       tabItem(
+        tabName="CustomiseModel",
+        h1("Customise Model"),
+        br(),
+        fluidRow(
+          column(
+            width=12,
+            box(
+              title=NULL,
+              width=NULL,
+              progressBar("Question_Progress", value=0, total=5),
+              h3("Please answer the following questions: "),
+              uiOutput("Question"),
+              br(),
+              radioButtons("StateSelection", "Select State", choices=c("temp")),
+              br(),
+              uiOutput("CustomisationInput")
+            )
+          )
+        )
+      ),
+      
+      tabItem(
         tabName="CustomizeNode",
         h1("Policy Selection Support"),
         br(),
@@ -187,11 +213,8 @@ dashboardPage(
             )
           ),
           column(
-            width=9,
-            box(
-              width=NULL,
-              uiOutput("policyTabNodesSlider")
-            )
+            width=6,
+            uiOutput("policyTabNodesSlider")
           )
         )
         # sidebarLayout(
