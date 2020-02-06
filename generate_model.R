@@ -69,19 +69,23 @@ graphviz.plot(dag.NA, layout = "dot",
 
 # Create prob tables for each node
 # Institution_type
-prob.institution_type <- matrix(c(0.5, 0.5), ncol = 2, dimnames = list(NULL, c("True", "False")))
+prob.institution_type <- matrix(c(0.2, 0.2, 0.2, 0.2, 0.2), ncol = 5, dimnames = list(NULL, c("Government_Central", 
+                                                                                              "Government_Local",
+                                                                                              "Charity",
+                                                                                              "Private_Corporate",
+                                                                                              "Higher_Education")))
 
 # Economic_political_upheaval
 prob.economic <- matrix(c(0.5, 0.5), ncol = 2, dimnames = list(NULL, c("True", "False")))
 
 # Digital_data_type
-prob.digital_data_type <- matrix(c(0.5, 0.5), ncol = 2, dimnames = list(NULL, c("True", "False")))
+prob.digital_data_type <- matrix(c(0.5, 0.5), ncol = 2, dimnames = list(NULL, c("Digitised", "Surrogate")))
 
 # Technical Upheaval
 prob.technical_upheaval <- matrix(c(0.5, 0.5), ncol = 2, dimnames = list(NULL, c("True", "False")))
 
 # Physical_disaster
-prob.physical_disaster <- matrix(c(0.5, 0.5), ncol = 2, dimnames = list(NULL, c("True", "False")))
+prob.physical_disaster <- matrix(c(0.5, 0.5), ncol = 2, dimnames = list(NULL, c("FLood", "No_Flood")))
 
 # Replacement_protocol
 prob.replacement_protocol <- matrix(c(0.5, 0.5), ncol = 2, dimnames = list(NULL, c("True", "False")))
@@ -90,22 +94,27 @@ prob.replacement_protocol <- matrix(c(0.5, 0.5), ncol = 2, dimnames = list(NULL,
 prob.system_security <- matrix(c(0.5, 0.5), ncol = 2, dimnames = list(NULL, c("True", "False")))
 
 # Target_community
-prob.target_community <- c(0.5, 0.5, 0.5, 0.5)
-dim(prob.target_community) <- c(2, 2)
+prob.target_community <- c(0.5, 0.5, 0.5, 0.5, 0.5,
+                           0.5, 0.5, 0.5, 0.5, 0.5)
+dim(prob.target_community) <- c(2, 5)
 dimnames(prob.target_community) <- list("Target_community"=c("True", "False"), 
-                                        "Institution_type"=c("True", "False"))
+                                        "Institution_type"=c("Government_Central", 
+                                                             "Government_Local",
+                                                             "Charity",
+                                                             "Private_Corporate",
+                                                             "Higher_Education"))
 
 # Copy_protocol
-prob.copy_protocol <- c(0.5, 0.5, 0.5, 0.5)
-dim(prob.copy_protocol) <- c(2, 2)
-dimnames(prob.copy_protocol) <- list("Copy_protocol"=c("True", "False"), 
+prob.copy_protocol <- c(0.4, 0.3, 0.3, 0.4, 0.3, 0.3)
+dim(prob.copy_protocol) <- c(3, 2)
+dimnames(prob.copy_protocol) <- list("Copy_protocol"=c("All", "Partial", "None"), 
                                      "Economic_political_upheaval"=c("True", "False"))
 
 # Technical_metadata
 prob.technical_metadata <- c(0.5, 0.5, 0.5, 0.5)
 dim(prob.technical_metadata) <- c(2, 2)
 dimnames(prob.technical_metadata) <- list("Technical_metadata"=c("True", "False"), 
-                                          "Digital_data_type"=c("True", "False"))
+                                          "Digital_data_type"=c("Digitised", "Surrogate"))
 
 # User_type
 prob.user_type <- c(0.5, 0.5, 0.5, 0.5)
@@ -114,9 +123,11 @@ dimnames(prob.user_type) <- list("User_type"=c("True", "False"),
                                  "Target_community"=c("True", "False"))
 
 # Storage_media
-prob.storage_media <- c(0.5, 0.5, 0.5, 0.5)
-dim(prob.storage_media) <- c(2, 2)
-dimnames(prob.storage_media) <- list("Storage_media"=c("True", "False"), 
+prob.storage_media <- c(0.2, 0.2, 0.2, 0.2, 0.2,
+                        0.2
+                        , 0.2, 0.2, 0.2, 0.2)
+dim(prob.storage_media) <- c(5, 2)
+dimnames(prob.storage_media) <- list("Storage_media"=c("Tape", "Optical", "SSD", "HDD", "Cloud"), 
                                      "Technological_upheaval"=c("True", "False"))
 
 # Search_facilities
@@ -129,7 +140,7 @@ dimnames(prob.search_facilities) <- list("Search_facilities"=c("True", "False"),
 prob.content_metadata<- c(0.5, 0.5, 0.5, 0.5)
 dim(prob.content_metadata) <- c(2, 2)
 dimnames(prob.content_metadata) <- list("Content_metadata"=c("True", "False"), 
-                                        "Digital_data_type"=c("True", "False"))
+                                        "Digital_data_type"=c("Digitised", "Surrogate"))
 
 # Permitted Access
 prob.permited_access<- c(0.5, 0.5, 0.5, 0.5)
@@ -143,10 +154,15 @@ dimnames(prob.provenance) <- list("Provenance"=c("True", "False"),
                                   "Content_metadata"=c("True", "False"))
 
 # Service_continuity
-prob.service_continuity <- c(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
-dim(prob.service_continuity) <- c(2, 2, 2)
+prob.service_continuity <- c(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
+                             0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
+dim(prob.service_continuity) <- c(2, 5, 2)
 dimnames(prob.service_continuity) <- list("Service_continuity"=c("True", "False"), 
-                                          "Institution_type"=c("True", "False"),
+                                          "Institution_type"=c("Government_Central", 
+                                                               "Government_Local",
+                                                               "Charity",
+                                                               "Private_Corporate",
+                                                               "Higher_Education"),
                                           "Economic_political_upheaval"=c("True", "False"))
 
 # Cataloguing
@@ -157,10 +173,11 @@ dimnames(prob.cataloguing) <- list("Cataloguing"=c("True", "False"),
                                    "Processing"=c("True", "False"))
 
 # Obsolecence
-prob.obsolecence <- c(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
-dim(prob.obsolecence) <- c(2, 2, 2)
+prob.obsolecence <- c(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
+                      0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
+dim(prob.obsolecence) <- c(2, 5, 2)
 dimnames(prob.obsolecence) <- list("Obsolecence"=c("True", "False"), 
-                                   "Storage_media"=c("True", "False"),
+                                   "Storage_media"=c("Tape", "Optical", "SSD", "HDD", "Cloud"),
                                    "Technical_metadata"=c("True", "False"))
 
 # Tools
@@ -186,39 +203,44 @@ dimnames(prob.trust) <- list("Trust"=c("True", "False"),
 
 # Processing
 prob.processing <- c(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
+                     0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
                      0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
-dim(prob.processing) <- c(2, 2, 2, 2)
+dim(prob.processing) <- c(2, 3, 2, 2)
 dimnames(prob.processing) <- list("Processing"=c("True", "False"), 
-                             "Copy_protocol"=c("True", "False"),
-                             "Digital_data_type"=c("True", "False"),
+                             "Copy_protocol"=c("All", "Partial", "None"),
+                             "Digital_data_type"=c("Digitised", "Surrogate"),
                              "Technical_metadata"=c("True", "False"))
 
 # Operating_environment
-prob.operating_environment <- c(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
-                     0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
-dim(prob.operating_environment) <- c(2, 2, 2, 2)
+prob.operating_environment <- c(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
+                                0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
+                                0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
+                                0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
+dim(prob.operating_environment) <- c(2, 2, 2, 5)
 dimnames(prob.operating_environment) <- list("Operating_environment"=c("True", "False"), 
                                              "Processing"=c("True", "False"),
-                                             "Physical_disaster"=c("True", "False"),
-                                             "Storage_media"=c("True", "False"))
+                                             "Physical_disaster"=c("FLood", "No_Flood"),
+                                             "Storage_media"=c("Tape", "Optical", "SSD", "HDD", "Cloud"))
 
 # Findability
 prob.findability <- c(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
                                 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
 dim(prob.findability) <- c(2, 2, 2, 2)
 dimnames(prob.findability) <- list("Findability"=c("True", "False"), 
-                                   "Search_facilities"=c("True", "False"),
+                                   "Search_facilities"=cf("True", "False"),
                                    "Permited_access"=c("True", "False"),
                                    "Cataloguing"=c("True", "False"))
 
 # Storage_life
-prob.storage_life<- c(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
-                      0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
-dim(prob.storage_life) <- c(2, 2, 2, 2)
+prob.storage_life<- c(0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2,
+                      0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2,
+                      0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2,
+                      0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2)
+dim(prob.storage_life) <- c(2, 2, 2, 5)
 dimnames(prob.storage_life) <- list("Storage_life"=c("True", "False"), 
                                     "Operating_environment"=c("True", "False"),
                                     "Replacement_protocol"=c("True", "False"),
-                                    "Storage_media"=c("True", "False"))
+                                    "Storage_media"=c("Tape", "Optical", "SSD", "HDD", "Cloud"))
 
 # Preservation
 prob.preservation <- c(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
