@@ -85,7 +85,7 @@ prob.digital_data_type <- matrix(c(0.5, 0.5), ncol = 2, dimnames = list(NULL, c(
 prob.technical_upheaval <- matrix(c(0.5, 0.5), ncol = 2, dimnames = list(NULL, c("True", "False")))
 
 # Physical_disaster
-prob.physical_disaster <- matrix(c(0.5, 0.5), ncol = 2, dimnames = list(NULL, c("FLood", "No_Flood")))
+prob.physical_disaster <- matrix(c(0.5, 0.5), ncol = 2, dimnames = list(NULL, c("High", "Low")))
 
 # Replacement_protocol
 prob.replacement_protocol <- matrix(c(0.5, 0.5), ncol = 2, dimnames = list(NULL, c("True", "False")))
@@ -219,7 +219,7 @@ prob.operating_environment <- c(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5
 dim(prob.operating_environment) <- c(2, 2, 2, 5)
 dimnames(prob.operating_environment) <- list("Operating_environment"=c("True", "False"), 
                                              "Processing"=c("True", "False"),
-                                             "Physical_disaster"=c("FLood", "No_Flood"),
+                                             "Physical_disaster"=c("High", "Low"),
                                              "Storage_media"=c("Tape", "Optical", "SSD", "HDD", "Cloud"))
 
 # Findability
@@ -227,15 +227,15 @@ prob.findability <- c(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
                                 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
 dim(prob.findability) <- c(2, 2, 2, 2)
 dimnames(prob.findability) <- list("Findability"=c("True", "False"), 
-                                   "Search_facilities"=cf("True", "False"),
+                                   "Search_facilities"=c("True", "False"),
                                    "Permited_access"=c("True", "False"),
                                    "Cataloguing"=c("True", "False"))
 
 # Storage_life
-prob.storage_life<- c(0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2,
-                      0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2,
-                      0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2,
-                      0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2)
+prob.storage_life<- c(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
+                      0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
+                      0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
+                      0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
 dim(prob.storage_life) <- c(2, 2, 2, 5)
 dimnames(prob.storage_life) <- list("Storage_life"=c("True", "False"), 
                                     "Operating_environment"=c("True", "False"),

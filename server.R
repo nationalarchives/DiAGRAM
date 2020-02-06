@@ -15,6 +15,7 @@ library(networkD3)
 library(BiocManager)
 library(Rgraphviz)
 library(tidyverse)
+library(shinyjs)
 
 options(repos = BiocManager::repositories())
 
@@ -22,12 +23,21 @@ shinyServer(function(input, output, session) {
   
   # STATIC VALUES
   stable.fit <- read.bif("Model.bif")
+  
+  # node definitions and state definitions
   node.definitions <- read_csv("node_information.csv") %>% arrange(node_name)
   state.definitions <- read_csv("node_states.csv")
+  
+  # Csv containing nodes and questions used during setup
+  setup_questions <- read_csv("setup_questions.csv")
+  
   
   # REACTIVE VALUES
   # initialise stable plot (unchanging) and reactive plot
   network <- reactiveValues(cancer.fit = read.bif("cancer.bif"))
+  
+  # Initialise Question Counter for model setup
+  questionValues <- reactiveValues(question_number=1)
   
   # itialise utility dataframe
   Utility <- reactiveValues(utility.df=tibble(name=character(),
@@ -178,6 +188,121 @@ shinyServer(function(input, output, session) {
   })
   
   # POLICY TAB
+  # Update state selection radio buttons
+  first_node <- setup_questions[1,]$node_name
+  first_states <- state.definitions %>%
+                  filter(node_name==first_node) %>%
+                  select(node_state)
+  
+  # Create user input UI which is at the bottom of the box
+  output$CustomisationInput <- renderUI({
+    
+    # If all questions have not been answered yet render next button
+    if (questionValues$question_number < 6) {
+      rendered_element <- fluidRow(
+                            column(
+                              width=2,
+                              tags$style(HTML('#NextQuestion{background-color:green}')),
+                              tags$style(HTML('#NextQuestion{color:white}')),
+                              tags$style(HTML('#NextQuestion{width:100%}')),
+                              actionButton("NextQuestion", "Next")
+                            ),
+                            column(
+                              width=2,
+                              tags$style(HTML('#BackButton{background-color:grey}')),
+                              tags$style(HTML('#BackButton{color:white}')),
+                              tags$style(HTML('#BackButton{width:100%')),
+                              actionButton("BackButton", "Back")
+                            )
+                          )
+    } else {
+      rendered_element <- fluidRow(
+                            column(
+                              width=3,
+                              textInput(
+                                inputId="CustomisedModelName",
+                                label=NULL
+                              ),
+                            ),  
+                            column(
+                              width=1,
+                              tags$style(HTML('#SaveModel{background-color:green}')),
+                              tags$style(HTML('#SaveModel{color:white}')),
+                              actionButton("SaveModel",
+                                           "Save Model")
+                              )
+                            )
+                          
+    }
+    rendered_element
+  })
+  
+  
+  updateRadioButtons(session, "StateSelection", choices=first_states$node_state)
+  
+  # Add question to setup page.
+  output$Question <- renderUI({
+    if (questionValues$question_number < 6 && questionValues$question_number>=1){
+      h4(strong(setup_questions[questionValues$question_number,]$node_question))
+    } else {
+      h4(strong("All Questions Answered."))
+    }
+  })
+  
+  # Update question when next question button is pressed
+  observeEvent(input$NextQuestion, {
+    
+    # update progress bar
+    updateProgressBar(
+      session=session,
+      id="Question_Progress",
+      value=questionValues$question_number,
+      total=5
+    )
+    
+    # update question number
+    questionValues$question_number <- questionValues$question_number + 1
+    
+    if (questionValues$question_number < 6 && questionValues$question_number >=1) {
+      # collect next states
+      next_node <- setup_questions[questionValues$question_number,]$node_name
+      next_states <- state.definitions %>%
+        filter(node_name==next_node) %>%
+        select(node_state)
+      # update states on radio button
+      updateRadioButtons(session, "StateSelection", choices=next_states$node_state)
+      
+    }
+  })
+  
+  # Update questions when back button is pressed
+  observeEvent(input$BackButton, {
+    
+    if (questionValues$question_number > 1) {
+      # update question number
+      questionValues$question_number <- questionValues$question_number - 1
+    }
+
+    if (questionValues$question_number >= 1) {
+      
+      # update progress bar
+      updateProgressBar(
+        session=session,
+        id="Question_Progress",
+        value=questionValues$question_number - 1,
+        total=5
+      )
+      # collect next states
+      next_node <- setup_questions[questionValues$question_number,]$node_name
+      next_states <- state.definitions %>%
+        filter(node_name==next_node) %>%
+        select(node_state)
+      # update states on radio button
+      updateRadioButtons(session, "StateSelection", choices=next_states$node_state)
+      
+    }
+  })
+  
   # list the nodes checklist dynamically based on model instead of hardcoding
   uiNodeChecklist <- nodes(stable.fit)
   
