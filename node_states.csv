@@ -27,8 +27,8 @@ Tools,TRUE,Insert state definition
 Tools,FALSE,Insert state definition
 Obsolecence,TRUE,Insert state definition
 Obsolecence,FALSE,Insert state definition
-Physical_disaster,Flood,Insert state definition
-Physical_disaster,No_Flood,Insert state definition
+Physical_disaster,High,Insert state definition
+Physical_disaster,Low,Insert state definition
 Economic_political_upheaval,TRUE,Insert state definition
 Economic_political_upheaval,FALSE,Insert state definition
 Technological_upheaval,TRUE,Insert state definition

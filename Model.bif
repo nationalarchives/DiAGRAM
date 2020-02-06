@@ -43,7 +43,7 @@ variable Obsolecence {
   type discrete [ 2 ] { True, False };
 }
 variable Physical_disaster {
-  type discrete [ 2 ] { FLood, No_Flood };
+  type discrete [ 2 ] { High, Low };
 }
 variable Economic_political_upheaval {
   type discrete [ 2 ] { True, False };
@@ -175,26 +175,26 @@ probability ( Technological_upheaval ) {
   table 0.5, 0.5;
 }
 probability ( Operating_environment | Physical_disaster, Storage_media, Processing ) {
-  (FLood, Tape, True) 0.5, 0.5;
-  (No_Flood, Tape, True) 0.5, 0.5;
-  (FLood, Optical, True) 0.5, 0.5;
-  (No_Flood, Optical, True) 0.5, 0.5;
-  (FLood, SSD, True) 0.5, 0.5;
-  (No_Flood, SSD, True) 0.5, 0.5;
-  (FLood, HDD, True) 0.5, 0.5;
-  (No_Flood, HDD, True) 0.5, 0.5;
-  (FLood, Cloud, True) 0.5, 0.5;
-  (No_Flood, Cloud, True) 0.5, 0.5;
-  (FLood, Tape, False) 0.5, 0.5;
-  (No_Flood, Tape, False) 0.5, 0.5;
-  (FLood, Optical, False) 0.5, 0.5;
-  (No_Flood, Optical, False) 0.5, 0.5;
-  (FLood, SSD, False) 0.5, 0.5;
-  (No_Flood, SSD, False) 0.5, 0.5;
-  (FLood, HDD, False) 0.5, 0.5;
-  (No_Flood, HDD, False) 0.5, 0.5;
-  (FLood, Cloud, False) 0.5, 0.5;
-  (No_Flood, Cloud, False) 0.5, 0.5;
+  (High, Tape, True) 0.5, 0.5;
+  (Low, Tape, True) 0.5, 0.5;
+  (High, Optical, True) 0.5, 0.5;
+  (Low, Optical, True) 0.5, 0.5;
+  (High, SSD, True) 0.5, 0.5;
+  (Low, SSD, True) 0.5, 0.5;
+  (High, HDD, True) 0.5, 0.5;
+  (Low, HDD, True) 0.5, 0.5;
+  (High, Cloud, True) 0.5, 0.5;
+  (Low, Cloud, True) 0.5, 0.5;
+  (High, Tape, False) 0.5, 0.5;
+  (Low, Tape, False) 0.5, 0.5;
+  (High, Optical, False) 0.5, 0.5;
+  (Low, Optical, False) 0.5, 0.5;
+  (High, SSD, False) 0.5, 0.5;
+  (Low, SSD, False) 0.5, 0.5;
+  (High, HDD, False) 0.5, 0.5;
+  (Low, HDD, False) 0.5, 0.5;
+  (High, Cloud, False) 0.5, 0.5;
+  (Low, Cloud, False) 0.5, 0.5;
 }
 probability ( Storage_life | Operating_environment, Storage_media, Replacement_protocol ) {
   (True, Tape, True) 0.5, 0.5;
