@@ -193,8 +193,24 @@ shinyServer(function(input, output, session) {
     
     i <- 1
     for(node in input$policyTabNodesChecklist){
-      label <- paste(node, "(True %)")
-      uiNodeSlider[[i]] <- sliderInput(node, label, min = 0, max = 100, value = 0, post = '%')
+      
+      nodeStates <- state.definitions %>%
+        filter(node_name==node) %>%
+        select(-node_name) 
+      
+      nodeStateSlider <- c()
+      
+      j <- 1
+      for(state in nodeStates$node_state){
+        inputId <- paste(node, state, sep = "-")
+        label <- paste(state, "(%)")
+        nodeStateSlider[[j]] <- sliderInput(inputId, label, min = 0, max = 100, step = 10, value = 0, post = "%")
+        j <- j+1
+      }
+      
+      nodeLabel <- strsplit(node, split = "_", fixed = TRUE)
+      nodeLabel <- paste(nodeLabel[[1]], collapse = ' ')
+      uiNodeSlider[[i]] <- fluidRow(h2(nodeLabel), nodeStateSlider )
       i <- i+1
     }
     
