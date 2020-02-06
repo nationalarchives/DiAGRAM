@@ -193,12 +193,17 @@ shinyServer(function(input, output, session) {
     
     i <- 1
     for(node in input$policyTabNodesChecklist){
-      uiNodeSlider[[i]] <- fluidRow(node)
+      label <- paste(node, "(True %)")
+      uiNodeSlider[[i]] <- sliderInput(node, label, min = 0, max = 100, value = 0, post = '%')
       i <- i+1
     }
     
     uiNodeSlider
   })
+  
+  # updating the conditional prob table -- within(a, Freq[Processing == 'True'] <- 0.7)
+  
+  # POLICIES TAB -- OLD
   
   # Plot network which changes for policy inputs
   output$netPlot <- renderPlot({
