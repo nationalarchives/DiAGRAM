@@ -213,11 +213,8 @@ dashboardPage(
             )
           ),
           column(
-            width=9,
-            box(
-              width=NULL,
-              uiOutput("policyTabNodesSlider")
-            )
+            width=6,
+            uiOutput("policyTabNodesSlider")
           )
         )
         # sidebarLayout(
