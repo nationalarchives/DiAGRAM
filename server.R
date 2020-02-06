@@ -188,6 +188,7 @@ shinyServer(function(input, output, session) {
                            choices = uiNodeChecklist
   )
   
+  # display the slider inputs for each selected node
   output$policyTabNodesSlider <- renderUI({
     uiNodeSlider <- c()
     
@@ -200,6 +201,7 @@ shinyServer(function(input, output, session) {
       
       nodeStateSlider <- c()
       
+      # creates a list of sliders inputs for each state of the respective node
       j <- 1
       for(state in nodeStates$node_state){
         inputId <- paste(node, state, sep = "-")
@@ -208,8 +210,11 @@ shinyServer(function(input, output, session) {
         j <- j+1
       }
       
+      # remove the _ from the node to ease readability
       nodeLabel <- strsplit(node, split = "_", fixed = TRUE)
       nodeLabel <- paste(nodeLabel[[1]], collapse = ' ')
+      
+      # list of nodes with corresponding state sliders
       uiNodeSlider[[i]] <- fluidRow(h2(nodeLabel), nodeStateSlider )
       i <- i+1
     }
