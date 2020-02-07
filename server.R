@@ -187,7 +187,10 @@ shinyServer(function(input, output, session) {
     
   })
   
-  # POLICY TAB
+  # SIMPLE VIEW 
+  
+  # CUSTOMIZE MODEL
+  
   # Update state selection radio buttons
   first_node <- setup_questions[1,]$node_name
   first_states <- state.definitions %>%
@@ -303,6 +306,8 @@ shinyServer(function(input, output, session) {
     }
   })
   
+  # CUSTOMIZE NODES
+  
   # list the nodes checklist dynamically based on model instead of hardcoding
   uiNodeChecklist <- nodes(stable.fit)
   
@@ -320,6 +325,7 @@ shinyServer(function(input, output, session) {
     i <- 1
     for(node in input$policyTabNodesChecklist){
       
+      ## TODO: change this to list of list (of nodes with node state) to avoid having to create a new list for every node
       nodeStates <- state.definitions %>%
         filter(node_name==node) %>%
         select(-node_name) 
@@ -340,12 +346,43 @@ shinyServer(function(input, output, session) {
       nodeLabel <- paste(nodeLabel[[1]], collapse = ' ')
       
       # list of nodes with corresponding state sliders
-      uiNodeSlider[[i]] <- fluidRow(h2(nodeLabel), nodeStateSlider )
+      uiNodeSlider[[i]] <- fluidRow(h3(nodeLabel), nodeStateSlider )
       i <- i+1
+    }
+    
+    if (i!= 1){
+      uiNodeSlider[[i]] <- fluidRow(actionBttn("SimpleViewAddPolicy", "Add Policy"))
     }
     
     uiNodeSlider
   })
+  
+  
+  # Add policy action
+  observeEvent(input$SimpleViewAddPolicy, {
+    for(node in input$policyTabNodesChecklist){
+      # conditional probability table (cpt) of each node
+      cpt <- as.data.frame(stable.fit[[node]]$prob)
+      
+      nodeStates <- state.definitions %>%
+        filter(node_name==node) %>%
+        select(-node_name) 
+      
+      # updating the cpt for each state 
+      for(state in nodeStates$node_state){
+        currId = paste(node, state, sep ="-")
+        index <- cpt[[node]] == state
+        cpt$Freq[index] <- input[[currId]]/100
+        
+        print(cpt)
+      }
+    }
+    
+  })
+  
+  output$policyTabUtilityScorePlot <- {
+    
+  }
   
   # updating the conditional prob table -- within(a, Freq[Processing == 'True'] <- 0.7)
   

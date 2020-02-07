@@ -215,6 +215,10 @@ dashboardPage(
           column(
             width=6,
             uiOutput("policyTabNodesSlider")
+          ),
+          column(
+            width=3,
+            plotOutput("policyTabUtilityScorePlot")
           )
         )
         # sidebarLayout(
