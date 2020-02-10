@@ -16,6 +16,7 @@ library(BiocManager)
 library(Rgraphviz)
 library(tidyverse)
 library(shinyjs)
+library(shinyalert)
 
 options(repos = BiocManager::repositories())
 
@@ -360,6 +361,9 @@ shinyServer(function(input, output, session) {
   
   # Add policy action
   observeEvent(input$SimpleViewAddPolicy, {
+    temp.model <- stable.fit
+    
+    
     for(node in input$policyTabNodesChecklist){
       # conditional probability table (cpt) of each node
       cpt <- as.data.frame(stable.fit[[node]]$prob)
@@ -368,18 +372,53 @@ shinyServer(function(input, output, session) {
         filter(node_name==node) %>%
         select(-node_name) 
       
+      currSumOfProbabilities <- 0
       # updating the cpt for each state 
       for(state in nodeStates$node_state){
         currId = paste(node, state, sep ="-")
         index <- cpt[[node]] == state
         cpt$Freq[index] <- input[[currId]]/100
+        currSumOfProbabilities <- currSumOfProbabilities +  input[[currId]]/100
         
-        print(cpt)
+        #print(cpt)
+      }
+      
+      # Display a pop-up when the probabilities don't add up to 1.0 (divided by 100)
+      
+      if(currSumOfProbabilities != 1.0){
+        #TODO: make it a function since it is also used in output$policyTabNodesSlider
+        
+        # remove the _ from the node to ease readability
+        nodeLabel <- strsplit(node, split = "_", fixed = TRUE)
+        nodeLabel <- paste(nodeLabel[[1]], collapse = ' ')
+        
+        errorMsg <- paste("Probabilities for '", nodeLabel, "' does not add upto to 1.0")
+        shinyalert("Oops!", errorMsg, type = "error")
+        
+        break
+      }
+      else{
+        
+      # Updating the model
+      # The data frame should be converted to a contigency and then the model is updated. 
+      # The table should be Freq~'all other columns'
+      
+      # get the column names excluding frequency
+      cptFactors <- colnames(cpt)[1:length(colnames(cpt))-1]
+      
+      # formula for xtabs
+      formula <- paste('Freq~', paste(cptFactors, collapse = "+"), sep="")
+      
+      # update the model
+      temp.model[[node]] <- xtabs(formula, cpt)
+      
+      print(temp.model[[node]]$prob)
       }
     }
-    
   })
   
+  # querygrain(a, nodes="Renderability")
+  #  a <- as.grain(stable.fit)
   output$policyTabUtilityScorePlot <- {
     
   }

@@ -16,6 +16,7 @@ library(gRain)
 library(shinysky)
 library(shinyWidgets)
 library(shinyjs)
+library(shinyalert)
 
 options(repos = BiocManager::repositories())
 
@@ -198,6 +199,7 @@ dashboardPage(
       ),
       
       tabItem(
+        useShinyalert(),
         tabName="CustomizeNode",
         h1("Policy Selection Support"),
         br(),
