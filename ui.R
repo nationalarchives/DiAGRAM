@@ -190,9 +190,21 @@ dashboardPage(
               h3("Please answer the following questions: "),
               uiOutput("Question"),
               br(),
+              useShinyjs(),
               radioButtons("StateSelection", "Select State", choices=c("temp")),
               br(),
               uiOutput("CustomisationInput")
+            )
+          )
+        ),
+        fluidRow(
+          column(
+            width=12,
+            box(
+              title="Utility Plot",
+              width=NULL,
+              collapsible=TRUE,
+              plotOutput("BasicUtilityComparison")
             )
           )
         )
