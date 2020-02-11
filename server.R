@@ -238,26 +238,66 @@ shinyServer(function(input, output, session) {
                   filter(node_name==first_node) %>%
                   select(node_state)
   
+  create_sliders <- function(node, states) {
+    # creates a list of sliders inputs for each state of the respective node
+    j <- 1
+    nodeStateSlider <- c()
+    print(states)
+    for(state in states){
+      print(j)
+      print(node)
+      print(state)
+      inputId <- paste(node, state, sep = "-")
+      label <- paste(state, "(%)")
+      nodeStateSlider[[j]] <- sliderInput(inputId, label, min = 0, max = 100, step = 10, value = 0, post = "%")
+                              
+      j <- j+1
+      print(j)
+    }
+    
+    # list of nodes with corresponding state sliders
+    return(nodeStateSlider)
+  }
+  
   # Create user input UI which is at the bottom of the box
   output$CustomisationInput <- renderUI({
     
+    input_type <- setup_questions[questionValues$question_number,]$type
+    
     # If all questions have not been answered yet render next button
     # TODO: make this more dynamic for situations where they add questions
-    if (questionValues$question_number < 6) {
+    if (questionValues$question_number < 6  && input_type=="slider") {
+      
+      # collect next node name
+      next_node <- setup_questions[questionValues$question_number,]$node_name
+      
+      # collect states of the next node
+      next_states <- state.definitions %>%
+        filter(node_name==next_node) %>%
+        select(node_state)
+      
       rendered_element <- fluidRow(
-                            column(
-                              width=2,
-                              tags$style(HTML('#NextQuestion{background-color:green}')),
-                              tags$style(HTML('#NextQuestion{color:white}')),
-                              tags$style(HTML('#NextQuestion{width:100%}')),
-                              actionButton("NextQuestion", "Next")
+                            fluidRow(
+                              column(
+                                width=5,
+                                create_sliders(next_node, next_states$node_state)
+                              )
                             ),
-                            column(
-                              width=2,
-                              tags$style(HTML('#BackButton{background-color:grey}')),
-                              tags$style(HTML('#BackButton{color:white}')),
-                              tags$style(HTML('#BackButton{width:100%')),
-                              actionButton("BackButton", "Back")
+                            fluidRow(
+                              column(
+                                width=2,
+                                tags$style(HTML('#NextQuestion{background-color:green}')),
+                                tags$style(HTML('#NextQuestion{color:white}')),
+                                tags$style(HTML('#NextQuestion{width:100%}')),
+                                actionButton("NextQuestion", "Next")
+                              ),
+                              column(
+                                width=2,
+                                tags$style(HTML('#BackButton{background-color:grey}')),
+                                tags$style(HTML('#BackButton{color:white}')),
+                                tags$style(HTML('#BackButton{width:100%')),
+                                actionButton("BackButton", "Back")
+                              )
                             )
                           )
     } else {
@@ -291,8 +331,6 @@ shinyServer(function(input, output, session) {
     rendered_element
   })
   
-  
-  updateRadioButtons(session, "StateSelection", choices=first_states$node_state)
   
   # Add question to setup page.
   # TODO: Make dynamic check rather than hardcoded 6
@@ -331,21 +369,6 @@ shinyServer(function(input, output, session) {
     # update question number
     questionValues$question_number <- questionValues$question_number + 1
     
-    # TODO: make this check dynamic rather than a hardcoded value
-    if (questionValues$question_number < 6 && questionValues$question_number >=1) {
-      
-      # collect next node name
-      next_node <- setup_questions[questionValues$question_number,]$node_name
-      
-      # collect states of the next node
-      next_states <- state.definitions %>%
-        filter(node_name==next_node) %>%
-        select(node_state)
-      
-      # update states on radio button
-      updateRadioButtons(session, "StateSelection", choices=next_states$node_state)
-      
-    }
   })
   
   # Update questions when back button is pressed
@@ -368,18 +391,6 @@ shinyServer(function(input, output, session) {
         value=questionValues$question_number - 1,
         total=5
       )
-      
-      # collect next node name
-      next_node <- setup_questions[questionValues$question_number,]$node_name
-      
-      # collect states of the next node
-      next_states <- state.definitions %>%
-        filter(node_name==next_node) %>%
-        select(node_state)
-      
-      # update states on radio button
-      updateRadioButtons(session, "StateSelection", choices=next_states$node_state)
-      
     }
   })
   
@@ -455,16 +466,22 @@ shinyServer(function(input, output, session) {
         filter(node_name==node) %>%
         select(-node_name) 
       
-      nodeStateSlider <- c()
+      # nodeStateSlider <- c()
       
       # creates a list of sliders inputs for each state of the respective node
-      j <- 1
-      for(state in nodeStates$node_state){
-        inputId <- paste(node, state, sep = "-")
-        label <- paste(state, "(%)")
-        nodeStateSlider[[j]] <- sliderInput(inputId, label, min = 0, max = 100, step = 10, value = 0, post = "%")
-        j <- j+1
-      }
+      # j <- 1
+      # for(state in nodeStates$node_state){
+        # inputId <- paste(node, state, sep = "-")
+        # label <- paste(state, "(%)")
+        # nodeStateSlider[[j]] <- sliderInput(inputId, label, min = 0, max = 100, step = 10, value = 0, post = "%")
+        # j <- j+1
+      # }
+      
+      # remove the _ from the node to ease readability
+      # nodeLabel <- strsplit(node, split = "_", fixed = TRUE)
+      # nodeLabel <- paste(nodeLabel[[1]], collapse = ' ')
+
+      nodeStateSlider <- create_sliders(node, nodeStates$node_state)
       
       # remove the _ from the node to ease readability
       nodeLabel <- strsplit(node, split = "_", fixed = TRUE)
