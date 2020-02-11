@@ -16,6 +16,7 @@ library(gRain)
 library(shinysky)
 library(shinyWidgets)
 library(shinyjs)
+library(shinyalert)
 
 options(repos = BiocManager::repositories())
 
@@ -189,15 +190,29 @@ dashboardPage(
               h3("Please answer the following questions: "),
               uiOutput("Question"),
               br(),
+              useShinyjs(),
               radioButtons("StateSelection", "Select State", choices=c("temp")),
               br(),
               uiOutput("CustomisationInput")
             )
           )
+        ),
+        fluidRow(
+          column(
+            width=12,
+            box(
+              title="Utility Plot",
+              width=NULL,
+              collapsible=TRUE,
+              plotOutput("BasicUtilityComparison")
+            )
+          )
         )
       ),
       
+      # TODO:sid - change policyTab identifier to the most appropriate (once decided)
       tabItem(
+        useShinyalert(),
         tabName="CustomizeNode",
         h1("Policy Selection Support"),
         br(),
@@ -213,8 +228,15 @@ dashboardPage(
             )
           ),
           column(
-            width=6,
-            uiOutput("policyTabNodesSlider")
+            width=4,
+            uiOutput("policyTabNodesSlider"),
+            useShinyjs(),
+            fluidRow(textInput("SimpleViewPolicyName", label = h3("Enter policy name"), value = ""),
+                     actionBttn("SimpleViewAddPolicy", "Add Policy"))
+          ),
+          column(
+            width=5,
+            plotOutput("policyTabUtilityScorePlot")
           )
         )
         # sidebarLayout(

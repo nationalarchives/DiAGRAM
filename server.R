@@ -16,10 +16,31 @@ library(BiocManager)
 library(Rgraphviz)
 library(tidyverse)
 library(shinyjs)
+library(shinyalert)
 
 options(repos = BiocManager::repositories())
 
 shinyServer(function(input, output, session) {
+  
+  # FUNCTIONS
+  # function which caluclates utility
+  calculate_utility <- function(model) {
+    
+    # convert model to grain object
+    model.grain <- as.grain(model)
+    
+    # find probability of findability and renderability
+    query.results <- querygrain(model.grain, nodes=c("Findability", "Renderability"))
+    
+    # Extract probabilities
+    prob.findability <- as.numeric(query.results$Findability["True"])
+    prob.renderability <- as.numeric(query.results$Renderability["True"])
+    
+    utility <- list("Findability"=prob.findability,
+                    "Renderability"=prob.renderability)
+    
+    return(utility)    
+  }
   
   # STATIC VALUES
   stable.fit <- read.bif("Model.bif")
@@ -30,7 +51,6 @@ shinyServer(function(input, output, session) {
   
   # Csv containing nodes and questions used during setup
   setup_questions <- read_csv("setup_questions.csv")
-  
   
   # REACTIVE VALUES
   # initialise stable plot (unchanging) and reactive plot
@@ -43,6 +63,25 @@ shinyServer(function(input, output, session) {
   Utility <- reactiveValues(utility.df=tibble(name=character(),
                                               utility=numeric()),
                             policy_networks=list())
+  
+  # Create vector to store answers to questions
+  answers <- reactiveValues(states=list())
+  
+  tna_utility <- calculate_utility(stable.fit)
+  
+  # Customised models
+  CustomModels <- reactiveValues(base_utility.df=tibble(name="TNA",
+                                                 findability=tna_utility$Findability,
+                                                 renderability=tna_utility$Renderability),
+                                 custom_networks=list("TNA"=stable.fit))
+  
+  
+  # Customised Policies
+  CustomPolicies <- reactiveValues(policy.df=tibble(name=character(),
+                                                    findability=numeric(),
+                                                    renderability=numeric()),
+                                   models=list())
+  
   
   # Construct smoker probability table
   smoker <- reactive({
@@ -187,9 +226,14 @@ shinyServer(function(input, output, session) {
     
   })
   
-  # POLICY TAB
+  # SIMPLE TAB
+  # MODEL CUSTOMISATION
+  
   # Update state selection radio buttons
+  # Collect the first node
   first_node <- setup_questions[1,]$node_name
+  
+  # retrieve states associated with the first node
   first_states <- state.definitions %>%
                   filter(node_name==first_node) %>%
                   select(node_state)
@@ -198,6 +242,7 @@ shinyServer(function(input, output, session) {
   output$CustomisationInput <- renderUI({
     
     # If all questions have not been answered yet render next button
+    # TODO: make this more dynamic for situations where they add questions
     if (questionValues$question_number < 6) {
       rendered_element <- fluidRow(
                             column(
@@ -225,13 +270,22 @@ shinyServer(function(input, output, session) {
                               ),
                             ),  
                             column(
-                              width=1,
+                              width=2,
                               tags$style(HTML('#SaveModel{background-color:green}')),
                               tags$style(HTML('#SaveModel{color:white}')),
                               actionButton("SaveModel",
                                            "Save Model")
-                              )
+                              ),
+                            column(
+                              width=1,
+                              offset=5,
+                              tags$style(HTML('#AddNew{background-color:grey}')),
+                              tags$style(HTML('#AddNew{color:white}')),
+                              actionButton("AddNew",
+                                           "Create New Model")
                             )
+                            )
+
                           
     }
     rendered_element
@@ -241,6 +295,7 @@ shinyServer(function(input, output, session) {
   updateRadioButtons(session, "StateSelection", choices=first_states$node_state)
   
   # Add question to setup page.
+  # TODO: Make dynamic check rather than hardcoded 6
   output$Question <- renderUI({
     if (questionValues$question_number < 6 && questionValues$question_number>=1){
       h4(strong(setup_questions[questionValues$question_number,]$node_question))
@@ -249,8 +304,21 @@ shinyServer(function(input, output, session) {
     }
   })
   
+  observe({
+    
+    if (questionValues$question_number > 5) {
+      shinyjs::hide(id="StateSelection")
+    } else {
+      shinyjs::show(id="StateSelection")
+    }
+
+  })
+  
   # Update question when next question button is pressed
   observeEvent(input$NextQuestion, {
+    
+    # add state to answer vector
+    answers$states[[setup_questions[questionValues$question_number,]$node_name]] = input$StateSelection
     
     # update progress bar
     updateProgressBar(
@@ -263,12 +331,17 @@ shinyServer(function(input, output, session) {
     # update question number
     questionValues$question_number <- questionValues$question_number + 1
     
+    # TODO: make this check dynamic rather than a hardcoded value
     if (questionValues$question_number < 6 && questionValues$question_number >=1) {
-      # collect next states
+      
+      # collect next node name
       next_node <- setup_questions[questionValues$question_number,]$node_name
+      
+      # collect states of the next node
       next_states <- state.definitions %>%
         filter(node_name==next_node) %>%
         select(node_state)
+      
       # update states on radio button
       updateRadioButtons(session, "StateSelection", choices=next_states$node_state)
       
@@ -279,6 +352,9 @@ shinyServer(function(input, output, session) {
   observeEvent(input$BackButton, {
     
     if (questionValues$question_number > 1) {
+      # remove last answer
+      answers$states[[setup_questions[questionValues$question_number,]$node_name]] = NULL
+      
       # update question number
       questionValues$question_number <- questionValues$question_number - 1
     }
@@ -292,16 +368,70 @@ shinyServer(function(input, output, session) {
         value=questionValues$question_number - 1,
         total=5
       )
-      # collect next states
+      
+      # collect next node name
       next_node <- setup_questions[questionValues$question_number,]$node_name
+      
+      # collect states of the next node
       next_states <- state.definitions %>%
         filter(node_name==next_node) %>%
         select(node_state)
+      
       # update states on radio button
       updateRadioButtons(session, "StateSelection", choices=next_states$node_state)
       
     }
   })
+  
+  # Save model to memory
+  observeEvent(input$SaveModel, {
+    
+    # create custom model and save to memory
+    custom_model <- mutilated(stable.fit, evidence=answers$states)
+    CustomModels$custom_network[[input$CustomisedModelName]] = custom_model
+    
+    # calculate utility and store
+    utility <- calculate_utility(custom_model)
+    CustomModels$base_utility.df <- CustomModels$base_utility.df %>% add_row(name=input$CustomisedModelName,
+                                                                             findability=utility$Findability,
+                                                                             renderability=utility$Renderability)
+    
+  })
+  
+  # plot utility
+  output$BasicUtilityComparison <- renderPlot({
+    
+    CustomModels$base_utility.df %>%
+    mutate(utility=findability+renderability) %>% 
+    pivot_longer(c(findability, renderability), names_to="node") %>%
+    ggplot(aes(x=name, fill=node, y=value)) +
+    geom_bar(position="stack", stat="identity")
+  })
+  
+  # Reset so new custom model can be created
+  observeEvent(input$AddNew, {
+    
+    # reset question number to 1
+    questionValues$question_number = 1
+    
+    # reset answers to an empty list
+    answers$states <- list()
+    
+    # update radio buttons
+    updateRadioButtons(session, "StateSelection", choices=first_states$node_state)
+    
+    # update progress bar
+    updateProgressBar(
+      session=session,
+      id="Question_Progress",
+      value=questionValues$question_number - 1,
+      total=5
+    )
+    
+  })
+  
+  
+  # SIMPLE POLICY
   
   # list the nodes checklist dynamically based on model instead of hardcoding
   uiNodeChecklist <- nodes(stable.fit)
@@ -320,6 +450,7 @@ shinyServer(function(input, output, session) {
     i <- 1
     for(node in input$policyTabNodesChecklist){
       
+      ## TODO: change this to list of list (of nodes with node state) to avoid having to create a new list for every node
       nodeStates <- state.definitions %>%
         filter(node_name==node) %>%
         select(-node_name) 
@@ -340,14 +471,111 @@ shinyServer(function(input, output, session) {
       nodeLabel <- paste(nodeLabel[[1]], collapse = ' ')
       
       # list of nodes with corresponding state sliders
-      uiNodeSlider[[i]] <- fluidRow(h2(nodeLabel), nodeStateSlider )
+      uiNodeSlider[[i]] <- fluidRow(h3(nodeLabel), nodeStateSlider )
       i <- i+1
+    }
+    
+    if (i!= 1){
+      shinyjs::show(id="SimpleViewPolicyName")
+      shinyjs::show(id="SimpleViewAddPolicy")
+    }
+    else{
+      shinyjs::hide(id="SimpleViewPolicyName")
+      shinyjs::hide(id="SimpleViewAddPolicy")
     }
     
     uiNodeSlider
   })
   
-  # updating the conditional prob table -- within(a, Freq[Processing == 'True'] <- 0.7)
+  
+  # Add policy action
+  observeEvent(input$SimpleViewAddPolicy, {
+    currModel <- stable.fit
+    isProbabilityMismatchError <- TRUE
+    
+    for(node in input$policyTabNodesChecklist){
+      # conditional probability table (cpt) of each node
+      cpt <- as.data.frame(stable.fit[[node]]$prob)
+      
+      nodeStates <- state.definitions %>%
+        filter(node_name==node) %>%
+        select(-node_name) 
+      
+      currSumOfProbabilities <- 0
+      # updating the cpt for each state 
+      for(state in nodeStates$node_state){
+        currId = paste(node, state, sep ="-")
+        index <- cpt[[node]] == state
+        cpt$Freq[index] <- input[[currId]]/100
+        currSumOfProbabilities <- currSumOfProbabilities +  input[[currId]]/100
+        
+        #print(cpt)
+      }
+      
+      # Display a pop-up when the probabilities don't add up to 1.0 (divided by 100)
+      
+      if(currSumOfProbabilities != 1.0){
+        isProbabilityMismatchError = TRUE
+        
+        #TODO: make it a function since it is also used in output$policyTabNodesSlider
+        
+        # remove the _ from the node to ease readability
+        nodeLabel <- strsplit(node, split = "_", fixed = TRUE)
+        nodeLabel <- paste(nodeLabel[[1]], collapse = ' ')
+        
+        errorMsg <- paste("Probabilities for '", nodeLabel, "' does not add upto to 1.0")
+        shinyalert("Oops!", errorMsg, type = "error")
+        
+        break
+      }
+      else if(input$SimpleViewPolicyName == ""){
+        isProbabilityMismatchError = TRUE
+        
+        shinyalert("Oops!", "Please provide a policy name", type = "error")
+      }
+      else{
+        isProbabilityMismatchError = FALSE
+        
+      # Updating the model
+      # The data frame should be converted to a contigency and then the model is updated. 
+      # The table should be Freq~'all other columns'
+      
+      # get the column names excluding frequency
+      cptFactors <- colnames(cpt)[1:length(colnames(cpt))-1]
+      
+      # formula for xtabs
+      formula <- paste('Freq~', paste(cptFactors, collapse = "+"), sep="")
+      
+      # update the model
+      currModel[[node]] <- xtabs(formula, cpt)
+      }
+    }
+    
+    if(isProbabilityMismatchError == FALSE)
+    {
+      # Calculate the utility of the new model
+      currPolicyUtility <- calculate_utility(currModel)
+      
+      # update reactive policy list
+      CustomPolicies$policy.df <- CustomPolicies$policy.df %>%
+        add_row(name=input$SimpleViewPolicyName, 
+                findability=currPolicyUtility$Findability, 
+                renderability=currPolicyUtility$Renderability)
+      
+      CustomPolicies$model[[input$SimpleViewPolicyName]] <- currModel
+    }
+  })
+  
+  # Plot the policy comparison stacked bar chart
+  output$policyTabUtilityScorePlot <- renderPlot(
+    {
+      CustomPolicies$policy.df %>%
+        mutate(utility=findability+renderability) %>%
+        pivot_longer(c(findability, renderability), names_to="policy") %>%
+        ggplot(aes(x=name, fill=policy, y=value)) +
+        geom_bar(position="stack", stat="identity")
+    }
+  )
   
   # POLICIES TAB -- OLD
   

@@ -69,11 +69,11 @@ graphviz.plot(dag.NA, layout = "dot",
 
 # Create prob tables for each node
 # Institution_type
-prob.institution_type <- matrix(c(0.2, 0.2, 0.2, 0.2, 0.2), ncol = 5, dimnames = list(NULL, c("Government_Central", 
-                                                                                              "Government_Local",
+prob.institution_type <- matrix(c(0.2, 0.2, 0.2, 0.2, 0.2), ncol = 5, dimnames = list(NULL, c("Government Central", 
+                                                                                              "Government Local",
                                                                                               "Charity",
-                                                                                              "Private_Corporate",
-                                                                                              "Higher_Education")))
+                                                                                              "Private Corporate",
+                                                                                              "Higher Education")))
 
 # Economic_political_upheaval
 prob.economic <- matrix(c(0.5, 0.5), ncol = 2, dimnames = list(NULL, c("True", "False")))
@@ -98,11 +98,11 @@ prob.target_community <- c(0.5, 0.5, 0.5, 0.5, 0.5,
                            0.5, 0.5, 0.5, 0.5, 0.5)
 dim(prob.target_community) <- c(2, 5)
 dimnames(prob.target_community) <- list("Target_community"=c("True", "False"), 
-                                        "Institution_type"=c("Government_Central", 
-                                                             "Government_Local",
+                                        "Institution_type"=c("Government Central", 
+                                                             "Government Local",
                                                              "Charity",
-                                                             "Private_Corporate",
-                                                             "Higher_Education"))
+                                                             "Private Corporate",
+                                                             "Higher Education"))
 
 # Copy_protocol
 prob.copy_protocol <- c(0.4, 0.3, 0.3, 0.4, 0.3, 0.3)
@@ -158,11 +158,11 @@ prob.service_continuity <- c(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
                              0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
 dim(prob.service_continuity) <- c(2, 5, 2)
 dimnames(prob.service_continuity) <- list("Service_continuity"=c("True", "False"), 
-                                          "Institution_type"=c("Government_Central", 
-                                                               "Government_Local",
+                                          "Institution_type"=c("Government Central", 
+                                                               "Government Local",
                                                                "Charity",
-                                                               "Private_Corporate",
-                                                               "Higher_Education"),
+                                                               "Private Corporate",
+                                                               "Higher Education"),
                                           "Economic_political_upheaval"=c("True", "False"))
 
 # Cataloguing

@@ -61,7 +61,7 @@ variable Storage_media {
   type discrete [ 5 ] { Tape, Optical, SSD, HDD, Cloud };
 }
 variable Institution_type {
-  type discrete [ 5 ] { Government_Central, Government_Local, Charity, Private_Corporate, Higher_Education };
+  type discrete [ 5 ] { Government Central, Government Local, Charity, Private Corporate, Higher Education };
 }
 variable Copy_protocol {
   type discrete [ 3 ] { All, Partial, None };
@@ -82,16 +82,16 @@ variable Target_community {
   type discrete [ 2 ] { True, False };
 }
 probability ( Service_continuity | Economic_political_upheaval, Institution_type ) {
-  (True, Government_Central) 0.5, 0.5;
-  (False, Government_Central) 0.5, 0.5;
-  (True, Government_Local) 0.5, 0.5;
-  (False, Government_Local) 0.5, 0.5;
+  (True, Government Central) 0.5, 0.5;
+  (False, Government Central) 0.5, 0.5;
+  (True, Government Local) 0.5, 0.5;
+  (False, Government Local) 0.5, 0.5;
   (True, Charity) 0.5, 0.5;
   (False, Charity) 0.5, 0.5;
-  (True, Private_Corporate) 0.5, 0.5;
-  (False, Private_Corporate) 0.5, 0.5;
-  (True, Higher_Education) 0.5, 0.5;
-  (False, Higher_Education) 0.5, 0.5;
+  (True, Private Corporate) 0.5, 0.5;
+  (False, Private Corporate) 0.5, 0.5;
+  (True, Higher Education) 0.5, 0.5;
+  (False, Higher Education) 0.5, 0.5;
 }
 probability ( Trust | Findability, Renderability ) {
   (True, True) 0.5, 0.5;
@@ -269,9 +269,9 @@ probability ( Processing | Digital_data_type, Technical_metadata, Copy_protocol 
   (Surrogate, False, None) 0.5, 0.5;
 }
 probability ( Target_community | Institution_type ) {
-  (Government_Central) 0.5, 0.5;
-  (Government_Local) 0.5, 0.5;
+  (Government Central) 0.5, 0.5;
+  (Government Local) 0.5, 0.5;
   (Charity) 0.5, 0.5;
-  (Private_Corporate) 0.5, 0.5;
-  (Higher_Education) 0.5, 0.5;
+  (Private Corporate) 0.5, 0.5;
+  (Higher Education) 0.5, 0.5;
 }
