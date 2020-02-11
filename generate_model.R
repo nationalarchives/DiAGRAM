@@ -10,25 +10,22 @@
 
 library(bnlearn)
 
-names.NA = c("Service_continuity","Trust","Permited_access",
+names.NA = c("Service_continuity", "Permited_access",
              "System_security",  "Provenance","Findability","Digital_data_type",
-             "Search_facilities", "Cataloguing","Renderability","Technical_metadata",
+             "Cataloguing","Renderability","Technical_metadata",
              "Content_metadata",  "Tools","Obsolecence","Physical_disaster",
              "Economic_political_upheaval","Technological_upheaval",
              "Operating_environment", "Storage_life","Storage_media","Institution_type",
-             "Copy_protocol","User_type","Replacement_protocol", "Preservation",
-             "Processing", "Target_community")
+             "Copy_protocol", "Replacement_protocol", "Preservation",
+             "Processing")
 dag.NA = empty.graph(nodes = names.NA)
 
 dag.NA = set.arc(dag.NA, from = "Service_continuity", to = "Preservation")
 dag.NA = set.arc(dag.NA, from = "Institution_type", to = "Service_continuity")
 dag.NA = set.arc(dag.NA, from = "Processing", to = "Cataloguing")
 dag.NA = set.arc(dag.NA, from = "Digital_data_type", to = "Processing")
-dag.NA = set.arc(dag.NA, from = "Target_community", to = "User_type")
-dag.NA = set.arc(dag.NA, from = "Institution_type", to = "Target_community")
 dag.NA = set.arc(dag.NA, from = "Permited_access", to = "Findability")
 dag.NA = set.arc(dag.NA, from = "Cataloguing", to = "Findability")
-dag.NA = set.arc(dag.NA, from = "Search_facilities", to = "Findability")
 dag.NA = set.arc(dag.NA, from = "Tools", to = "Renderability")
 dag.NA = set.arc(dag.NA, from = "Obsolecence", to = "Tools")
 dag.NA = set.arc(dag.NA, from = "Physical_disaster", to = "Operating_environment")
@@ -39,7 +36,6 @@ dag.NA = set.arc(dag.NA, from = "Content_metadata", to = "Provenance")
 dag.NA = set.arc(dag.NA, from = "Content_metadata", to = "Cataloguing")
 dag.NA = set.arc(dag.NA, from = "Operating_environment", to = "Storage_life")
 dag.NA = set.arc(dag.NA, from = "Storage_life", to = "Preservation")
-dag.NA = set.arc(dag.NA, from = "Findability", to = "Trust")
 dag.NA = set.arc(dag.NA, from = "System_security", to = "Preservation")
 dag.NA = set.arc(dag.NA, from = "Storage_media", to = "Obsolecence")
 dag.NA = set.arc(dag.NA, from = "Storage_media", to = "Operating_environment")
@@ -54,14 +50,10 @@ dag.NA = set.arc(dag.NA, from = "Replacement_protocol", to = "Storage_life")
 dag.NA = set.arc(dag.NA, from = "Copy_protocol", to = "Processing")
 dag.NA = set.arc(dag.NA, from = "Processing", to = "Operating_environment")
 dag.NA = set.arc(dag.NA, from = "Technical_metadata", to = "Processing")
-dag.NA = set.arc(dag.NA, from = "User_type", to = "Search_facilities")
 dag.NA = set.arc(dag.NA, from = "Content_metadata", to = "Permited_access")
-dag.NA = set.arc(dag.NA, from = "Renderability", to = "Trust")
-
 
 graphviz.plot(dag.NA, layout = "dot",
-              highlight = list(nodes=c("Renderability","Findability",
-                                        "Trust"), fill="lightgrey"),
+              highlight = list(nodes=c("Renderability","Findability"), fill="lightgrey"),
               shape = "ellipse",
               render = TRUE,
               main="Proposed network")
@@ -93,16 +85,6 @@ prob.replacement_protocol <- matrix(c(0.5, 0.5), ncol = 2, dimnames = list(NULL,
 # System_security
 prob.system_security <- matrix(c(0.5, 0.5), ncol = 2, dimnames = list(NULL, c("True", "False")))
 
-# Target_community
-prob.target_community <- c(0.5, 0.5, 0.5, 0.5, 0.5,
-                           0.5, 0.5, 0.5, 0.5, 0.5)
-dim(prob.target_community) <- c(2, 5)
-dimnames(prob.target_community) <- list("Target_community"=c("True", "False"), 
-                                        "Institution_type"=c("Government Central", 
-                                                             "Government Local",
-                                                             "Charity",
-                                                             "Private Corporate",
-                                                             "Higher Education"))
 
 # Copy_protocol
 prob.copy_protocol <- c(0.4, 0.3, 0.3, 0.4, 0.3, 0.3)
@@ -116,12 +98,6 @@ dim(prob.technical_metadata) <- c(2, 2)
 dimnames(prob.technical_metadata) <- list("Technical_metadata"=c("True", "False"), 
                                           "Digital_data_type"=c("Digitised", "Surrogate"))
 
-# User_type
-prob.user_type <- c(0.5, 0.5, 0.5, 0.5)
-dim(prob.user_type) <- c(2, 2)
-dimnames(prob.user_type) <- list("User_type"=c("True", "False"), 
-                                 "Target_community"=c("True", "False"))
-
 # Storage_media
 prob.storage_media <- c(0.2, 0.2, 0.2, 0.2, 0.2,
                         0.2
@@ -129,12 +105,6 @@ prob.storage_media <- c(0.2, 0.2, 0.2, 0.2, 0.2,
 dim(prob.storage_media) <- c(5, 2)
 dimnames(prob.storage_media) <- list("Storage_media"=c("Tape", "Optical", "SSD", "HDD", "Cloud"), 
                                      "Technological_upheaval"=c("True", "False"))
-
-# Search_facilities
-prob.search_facilities <- c(0.5, 0.5, 0.5, 0.5)
-dim(prob.search_facilities) <- c(2, 2)
-dimnames(prob.search_facilities) <- list("Search_facilities"=c("True", "False"), 
-                                         "User_type"=c("True", "False"))
 
 # Content_metadata
 prob.content_metadata<- c(0.5, 0.5, 0.5, 0.5)
@@ -194,13 +164,6 @@ dimnames(prob.renderability) <- list("Renderability"=c("True", "False"),
                                      "Preservation"=c("True", "False"),
                                      "Tools"=c("True", "False"))
 
-# Trust
-prob.trust <- c(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
-dim(prob.trust) <- c(2, 2, 2)
-dimnames(prob.trust) <- list("Trust"=c("True", "False"), 
-                             "Findability"=c("True", "False"),
-                             "Renderability"=c("True", "False"))
-
 # Processing
 prob.processing <- c(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
                      0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
@@ -223,11 +186,9 @@ dimnames(prob.operating_environment) <- list("Operating_environment"=c("True", "
                                              "Storage_media"=c("Tape", "Optical", "SSD", "HDD", "Cloud"))
 
 # Findability
-prob.findability <- c(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
-                                0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
-dim(prob.findability) <- c(2, 2, 2, 2)
-dimnames(prob.findability) <- list("Findability"=c("True", "False"), 
-                                   "Search_facilities"=c("True", "False"),
+prob.findability <- c(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
+dim(prob.findability) <- c(2, 2, 2)
+dimnames(prob.findability) <- list("Findability"=c("True", "False"),
                                    "Permited_access"=c("True", "False"),
                                    "Cataloguing"=c("True", "False"))
 
@@ -262,12 +223,9 @@ model.fit <- custom.fit(dag.NA,
                                   "Physical_disaster"=prob.physical_disaster,
                                   "Replacement_protocol"=prob.replacement_protocol,
                                   "System_security"=prob.system_security,
-                                  "Target_community"=prob.target_community,
                                   "Copy_protocol"=prob.copy_protocol,
                                   "Technical_metadata"=prob.technical_metadata,
-                                  "User_type"=prob.user_type,
                                   "Storage_media"=prob.storage_media,
-                                  "Search_facilities"=prob.search_facilities,
                                   "Content_metadata"=prob.content_metadata,
                                   "Permited_access"=prob.permited_access,
                                   "Provenance"=prob.provenance,
@@ -278,7 +236,6 @@ model.fit <- custom.fit(dag.NA,
                                   "Processing"=prob.processing,
                                   "Operating_environment"=prob.operating_environment,
                                   "Renderability"=prob.renderability,
-                                  "Trust"=prob.trust,
                                   "Findability"=prob.findability,
                                   "Storage_life"=prob.storage_life,
                                   "Preservation"=prob.preservation))
