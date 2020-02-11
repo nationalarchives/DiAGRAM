@@ -75,6 +75,14 @@ shinyServer(function(input, output, session) {
                                                  renderability=tna_utility$Renderability),
                                  custom_networks=list("TNA"=stable.fit))
   
+  
+  # Customised Policies
+  CustomPolicies <- reactiveValues(policy.df=tibble(name=character(),
+                                                    findability=numeric(),
+                                                    renderability=numeric()),
+                                   models=list())
+  
+  
   # Construct smoker probability table
   smoker <- reactive({
     # Convert to dataframe and multiply probability by 100
@@ -468,7 +476,12 @@ shinyServer(function(input, output, session) {
     }
     
     if (i!= 1){
-      uiNodeSlider[[i]] <- fluidRow(actionBttn("SimpleViewAddPolicy", "Add Policy"))
+      shinyjs::show(id="SimpleViewPolicyName")
+      shinyjs::show(id="SimpleViewAddPolicy")
+    }
+    else{
+      shinyjs::hide(id="SimpleViewPolicyName")
+      shinyjs::hide(id="SimpleViewAddPolicy")
     }
     
     uiNodeSlider
@@ -477,8 +490,8 @@ shinyServer(function(input, output, session) {
   
   # Add policy action
   observeEvent(input$SimpleViewAddPolicy, {
-    temp.model <- stable.fit
-    
+    currModel <- stable.fit
+    isProbabilityMismatchError <- TRUE
     
     for(node in input$policyTabNodesChecklist){
       # conditional probability table (cpt) of each node
@@ -502,6 +515,8 @@ shinyServer(function(input, output, session) {
       # Display a pop-up when the probabilities don't add up to 1.0 (divided by 100)
       
       if(currSumOfProbabilities != 1.0){
+        isProbabilityMismatchError = TRUE
+        
         #TODO: make it a function since it is also used in output$policyTabNodesSlider
         
         # remove the _ from the node to ease readability
@@ -513,7 +528,13 @@ shinyServer(function(input, output, session) {
         
         break
       }
+      else if(input$SimpleViewPolicyName == ""){
+        isProbabilityMismatchError = TRUE
+        
+        shinyalert("Oops!", "Please provide a policy name", type = "error")
+      }
       else{
+        isProbabilityMismatchError = FALSE
         
       # Updating the model
       # The data frame should be converted to a contigency and then the model is updated. 
@@ -526,20 +547,35 @@ shinyServer(function(input, output, session) {
       formula <- paste('Freq~', paste(cptFactors, collapse = "+"), sep="")
       
       # update the model
-      temp.model[[node]] <- xtabs(formula, cpt)
-      
-      print(temp.model[[node]]$prob)
+      currModel[[node]] <- xtabs(formula, cpt)
       }
+    }
+    
+    if(isProbabilityMismatchError == FALSE)
+    {
+      # Calculate the utility of the new model
+      currPolicyUtility <- calculate_utility(currModel)
+      
+      # update reactive policy list
+      CustomPolicies$policy.df <- CustomPolicies$policy.df %>%
+        add_row(name=input$SimpleViewPolicyName, 
+                findability=currPolicyUtility$Findability, 
+                renderability=currPolicyUtility$Renderability)
+      
+      CustomPolicies$model[[input$SimpleViewPolicyName]] <- currModel
     }
   })
   
-  # querygrain(a, nodes="Renderability")
-  #  a <- as.grain(stable.fit)
-  output$policyTabUtilityScorePlot <- {
-    
-  }
-  
-  # updating the conditional prob table -- within(a, Freq[Processing == 'True'] <- 0.7)
+  # Plot the policy comparison stacked bar chart
+  output$policyTabUtilityScorePlot <- renderPlot(
+    {
+      CustomPolicies$policy.df %>%
+        mutate(utility=findability+renderability) %>%
+        pivot_longer(c(findability, renderability), names_to="policy") %>%
+        ggplot(aes(x=name, fill=policy, y=value)) +
+        geom_bar(position="stack", stat="identity")
+    }
+  )
   
   # POLICIES TAB -- OLD
   

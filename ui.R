@@ -210,6 +210,7 @@ dashboardPage(
         )
       ),
       
+      # TODO:sid - change policyTab identifier to the most appropriate (once decided)
       tabItem(
         useShinyalert(),
         tabName="CustomizeNode",
@@ -227,11 +228,14 @@ dashboardPage(
             )
           ),
           column(
-            width=6,
-            uiOutput("policyTabNodesSlider")
+            width=4,
+            uiOutput("policyTabNodesSlider"),
+            useShinyjs(),
+            fluidRow(textInput("SimpleViewPolicyName", label = h3("Enter policy name"), value = ""),
+                     actionBttn("SimpleViewAddPolicy", "Add Policy"))
           ),
           column(
-            width=3,
+            width=5,
             plotOutput("policyTabUtilityScorePlot")
           )
         )
