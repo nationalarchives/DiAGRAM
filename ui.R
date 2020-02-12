@@ -217,6 +217,11 @@ dashboardPage(
         h1("Policy Selection Support"),
         br(),
         fluidRow(
+          selectInput("customModelSelection",
+                      "Select Model",
+                      choices="TNA")
+        ),
+        fluidRow(
           column(
             width=3,
             box(

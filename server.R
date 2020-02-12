@@ -75,13 +75,13 @@ shinyServer(function(input, output, session) {
                                                  renderability=tna_utility$Renderability),
                                  custom_networks=list("TNA"=stable.fit))
   
+  customModelChoices <- c('TNA')
   
   # Customised Policies
-  CustomPolicies <- reactiveValues(policy.df=tibble(name=character(),
-                                                    findability=numeric(),
-                                                    renderability=numeric()),
-                                   models=list())
-  
+  CustomPolicies <- reactiveValues(archiveList=list("TNA"= tibble(name="TNA",
+                                                    findability=tna_utility$Findability,
+                                                    renderability=tna_utility$Renderability)),
+                                   models=list("TNA"=list("Base"=stable.fit)))
   
   # Construct smoker probability table
   smoker <- reactive({
@@ -389,13 +389,20 @@ shinyServer(function(input, output, session) {
     # create custom model and save to memory
     custom_model <- mutilated(stable.fit, evidence=answers$states)
     CustomModels$custom_network[[input$CustomisedModelName]] = custom_model
+    CustomPolicies$models[[input$CustomisedModelName]] = list('Base'=custom_model)
     
     # calculate utility and store
     utility <- calculate_utility(custom_model)
     CustomModels$base_utility.df <- CustomModels$base_utility.df %>% add_row(name=input$CustomisedModelName,
                                                                              findability=utility$Findability,
                                                                              renderability=utility$Renderability)
+    CustomPolicies$archiveList[[input$CustomisedModelName]] <- tibble(name=input$CustomisedModelName,
+                                         findability=utility$Findability,
+                                         renderability=utility$Renderability)
     
+    # setting choices for the drop down list in the Simple view Node customisation tab
+    customModelChoices <- CustomModels$base_utility.df %>% select(name)
+    updateSelectInput(session, 'customModelSelection', choices=customModelChoices)
   })
   
   # plot utility
@@ -430,21 +437,44 @@ shinyServer(function(input, output, session) {
     
   })
   
-  
   # SIMPLE POLICY
   
-  # list the nodes checklist dynamically based on model instead of hardcoding
-  uiNodeChecklist <- nodes(stable.fit)
+  # Plot the policy comparison stacked bar chart
+  output$policyTabUtilityScorePlot <- renderPlot(
+    {
+      CustomPolicies$archiveList[[input$customModelSelection]] %>%
+        mutate(utility=findability+renderability) %>%
+        pivot_longer(c(findability, renderability), names_to="policy") %>%
+        ggplot(aes(x=name, fill=policy, y=value)) +
+        geom_bar(position="stack", stat="identity")
+    }
+  )
   
+  currModel <- stable.fit
+  
+  observeEvent(input$customModelSelection,{
+    # list the nodes checklist dynamically based on model instead of hardcoding
+    
+    if(input$customModelSelection == 'TNA'){
+      currModel <- stable.fit
+    }
+    else{
+      currModel <- CustomPolicies$models[[input$customModelSelection]]$Base
+    }
+    
+
+ })
+  
+  uiNodeChecklist <- nodes(currModel)
   # update the checklist options with nodes list
   updateCheckboxGroupInput(session,
                            "policyTabNodesChecklist",
-                           label=NULL,  
-                           choices = uiNodeChecklist
-  )
-  
+                           label=NULL,
+                           choices = uiNodeChecklist)
+
   # display the slider inputs for each selected node
   output$policyTabNodesSlider <- renderUI({
+    print(currModel$Storage_media$prob)
     uiNodeSlider <- c()
     
     i <- 1
@@ -453,7 +483,7 @@ shinyServer(function(input, output, session) {
       ## TODO: change this to list of list (of nodes with node state) to avoid having to create a new list for every node
       nodeStates <- state.definitions %>%
         filter(node_name==node) %>%
-        select(-node_name) 
+        select(-node_name)
       
       nodeStateSlider <- c()
       
@@ -490,7 +520,9 @@ shinyServer(function(input, output, session) {
   
   # Add policy action
   observeEvent(input$SimpleViewAddPolicy, {
-    currModel <- stable.fit
+    print(input$SimpleViewAddPolicy)
+    print('here')
+    
     isProbabilityMismatchError <- TRUE
     
     for(node in input$policyTabNodesChecklist){
@@ -499,10 +531,10 @@ shinyServer(function(input, output, session) {
       
       nodeStates <- state.definitions %>%
         filter(node_name==node) %>%
-        select(-node_name) 
+        select(-node_name)
       
       currSumOfProbabilities <- 0
-      # updating the cpt for each state 
+      # updating the cpt for each state
       for(state in nodeStates$node_state){
         currId = paste(node, state, sep ="-")
         index <- cpt[[node]] == state
@@ -536,18 +568,18 @@ shinyServer(function(input, output, session) {
       else{
         isProbabilityMismatchError = FALSE
         
-      # Updating the model
-      # The data frame should be converted to a contigency and then the model is updated. 
-      # The table should be Freq~'all other columns'
-      
-      # get the column names excluding frequency
-      cptFactors <- colnames(cpt)[1:length(colnames(cpt))-1]
-      
-      # formula for xtabs
-      formula <- paste('Freq~', paste(cptFactors, collapse = "+"), sep="")
-      
-      # update the model
-      currModel[[node]] <- xtabs(formula, cpt)
+        # Updating the model
+        # The data frame should be converted to a contigency and then the model is updated.
+        # The table should be Freq~'all other columns'
+        
+        # get the column names excluding frequency
+        cptFactors <- colnames(cpt)[1:length(colnames(cpt))-1]
+        
+        # formula for xtabs
+        formula <- paste('Freq~', paste(cptFactors, collapse = "+"), sep="")
+        
+        # update the model
+        currModel[[node]] <- xtabs(formula, cpt)
       }
     }
     
@@ -557,25 +589,18 @@ shinyServer(function(input, output, session) {
       currPolicyUtility <- calculate_utility(currModel)
       
       # update reactive policy list
-      CustomPolicies$policy.df <- CustomPolicies$policy.df %>%
-        add_row(name=input$SimpleViewPolicyName, 
-                findability=currPolicyUtility$Findability, 
+      CustomPolicies$archiveList[[input$customModelSelection]] <- CustomPolicies$archiveList[[input$customModelSelection]] %>%
+        add_row(name=input$SimpleViewPolicyName,
+                findability=currPolicyUtility$Findability,
                 renderability=currPolicyUtility$Renderability)
       
-      CustomPolicies$model[[input$SimpleViewPolicyName]] <- currModel
+      CustomPolicies$models[[input$customModelSelection]][[input$SimpleViewPolicyName]] <- currModel
     }
   })
   
-  # Plot the policy comparison stacked bar chart
-  output$policyTabUtilityScorePlot <- renderPlot(
-    {
-      CustomPolicies$policy.df %>%
-        mutate(utility=findability+renderability) %>%
-        pivot_longer(c(findability, renderability), names_to="policy") %>%
-        ggplot(aes(x=name, fill=policy, y=value)) +
-        geom_bar(position="stack", stat="identity")
-    }
-  )
+  
+  
+  
   
   # POLICIES TAB -- OLD
   
