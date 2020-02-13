@@ -1,6 +1,6 @@
-node_name,node_question
-Storage_media,What is the storage media being used to store these digital assets?
-Physical_disaster,How high is your flood risk?
-Institution_type,What is your institution type?
-Copy_protocol,What is your copy protocol?
-Digital_data_type,What is the digital data type of these digital assets?
+node_name,node_question,type
+Storage_media,What is the storage media being used to store these digital assets?,slider
+Physical_disaster,How high is your flood risk?,slider
+Institution_type,What is your institution type?,radiobuttons
+Copy_protocol,What is your copy protocol?,radiobuttons
+Digital_data_type,What is the digital data type of these digital assets?,slider
