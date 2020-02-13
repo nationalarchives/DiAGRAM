@@ -83,6 +83,7 @@ shinyServer(function(input, output, session) {
                                                     renderability=tna_utility$Renderability)),
                                    models=list("TNA"=list("Base"=stable.fit)))
   
+  
   # Construct smoker probability table
   smoker <- reactive({
     # Convert to dataframe and multiply probability by 100
@@ -439,6 +440,8 @@ shinyServer(function(input, output, session) {
   
   # SIMPLE POLICY
   
+  currModel <- reactiveValues(model=stable.fit)
+  
   # Plot the policy comparison stacked bar chart
   output$policyTabUtilityScorePlot <- renderPlot(
     {
@@ -450,31 +453,31 @@ shinyServer(function(input, output, session) {
     }
   )
   
-  currModel <- stable.fit
-  
   observeEvent(input$customModelSelection,{
     # list the nodes checklist dynamically based on model instead of hardcoding
     
     if(input$customModelSelection == 'TNA'){
-      currModel <- stable.fit
+      currModel$model <- stable.fit
     }
     else{
-      currModel <- CustomPolicies$models[[input$customModelSelection]]$Base
+      currModel$model <- CustomPolicies$models[[input$customModelSelection]]$Base
     }
     
-
+    uiNodeChecklist <- nodes(currModel$model)
+    
+    # update the checklist options with nodes list
+    updateCheckboxGroupInput(session,
+                             "policyTabNodesChecklist",
+                             label=NULL,
+                             choices = uiNodeChecklist)
  })
   
-  uiNodeChecklist <- nodes(currModel)
-  # update the checklist options with nodes list
-  updateCheckboxGroupInput(session,
-                           "policyTabNodesChecklist",
-                           label=NULL,
-                           choices = uiNodeChecklist)
+  
+
 
   # display the slider inputs for each selected node
   output$policyTabNodesSlider <- renderUI({
-    print(currModel$Storage_media$prob)
+    print(currModel$model$Storage_media$prob)
     uiNodeSlider <- c()
     
     i <- 1
@@ -579,14 +582,14 @@ shinyServer(function(input, output, session) {
         formula <- paste('Freq~', paste(cptFactors, collapse = "+"), sep="")
         
         # update the model
-        currModel[[node]] <- xtabs(formula, cpt)
+        currModel$model[[node]] <- xtabs(formula, cpt)
       }
     }
     
     if(isProbabilityMismatchError == FALSE)
     {
       # Calculate the utility of the new model
-      currPolicyUtility <- calculate_utility(currModel)
+      currPolicyUtility <- calculate_utility(currModel$model)
       
       # update reactive policy list
       CustomPolicies$archiveList[[input$customModelSelection]] <- CustomPolicies$archiveList[[input$customModelSelection]] %>%
@@ -594,7 +597,7 @@ shinyServer(function(input, output, session) {
                 findability=currPolicyUtility$Findability,
                 renderability=currPolicyUtility$Renderability)
       
-      CustomPolicies$models[[input$customModelSelection]][[input$SimpleViewPolicyName]] <- currModel
+      CustomPolicies$models[[input$customModelSelection]][[input$SimpleViewPolicyName]] <- currModel$model
     }
   })
   
