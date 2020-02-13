@@ -42,6 +42,79 @@ shinyServer(function(input, output, session) {
     return(utility)    
   }
   
+  # Function creates multiple sliders for the different states in a node
+  create_sliders <- function(node, states) {
+    # creates a list of sliders inputs for each state of the respective node
+    j <- 1
+    nodeStateSlider <- c()
+    for(state in states){
+      inputId <- paste(node, state, sep = "-")
+      label <- paste(state, "(%)")
+      nodeStateSlider[[j]] <- sliderInput(inputId, label, min = 0, max = 100, step = 10, value = 0, post = "%")
+      
+      j <- j+1
+    }
+    
+    # list of nodes with corresponding state sliders
+    return(nodeStateSlider)
+  }
+  
+  # Function collects inputs from generated sliders and combines into dataframe
+  collect_slider_inputs <- function(name){
+    # create input ids to access slider information
+    input.ids <- state.definitions %>%
+      filter(node_name==name) %>%
+      mutate(id=paste(node_name, node_state, sep = "-")) %>%
+      select(id, node_state)
+    
+    # create vectors for states and probabilities
+    states <- c()
+    probabilities <- c()
+    
+    # iterate through all id's and collect values
+    i <- 1
+    for (id in input.ids$id) {
+      # collect states and their probabilities
+      state <- input.ids$node_state[i]
+      probability <- input[[id]]
+      
+      # add to vectors
+      states <- c(states, state)
+      probabilities <- c(probabilities, probability)
+      
+      # iterate to next state
+      i <- i + 1
+    }
+    
+    # combine states into one dataframe
+    return(tibble(state=states, probability=probabilities))
+  }
+  
+  # Function updates probability tables of model with user inputs
+  update_probability <- function(node, model.probability.df, input.probability.df){
+    
+    # collect node states and corresponding probabilities
+    node_states <- input.probability.df$state
+    state_probabilities <- input.probability.df$probability
+    
+    # iterate through states and update model probability table
+    i <- 1
+    for (state in node_states){
+      current.probability <- state_probabilities[i]
+      print(state)
+      model.probability.df <- model.probability.df %>%
+        mutate(Freq=ifelse(model.probability.df[[node]]==state, current.probability, Freq))
+      
+      i <- i + 1
+    }
+    
+    # normalise probability range between 0 and 1
+    model.probability.df <- model.probability.df %>% mutate(Freq=Freq/100)
+    
+    # convert from data.frame to table
+    model.probability.table <- xtabs(Freq~., model.probability.df)
+    return(model.probability.table)
+  }
   # STATIC VALUES
   stable.fit <- read.bif("Model.bif")
   
@@ -51,6 +124,9 @@ shinyServer(function(input, output, session) {
   
   # Csv containing nodes and questions used during setup
   setup_questions <- read_csv("setup_questions.csv")
+  
+  # TNA default risk
+  tna_utility <- calculate_utility(stable.fit)
   
   # REACTIVE VALUES
   # initialise stable plot (unchanging) and reactive plot
@@ -65,9 +141,8 @@ shinyServer(function(input, output, session) {
                             policy_networks=list())
   
   # Create vector to store answers to questions
-  answers <- reactiveValues(states=list())
-  
-  tna_utility <- calculate_utility(stable.fit)
+  answers <- reactiveValues(radio_answers=list(),
+                            slider_answers=list())
   
   # Customised models
   CustomModels <- reactiveValues(base_utility.df=tibble(name="TNA",
@@ -238,25 +313,10 @@ shinyServer(function(input, output, session) {
                   filter(node_name==first_node) %>%
                   select(node_state)
   
-  create_sliders <- function(node, states) {
-    # creates a list of sliders inputs for each state of the respective node
-    j <- 1
-    nodeStateSlider <- c()
-    for(state in states){
-      inputId <- paste(node, state, sep = "-")
-      label <- paste(state, "(%)")
-      nodeStateSlider[[j]] <- sliderInput(inputId, label, min = 0, max = 100, step = 10, value = 0, post = "%")
-                              
-      j <- j+1
-    }
-    
-    # list of nodes with corresponding state sliders
-    return(nodeStateSlider)
-  }
-  
   # Create user input UI which is at the bottom of the box
   output$CustomisationInput <- renderUI({
     
+    # collect type of input, radiobutton or slider
     input_type <- setup_questions[questionValues$question_number,]$type
     
     # If all questions have not been answered yet render next button
@@ -310,7 +370,7 @@ shinyServer(function(input, output, session) {
         fluidRow(
           column(
             width=5,
-            radioButtons("stateSelection", label=NULL, choices=next_states$node_state)
+            radioButtons("StateSelection", label=NULL, choices=next_states$node_state)
           )
         ),
         fluidRow(
@@ -372,21 +432,36 @@ shinyServer(function(input, output, session) {
     }
   })
   
-  observe({
-    
-    if (questionValues$question_number > 5) {
-      shinyjs::hide(id="StateSelection")
-    } else {
-      shinyjs::show(id="StateSelection")
-    }
-
-  })
-  
   # Update question when next question button is pressed
   observeEvent(input$NextQuestion, {
     
+    # collect input type, whether radio button or slider
+    input_type <- setup_questions[questionValues$question_number,]$type
+    
+    # collect node name
+    node_name <- setup_questions[questionValues$question_number,]$node_name
+    
     # add state to answer vector
-    answers$states[[setup_questions[questionValues$question_number,]$node_name]] = input$StateSelection
+    # if radio button, add to radio button answers
+    if (input_type == "radiobuttons") {
+      answers$radio_answers[[node_name]] = input$StateSelection
+      
+    } else if (input_type == "slider") {
+      # collcet input probabilities and check the sum
+      input.probabilities <- collect_slider_inputs(node_name)
+      prob.summary <- input.probabilities %>% summarise(prob_sum=sum(probability))
+
+      # if sum of probability is not 100 alert user and break out of function
+      if (prob.summary$prob_sum != 100){
+        errorMsg <- paste("Probabilities for '", node_name, "' do not add up to to 100%")
+        shinyalert("Oops!", errorMsg, type = "error")
+        
+        return()
+        
+      } else {
+        answers$slider_answers[[node_name]] = input.probabilities
+      }
+    }
     
     # update progress bar
     updateProgressBar(
@@ -405,9 +480,20 @@ shinyServer(function(input, output, session) {
   observeEvent(input$BackButton, {
     
     if (questionValues$question_number > 1) {
-      # remove last answer
-      answers$states[[setup_questions[questionValues$question_number,]$node_name]] = NULL
+      # collect input type, whether radio button or slider
+      input_type <- setup_questions[questionValues$question_number,]$type
       
+      # collect node name
+      node_name <- setup_questions[questionValues$question_number,]$node_name
+      
+      # remove last answer
+      # if radio button input, remove from radio button list
+      if (input_type == "radiobuttons"){
+        answers$radio_answers[[node_name]] = NULL
+      } else if (input_type == "slider"){
+        answers$slider_answers[[node_name]] = NULL
+      }
+
       # update question number
       questionValues$question_number <- questionValues$question_number - 1
     }
@@ -426,16 +512,33 @@ shinyServer(function(input, output, session) {
   
   # Save model to memory
   observeEvent(input$SaveModel, {
-    
     # create custom model and save to memory
-    custom_model <- mutilated(stable.fit, evidence=answers$states)
+    # first update inputs from radio buttons
+    custom_model <- mutilated(stable.fit, evidence=answers$radio_answers)
+    
+    # second update states with inputs as sliders
+    for (node in names(answers$slider_answers)) {
+      input.probability.df <- answers$slider_answers[[node]]
+      model.probability.df <- as.data.frame(custom_model[[node]]$prob)
+      
+      # if one of the columns is Var1 change to node name
+      if ("Var1" %in% colnames(model.probability.df)) {
+        model.probability.df <- rename(model.probability.df, !!node:=Var1)
+      }
+      model.probability.table <- update_probability(node, model.probability.df, input.probability.df)
+      
+      # update probability table for node
+      custom_model[[node]] = model.probability.table
+    }
+    
+    # Add custom network to memory 
     CustomModels$custom_network[[input$CustomisedModelName]] = custom_model
     
     # calculate utility and store
     utility <- calculate_utility(custom_model)
     CustomModels$base_utility.df <- CustomModels$base_utility.df %>% add_row(name=input$CustomisedModelName,
-                                                                             findability=utility$Findability,
-                                                                             renderability=utility$Renderability)
+                                                                              findability=utility$Findability,
+                                                                              renderability=utility$Renderability)
     
   })
   
@@ -687,6 +790,7 @@ shinyServer(function(input, output, session) {
     updatedSmokerTable <- xtabs(Probability~Smoker, smoker.df)
     updatedPollutionTable <- xtabs(Probability~Pollution, pollution.df)
     updatedCancerTable <- xtabs(Probability~Cancer+Smoker+Pollution, cancer.df)
+    print(updatedCancerTable)
     
     
     # retrieve model
