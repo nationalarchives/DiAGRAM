@@ -234,8 +234,10 @@ dashboardPage(
           ),
           column(
             width=4,
-            uiOutput("policyTabNodesSlider"),
             useShinyjs(),
+            uiOutput("policyTabNodesSlider"),
+            actionButton("SimpleViewPolicyNext", label = "Next"),
+            actionButton("SimpleViewPolicyPrevious", label = "Previous"),
             fluidRow(textInput("SimpleViewPolicyName", label = h3("Enter policy name"), value = ""),
                      actionBttn("SimpleViewAddPolicy", "Add Policy"))
           ),

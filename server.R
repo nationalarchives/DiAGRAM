@@ -440,8 +440,6 @@ shinyServer(function(input, output, session) {
   
   # SIMPLE POLICY
   
-  currModel <- reactiveValues(model=stable.fit)
-  
   # Plot the policy comparison stacked bar chart
   output$policyTabUtilityScorePlot <- renderPlot(
     {
@@ -453,6 +451,12 @@ shinyServer(function(input, output, session) {
     }
   )
   
+  currModel <- reactiveValues(model=stable.fit)
+  uiNodeSlider <- reactiveValues(node=c())
+  totalNumberOfNode <- reactiveValues(i=0)
+  nodeStateProgress <- reactiveValues(progress=0)
+  
+  # make the necessary changes when the model is changed from dropdown menu
   observeEvent(input$customModelSelection,{
     # list the nodes checklist dynamically based on model instead of hardcoding
     
@@ -470,17 +474,18 @@ shinyServer(function(input, output, session) {
                              "policyTabNodesChecklist",
                              label=NULL,
                              choices = uiNodeChecklist)
+    
+    # reset the progress for selected model
+    nodeStateProgress$progress <- 0
+    uiNodeSlider$node <- c()
  })
   
-  
-
-
-  # display the slider inputs for each selected node
-  output$policyTabNodesSlider <- renderUI({
-    print(currModel$model$Storage_media$prob)
-    uiNodeSlider <- c()
+  # observe the input for checklist to update uiNodeSlider$node with respective states
+  observeEvent(input$policyTabNodesChecklist, {
+    totalNumberOfNode$i <- 1
+    uiNodeSlider$node <- c()
+    nodeStateProgress$progress <- 1
     
-    i <- 1
     for(node in input$policyTabNodesChecklist){
       
       ## TODO: change this to list of list (of nodes with node state) to avoid having to create a new list for every node
@@ -504,11 +509,42 @@ shinyServer(function(input, output, session) {
       nodeLabel <- paste(nodeLabel[[1]], collapse = ' ')
       
       # list of nodes with corresponding state sliders
-      uiNodeSlider[[i]] <- fluidRow(h3(nodeLabel), nodeStateSlider )
-      i <- i+1
+      uiNodeSlider$node[[totalNumberOfNode$i]] <- fluidRow(h3(nodeLabel), nodeStateSlider )
+      totalNumberOfNode$i <- totalNumberOfNode$i+1
+    }
+  })
+  
+  
+  #NOTE: When length(input$policyTabNodesChecklist) == 0, the observeEvent(input$policyTabNodesChecklist, {}) method is not called. 
+  # As a result, uiNodeSlider$node remains unchanged (contains last selected node as the only element)
+  # For this reason, checks (for length !=0) have been added to update content when no node is selected.
+  
+  # display the slider inputs for each selected node (as a progress bar walkthrough)
+  output$policyTabNodesSlider <- renderUI({
+    # Enabling/disabling buttons based on progress
+    
+    # if nothing is selected everything is hidden and disabled
+    if (length(input$policyTabNodesChecklist)!=0){
+      shinyjs::show(id="SimpleViewPolicyNext")
+      shinyjs::show(id="SimpleViewPolicyPrevious")
+      shinyjs::enable(id="SimpleViewPolicyNext")
+      shinyjs::enable(id="SimpleViewPolicyPrevious")
+    }
+    else{
+      shinyjs::hide(id="SimpleViewPolicyNext")
+      shinyjs::hide(id="SimpleViewPolicyPrevious")
+      shinyjs::hide(id="SimpleViewPolicyName")
+      shinyjs::hide(id="SimpleViewAddPolicy")
     }
     
-    if (i!= 1){
+    # disable previous button to avoid negative index (<1)
+    if(nodeStateProgress$progress == 1){
+      shinyjs::disable(id="SimpleViewPolicyPrevious")
+    }
+    
+    # Policy can only be added when all the selected nodes have been updated
+    if(length(input$policyTabNodesChecklist) != 0 & nodeStateProgress$progress == length(uiNodeSlider$node)){
+      shinyjs::disable(id="SimpleViewPolicyNext") # disable next button to avoid exceeding array size
       shinyjs::show(id="SimpleViewPolicyName")
       shinyjs::show(id="SimpleViewAddPolicy")
     }
@@ -517,15 +553,23 @@ shinyServer(function(input, output, session) {
       shinyjs::hide(id="SimpleViewAddPolicy")
     }
     
-    uiNodeSlider
+    
+    if (length(input$policyTabNodesChecklist)!=0){
+      uiNodeSlider$node[[nodeStateProgress$progress]]
+    }
+  })
+  
+  observeEvent(input$SimpleViewPolicyNext, {
+    nodeStateProgress$progress <- nodeStateProgress$progress + 1
+  })
+  
+  observeEvent(input$SimpleViewPolicyPrevious, {
+    nodeStateProgress$progress <- nodeStateProgress$progress - 1
   })
   
   
   # Add policy action
   observeEvent(input$SimpleViewAddPolicy, {
-    print(input$SimpleViewAddPolicy)
-    print('here')
-    
     isProbabilityMismatchError <- TRUE
     
     for(node in input$policyTabNodesChecklist){
@@ -543,8 +587,6 @@ shinyServer(function(input, output, session) {
         index <- cpt[[node]] == state
         cpt$Freq[index] <- input[[currId]]/100
         currSumOfProbabilities <- currSumOfProbabilities +  input[[currId]]/100
-        
-        #print(cpt)
       }
       
       # Display a pop-up when the probabilities don't add up to 1.0 (divided by 100)
