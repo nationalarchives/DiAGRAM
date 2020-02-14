@@ -361,6 +361,26 @@ shinyServer(function(input, output, session) {
       # collect next node name
       next_node <- setup_questions[questionValues$question_number,]$node_name
       
+      # if node is equal to Copy_protocol, add description
+      if (next_node == "Copy_protocol"){
+        text_description <- column(
+                              width=5,
+                              tags$ol(
+                                tags$li("The archive has multiple independent copies of the
+                                         digital materials."),
+                                tags$li("Copies are geographically separated
+                                         into different locations."),
+                                tags$li("Copies use different storage technologies."),
+                                tags$li("Copies use a combination of online and
+                                         offline storage techniques."),
+                                tags$li("Storage is actively monitored to ensure any
+                                         problems are detected and corrected quickly.")
+                              )
+                            )
+      } else{
+        text_description <- column(width=5)
+      }
+      
       # collect states of the next node
       next_states <- state.definitions %>%
         filter(node_name==next_node) %>%
@@ -371,7 +391,8 @@ shinyServer(function(input, output, session) {
           column(
             width=5,
             radioButtons("StateSelection", label=NULL, choices=next_states$node_state)
-          )
+          ),
+          text_description
         ),
         fluidRow(
           column(
