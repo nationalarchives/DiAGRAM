@@ -218,6 +218,20 @@ dashboardPage(
         br(),
         fluidRow(
           column(
+            width = 3,
+            selectInput("customModelSelection",
+                        "Select Model",
+                        choices="TNA")
+          ),
+          column(
+            width = 3,
+            selectInput("customOaisEntitySelection",
+                        "Select OAIS Function Entity",
+                        choices="None")
+          )
+        ),
+        fluidRow(
+          column(
             width=3,
             box(
               title="Nodes Checklist",
@@ -229,10 +243,30 @@ dashboardPage(
           ),
           column(
             width=4,
-            uiOutput("policyTabNodesSlider"),
             useShinyjs(),
-            fluidRow(textInput("SimpleViewPolicyName", label = h3("Enter policy name"), value = ""),
-                     actionBttn("SimpleViewAddPolicy", "Add Policy"))
+            box(
+              id="StateNodeSliderBox",
+              title=NULL,
+              width=NULL,
+              div(id="nodeSliderPlaceholder", h4('No nodes selected')),
+              uiOutput("policyTabNodesSlider"),
+              tags$style(HTML('#SimpleViewPolicyNext{background-color:green}')),
+              tags$style(HTML('#SimpleViewPolicyNext{color:white}')),
+              actionButton("SimpleViewPolicyNext", label = "Next"),
+              tags$style(HTML('#SimpleViewPolicyPrevious{background-color:grey}')),
+              tags$style(HTML('#SimpleViewPolicyPrevious{color:white}')),
+              actionButton("SimpleViewPolicyPrevious", label = "Previous"),
+              br()
+            ),
+            box(
+              id="SimpleViewPolicyAddBox",
+              title=NULL,
+              width=NULL,
+              textInput("SimpleViewPolicyName", label = h4("Enter policy name"), value = ""),
+              tags$style(HTML('#SimpleViewAddPolicy{background-color:green}')),
+              tags$style(HTML('#SimpleViewAddPolicy{color:white}')),
+              actionButton("SimpleViewAddPolicy", "Add Policy")
+            )
           ),
           column(
             width=5,
