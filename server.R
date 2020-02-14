@@ -49,7 +49,7 @@ shinyServer(function(input, output, session) {
   node.definitions <- read_csv("node_information.csv") %>% arrange(node_name)
   state.definitions <- read_csv("node_states.csv")
   
-  # Csv containing nodes and questions used during setup
+  # csv containing nodes and questions used during setup
   setup_questions <- read_csv("setup_questions.csv")
   
   # REACTIVE VALUES
@@ -451,6 +451,35 @@ shinyServer(function(input, output, session) {
     }
   )
   
+  OAISentities <- node.definitions$OAIS_Entity
+  OAISentities <- c(unique(OAISentities), 'None')
+  
+  updateSelectInput(session, 
+                    "customOaisEntitySelection",
+                    choices = OAISentities, 
+                    selected = 'None')
+  
+  uiNode <- reactiveValues(checklist=c())
+  
+  observeEvent(input$customOaisEntitySelection, {
+    if(input$customOaisEntitySelection == 'None'){
+      uiNode$checklist <- nodes(stable.fit)
+    }
+    else{
+      tmp <- node.definitions %>%
+        filter(OAIS_Entity==input$customOaisEntitySelection) %>%
+        select(node_name)
+      
+      uiNode$checklist <- tmp$node_name
+    }
+    
+    # update the checklist options with nodes list
+    updateCheckboxGroupInput(session,
+                             "policyTabNodesChecklist",
+                             label=NULL,
+                             choices = uiNode$checklist)
+  })
+  
   currModel <- reactiveValues(model=stable.fit)
   uiNodeSlider <- reactiveValues(node=c())
   totalNumberOfNode <- reactiveValues(i=0)
@@ -466,14 +495,6 @@ shinyServer(function(input, output, session) {
     else{
       currModel$model <- CustomPolicies$models[[input$customModelSelection]]$Base
     }
-    
-    uiNodeChecklist <- nodes(currModel$model)
-    
-    # update the checklist options with nodes list
-    updateCheckboxGroupInput(session,
-                             "policyTabNodesChecklist",
-                             label=NULL,
-                             choices = uiNodeChecklist)
     
     # reset the progress for selected model
     nodeStateProgress$progress <- 0

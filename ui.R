@@ -219,7 +219,10 @@ dashboardPage(
         fluidRow(
           selectInput("customModelSelection",
                       "Select Model",
-                      choices="TNA")
+                      choices="TNA"),
+          selectInput("customOaisEntitySelection",
+                      "Select OAIS Function Entity",
+                      choices="None")
         ),
         fluidRow(
           column(
