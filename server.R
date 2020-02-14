@@ -451,8 +451,9 @@ shinyServer(function(input, output, session) {
     }
   )
   
+  # OAIS Entities list
   OAISentities <- node.definitions$OAIS_Entity
-  OAISentities <- c(unique(OAISentities), 'None')
+  OAISentities <- c('None', unique(OAISentities)) # adding None to provide option of listing all nodes
   
   updateSelectInput(session, 
                     "customOaisEntitySelection",
@@ -530,7 +531,7 @@ shinyServer(function(input, output, session) {
       nodeLabel <- paste(nodeLabel[[1]], collapse = ' ')
       
       # list of nodes with corresponding state sliders
-      uiNodeSlider$node[[totalNumberOfNode$i]] <- fluidRow(h3(nodeLabel), nodeStateSlider )
+      uiNodeSlider$node[[totalNumberOfNode$i]] <- div(h4(nodeLabel), nodeStateSlider )
       totalNumberOfNode$i <- totalNumberOfNode$i+1
     }
   })
@@ -550,12 +551,15 @@ shinyServer(function(input, output, session) {
       shinyjs::show(id="SimpleViewPolicyPrevious")
       shinyjs::enable(id="SimpleViewPolicyNext")
       shinyjs::enable(id="SimpleViewPolicyPrevious")
+      shinyjs::hide(id="nodeSliderPlaceholder")
     }
     else{
       shinyjs::hide(id="SimpleViewPolicyNext")
       shinyjs::hide(id="SimpleViewPolicyPrevious")
-      shinyjs::hide(id="SimpleViewPolicyName")
-      shinyjs::hide(id="SimpleViewAddPolicy")
+      shinyjs::hide(id="SimpleViewPolicyAddBox")
+      shinyjs::show(id="nodeSliderPlaceholder")
+      # shinyjs::hide(id="SimpleViewPolicyName")
+      # shinyjs::hide(id="SimpleViewAddPolicy")
     }
     
     # disable previous button to avoid negative index (<1)
@@ -566,12 +570,12 @@ shinyServer(function(input, output, session) {
     # Policy can only be added when all the selected nodes have been updated
     if(length(input$policyTabNodesChecklist) != 0 & nodeStateProgress$progress == length(uiNodeSlider$node)){
       shinyjs::disable(id="SimpleViewPolicyNext") # disable next button to avoid exceeding array size
-      shinyjs::show(id="SimpleViewPolicyName")
-      shinyjs::show(id="SimpleViewAddPolicy")
+      shinyjs::show(id="SimpleViewPolicyAddBox")
+      #shinyjs::show(id="SimpleViewAddPolicy")
     }
     else{
-      shinyjs::hide(id="SimpleViewPolicyName")
-      shinyjs::hide(id="SimpleViewAddPolicy")
+      shinyjs::hide(id="SimpleViewPolicyAddBox")
+      #shinyjs::hide(id="SimpleViewAddPolicy")
     }
     
     
