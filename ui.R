@@ -189,9 +189,7 @@ dashboardPage(
               progressBar("Question_Progress", value=0, total=5),
               h3("Please answer the following questions: "),
               uiOutput("Question"),
-              br(),
               useShinyjs(),
-              radioButtons("StateSelection", "Select State", choices=c("temp")),
               br(),
               uiOutput("CustomisationInput")
             )
