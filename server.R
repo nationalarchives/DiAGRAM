@@ -115,6 +115,7 @@ shinyServer(function(input, output, session) {
     model.probability.table <- xtabs(Freq~., model.probability.df)
     return(model.probability.table)
   }
+  
   # STATIC VALUES
   stable.fit <- read.bif("Model.bif")
   
@@ -130,7 +131,7 @@ shinyServer(function(input, output, session) {
   
   # REACTIVE VALUES
   # initialise stable plot (unchanging) and reactive plot
-  network <- reactiveValues(cancer.fit = read.bif("cancer.bif"))
+  network <- reactiveValues(model.fit = read.bif("Model.bif"))
   
   # Initialise Question Counter for model setup
   questionValues <- reactiveValues(question_number=1)
@@ -158,73 +159,7 @@ shinyServer(function(input, output, session) {
                                                     renderability=tna_utility$Renderability)),
                                    models=list("TNA"=list("Base"=stable.fit)))
   
-  
-  # Construct smoker probability table
-  smoker <- reactive({
-    # Convert to dataframe and multiply probability by 100
-    # so it is more intuitive to non-statistical users
-    smoker.df <- data.frame(network$cancer.fit$Smoker$prob) %>%
-      rename(Probability=Freq)
-    
-    if ("Var1" %in% colnames(smoker.df)) {
-      
-      # When loaded var1 is originally given to smoker variables
-      # Once changed it does not revert back which can cause renaming errors
-      # Program cannot find Var1 because it has already been changed to smoker
-      smoker.df <- smoker.df %>% rename(Smoker=Var1)
-      
-    }
-    
-    smoker.df
-  })
-  
-  # Construct Pollution Probability Table
-  pollution <- reactive({
-    
-    pollution.df <- data.frame(network$cancer.fit$Pollution$prob) %>%
-      rename(Probability=Freq)
-    
-    # When loaded var1 is originally given to pollution variables
-    # Once changed it does not revert back which can cause renaming errors
-    # Program cannot find Var1 because it has already been changed to pollution
-    if ("Var1" %in% colnames(pollution.df)){
-      
-      pollution.df <- pollution.df %>% rename(Pollution=Var1)
-      
-    }
-    
-    pollution.df
-    
-  })
-  
-  # Construct Cancer Probability Table
-  cancer <- reactive({
-    
-    # Create initial cancer dataframe
-    cancer.df <- data.frame(network$cancer.fit$Cancer$prob) %>% 
-      rename(Probability=Freq)
-    
-    if (input$CancerProbTable =="Conditional Probability Table") {
-      # Spread the conditional table to make it easier for the user to understand
-      cancer.df %>% 
-        mutate(Probability=Probability*100) %>%
-        pivot_wider(names_from=Cancer, values_from=Probability) %>%
-        rename(`Cancer=True`=True,
-               `Cancer=False`=False)
-      
-    } else {
-      
-      # Get probability that cancer = False
-      cancer.false <- calculateUtility(cancer.df, smoker(), pollution())$TotalProb
-      
-      # Use probability to create independent table
-      tibble("Cancer"=c("True", "False"), "Probability"=c(1-cancer.false, cancer.false)) %>%
-        mutate(Probability=Probability*100)
-      
-    }
-    
-    
-  })
+
   
   # create utility barchart
   utility.plot <- reactive({
@@ -831,36 +766,16 @@ shinyServer(function(input, output, session) {
   
   
   
-  # POLICIES TAB -- OLD
+  # ADVANCED POLICIES
   
   # Plot network which changes for policy inputs
   output$netPlot <- renderPlot({
     
-    first <- graphviz.chart(network$cancer.fit, type = "barprob", grid=TRUE, main="Test Network")
-    graphviz.chart(network$cancer.fit, type = "barprob", grid=TRUE, main="Test Network")
+    # TODO: DETERMINE WHY MODEL MUST BE PLOTTED TWICE TO WORK PROPERLY
+    first <- graphviz.chart(network$model.fit, type = "barprob", grid=TRUE, main="Network")
+    graphviz.chart(network$model.fit, type = "barprob", grid=TRUE, main="Network")
     
   })
-  
-  # Output Smoker Probability table
-  output$smokerHotable <- renderHotable({
-    
-  smoker() %>% mutate(Probability=Probability*100)
-        
-  }, readOnly=FALSE)
-  
-  # Output Pollution Probability table
-  output$pollutionHotable <- renderHotable({
-    
-  pollution() %>% mutate(Probability=Probability*100)
-    
-  }, readOnly=FALSE)
-  
-  # Output cancer probability table
-  output$cancerHotable <- renderHotable({
-  
-  cancer()
-    
-  }, readOnly=FALSE)
   
   # plot utility barchart for policy page
   output$utilityComparison <- renderPlot({
@@ -981,9 +896,6 @@ shinyServer(function(input, output, session) {
   
   
   
-  
-  
-  
   # Function calculates utility
   calculateUtility <- function(cancer.df, smoker.df, pollution.df){
     
@@ -1051,5 +963,6 @@ shinyServer(function(input, output, session) {
       }
     }
   )
-
+  
 })
+

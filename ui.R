@@ -59,8 +59,8 @@ dashboardPage(
       
       
       # Create Network ajdustment page
-      menuItem("Policies",
-               tabName="Policies",
+      menuItem("Advanced Policy",
+               tabName="AdvancedPolicy",
                icon=icon("calculator")),
       
       # Create Report Tab
@@ -282,91 +282,43 @@ dashboardPage(
       
       # Policy Tab
       tabItem(
-        tabName="Policies",
+        tabName="AdvancedPolicy",
         h1("Policy Selection"),
         br(),
         fluidRow(
-          column(
-            width=8,
-            fluidRow(
-              column(width=12,
-                     
-                     # Plot the bayesian network
-                     box(
-                       title="Network",
-                       collapsible=TRUE,
-                       width=NULL,
-                       plotOutput("netPlot")
-                     )
-              )
-            ),
-            fluidRow(
-              column(width=6,
-                     box(
-                       title="Pollution",
-                       hotable("pollutionHotable"),
-                       width=NULL,
-                       collapsible=TRUE,
-                       collapsed=FALSE
-                     )
-              ),
-              column(width=6,
-                     box(
-                       title="Smoker",
-                       hotable("smokerHotable"),
-                       width=NULL,
-                       collapsible=TRUE,
-                       collapsed=FALSE
-                     )
-              )
-            ),
-            fluidRow(
-              column(width=12,
-                     box(
-                       title="Cancer",
-                       radioButtons("CancerProbTable",
-                                    "Cancer Probability Table",
-                                    c("Independent Probability Table",
-                                      "Conditional Probability Table"),
-                                    selected="Independent Probability Table"),
-                       hotable("cancerHotable"),
-                       width=NULL,
-                       collapsible=TRUE,
-                       collapsed=FALSE
-                     )
-              )
-            ),
-            fluidRow(
-              column(
-                width=4,
-                textInput("policyName",
-                          label=NULL,
-                          value="Enter Policy Name...")
-              ),
-              column(width=2,
-                     style='padding:0px;',
-                     tags$style(HTML('#networkUpdate{background-color:green}')),
-                     tags$style(HTML('#networkUpdate{color:white}')),
-                     actionButton("networkUpdate",
-                                  "Add Policy", 
-                                  width='100%')
-              ),
-              column(
-                width=2,
-                offset=4,
-                tags$style(HTML('#networkReset{width: 100%')),
-                actionButton('networkReset',
-                             'Reset')
-              )
+          width=8,
+          fluidRow(
+            column(width=12,
+                   # Plot the bayesian network
+                   box(
+                     title="Network",
+                     collapsible=TRUE,
+                     width=NULL,
+                     plotOutput("netPlot")
+                   )
             )
           ),
-          column(
-            width=4,
-            box(
-              title="Policy Summary",
-              width=NULL,
-              collapsible=TRUE,
-              plotOutput("utilityComparison")
+          fluidRow(
+            column(
+              width=4,
+              textInput("policyName",
+                        label=NULL,
+                        value="Enter Policy Name...")
+            ),
+            column(width=2,
+                   style='padding:0px;',
+                   tags$style(HTML('#networkUpdate{background-color:green}')),
+                   tags$style(HTML('#networkUpdate{color:white}')),
+                   actionButton("networkUpdate",
+                                "Add Policy", 
+                                width='100%')
+            ),
+            column(
+              width=2,
+              offset=4,
+              tags$style(HTML('#networkReset{width: 100%')),
+              actionButton('networkReset',
+                           'Reset')
             )
           )
         )
