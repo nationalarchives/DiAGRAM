@@ -375,13 +375,20 @@ dashboardPage(
         tabName="Report",
         h1("Report"),
         br(),
+        div(
+          selectInput(
+            "reportTabModelSelection",
+            "Select Model",
+            choices = "TNA"
+          )
+        ),
         fluidRow(
           column(
             width=4,
             box(
               title="Summary",
               width=NULL,
-              textOutput("TextReport")
+              htmlOutput("ReportTabSummaryText")
             )
           ),
           column(
