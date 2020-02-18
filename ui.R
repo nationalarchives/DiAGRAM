@@ -301,6 +301,38 @@ dashboardPage(
           fluidRow(
             column(
               width=4,
+              selectInput("nodeProbTable",
+                          "Select Node",
+                          choices=c("nodes loading"))
+            ),
+            column(
+              width=8,
+              box(
+                title="Probability Table",
+                width=NULL,
+                column(
+                  width=4,
+                  radioButtons("probtabltype",
+                               "Table Type",
+                               choices=c("Independent Probability Table",
+                                         "Conditional Probability Table")),
+                  tags$style(HTML('#updateProb{background-color:green}')),
+                  tags$style(HTML('#updateProb{color:white}')),
+                  actionButton("updateProb",
+                               "Add Changes")
+                  
+                ),
+                column(
+                  width=8,
+                  hotable("probabilityTable")
+                )
+
+              )
+            )
+          ),
+          fluidRow(
+            column(
+              width=4,
               textInput("policyName",
                         label=NULL,
                         value="Enter Policy Name...")

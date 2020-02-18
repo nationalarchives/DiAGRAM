@@ -762,11 +762,12 @@ shinyServer(function(input, output, session) {
     }
   })
   
-  
-  
-  
+
   
   # ADVANCED POLICIES
+  
+  # add nodes to drop down list
+  
   
   # Plot network which changes for policy inputs
   output$netPlot <- renderPlot({
@@ -774,6 +775,24 @@ shinyServer(function(input, output, session) {
     # TODO: DETERMINE WHY MODEL MUST BE PLOTTED TWICE TO WORK PROPERLY
     first <- graphviz.chart(network$model.fit, type = "barprob", grid=TRUE, main="Network")
     graphviz.chart(network$model.fit, type = "barprob", grid=TRUE, main="Network")
+    
+  })
+  
+  # output probability table
+  output$probabilityTable <- renderHotable({
+    
+    if (input$probtabltype == "Conditional Probability Table") {
+      as.data.frame(stable.fit$Processing$prob)
+    } else {
+      # convert model to grain object
+      model.grain <- as.grain(network$model.fit)
+      
+      # find probability of findability and renderability
+      query.results <- querygrain(model.grain, nodes=c("Processing"))
+      
+      # return independent probability table
+      data.frame(query.results) %>% rownames_to_column()
+    }
     
   })
   
