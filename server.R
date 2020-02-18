@@ -954,31 +954,37 @@ shinyServer(function(input, output, session) {
   })
   
   # REPORT TAB
-  observeEvent(input$reportTabModelSelection, {
-    currModel <- input$reportTabModelSelection
-    
-    # constructing text for the summary section
-    summary <- paste("The", currModel, "model has", length(names(CustomPolicies$models[[currModel]])), "policy(ies) customised by the user (including base):<br/><br/>")
-    
-    # to keep track of best policy
-    maxUtility <- -99999
-    maxUtilityPolicyName <- ""
-    
-    # getting list of policies
-    for(policy in names(CustomPolicies$models[[currModel]])){
-      summary <- paste(summary, "-", policy, "<br/>")
-      policyUtility <- calculate_utility(CustomPolicies$models[[currModel]][[policy]])
-      currUtility <- policyUtility$Findability + policyUtility$Renderability 
+  
+  generateSummaryAndGraph <- 
+  
+  
+  observeEvent(input$sidebarMenu, {
+    if(input$sidebarMenu == "Report"){
+      currModel <- input$reportTabModelSelection
       
-      if(currUtility > maxUtility){
-        maxUtility <- currUtility
-        maxUtilityPolicyName <- policy
+      # constructing text for the summary section
+      summary <- paste("The", currModel, "model has", length(names(CustomPolicies$models[[currModel]])), "policy(ies) customised by the user (including base):<br/><br/>")
+      
+      # to keep track of best policy
+      maxUtility <- -99999
+      maxUtilityPolicyName <- ""
+      
+      # getting list of policies
+      for(policy in names(CustomPolicies$models[[currModel]])){
+        summary <- paste(summary, "-", policy, "<br/>")
+        policyUtility <- calculate_utility(CustomPolicies$models[[currModel]][[policy]])
+        currUtility <- policyUtility$Findability + policyUtility$Renderability 
+        
+        if(currUtility > maxUtility){
+          maxUtility <- currUtility
+          maxUtilityPolicyName <- policy
+        }
       }
+      
+      summary <- paste(summary, "<br/>", "The policy with maximum utility score for findability and renderability is: <b>", maxUtilityPolicyName, "</b>")
+      
+      output$ReportTabSummaryText <- renderText(summary)
     }
-    
-    summary <- paste(summary, "<br/>", "The policy with maximum utility score for findability and renderability is: <b>", maxUtilityPolicyName, "</b>")
-    
-    output$ReportTabSummaryText <- renderText(summary)
   })
   
   
