@@ -451,7 +451,7 @@ shinyServer(function(input, output, session) {
     if (questionValues$question_number < 6 && questionValues$question_number>=1){
       h4(strong(setup_questions[questionValues$question_number,]$node_question))
     } else {
-      h4(strong("All Questions Answered."))
+      h4(strong("All Questions Answered. Please give model a name:"))
     }
   })
   
