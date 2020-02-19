@@ -668,7 +668,7 @@ shinyServer(function(input, output, session) {
                                label=NULL,
                                choices = uiNode$checklist)
     }
-
+    
   })
   
   currModel <- reactiveValues(model=stable.fit)
@@ -826,7 +826,6 @@ shinyServer(function(input, output, session) {
     nodeStateProgress$progress <- nodeStateProgress$progress - 1
   })
   
-  
   # Add policy action
   observeEvent(input$SimpleViewAddPolicy, {
     
@@ -852,6 +851,9 @@ shinyServer(function(input, output, session) {
     for(node in input$policyTabNodesChecklist){
       # conditional probability table (cpt) of each node
       cpt <- as.data.frame(currModel$model[[node]]$prob)
+      # print(node)
+      # print(cpt)
+      # print("----------------------\n")
       
       nodeStates <- state.definitions %>%
         filter(node_name==node) %>%
@@ -903,20 +905,19 @@ shinyServer(function(input, output, session) {
       # update the model
       currModel$model[[node]] <- xtabs(formula, cpt)
       
-      # print(node)
-      # print(currModel$model[[node]]$prob)
-      
-      # Calculate the utility of the new model
-      currPolicyUtility <- calculate_utility(currModel$model)
-      
-      # update reactive policy list
-      CustomPolicies$archiveList[[input$customModelSelection]] <- CustomPolicies$archiveList[[input$customModelSelection]] %>%
-        add_row(name=input$SimpleViewPolicyName,
-                findability=currPolicyUtility$Findability,
-                renderability=currPolicyUtility$Renderability)
-      
-      CustomPolicies$models[[input$customModelSelection]][[input$SimpleViewPolicyName]] <- currModel$model
+      # print(as.data.frame(currModel$model[[node]]$prob))
     }
+    
+    # Calculate the utility of the new model
+    currPolicyUtility <- calculate_utility(currModel$model)
+    
+    # update reactive policy list
+    CustomPolicies$archiveList[[input$customModelSelection]] <- CustomPolicies$archiveList[[input$customModelSelection]] %>%
+      add_row(name=input$SimpleViewPolicyName,
+              findability=currPolicyUtility$Findability,
+              renderability=currPolicyUtility$Renderability)
+    
+    CustomPolicies$models[[input$customModelSelection]][[input$SimpleViewPolicyName]] <- currModel$model
   })
   
   
@@ -1143,4 +1144,4 @@ shinyServer(function(input, output, session) {
     }
   )
   
-  })
+})
