@@ -568,8 +568,7 @@ shinyServer(function(input, output, session) {
                                                                       renderability=utility$Renderability)
     
     # setting choices for the drop down list in the Simple view Node customisation tab
-    customModelChoices <- CustomModels$base_utility.df %>% select(name)
-    updateSelectInput(session, 'customModelSelection', choices=customModelChoices)
+    updateSelectInput(session, 'customModelSelection', choices=CustomModels$base_utility.df$name)
   })
   
   # plot utility
@@ -629,27 +628,51 @@ shinyServer(function(input, output, session) {
   uiNode <- reactiveValues(checklist=c())
   
   observeEvent(input$customOaisEntitySelection, {
-    if(input$customOaisEntitySelection == 'None'){
-      uiNode$checklist <- nodes(stable.fit)
+    oaisSelected <- TRUE
+    
+    if(length(input$customOaisEntitySelection) == 1 & input$customOaisEntitySelection[1] == 'None'){
+      uiNode$checklist <- node.definitions$node_name
+      oaisSelected <- FALSE
     }
     else{
-      tmp <- node.definitions %>%
-        filter(OAIS_Entity==input$customOaisEntitySelection) %>%
-        select(node_name)
-      
-      uiNode$checklist <- tmp$node_name
+      uiNode$checklist <- c()
+      for(oaisEntity in input$customOaisEntitySelection){
+        
+        # display error if 'None' is still selected alongwith other OAIS entities. 
+        if(oaisEntity == 'None'){
+          shinyalert("Oops!", "You can't select 'None' and other OAIS Entities together. If you wish to view features within an OAIS
+                    entity, please click on 'None' and delete/backspace, followed by selection of the desired OAIS entities", type = "error")
+          return()
+        }
+        
+        tmp <- node.definitions %>%
+          filter(OAIS_Entity==oaisEntity) %>%
+          select(node_name)
+        
+        uiNode$checklist <- c(tmp$node_name, uiNode$checklist)
+      }
     }
     
-    # update the checklist options with nodes list
-    updateCheckboxGroupInput(session,
-                             "policyTabNodesChecklist",
-                             label=NULL,
-                             choices = uiNode$checklist)
+    # auto-select all the nodes in checklist if any 'non-None' OAIS entity is selected
+    if(oaisSelected == TRUE){
+      # update the checklist options with nodes list
+      updateCheckboxGroupInput(session,
+                               "policyTabNodesChecklist",
+                               label=NULL,
+                               choices = uiNode$checklist, 
+                               selected = uiNode$checklist)
+    }
+    else{
+      updateCheckboxGroupInput(session,
+                               "policyTabNodesChecklist",
+                               label=NULL,
+                               choices = uiNode$checklist)
+    }
+
   })
   
   currModel <- reactiveValues(model=stable.fit)
   uiNodeSlider <- reactiveValues(node=c())
-  i <- 0
   nodeStateProgress <- reactiveValues(progress=0)
   
   # make the necessary changes when the model is changed from dropdown menu
@@ -809,7 +832,6 @@ shinyServer(function(input, output, session) {
     
     # check for input correctness of the last selected node
     lastNode <- input$policyTabNodesChecklist[[nodeStateProgress$progress]]
-    
     if(checkForInputCorrectness(lastNode) == FALSE){
       return()
     }
@@ -868,28 +890,6 @@ shinyServer(function(input, output, session) {
         }
       }
       
-      
-      # Display a pop-up when the probabilities don't add up to 1.0 (divided by 100)
-      # print(currSumOfProbabilities)
-      # if(currSumOfProbabilities != 1){
-      #   print(currSumOfProbabilities)
-      # 
-      #   isProbabilityMismatchError = TRUE
-      # 
-      #   #TODO: make it a function since it is also used in output$policyTabNodesSlider
-      # 
-      #   # remove the _ from the node to ease readability
-      #   nodeLabel <- strsplit(node, split = "_", fixed = TRUE)
-      #   nodeLabel <- paste(nodeLabel[[1]], collapse = ' ')
-      # 
-      #   errorMsg <- paste("Probabilities for '", nodeLabel, "' does not add upto to 1.0")
-      #   shinyalert("Oops!", errorMsg, type = "error")
-      # 
-      #   break
-      # }
-      # else
-      
-      
       # Updating the model
       # The data frame should be converted to a contigency and then the model is updated.
       # The table should be Freq~'all other columns'
@@ -903,7 +903,8 @@ shinyServer(function(input, output, session) {
       # update the model
       currModel$model[[node]] <- xtabs(formula, cpt)
       
-      print(currModel$model[[node]]$prob)
+      # print(node)
+      # print(currModel$model[[node]]$prob)
       
       # Calculate the utility of the new model
       currPolicyUtility <- calculate_utility(currModel$model)
@@ -917,23 +918,6 @@ shinyServer(function(input, output, session) {
       CustomPolicies$models[[input$customModelSelection]][[input$SimpleViewPolicyName]] <- currModel$model
     }
   })
-  
-  
-  # if(isProbabilityMismatchError == FALSE)
-  # {
-  #   # Calculate the utility of the new model
-  #   currPolicyUtility <- calculate_utility(currModel$model)
-  #   
-  #   # update reactive policy list
-  #   CustomPolicies$archiveList[[input$customModelSelection]] <- CustomPolicies$archiveList[[input$customModelSelection]] %>%
-  #     add_row(name=input$SimpleViewPolicyName,
-  #             findability=currPolicyUtility$Findability,
-  #             renderability=currPolicyUtility$Renderability)
-  #   
-  #   CustomPolicies$models[[input$customModelSelection]][[input$SimpleViewPolicyName]] <- currModel$model
-  # }
-  
-  
   
   
   
@@ -1056,6 +1040,7 @@ shinyServer(function(input, output, session) {
   })
   
   # REPORT TAB
+  
   # Plot network for report page
   output$ReportModel <- renderPlot({
     

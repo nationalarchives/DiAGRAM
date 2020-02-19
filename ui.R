@@ -225,7 +225,8 @@ dashboardPage(
             width = 3,
             selectInput("customOaisEntitySelection",
                         "Select OAIS Function Entity",
-                        choices="None")
+                        choices="None", 
+                        multiple = TRUE)
           )
         ),
         fluidRow(
