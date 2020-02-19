@@ -50,7 +50,7 @@ shinyServer(function(input, output, session) {
     for(state in states){
       inputId <- paste(node, state, sep = "-")
       label <- paste(state, "(%)")
-      nodeStateSlider[[j]] <- sliderInput(inputId, label, min = 0, max = 100, step = 10, value = 0, post = "%")
+      nodeStateSlider[[j]] <- sliderInput(inputId, label, min = 0, max = 100, step = 1, value = 0, post = "%")
       
       j <- j+1
     }
@@ -392,7 +392,7 @@ shinyServer(function(input, output, session) {
         fluidRow(
           column(
             width=5,
-            sliderInput(inputId, label, min = 0, max = 100, step = 10, value = 0, post = "%")
+            sliderInput(inputId, label, min = 0, max = 100, step = 1, value = 0, post = "%")
           )
         ),
         fluidRow(
