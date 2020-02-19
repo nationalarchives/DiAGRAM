@@ -643,7 +643,6 @@ shinyServer(function(input, output, session) {
       # update probability table for node
       custom_model[[node]] = model.probability.table
     }
-    print(custom_model)
     # Add custom network to memory 
     CustomModels$custom_network[[input$CustomisedModelName]] = custom_model
     CustomPolicies$models[[input$CustomisedModelName]] = list('Base'=custom_model)
