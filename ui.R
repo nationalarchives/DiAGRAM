@@ -53,8 +53,8 @@ dashboardPage(
                tabName = "SimpleView",
                menuSubItem("Customise Model",
                            tabName="CustomiseModel"),
-               menuSubItem("Customize Nodes", 
-                            tabName = "CustomizeNode")
+               menuSubItem("Customise Nodes", 
+                            tabName = "CustomiseNode")
                ),
       
       
@@ -211,7 +211,7 @@ dashboardPage(
       # TODO:sid - change policyTab identifier to the most appropriate (once decided)
       tabItem(
         useShinyalert(),
-        tabName="CustomizeNode",
+        tabName="CustomiseNode",
         h1("Policy Selection Support"),
         br(),
         fluidRow(

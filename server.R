@@ -115,6 +115,8 @@ shinyServer(function(input, output, session) {
     model.probability.table <- xtabs(Freq~., model.probability.df)
     return(model.probability.table)
   }
+  
+  
   # STATIC VALUES
   stable.fit <- read.bif("Model.bif")
   
@@ -146,16 +148,16 @@ shinyServer(function(input, output, session) {
   
   # Customised models
   CustomModels <- reactiveValues(base_utility.df=tibble(name="TNA",
-                                                 findability=tna_utility$Findability,
-                                                 renderability=tna_utility$Renderability),
+                                                        findability=tna_utility$Findability,
+                                                        renderability=tna_utility$Renderability),
                                  custom_networks=list("TNA"=stable.fit))
   
   customModelChoices <- c('TNA')
   
   # Customised Policies
   CustomPolicies <- reactiveValues(archiveList=list("TNA"= tibble(name="TNA",
-                                                    findability=tna_utility$Findability,
-                                                    renderability=tna_utility$Renderability)),
+                                                                  findability=tna_utility$Findability,
+                                                                  renderability=tna_utility$Renderability)),
                                    models=list("TNA"=list("Base"=stable.fit)))
   
   
@@ -256,9 +258,9 @@ shinyServer(function(input, output, session) {
   output$NodeDefinition <- renderUI({
     
     definition <- node.definitions %>% 
-                  filter(node_name==input$NodeSelection) %>%
-                  select(node_definition) %>%
-                  as.character()
+      filter(node_name==input$NodeSelection) %>%
+      select(node_definition) %>%
+      as.character()
     
     tagList(strong("Definition: "), definition)
     
@@ -269,9 +271,9 @@ shinyServer(function(input, output, session) {
   output$DataLink <- renderUI({
     
     url <- node.definitions %>% 
-           filter(node_name==input$NodeSelection) %>%
-           select(data_source) %>%
-           as.character()
+      filter(node_name==input$NodeSelection) %>%
+      select(data_source) %>%
+      as.character()
     
     url <- a(input$NodeSelection, href=url)
     
@@ -283,9 +285,9 @@ shinyServer(function(input, output, session) {
   output$DataYear <- renderUI({
     
     year <- node.definitions %>% 
-            filter(node_name==input$NodeSelection) %>%
-            select(node_year) %>%
-            as.character()
+      filter(node_name==input$NodeSelection) %>%
+      select(node_year) %>%
+      as.character()
     
     tagList(strong("Data last updated: "), year)
     
@@ -311,8 +313,8 @@ shinyServer(function(input, output, session) {
   
   # retrieve states associated with the first node
   first_states <- state.definitions %>%
-                  filter(node_name==first_node) %>%
-                  select(node_state)
+    filter(node_name==first_node) %>%
+    select(node_state)
   
   # Create user input UI which is at the bottom of the box
   output$CustomisationInput <- renderUI({
@@ -334,29 +336,29 @@ shinyServer(function(input, output, session) {
         select(node_state)
       
       rendered_element <- div(
-                            fluidRow(
-                              column(
-                                width=5,
-                                create_sliders(next_node, next_states$node_state)
-                              )
-                            ),
-                            fluidRow(
-                              column(
-                                width=2,
-                                tags$style(HTML('#NextQuestion{background-color:green}')),
-                                tags$style(HTML('#NextQuestion{color:white}')),
-                                tags$style(HTML('#NextQuestion{width:100%}')),
-                                actionButton("NextQuestion", "Next")
-                              ),
-                              column(
-                                width=2,
-                                tags$style(HTML('#BackButton{background-color:grey}')),
-                                tags$style(HTML('#BackButton{color:white}')),
-                                tags$style(HTML('#BackButton{width:100%')),
-                                actionButton("BackButton", "Back")
-                              )
-                            )
-                          )
+        fluidRow(
+          column(
+            width=5,
+            create_sliders(next_node, next_states$node_state)
+          )
+        ),
+        fluidRow(
+          column(
+            width=2,
+            tags$style(HTML('#NextQuestion{background-color:green}')),
+            tags$style(HTML('#NextQuestion{color:white}')),
+            tags$style(HTML('#NextQuestion{width:100%}')),
+            actionButton("NextQuestion", "Next")
+          ),
+          column(
+            width=2,
+            tags$style(HTML('#BackButton{background-color:grey}')),
+            tags$style(HTML('#BackButton{color:white}')),
+            tags$style(HTML('#BackButton{width:100%')),
+            actionButton("BackButton", "Back")
+          )
+        )
+      )
     } else if(questionValues$question_number < 6  && input_type=="radiobuttons") {
       
       # collect next node name
@@ -365,19 +367,19 @@ shinyServer(function(input, output, session) {
       # if node is equal to Copy_protocol, add description
       if (next_node == "Copy_protocol"){
         text_description <- column(
-                              width=5,
-                              tags$ol(
-                                tags$li("The archive has multiple independent copies of the
+          width=5,
+          tags$ol(
+            tags$li("The archive has multiple independent copies of the
                                          digital materials."),
-                                tags$li("Copies are geographically separated
+            tags$li("Copies are geographically separated
                                          into different locations."),
-                                tags$li("Copies use different storage technologies."),
-                                tags$li("Copies use a combination of online and
+            tags$li("Copies use different storage technologies."),
+            tags$li("Copies use a combination of online and
                                          offline storage techniques."),
-                                tags$li("Storage is actively monitored to ensure any
+            tags$li("Storage is actively monitored to ensure any
                                          problems are detected and corrected quickly.")
-                              )
-                            )
+          )
+        )
       } else{
         text_description <- column(width=5)
       }
@@ -414,31 +416,29 @@ shinyServer(function(input, output, session) {
       )
     } else {
       rendered_element <- fluidRow(
-                            column(
-                              width=3,
-                              textInput(
-                                inputId="CustomisedModelName",
-                                label=NULL
-                              ),
-                            ),  
-                            column(
-                              width=2,
-                              tags$style(HTML('#SaveModel{background-color:green}')),
-                              tags$style(HTML('#SaveModel{color:white}')),
-                              actionButton("SaveModel",
-                                           "Save Model")
-                              ),
-                            column(
-                              width=1,
-                              offset=5,
-                              tags$style(HTML('#AddNew{background-color:grey}')),
-                              tags$style(HTML('#AddNew{color:white}')),
-                              actionButton("AddNew",
-                                           "Create New Model")
-                            )
-                            )
-
-                          
+        column(
+          width=3,
+          textInput(
+            inputId="CustomisedModelName",
+            label=NULL
+          ),
+        ),  
+        column(
+          width=2,
+          tags$style(HTML('#SaveModel{background-color:green}')),
+          tags$style(HTML('#SaveModel{color:white}')),
+          actionButton("SaveModel",
+                       "Save Model")
+        ),
+        column(
+          width=1,
+          offset=5,
+          tags$style(HTML('#AddNew{background-color:grey}')),
+          tags$style(HTML('#AddNew{color:white}')),
+          actionButton("AddNew",
+                       "Create New Model")
+        )
+      )
     }
     rendered_element
   })
@@ -472,7 +472,7 @@ shinyServer(function(input, output, session) {
       # collcet input probabilities and check the sum
       input.probabilities <- collect_slider_inputs(node_name)
       prob.summary <- input.probabilities %>% summarise(prob_sum=sum(probability))
-
+      
       # if sum of probability is not 100 alert user and break out of function
       if (prob.summary$prob_sum != 100){
         errorMsg <- paste("Probabilities for '", node_name, "' do not add up to to 100%")
@@ -515,11 +515,11 @@ shinyServer(function(input, output, session) {
       } else if (input_type == "slider"){
         answers$slider_answers[[node_name]] = NULL
       }
-
+      
       # update question number
       questionValues$question_number <- questionValues$question_number - 1
     }
-
+    
     if (questionValues$question_number >= 1) {
       
       # update progress bar
@@ -560,12 +560,12 @@ shinyServer(function(input, output, session) {
     # calculate utility and store
     utility <- calculate_utility(custom_model)
     CustomModels$base_utility.df <- CustomModels$base_utility.df %>% add_row(name=input$CustomisedModelName,
-                                                                              findability=utility$Findability,
-                                                                              renderability=utility$Renderability)
+                                                                             findability=utility$Findability,
+                                                                             renderability=utility$Renderability)
     # TODO: Why do we have two structures saving the same information?
     CustomPolicies$archiveList[[input$CustomisedModelName]] <- tibble(name=input$CustomisedModelName,
-                                         findability=utility$Findability,
-                                         renderability=utility$Renderability)
+                                                                      findability=utility$Findability,
+                                                                      renderability=utility$Renderability)
     
     # setting choices for the drop down list in the Simple view Node customisation tab
     customModelChoices <- CustomModels$base_utility.df %>% select(name)
@@ -576,10 +576,10 @@ shinyServer(function(input, output, session) {
   output$BasicUtilityComparison <- renderPlot({
     
     CustomModels$base_utility.df %>%
-    mutate(utility=findability+renderability) %>% 
-    pivot_longer(c(findability, renderability), names_to="node") %>%
-    ggplot(aes(x=name, fill=node, y=value)) +
-    geom_bar(position="stack", stat="identity")
+      mutate(utility=findability+renderability) %>% 
+      pivot_longer(c(findability, renderability), names_to="node") %>%
+      ggplot(aes(x=name, fill=node, y=value)) +
+      geom_bar(position="stack", stat="identity")
   })
   
   # Reset so new custom model can be created
@@ -649,7 +649,7 @@ shinyServer(function(input, output, session) {
   
   currModel <- reactiveValues(model=stable.fit)
   uiNodeSlider <- reactiveValues(node=c())
-  totalNumberOfNode <- reactiveValues(i=0)
+  i <- 0
   nodeStateProgress <- reactiveValues(progress=0)
   
   # make the necessary changes when the model is changed from dropdown menu
@@ -666,11 +666,11 @@ shinyServer(function(input, output, session) {
     # reset the progress for selected model
     nodeStateProgress$progress <- 0
     uiNodeSlider$node <- c()
- })
+  })
   
   # observe the input for checklist to update uiNodeSlider$node with respective states
   observeEvent(input$policyTabNodesChecklist, {
-    totalNumberOfNode$i <- 1
+    i <- 1
     uiNodeSlider$node <- c()
     nodeStateProgress$progress <- 1
     
@@ -684,24 +684,22 @@ shinyServer(function(input, output, session) {
       nodeStateType <- node.definitions %>% filter(node_name==node) %>% select(type)
       
       if(nodeStateType == 'BooleanSlider'){
-        
         nodeStateSlider <- sliderInput(node, "True (%)", min = 0, max = 100, step = 10, value = 0, post = "%")
       }
       else if(nodeStateType == "slider"){
         nodeStateSlider <- create_sliders(node, nodeStates$node_state)
       }
       else{ ## radio buttons
-        nodeStateSlider <- radioButtons(node, label=NULL, choices=nodeStates$node_state)
+        nodeStateSlider <- radioButtons(node, label="", choices=nodeStates$node_state)
       }
-      
       
       # remove the _ from the node to ease readability
       nodeLabel <- strsplit(node, split = "_", fixed = TRUE)
       nodeLabel <- paste(nodeLabel[[1]], collapse = ' ')
       
       # list of nodes with corresponding state sliders
-      uiNodeSlider$node[[totalNumberOfNode$i]] <- div(h4(nodeLabel), nodeStateSlider )
-      totalNumberOfNode$i <- totalNumberOfNode$i+1
+      uiNodeSlider$node[[i]] <- div(h4(nodeLabel), nodeStateSlider )
+      i <- i+1
     }
   })
   
@@ -753,8 +751,52 @@ shinyServer(function(input, output, session) {
     }
   })
   
+  # method to check for the correctness of the input -- specifically for slider input of all states == 100
+  checkForInputCorrectness <- function(node) {
+    nodeStates <- state.definitions %>%
+      filter(node_name==node) %>%
+      select(-node_name)
+    
+    nodeStateType <- node.definitions %>% filter(node_name==node) %>% select(type)
+    
+    # sum to 100 is important when the input type is slider. For boolean slider and radio buttons, it is always equal to 100
+    if(nodeStateType == 'slider'){
+      
+      # getting the total probability for slider input of each state
+      currSumOfProbabilities <- 0
+      for(state in nodeStates$node_state){
+        currId = paste(node, state, sep ="-")
+        currSumOfProbabilities <- currSumOfProbabilities +  input[[currId]]
+      }
+      
+      if(currSumOfProbabilities != 100){
+        # remove the _ from the node to ease readability
+        nodeLabel <- strsplit(node, split = "_", fixed = TRUE)
+        nodeLabel <- paste(nodeLabel[[1]], collapse = ' ')
+        
+        errorMsg <- paste("Probabilities for '", nodeLabel, "' does not add upto to 100")
+        shinyalert("Oops!", errorMsg, type = "error")
+        
+        return(FALSE)
+      }
+      else{
+        return(TRUE)
+      }
+    }
+    else {
+      return(TRUE)
+    }
+    
+  }
+  
+  
   observeEvent(input$SimpleViewPolicyNext, {
-    nodeStateProgress$progress <- nodeStateProgress$progress + 1
+    node <- input$policyTabNodesChecklist[[nodeStateProgress$progress]]
+    
+    if(checkForInputCorrectness(node) == TRUE){
+      nodeStateProgress$progress <- nodeStateProgress$progress + 1
+    }
+    
   })
   
   observeEvent(input$SimpleViewPolicyPrevious, {
@@ -764,20 +806,38 @@ shinyServer(function(input, output, session) {
   
   # Add policy action
   observeEvent(input$SimpleViewAddPolicy, {
-    isProbabilityMismatchError <- TRUE
+    
+    # check for input correctness of the last selected node
+    lastNode <- input$policyTabNodesChecklist[[nodeStateProgress$progress]]
+    
+    if(checkForInputCorrectness(lastNode) == FALSE){
+      return()
+    }
+    
+    if(input$SimpleViewPolicyName == ""){
+      shinyalert("Oops!", "Please provide a policy name", type = "error")
+      return()
+    }
+    
+    for(existingPolicyModel in names(CustomPolicies$models[[input$customModelSelection]])){
+      if(input$SimpleViewPolicyName == existingPolicyModel){
+        shinyalert("Oops!", "Policy name already exists", type = "error")
+        return()
+      }
+    }
+    
     
     for(node in input$policyTabNodesChecklist){
       # conditional probability table (cpt) of each node
-      cpt <- as.data.frame(stable.fit[[node]]$prob)
+      cpt <- as.data.frame(currModel$model[[node]]$prob)
       
       nodeStates <- state.definitions %>%
         filter(node_name==node) %>%
         select(-node_name)
       
-      currSumOfProbabilities <- 0
-      
       nodeStateType <- node.definitions %>% filter(node_name==node) %>% select(type)
       
+      # extract and set the values in CPT based on the input type -- BooleanSlider, slider, radiobutton
       if(nodeStateType == 'BooleanSlider'){
         # update cpt for the True state as the single slider signifies input for True %
         index <- cpt[[node]] == 'True'
@@ -794,7 +854,6 @@ shinyServer(function(input, output, session) {
           
           
           cpt$Freq[index] <- input[[currId]]/100
-          currSumOfProbabilities <- currSumOfProbabilities +  input[[currId]]/100
         }
       }
       else{ ## radio buttons
@@ -809,52 +868,43 @@ shinyServer(function(input, output, session) {
         }
       }
       
-      print(cpt)
-      
-
       
       # Display a pop-up when the probabilities don't add up to 1.0 (divided by 100)
-      
-      # if(currSumOfProbabilities != 1.0){
+      # print(currSumOfProbabilities)
+      # if(currSumOfProbabilities != 1){
+      #   print(currSumOfProbabilities)
+      # 
       #   isProbabilityMismatchError = TRUE
-      #   
+      # 
       #   #TODO: make it a function since it is also used in output$policyTabNodesSlider
-      #   
+      # 
       #   # remove the _ from the node to ease readability
       #   nodeLabel <- strsplit(node, split = "_", fixed = TRUE)
       #   nodeLabel <- paste(nodeLabel[[1]], collapse = ' ')
-      #   
+      # 
       #   errorMsg <- paste("Probabilities for '", nodeLabel, "' does not add upto to 1.0")
       #   shinyalert("Oops!", errorMsg, type = "error")
-      #   
+      # 
       #   break
       # }
-      # else 
-        if(input$SimpleViewPolicyName == ""){
-        isProbabilityMismatchError = TRUE
-        
-        shinyalert("Oops!", "Please provide a policy name", type = "error")
-      }
-      else{
-        isProbabilityMismatchError = FALSE
-        
-        # Updating the model
-        # The data frame should be converted to a contigency and then the model is updated.
-        # The table should be Freq~'all other columns'
-        
-        # get the column names excluding frequency
-        cptFactors <- colnames(cpt)[1:length(colnames(cpt))-1]
-        
-        # formula for xtabs
-        formula <- paste('Freq~', paste(cptFactors, collapse = "+"), sep="")
-        
-        # update the model
-        currModel$model[[node]] <- xtabs(formula, cpt)
-      }
-    }
-    
-    if(isProbabilityMismatchError == FALSE)
-    {
+      # else
+      
+      
+      # Updating the model
+      # The data frame should be converted to a contigency and then the model is updated.
+      # The table should be Freq~'all other columns'
+      
+      # get the column names excluding frequency
+      cptFactors <- colnames(cpt)[1:length(colnames(cpt))-1]
+      
+      # formula for xtabs
+      formula <- paste('Freq~', paste(cptFactors, collapse = "+"), sep="")
+      
+      # update the model
+      currModel$model[[node]] <- xtabs(formula, cpt)
+      
+      print(currModel$model[[node]]$prob)
+      
       # Calculate the utility of the new model
       currPolicyUtility <- calculate_utility(currModel$model)
       
@@ -867,6 +917,21 @@ shinyServer(function(input, output, session) {
       CustomPolicies$models[[input$customModelSelection]][[input$SimpleViewPolicyName]] <- currModel$model
     }
   })
+  
+  
+  # if(isProbabilityMismatchError == FALSE)
+  # {
+  #   # Calculate the utility of the new model
+  #   currPolicyUtility <- calculate_utility(currModel$model)
+  #   
+  #   # update reactive policy list
+  #   CustomPolicies$archiveList[[input$customModelSelection]] <- CustomPolicies$archiveList[[input$customModelSelection]] %>%
+  #     add_row(name=input$SimpleViewPolicyName,
+  #             findability=currPolicyUtility$Findability,
+  #             renderability=currPolicyUtility$Renderability)
+  #   
+  #   CustomPolicies$models[[input$customModelSelection]][[input$SimpleViewPolicyName]] <- currModel$model
+  # }
   
   
   
@@ -885,21 +950,21 @@ shinyServer(function(input, output, session) {
   # Output Smoker Probability table
   output$smokerHotable <- renderHotable({
     
-  smoker() %>% mutate(Probability=Probability*100)
-        
+    smoker() %>% mutate(Probability=Probability*100)
+    
   }, readOnly=FALSE)
   
   # Output Pollution Probability table
   output$pollutionHotable <- renderHotable({
     
-  pollution() %>% mutate(Probability=Probability*100)
+    pollution() %>% mutate(Probability=Probability*100)
     
   }, readOnly=FALSE)
   
   # Output cancer probability table
   output$cancerHotable <- renderHotable({
-  
-  cancer()
+    
+    cancer()
     
   }, readOnly=FALSE)
   
@@ -1030,13 +1095,13 @@ shinyServer(function(input, output, session) {
     
     cancer.true <- cancer.df %>% filter(Cancer == "True")
     cancer.prob <- cancer.true %>% 
-                   left_join(smoker.df, by="Smoker") %>% 
-                   left_join(pollution.df, by="Pollution") %>%
-                   rename(CancerProb=Probability.x,
-                          SmokerProb=Probability.y,
-                          PollutionProb=Probability) %>%
-                   mutate(SummedProb = CancerProb*SmokerProb*PollutionProb) %>%
-                   summarise(TotalProb = 1- sum(SummedProb))
+      left_join(smoker.df, by="Smoker") %>% 
+      left_join(pollution.df, by="Pollution") %>%
+      rename(CancerProb=Probability.x,
+             SmokerProb=Probability.y,
+             PollutionProb=Probability) %>%
+      mutate(SummedProb = CancerProb*SmokerProb*PollutionProb) %>%
+      summarise(TotalProb = 1- sum(SummedProb))
     
     return(cancer.prob)
   }
@@ -1059,7 +1124,7 @@ shinyServer(function(input, output, session) {
   
   # Download selected files
   output$Download <- downloadHandler(
-
+    
     filename = function() {
       paste0(input$policySelection, ".zip")
     },
@@ -1078,7 +1143,7 @@ shinyServer(function(input, output, session) {
         print(utility.plot())
         dev.off()
       }
-    
+      
       
       # create zip file to return
       filenames <- c(paste0(input$policySelection, ".bif"),
@@ -1092,5 +1157,5 @@ shinyServer(function(input, output, session) {
       }
     }
   )
-
-})
+  
+  })
