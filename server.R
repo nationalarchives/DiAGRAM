@@ -799,7 +799,7 @@ shinyServer(function(input, output, session) {
       nodeStateType <- node.definitions %>% filter(node_name==node) %>% select(type)
       
       if(nodeStateType == 'BooleanSlider'){
-        nodeStateSlider <- sliderInput(node, "True (%)", min = 0, max = 100, step = 10, value = 0, post = "%")
+        nodeStateSlider <- sliderInput(node, "True (%)", min = 0, max = 100, step = 1, value = 0, post = "%")
       }
       else if(nodeStateType == "slider"){
         nodeStateSlider <- create_sliders(node, nodeStates$node_state)
@@ -1133,6 +1133,13 @@ shinyServer(function(input, output, session) {
   })
   
   # REPORT TAB
+  
+  observeEvent(input$sidebarMenu, {
+    if(input$sidebarMenu == 'CustomiseNode'){
+      shinyalert("Please select the model for your archive. If you skipped step 1 - 'Customise Model', please create a model for your own archive by navigating to the tab 
+                 '1. Customise Model'", type = "info")
+    }
+  })
   
   # Plot network for report page
   output$ReportModel <- renderPlot({

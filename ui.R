@@ -48,14 +48,18 @@ dashboardPage(
                tabName="Node_Definitions",
                icon=icon("globe")),
       
+      # Customise model tab
+      menuItem("1. Customise Model",
+               tabName="CustomiseModel"),
+      
       # Simple View Page
-      menuItem("Simple View",
-               tabName = "SimpleView",
-               menuSubItem("Customise Model",
-                           tabName="CustomiseModel"),
-               menuSubItem("Customise Nodes", 
-                            tabName = "CustomiseNode")
-               ),
+      menuItem("2. Policy",
+               tabName = "PolicyView",
+               menuSubItem("Simple Customisation", 
+                           tabName = "CustomiseNode"),
+               menuSubItem("Advanced Customisation", 
+                           tabName = "AdvancedCustomiseNode")
+      ),
       
       
       # Create Network ajdustment page
