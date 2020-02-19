@@ -59,6 +59,7 @@ shinyServer(function(input, output, session) {
     return(nodeStateSlider)
   }
   
+  
   # Function collects inputs from generated sliders and combines into dataframe
   collect_slider_inputs <- function(name){
     # create input ids to access slider information
@@ -90,13 +91,36 @@ shinyServer(function(input, output, session) {
     return(tibble(state=states, probability=probabilities))
   }
   
+  # Function collects inputs from Boolean sliders and combines into dataframe
+  collect_boolean_slider_inputs <- function(name){
+    
+    # collect states of the node
+    next_states <- state.definitions %>%
+      filter(node_name==name) %>%
+      select(node_state)
+    
+    # collect primary and secondary state
+    primary_state <- next_states$node_state[1]
+    secondary_state <- next_states$node_state[2]
+    
+    # create input id
+    inputId <- paste(name, primary_state, sep="-")
+    
+    # collect probabilities
+    primary_prob <- input[[inputId]]
+    secondary_prob <- 100 - primary_prob
+    
+    # return tibble of probabilities
+    return(tibble(state=c(primary_state, secondary_state),
+                  probability=c(primary_prob, secondary_prob)))
+  }
+  
   # Function updates probability tables of model with user inputs
   update_probability <- function(node, model.probability.df, input.probability.df){
     
     # collect node states and corresponding probabilities
     node_states <- input.probability.df$state
     state_probabilities <- input.probability.df$probability
-    
     # iterate through states and update model probability table
     i <- 1
     for (state in node_states){
@@ -142,7 +166,8 @@ shinyServer(function(input, output, session) {
   
   # Create vector to store answers to questions
   answers <- reactiveValues(radio_answers=list(),
-                            slider_answers=list())
+                            slider_answers=list(),
+                            boolean_slider_answers=list())
   
   # Customised models
   CustomModels <- reactiveValues(base_utility.df=tibble(name="TNA",
@@ -317,27 +342,31 @@ shinyServer(function(input, output, session) {
   # Create user input UI which is at the bottom of the box
   output$CustomisationInput <- renderUI({
     
+    # collect next node questions
+    next_node_name <- setup_questions[questionValues$question_number,]$node_name
+    
     # collect type of input, radiobutton or slider
-    input_type <- setup_questions[questionValues$question_number,]$type
+    next_node <- node.definitions %>% 
+                 filter(node_name==next_node_name)
+    number_of_questions <- nrow(setup_questions)
     
     # If all questions have not been answered yet render next button
-    # TODO: make this more dynamic for situations where they add questions
     # If input type is slider, render multiple sliders for the different input states
-    if (questionValues$question_number < 6  && input_type=="slider") {
+    if (questionValues$question_number < number_of_questions+1 && next_node$type=="slider") {
       
       # collect next node name
-      next_node <- setup_questions[questionValues$question_number,]$node_name
+      # next_node <- setup_questions[questionValues$question_number,]$node_name
       
       # collect states of the next node
       next_states <- state.definitions %>%
-        filter(node_name==next_node) %>%
+        filter(node_name==next_node$node_name) %>%
         select(node_state)
       
       rendered_element <- div(
                             fluidRow(
                               column(
                                 width=5,
-                                create_sliders(next_node, next_states$node_state)
+                                create_sliders(next_node$node_name, next_states$node_state)
                               )
                             ),
                             fluidRow(
@@ -357,13 +386,13 @@ shinyServer(function(input, output, session) {
                               )
                             )
                           )
-    } else if(questionValues$question_number < 6  && input_type=="radiobuttons") {
+    } else if(questionValues$question_number < number_of_questions+1 && next_node$type=="radiobuttons") {
       
       # collect next node name
-      next_node <- setup_questions[questionValues$question_number,]$node_name
+      # next_node <- setup_questions[questionValues$question_number,]$node_name
       
       # if node is equal to Copy_protocol, add description
-      if (next_node == "Copy_protocol"){
+      if (next_node$node_name == "Copy_protocol"){
         text_description <- column(
                               width=5,
                               tags$ol(
@@ -384,7 +413,7 @@ shinyServer(function(input, output, session) {
       
       # collect states of the next node
       next_states <- state.definitions %>%
-        filter(node_name==next_node) %>%
+        filter(node_name==next_node$node_name) %>%
         select(node_state)
       
       rendered_element <- div(
@@ -412,6 +441,43 @@ shinyServer(function(input, output, session) {
           )
         )
       )
+    } else if (questionValues$question_number < number_of_questions+1 && next_node$type=="BooleanSlider"){
+
+      # collect states of the next node
+      next_states <- state.definitions %>%
+        filter(node_name==next_node$node_name) %>%
+        select(node_state)
+      
+      # collect primary state
+      primary_state <- next_states$node_state[1]
+      inputId <- paste(next_node$node_name, primary_state, sep="-")
+      label <- paste(primary_state, "%")
+      
+      rendered_element <- div(
+        fluidRow(
+          column(
+            width=5,
+            sliderInput(inputId, label, min = 0, max = 100, step = 10, value = 0, post = "%")
+          )
+        ),
+        fluidRow(
+          column(
+            width=2,
+            tags$style(HTML('#NextQuestion{background-color:green}')),
+            tags$style(HTML('#NextQuestion{color:white}')),
+            tags$style(HTML('#NextQuestion{width:100%}')),
+            actionButton("NextQuestion", "Next")
+          ),
+          column(
+            width=2,
+            tags$style(HTML('#BackButton{background-color:grey}')),
+            tags$style(HTML('#BackButton{color:white}')),
+            tags$style(HTML('#BackButton{width:100%')),
+            actionButton("BackButton", "Back")
+          )
+        )
+      )
+      
     } else {
       rendered_element <- fluidRow(
                             column(
@@ -457,32 +523,36 @@ shinyServer(function(input, output, session) {
   # Update question when next question button is pressed
   observeEvent(input$NextQuestion, {
     
-    # collect input type, whether radio button or slider
-    input_type <- setup_questions[questionValues$question_number,]$type
+    # collect next node question
+    next_node_name <- setup_questions[questionValues$question_number,]$node_name
     
-    # collect node name
-    node_name <- setup_questions[questionValues$question_number,]$node_name
+    # collect information on node
+    next_node <- node.definitions %>%
+                 filter(node_name==next_node_name)
     
     # add state to answer vector
     # if radio button, add to radio button answers
-    if (input_type == "radiobuttons") {
-      answers$radio_answers[[node_name]] = input$StateSelection
+    if (next_node$type == "radiobuttons") {
+      answers$radio_answers[[next_node$node_name]] = input$StateSelection
       
-    } else if (input_type == "slider") {
+    } else if (next_node$type == "slider") {
       # collcet input probabilities and check the sum
-      input.probabilities <- collect_slider_inputs(node_name)
+      input.probabilities <- collect_slider_inputs(next_node$node_name)
       prob.summary <- input.probabilities %>% summarise(prob_sum=sum(probability))
 
       # if sum of probability is not 100 alert user and break out of function
       if (prob.summary$prob_sum != 100){
-        errorMsg <- paste("Probabilities for '", node_name, "' do not add up to to 100%")
+        errorMsg <- paste("Probabilities for '", next_node$node_name, "' do not add up to to 100%")
         shinyalert("Oops!", errorMsg, type = "error")
         
         return()
         
       } else {
-        answers$slider_answers[[node_name]] = input.probabilities
+        answers$slider_answers[[next_node$node_name]] = input.probabilities
       }
+    } else if (next_node$type == "BooleanSlider"){
+      input.probabilities<- collect_boolean_slider_inputs(next_node$node_name)
+      answers$boolean_slider_answers[[next_node$node_name]] = input.probabilities
     }
     
     # update progress bar
@@ -534,6 +604,20 @@ shinyServer(function(input, output, session) {
   
   # Save model to memory
   observeEvent(input$SaveModel, {
+    # Check if model has been named correctly
+    if (input$CustomisedModelName == "") {
+      errorMsg <-"Please give your custom model a name!"
+      shinyalert("Oops!", errorMsg, type = "error")
+      
+      return()
+    }
+    
+    if (input$CustomisedModelName %in% names(CustomModels$custom_network)){
+      errorMsg <-"You have already used this name for another custom model!"
+      shinyalert("Oops!", errorMsg, type = "error")
+      
+      return()
+    }
     # create custom model and save to memory
     # first update inputs from radio buttons
     custom_model <- mutilated(stable.fit, evidence=answers$radio_answers)
@@ -542,17 +626,24 @@ shinyServer(function(input, output, session) {
     for (node in names(answers$slider_answers)) {
       input.probability.df <- answers$slider_answers[[node]]
       model.probability.df <- as.data.frame(custom_model[[node]]$prob)
-      
-      # if one of the columns is Var1 change to node name
-      if ("Var1" %in% colnames(model.probability.df)) {
-        model.probability.df <- rename(model.probability.df, !!node:=Var1)
-      }
       model.probability.table <- update_probability(node, model.probability.df, input.probability.df)
       
       # update probability table for node
       custom_model[[node]] = model.probability.table
     }
     
+    # third update states with boolean sliders as inputs
+    for (node in names(answers$boolean_slider_answers)) {
+      input.probability.df <- answers$boolean_slider_answers[[node]]
+      model.probability.df <- as.data.frame(custom_model[[node]]$prob)
+      model.probability.df <- rename(model.probability.df, !!node:=Var1)
+      
+      model.probability.table <- update_probability(node, model.probability.df, input.probability.df)
+  
+      # update probability table for node
+      custom_model[[node]] = model.probability.table
+    }
+    print(custom_model)
     # Add custom network to memory 
     CustomModels$custom_network[[input$CustomisedModelName]] = custom_model
     CustomPolicies$models[[input$CustomisedModelName]] = list('Base'=custom_model)
@@ -589,7 +680,7 @@ shinyServer(function(input, output, session) {
     questionValues$question_number = 1
     
     # reset answers to an empty list
-    answers$states <- list()
+    # answers$states <- list()
     
     # update radio buttons
     updateRadioButtons(session, "StateSelection", choices=first_states$node_state)
