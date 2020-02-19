@@ -680,10 +680,20 @@ shinyServer(function(input, output, session) {
       nodeStates <- state.definitions %>%
         filter(node_name==node) %>%
         select(-node_name) 
-
-      # Create sliders
-      nodeStateSlider <- create_sliders(node, nodeStates$node_state)
-
+      
+      nodeStateType <- node.definitions %>% filter(node_name==node) %>% select(type)
+      
+      if(nodeStateType == 'BooleanSlider'){
+        
+        nodeStateSlider <- sliderInput(node, "True (%)", min = 0, max = 100, step = 10, value = 0, post = "%")
+      }
+      else if(nodeStateType == "slider"){
+        nodeStateSlider <- create_sliders(node, nodeStates$node_state)
+      }
+      else{ ## radio buttons
+        nodeStateSlider <- radioButtons(node, label=NULL, choices=nodeStates$node_state)
+      }
+      
       
       # remove the _ from the node to ease readability
       nodeLabel <- strsplit(node, split = "_", fixed = TRUE)
@@ -765,31 +775,62 @@ shinyServer(function(input, output, session) {
         select(-node_name)
       
       currSumOfProbabilities <- 0
-      # updating the cpt for each state
-      for(state in nodeStates$node_state){
-        currId = paste(node, state, sep ="-")
-        index <- cpt[[node]] == state
-        cpt$Freq[index] <- input[[currId]]/100
-        currSumOfProbabilities <- currSumOfProbabilities +  input[[currId]]/100
+      
+      nodeStateType <- node.definitions %>% filter(node_name==node) %>% select(type)
+      
+      if(nodeStateType == 'BooleanSlider'){
+        # update cpt for the True state as the single slider signifies input for True %
+        index <- cpt[[node]] == 'True'
+        cpt$Freq[index] <- input[[node]]/100
+        
+        index <- cpt[[node]] == 'False'
+        cpt$Freq[index] <- 1 - input[[node]]/100
       }
+      else if(nodeStateType == "slider"){
+        # updating the cpt for each state
+        for(state in nodeStates$node_state){
+          currId = paste(node, state, sep ="-")
+          index <- cpt[[node]] == state
+          
+          
+          cpt$Freq[index] <- input[[currId]]/100
+          currSumOfProbabilities <- currSumOfProbabilities +  input[[currId]]/100
+        }
+      }
+      else{ ## radio buttons
+        index <- cpt[[node]] == input[[node]]
+        cpt$Freq[index] <- 1
+        
+        for(state in nodeStates$node_state){
+          if(state != input[[node]]){
+            index <- cpt[[node]] == state
+            cpt$Freq[index] <- 0
+          }
+        }
+      }
+      
+      print(cpt)
+      
+
       
       # Display a pop-up when the probabilities don't add up to 1.0 (divided by 100)
       
-      if(currSumOfProbabilities != 1.0){
-        isProbabilityMismatchError = TRUE
-        
-        #TODO: make it a function since it is also used in output$policyTabNodesSlider
-        
-        # remove the _ from the node to ease readability
-        nodeLabel <- strsplit(node, split = "_", fixed = TRUE)
-        nodeLabel <- paste(nodeLabel[[1]], collapse = ' ')
-        
-        errorMsg <- paste("Probabilities for '", nodeLabel, "' does not add upto to 1.0")
-        shinyalert("Oops!", errorMsg, type = "error")
-        
-        break
-      }
-      else if(input$SimpleViewPolicyName == ""){
+      # if(currSumOfProbabilities != 1.0){
+      #   isProbabilityMismatchError = TRUE
+      #   
+      #   #TODO: make it a function since it is also used in output$policyTabNodesSlider
+      #   
+      #   # remove the _ from the node to ease readability
+      #   nodeLabel <- strsplit(node, split = "_", fixed = TRUE)
+      #   nodeLabel <- paste(nodeLabel[[1]], collapse = ' ')
+      #   
+      #   errorMsg <- paste("Probabilities for '", nodeLabel, "' does not add upto to 1.0")
+      #   shinyalert("Oops!", errorMsg, type = "error")
+      #   
+      #   break
+      # }
+      # else 
+        if(input$SimpleViewPolicyName == ""){
         isProbabilityMismatchError = TRUE
         
         shinyalert("Oops!", "Please provide a policy name", type = "error")
