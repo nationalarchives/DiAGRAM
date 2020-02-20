@@ -660,6 +660,9 @@ shinyServer(function(input, output, session) {
     
     # setting choices for the drop down list in the Simple view Node customisation tab
     updateSelectInput(session, 'customModelSelection', choices=CustomModels$base_utility.df$name)
+    
+    # set choices for the drop down list in the Report tab
+    updateSelectInput(session, 'reportTabModelSelection', choices=CustomModels$base_utility.df$name)
   })
   
   # plot utility
@@ -1133,44 +1136,50 @@ shinyServer(function(input, output, session) {
   
   # REPORT TAB
   
+  setReportTabSummary <- function(currModelName, currModel, policies){
+    # constructing text for the summary section
+    summary <- paste("The", currModelName, "model has", length(names(currModel)), "policy(ies) customised by the user (including base):<br/><br/>")
+    
+    # to keep track of best policy
+    maxUtility <- -99999
+    maxUtilityPolicyName <- ""
+    
+    # getting list of policies
+    for(policy in names(currModel)){
+      summary <- paste(summary, "-", policy, "<br/>")
+      policyUtility <- calculate_utility(currModel[[policy]])
+      currUtility <- policyUtility$Findability + policyUtility$Renderability 
+      
+      if(currUtility > maxUtility){
+        maxUtility <- currUtility
+        maxUtilityPolicyName <- policy
+      }
+    }
+    
+    summary <- paste(summary, "<br/>", "The policy with maximum utility score for findability and renderability is: <b>", maxUtilityPolicyName, "</b>")
+    
+    return(summary)
+  }
+  
   observeEvent(input$sidebarMenu, {
     if(input$sidebarMenu == 'CustomiseNode'){
       shinyalert("Please select the model for your archive. If you skipped step 1 - 'Customise Model', please create a model for your own archive by navigating to the tab 
                  '1. Customise Model'", type = "info")
     }
-  })
-  
-  
-  generateSummaryAndGraph <- 
-  
-  
-  observeEvent(input$sidebarMenu, {
+    
     if(input$sidebarMenu == "Report"){
       currModel <- input$reportTabModelSelection
-      
-      # constructing text for the summary section
-      summary <- paste("The", currModel, "model has", length(names(CustomPolicies$models[[currModel]])), "policy(ies) customised by the user (including base):<br/><br/>")
-      
-      # to keep track of best policy
-      maxUtility <- -99999
-      maxUtilityPolicyName <- ""
-      
-      # getting list of policies
-      for(policy in names(CustomPolicies$models[[currModel]])){
-        summary <- paste(summary, "-", policy, "<br/>")
-        policyUtility <- calculate_utility(CustomPolicies$models[[currModel]][[policy]])
-        currUtility <- policyUtility$Findability + policyUtility$Renderability 
-        
-        if(currUtility > maxUtility){
-          maxUtility <- currUtility
-          maxUtilityPolicyName <- policy
-        }
-      }
-      
-      summary <- paste(summary, "<br/>", "The policy with maximum utility score for findability and renderability is: <b>", maxUtilityPolicyName, "</b>")
+      summary <- setReportTabSummary(currModel, CustomPolicies$models[[currModel]], names(CustomPolicies$models[[currModel]]))
       
       output$ReportTabSummaryText <- renderText(summary)
     }
+  })
+  
+  observeEvent(input$reportTabModelSelection, {
+    currModel <- input$reportTabModelSelection
+    summary <- setReportTabSummary(currModel, CustomPolicies$models[[currModel]], names(CustomPolicies$models[[currModel]]))
+    
+    output$ReportTabSummaryText <- renderText(summary)
   })
   
   
