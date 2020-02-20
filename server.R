@@ -19,6 +19,7 @@ library(Rgraphviz)
 library(tidyverse)
 library(shinyjs)
 library(shinyalert)
+library(gridExtra)
 
 options(repos = BiocManager::repositories())
 
@@ -1223,16 +1224,71 @@ shinyServer(function(input, output, session) {
     
   })
   
+  plotUtility <- reactive({
+    CustomPolicies$archiveList[[input$reportTabModelSelection]] %>%
+      mutate(utility=findability+renderability) %>%
+      pivot_longer(c(findability, renderability), names_to="policy") %>%
+      ggplot(aes(x=name, fill=policy, y=value)) +
+      geom_bar(position="stack", stat="identity")
+  })
+  
   # Plot the policy comparison stacked bar chart
-  output$ReportTabUtiltiyComparisonPlot <- renderPlot(
+  output$ReportTabUtilityComparisonPlot <- renderPlot(
     {
-      CustomPolicies$archiveList[[input$reportTabModelSelection]] %>%
-        mutate(utility=findability+renderability) %>%
-        pivot_longer(c(findability, renderability), names_to="policy") %>%
-        ggplot(aes(x=name, fill=policy, y=value)) +
-        geom_bar(position="stack", stat="identity")
+      plotUtility()
     }
   )
+  
+  output$reportTabDownloadBtn <- downloadHandler(
+    
+    filename = function() {
+      paste0(input$reportTabModelSelection, ".zip")
+    },
+    
+    content = function(file){
+      
+      # write model
+      if ("Policy Model" %in% input$downloadOptions) {
+        write.bif(paste0(input$ReportTabPolicySelection, ".bif"),
+                  CustomPolicies$models[[input$reportTabModelSelection]][[input$ReportTabPolicySelection]])
+      }
+      
+      # write utility plot
+      if ("Archive Model Utility Comparison Plot" %in% input$downloadOptions) {
+        png(filename=paste0(input$reportTabModelSelection, ".png"))
+        print(plotUtility())
+        dev.off()
+      }
+      
+      # if ("Documented Report" %in% input$downloadOptions){
+      #   pdf(file=paste0(input$reportTabModelSelection, ".pdf"), onefile = TRUE)
+      #   
+      #   currModel <- input$reportTabModelSelection
+      #   summary <- setReportTabSummary(currModel, 
+      #                                  CustomPolicies$archiveList[[currModel]])
+      #   
+      #   grid.arrange(rplotUtility())
+      # }
+      
+      # create zip file to return
+      filenames <- c(paste0(input$ReportTabPolicySelection, ".bif"),
+                     paste0(input$reportTabModelSelection, ".png"),
+                     paste0(input$reportTabModelSelection, ".pdf"))
+      
+      zip(file, filenames)
+      
+      # delete all files on server
+      for (filename in filenames){
+        file.remove(filename)
+      }
+    }
+  )
+  
+  
+  
+  
+  
+  ## OLD CODE BUT STILL KEEPING TO AVOID CRASH
   
   
   
@@ -1304,41 +1360,4 @@ shinyServer(function(input, output, session) {
     
     return(cancer.df)
   }
-  
-  # Download selected files
-  output$Download <- downloadHandler(
-    
-    filename = function() {
-      paste0(input$policySelection, ".zip")
-    },
-    
-    content = function(file){
-      
-      # write model
-      if ("Model" %in% input$downloadOptions) {
-        write.bif(paste0(input$policySelection, ".bif"),
-                  Utility$policy_networks[[input$policySelection]])
-      }
-      
-      # write utility plot
-      if ("Utility Plot" %in% input$downloadOptions) {
-        png(filename=paste0(input$policySelection, ".png"))
-        print(utility.plot())
-        dev.off()
-      }
-      
-      
-      # create zip file to return
-      filenames <- c(paste0(input$policySelection, ".bif"),
-                     paste0(input$policySelection, ".png"))
-      
-      zip(file, filenames)
-      
-      # delete all files on server
-      for (filename in filenames){
-        file.remove(filename)
-      }
-    }
-  )
-  
 })

@@ -389,61 +389,100 @@ dashboardPage(
         ),
         fluidRow(
           column(
-            width=4,
+            width=6,
             box(
               title="Summary",
               width=NULL,
               htmlOutput("ReportTabSummaryText")
-            )
-          ),
-          column(
-            width=8,
-            box(
-              title="Utility Comparison",
-              width=NULL,
-                plotOutput("ReportTabUtiltiyComparisonPlot")
-            )
-          )
-        ),
-        fluidRow(
-          column(
-            width=4,
+            ),
             box(
               title=NULL,
               width=NULL,
               selectInput("ReportTabPolicySelection",
                           "Select Policy",
-                          choices="No policies added")
-            ),
-            box(
-              title="Download",
-              width=NULL,
+                          choices="No policies added"),
+              br(),
               "Select what you would like to download:",
               br(),
               br(),
               checkboxGroupInput("downloadOptions",
                                  NULL,
-                                 choices=c("Model",
-                                           "Model Plot",
-                                           "Utility Plot",
-                                           "Policy Summary")),
+                                 choices=c("Archive Model Utility Comparison Plot",
+                                           "Policy Model",
+                                           "Documented Report")),
               br(),
               tags$style(HTML('#Download{background-color:green}')),
               tags$style(HTML('#Download{color:white}')),
-              downloadButton("Download",
+              downloadButton("reportTabDownloadBtn",
                              "Download")
               
-            )
+            ),
           ),
           column(
-            width=8,
+            width=6,
             box(
-              title="Model",
+              title="Utility Comparison",
               width=NULL,
-              plotOutput("ReportModel")
+              plotOutput("ReportTabUtiltiyComparisonPlot")
             )
           )
-        )
+          # column(
+          #   width=4,
+          #   box(
+          #     title="Summary",
+          #     width=NULL,
+          #     htmlOutput("ReportTabSummaryText")
+          #   )
+          # ),
+          # column(
+          #   width=8,
+          #   box(
+          #     title="Utility Comparison",
+          #     width=NULL,
+          #       plotOutput("ReportTabUtiltiyComparisonPlot")
+          #   )
+          # ),
+          
+        ),
+        # fluidRow(
+        #   column(
+        #     width=4,
+        #     box(
+        #       title=NULL,
+        #       width=NULL,
+        #       selectInput("ReportTabPolicySelection",
+        #                   "Select Policy",
+        #                   choices="No policies added")
+        #     ),
+        #     box(
+        #       title="Download",
+        #       width=NULL,
+        #       "Select what you would like to download:",
+        #       br(),
+        #       br(),
+        #       checkboxGroupInput("downloadOptions",
+        #                          NULL,
+        #                          choices=c("Model",
+        #                                    "Model Plot",
+        #                                    "Utility Plot",
+        #                                    "Policy Summary")),
+        #       br(),
+        #       tags$style(HTML('#Download{background-color:green}')),
+        #       tags$style(HTML('#Download{color:white}')),
+        #       downloadButton("Download",
+        #                      "Download")
+        #       
+        #     )
+        #   ),
+        #   column(
+        #     width=8,
+        #     box(
+        #       title="Model",
+        #       width=NULL,
+        #       plotOutput("ReportModel")
+        #     )
+        #   )
+        # )
       )
     )
   )
