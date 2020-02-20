@@ -181,10 +181,13 @@ shinyServer(function(input, output, session) {
   
   ## TODO:sid - combine both into a single data structure
   # Customised Policies
-  CustomPolicies <- reactiveValues(archiveList=list("TNA"= tibble(name="TNA",
-                                                                  findability=tna_utility$Findability,
-                                                                  renderability=tna_utility$Renderability)),
-                                   models=list("TNA"=list("Base"=stable.fit)))
+  
+  # CustomPolicies <- reactiveValues(archiveList=list("TNA"= tibble(name="TNA",
+  #                                                                 findability=tna_utility$Findability,
+  #                                                                 renderability=tna_utility$Renderability)),
+  #                                  models=list("TNA"=list("Base"=stable.fit)))
+  CustomPolicies <- reactiveValues(archiveList=list(),
+                                   models=list())
   
   
   # Construct smoker probability table
@@ -1134,53 +1137,102 @@ shinyServer(function(input, output, session) {
     
   })
   
+  
   # REPORT TAB
   
-  setReportTabSummary <- function(currModelName, currModel, policies){
+  setReportTabSummary <- function(currModelName, currModel){
     # constructing text for the summary section
-    summary <- paste("The", currModelName, "model has", length(names(currModel)), "policy(ies) customised by the user (including base):<br/><br/>")
+    summary <- paste("The", currModelName, "model has", length(currModel$name), "policy(ies) customised by the user (including base):<br/><br/>")
     
     # to keep track of best policy
     maxUtility <- -99999
     maxUtilityPolicyName <- ""
     
+    summary <- paste(summary, "<pre>", sep="")
+
     # getting list of policies
-    for(policy in names(currModel)){
-      summary <- paste(summary, "-", policy, "<br/>")
-      policyUtility <- calculate_utility(currModel[[policy]])
-      currUtility <- policyUtility$Findability + policyUtility$Renderability 
+    for(policy in currModel$name){
+      policyUtility <- currModel %>% filter(name==policy) %>% select(renderability, findability)
+      currUtility <- policyUtility$findability + policyUtility$renderability 
+      
+      summary <- paste(summary, policy, "\t", currUtility, "<br/>", sep = "")
       
       if(currUtility > maxUtility){
         maxUtility <- currUtility
         maxUtilityPolicyName <- policy
       }
     }
-    
+    summary <- paste(summary, "</pre>", sep="")
     summary <- paste(summary, "<br/>", "The policy with maximum utility score for findability and renderability is: <b>", maxUtilityPolicyName, "</b>")
     
     return(summary)
   }
   
+  initialModelSetup <- reactiveValues(flag=TRUE)
+  initialSimpleCustomisationPopup <- reactiveValues(flag=TRUE)
+  
   observeEvent(input$sidebarMenu, {
-    if(input$sidebarMenu == 'CustomiseNode'){
+    
+    ## Initial Model and Pop setup flags
+    if(initialModelSetup$flag){
+      CustomPolicies$archiveList[['TNA']] <- tibble(name="Base", 
+                                                    findability=tna_utility$Findability,
+                                                    renderability=tna_utility$Renderability)
+      
+      CustomPolicies$models[['TNA']][['Base']] <- stable.fit
+      
+      initialModelSetup$flag = FALSE
+    }
+    
+    if(input$sidebarMenu == 'CustomiseNode' & initialSimpleCustomisationPopup$flag){
       shinyalert("Please select the model for your archive. If you skipped step 1 - 'Customise Model', please create a model for your own archive by navigating to the tab 
                  '1. Customise Model'", type = "info")
+      
+      initialSimpleCustomisationPopup$flag = FALSE
     }
+    
+    # FOR REPORT TAB
     
     if(input$sidebarMenu == "Report"){
       currModel <- input$reportTabModelSelection
-      summary <- setReportTabSummary(currModel, CustomPolicies$models[[currModel]], names(CustomPolicies$models[[currModel]]))
+      summary <- setReportTabSummary(currModel, 
+                                     CustomPolicies$archiveList[[currModel]])
       
       output$ReportTabSummaryText <- renderText(summary)
+      
+      # set the list of policies in drop down
+      updateSelectInput(session, 
+                        "ReportTabPolicySelection",
+                        choices = CustomPolicies$archiveList[[currModel]]$name)
     }
   })
   
   observeEvent(input$reportTabModelSelection, {
     currModel <- input$reportTabModelSelection
-    summary <- setReportTabSummary(currModel, CustomPolicies$models[[currModel]], names(CustomPolicies$models[[currModel]]))
+    
+    # set the summary
+    summary <- setReportTabSummary(currModel, 
+                                   CustomPolicies$archiveList[[currModel]])
     
     output$ReportTabSummaryText <- renderText(summary)
+    
+    # set the list of policies in drop down
+    updateSelectInput(session, 
+                      "ReportTabPolicySelection",
+                      choices = CustomPolicies$archiveList[[currModel]]$name)
+    
   })
+  
+  # Plot the policy comparison stacked bar chart
+  output$ReportTabUtiltiyComparisonPlot <- renderPlot(
+    {
+      CustomPolicies$archiveList[[input$reportTabModelSelection]] %>%
+        mutate(utility=findability+renderability) %>%
+        pivot_longer(c(findability, renderability), names_to="policy") %>%
+        ggplot(aes(x=name, fill=policy, y=value)) +
+        geom_bar(position="stack", stat="identity")
+    }
+  )
   
   
   

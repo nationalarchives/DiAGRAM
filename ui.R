@@ -401,7 +401,7 @@ dashboardPage(
             box(
               title="Utility Comparison",
               width=NULL,
-              plotOutput("utilityComparisonFinal")
+                plotOutput("ReportTabUtiltiyComparisonPlot")
             )
           )
         ),
@@ -411,7 +411,7 @@ dashboardPage(
             box(
               title=NULL,
               width=NULL,
-              selectInput("policySelection",
+              selectInput("ReportTabPolicySelection",
                           "Select Policy",
                           choices="No policies added")
             ),
