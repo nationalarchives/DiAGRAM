@@ -1262,18 +1262,20 @@ shinyServer(function(input, output, session) {
       
       # if ("Documented Report" %in% input$downloadOptions){
       #   pdf(file=paste0(input$reportTabModelSelection, ".pdf"), onefile = TRUE)
-      #   
+      # 
       #   currModel <- input$reportTabModelSelection
-      #   summary <- setReportTabSummary(currModel, 
+      #   summary <- setReportTabSummary(currModel,
       #                                  CustomPolicies$archiveList[[currModel]])
-      #   
-      #   grid.arrange(rplotUtility())
+      # 
+      #   grid.arrange(output$ReportTabSummaryText, plotUtility())
+      #   dev.off()
       # }
       
       # create zip file to return
       filenames <- c(paste0(input$ReportTabPolicySelection, ".bif"),
-                     paste0(input$reportTabModelSelection, ".png"),
-                     paste0(input$reportTabModelSelection, ".pdf"))
+                     paste0(input$reportTabModelSelection, ".png")
+                     #,paste0(input$reportTabModelSelection, ".pdf")
+                     )
       
       zip(file, filenames)
       

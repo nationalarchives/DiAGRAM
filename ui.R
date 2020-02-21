@@ -408,8 +408,9 @@ dashboardPage(
               checkboxGroupInput("downloadOptions",
                                  NULL,
                                  choices=c("Archive Model Utility Comparison Plot",
-                                           "Policy Model",
-                                           "Documented Report")),
+                                           "Policy Model"
+                                           #,"Documented Report"
+                                           )),
               br(),
               tags$style(HTML('#Download{background-color:green}')),
               tags$style(HTML('#Download{color:white}')),
@@ -423,7 +424,7 @@ dashboardPage(
             box(
               title="Utility Comparison",
               width=NULL,
-              plotOutput("ReportTabUtiltiyComparisonPlot")
+              plotOutput("ReportTabUtilityComparisonPlot")
             )
           )
           # column(
