@@ -595,16 +595,12 @@ shinyServer(function(input, output, session) {
                                                                       renderability=utility$Renderability)
     
     # setting choices for the drop down list in the Simple view Node customisation tab
-<<<<<<< HEAD
+
     customModelChoices <- CustomModels$base_utility.df %>% select(name)
     updateSelectInput(session, 'customModelSelection', choices=customModelChoices)
     updateSelectInput(session, "model_version", label="Select Model", choices=customModelChoices)
-=======
-    updateSelectInput(session, 'customModelSelection', choices=CustomModels$base_utility.df$name)
-    
     # set choices for the drop down list in the Report tab
     updateSelectInput(session, 'reportTabModelSelection', choices=CustomModels$base_utility.df$name)
->>>>>>> master
   })
   
   # plot utility
@@ -1405,8 +1401,7 @@ shinyServer(function(input, output, session) {
     utility.plot()
     
   })
-  
-<<<<<<< HEAD
+
   # Download selected files
   output$Download <- downloadHandler(
     
@@ -1441,44 +1436,5 @@ shinyServer(function(input, output, session) {
       }
     }
   )
-  
-=======
-  
-  
-  
-  
-  
-  # Function calculates utility
-  calculateUtility <- function(cancer.df, smoker.df, pollution.df){
-    
-    cancer.true <- cancer.df %>% filter(Cancer == "True")
-    cancer.prob <- cancer.true %>% 
-      left_join(smoker.df, by="Smoker") %>% 
-      left_join(pollution.df, by="Pollution") %>%
-      rename(CancerProb=Probability.x,
-             SmokerProb=Probability.y,
-             PollutionProb=Probability) %>%
-      mutate(SummedProb = CancerProb*SmokerProb*PollutionProb) %>%
-      summarise(TotalProb = 1- sum(SummedProb))
-    
-    return(cancer.prob)
-  }
-  
-  # Function converts independent cancer table to conditional cancer table
-  # TODO: make more elegant solution for more complicated network
-  convertToConditional <- function(cancer.true, cancer.false){
-    
-    cancer <- c("True", "False", "True", "False", "True", "False", "True", "False")
-    pollution <- c("low", "low", "high", "high", "low", "low", "high", "high")
-    smoker <- c("True","True","True","True", "False", "False", "False", "False")
-    Probability <- c(cancer.true, cancer.false, cancer.true, cancer.false,
-                     cancer.true, cancer.false, cancer.true, cancer.false)
-    
-    cancer.df <- tibble("Cancer"=cancer, "Pollution"=pollution,
-                        "Smoker"=smoker, "Probability"=Probability)
-    
-    return(cancer.df)
-  }
->>>>>>> master
 })
 
