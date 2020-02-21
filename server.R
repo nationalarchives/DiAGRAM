@@ -19,6 +19,7 @@ library(Rgraphviz)
 library(tidyverse)
 library(shinyjs)
 library(shinyalert)
+library(gridExtra)
 
 options(repos = BiocManager::repositories())
 
@@ -179,13 +180,15 @@ shinyServer(function(input, output, session) {
                                                         renderability=tna_utility$Renderability),
                                  custom_networks=list("TNA"=stable.fit))
   
-  customModelChoices <- c('TNA')
-  
+  ## TODO:sid - combine both into a single data structure
   # Customised Policies
-  CustomPolicies <- reactiveValues(archiveList=list("TNA"= tibble(name="TNA",
-                                                                  findability=tna_utility$Findability,
-                                                                  renderability=tna_utility$Renderability)),
-                                   models=list("TNA"=list("Base"=stable.fit)))
+  
+  # CustomPolicies <- reactiveValues(archiveList=list("TNA"= tibble(name="TNA",
+  #                                                                 findability=tna_utility$Findability,
+  #                                                                 renderability=tna_utility$Renderability)),
+  #                                  models=list("TNA"=list("Base"=stable.fit)))
+  CustomPolicies <- reactiveValues(archiveList=list(),
+                                   models=list())
   
   
   # Construct smoker probability table
@@ -661,6 +664,9 @@ shinyServer(function(input, output, session) {
     
     # setting choices for the drop down list in the Simple view Node customisation tab
     updateSelectInput(session, 'customModelSelection', choices=CustomModels$base_utility.df$name)
+    
+    # set choices for the drop down list in the Report tab
+    updateSelectInput(session, 'reportTabModelSelection', choices=CustomModels$base_utility.df$name)
   })
   
   # plot utility
@@ -1132,14 +1138,164 @@ shinyServer(function(input, output, session) {
     
   })
   
+  
   # REPORT TAB
   
+  setReportTabSummary <- function(currModelName, currModel){
+    # constructing text for the summary section
+    summary <- paste("The", currModelName, "model has", length(currModel$name), "policy(ies) customised by the user (including base):<br/><br/>")
+    
+    # to keep track of best policy
+    maxUtility <- -99999
+    maxUtilityPolicyName <- ""
+    
+    summary <- paste(summary, "<pre>", sep="")
+
+    # getting list of policies
+    for(policy in currModel$name){
+      policyUtility <- currModel %>% filter(name==policy) %>% select(renderability, findability)
+      currUtility <- policyUtility$findability + policyUtility$renderability 
+      
+      summary <- paste(summary, policy, "\t", currUtility, "<br/>", sep = "")
+      
+      if(currUtility > maxUtility){
+        maxUtility <- currUtility
+        maxUtilityPolicyName <- policy
+      }
+    }
+    summary <- paste(summary, "</pre>", sep="")
+    summary <- paste(summary, "<br/>", "The policy with maximum utility score for findability and renderability is: <b>", maxUtilityPolicyName, "</b>")
+    
+    return(summary)
+  }
+  
+  initialModelSetup <- reactiveValues(flag=TRUE)
+  initialSimpleCustomisationPopup <- reactiveValues(flag=TRUE)
+  
   observeEvent(input$sidebarMenu, {
-    if(input$sidebarMenu == 'CustomiseNode'){
+    
+    ## Initial Model and Pop setup flags
+    if(initialModelSetup$flag){
+      CustomPolicies$archiveList[['TNA']] <- tibble(name="Base", 
+                                                    findability=tna_utility$Findability,
+                                                    renderability=tna_utility$Renderability)
+      
+      CustomPolicies$models[['TNA']][['Base']] <- stable.fit
+      
+      initialModelSetup$flag = FALSE
+    }
+    
+    if(input$sidebarMenu == 'CustomiseNode' & initialSimpleCustomisationPopup$flag){
       shinyalert("Please select the model for your archive. If you skipped step 1 - 'Customise Model', please create a model for your own archive by navigating to the tab 
                  '1. Customise Model'", type = "info")
+      
+      initialSimpleCustomisationPopup$flag = FALSE
+    }
+    
+    # FOR REPORT TAB
+    
+    if(input$sidebarMenu == "Report"){
+      currModel <- input$reportTabModelSelection
+      summary <- setReportTabSummary(currModel, 
+                                     CustomPolicies$archiveList[[currModel]])
+      
+      output$ReportTabSummaryText <- renderText(summary)
+      
+      # set the list of policies in drop down
+      updateSelectInput(session, 
+                        "ReportTabPolicySelection",
+                        choices = CustomPolicies$archiveList[[currModel]]$name)
     }
   })
+  
+  observeEvent(input$reportTabModelSelection, {
+    currModel <- input$reportTabModelSelection
+    
+    # set the summary
+    summary <- setReportTabSummary(currModel, 
+                                   CustomPolicies$archiveList[[currModel]])
+    
+    output$ReportTabSummaryText <- renderText(summary)
+    
+    # set the list of policies in drop down
+    updateSelectInput(session, 
+                      "ReportTabPolicySelection",
+                      choices = CustomPolicies$archiveList[[currModel]]$name)
+    
+  })
+  
+  plotUtility <- reactive({
+    CustomPolicies$archiveList[[input$reportTabModelSelection]] %>%
+      mutate(utility=findability+renderability) %>%
+      pivot_longer(c(findability, renderability), names_to="policy") %>%
+      ggplot(aes(x=name, fill=policy, y=value)) +
+      geom_bar(position="stack", stat="identity")
+  })
+  
+  # Plot the policy comparison stacked bar chart
+  output$ReportTabUtilityComparisonPlot <- renderPlot(
+    {
+      plotUtility()
+    }
+  )
+  
+  output$reportTabDownloadBtn <- downloadHandler(
+    
+    filename = function() {
+      paste0(input$reportTabModelSelection, ".zip")
+    },
+    
+    content = function(file){
+      
+      # write model
+      if ("Policy Model" %in% input$downloadOptions) {
+        write.bif(paste0(input$ReportTabPolicySelection, ".bif"),
+                  CustomPolicies$models[[input$reportTabModelSelection]][[input$ReportTabPolicySelection]])
+      }
+      
+      # write utility plot
+      if ("Archive Model Utility Comparison Plot" %in% input$downloadOptions) {
+        png(filename=paste0(input$reportTabModelSelection, ".png"))
+        print(plotUtility())
+        dev.off()
+      }
+      
+      # if ("Documented Report" %in% input$downloadOptions){
+      #   pdf(file=paste0(input$reportTabModelSelection, ".pdf"), onefile = TRUE)
+      # 
+      #   currModel <- input$reportTabModelSelection
+      #   summary <- setReportTabSummary(currModel,
+      #                                  CustomPolicies$archiveList[[currModel]])
+      # 
+      #   grid.arrange(output$ReportTabSummaryText, plotUtility())
+      #   dev.off()
+      # }
+      
+      # create zip file to return
+      filenames <- c(paste0(input$ReportTabPolicySelection, ".bif"),
+                     paste0(input$reportTabModelSelection, ".png")
+                     #,paste0(input$reportTabModelSelection, ".pdf")
+                     )
+      
+      zip(file, filenames)
+      
+      # delete all files on server
+      for (filename in filenames){
+        file.remove(filename)
+      }
+    }
+  )
+  
+  
+  
+  
+  
+  ## OLD CODE BUT STILL KEEPING TO AVOID CRASH
+  
+  
+  
+  
+  
   
   # Plot network for report page
   output$ReportModel <- renderPlot({
@@ -1206,41 +1362,4 @@ shinyServer(function(input, output, session) {
     
     return(cancer.df)
   }
-  
-  # Download selected files
-  output$Download <- downloadHandler(
-    
-    filename = function() {
-      paste0(input$policySelection, ".zip")
-    },
-    
-    content = function(file){
-      
-      # write model
-      if ("Model" %in% input$downloadOptions) {
-        write.bif(paste0(input$policySelection, ".bif"),
-                  Utility$policy_networks[[input$policySelection]])
-      }
-      
-      # write utility plot
-      if ("Utility Plot" %in% input$downloadOptions) {
-        png(filename=paste0(input$policySelection, ".png"))
-        print(utility.plot())
-        dev.off()
-      }
-      
-      
-      # create zip file to return
-      filenames <- c(paste0(input$policySelection, ".bif"),
-                     paste0(input$policySelection, ".png"))
-      
-      zip(file, filenames)
-      
-      # delete all files on server
-      for (filename in filenames){
-        file.remove(filename)
-      }
-    }
-  )
-  
 })
