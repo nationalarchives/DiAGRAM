@@ -301,9 +301,19 @@ dashboardPage(
           fluidRow(
             column(
               width=4,
-              selectInput("nodeProbTable",
-                          "Select Node",
-                          choices=c("nodes loading"))
+              box(
+                width=NULL,
+                selectInput("model_version",
+                            "Select Model",
+                            choices=c("TNA")),
+                selectInput("nodeProbTable",
+                            "Select Node",
+                            choices=c("nodes loading")),
+                tags$style(HTML('#networkReset{background-color:gray}')),
+                tags$style(HTML('#networkReset{color:white}')),
+                actionButton('networkReset',
+                             'Reset Model')
+              )
             ),
             column(
               width=8,
@@ -333,24 +343,57 @@ dashboardPage(
           fluidRow(
             column(
               width=4,
-              textInput("policyName",
-                        label=NULL,
-                        value="Enter Policy Name...")
-            ),
-            column(width=2,
-                   style='padding:0px;',
-                   tags$style(HTML('#networkUpdate{background-color:green}')),
-                   tags$style(HTML('#networkUpdate{color:white}')),
-                   actionButton("networkUpdate",
-                                "Add Policy", 
-                                width='100%')
+              box(
+                title="Changed Nodes",
+                width=NULL,
+                collapsible=TRUE,
+                tags$ul(
+                  uiOutput("ChangeNodes")
+                )
+              ),
+              box(
+                title="Save Network",
+                width=NULL,
+                collapsible=TRUE,
+                textInput("policyName",
+                          label="Modified network name:",
+                          value=""),
+                tags$style(HTML('#networkUpdate{background-color:green}')),
+                tags$style(HTML('#networkUpdate{color:white}')),
+                actionButton("networkUpdate",
+                             "Add as policy"),
+                tags$style(HTML('#addModelAdvanced{background-color:green}')),
+                tags$style(HTML('#addModelAdvanced{color:white}')),
+                actionButton("addModelAdvanced",
+                             "Add as custom model")
+              )
             ),
             column(
-              width=2,
-              offset=4,
-              tags$style(HTML('#networkReset{width: 100%')),
-              actionButton('networkReset',
-                           'Reset')
+              width=8,
+              box(
+                title="Node Probability",
+                width=NULL,
+                collapsible=TRUE,
+                plotOutput("nodeProbability")
+              )
+            )
+          ),
+          fluidRow(
+            column(
+              width=6,
+              box(
+                title="Policy Comparison",
+                width=NULL,
+                plotOutput("PolicyComparison")
+              )
+            ),
+            column(
+              width=6,
+              box(
+                title="Model Base Utility Comparison",
+                width=NULL,
+                plotOutput("BaseUtilityComparison")
+              )
             )
           )
         )
