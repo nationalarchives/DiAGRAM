@@ -61,12 +61,6 @@ dashboardPage(
                            tabName = "AdvancedCustomiseNode")
       ),
       
-      
-      # Create Network ajdustment page
-      menuItem("Advanced Policy",
-               tabName="AdvancedPolicy",
-               icon=icon("calculator")),
-      
       # Create Report Tab
       menuItem("Report",
                tabName="Report",
@@ -287,7 +281,7 @@ dashboardPage(
       
       # Policy Tab
       tabItem(
-        tabName="AdvancedPolicy",
+        tabName="AdvancedCustomiseNode",
         h1("Policy Selection"),
         br(),
         fluidRow(
