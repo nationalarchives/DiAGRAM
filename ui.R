@@ -19,6 +19,7 @@ library(shinyjs)
 library(shinyalert)
 
 options(repos = BiocManager::repositories())
+nquestions <- read_csv("setup_questions.csv") %>% nrow()
 
 # create main dashboard page
 dashboardPage(
@@ -184,7 +185,7 @@ dashboardPage(
             box(
               title=NULL,
               width=NULL,
-              progressBar("Question_Progress", value=0, total=5),
+              progressBar("Question_Progress", value=0, total=nquestions),
               h3("Please answer the following questions: "),
               uiOutput("Question"),
               useShinyjs(),
