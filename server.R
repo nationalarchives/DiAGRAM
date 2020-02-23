@@ -164,11 +164,6 @@ shinyServer(function(input, output, session) {
   # Initialise Question Counter for model setup
   questionValues <- reactiveValues(question_number=1)
   
-  # itialise utility dataframe
-  Utility <- reactiveValues(utility.df=tibble(name=character(),
-                                              utility=numeric()),
-                            policy_networks=list())
-  
   # Create vector to store answers to questions
   answers <- reactiveValues(radio_answers=list(),
                             slider_answers=list(),
@@ -189,17 +184,7 @@ shinyServer(function(input, output, session) {
   #                                  models=list("TNA"=list("Base"=stable.fit)))
   CustomPolicies <- reactiveValues(archiveList=list(),
                                    models=list())
-  
 
-  
-  # create utility barchart
-  utility.plot <- reactive({
-    
-    Utility$utility.df %>% ggplot(aes(x=name, y=utility)) + 
-      geom_col() + 
-      labs(title="Utility Comparison")
-    
-  })
   
   # NODE DEFINITION TAB
   
@@ -394,10 +379,21 @@ shinyServer(function(input, output, session) {
       inputId <- paste(next_node$node_name, primary_state, sep="-")
       label <- paste(primary_state, "%")
       
+      if (next_node$node_name == "Physical_Disaster"){
+        node_text <- a(href="https://flood-warning-information.service.gov.uk/long-term-flood-risk/postcode",
+                       'Click here to check your flood risk here.')
+      }
+      else{
+        node_text <- ""
+      }
+      
       rendered_element <- div(
         fluidRow(
           column(
             width=5,
+            node_text,
+            br(),
+            br(),
             sliderInput(inputId, label, min = 0, max = 100, step = 1, value = 0, post = "%")
           )
         ),
@@ -632,6 +628,45 @@ shinyServer(function(input, output, session) {
       total=nrow(setup_questions)
     )
     
+  })
+  
+  # upload custom model
+  
+  observeEvent(input$uploadCustomModel, {
+    
+    req(input$customModel)
+    
+    if (is.null(input$customModel)){
+      errorMsg <-"You have not uploaded a model."
+      shinyalert("Oops!", errorMsg, type = "error")
+      return()
+    } else{
+      # check if name is already being used
+      if(input$uploadName %in% names(CustomModels$custom_networks)){
+        errorMsg <-"You have already used this name for another custom model!"
+        shinyalert("Oops!", errorMsg, type = "error")
+        return()
+      }
+      
+      # check if name is empty
+      if (input$uploadName == ""){
+        errorMsg <-"Please provide uploaded model a name!"
+        shinyalert("Oops!", errorMsg, type = "error")
+        return()
+      }
+      
+      # load model into memory and calculate base utility
+      custom_model <- read.bif(input$customModel$datapath)
+      utility <- calculate_utility(custom_model)
+      
+      
+      CustomModels$base_utility.df <- CustomModels$base_utility.df %>% add_row(name=input$uploadName,
+                                                                         Intellectual_Control=utility$Intellectual_Control,
+                                                                         renderability=utility$Renderability)
+      
+      CustomModels$custom_networks[[input$uploadName]] <- custom_model
+      
+    }
   })
   
   # SIMPLE POLICY
@@ -1406,13 +1441,6 @@ shinyServer(function(input, output, session) {
       "No Policies have been added yet."
       
     }
-    
-  })
-  
-  # plot utility barchart for report page
-  output$utilityComparisonFinal <- renderPlot({
-    
-    utility.plot()
     
   })
 

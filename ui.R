@@ -214,7 +214,13 @@ dashboardPage(
               br(),
               fileInput("customModel",
                         "Choose Custom Model",
-                        accept=c(".bif"))
+                        accept=c(".bif")),
+              textInput("uploadName",
+                        label="Custom Model Name"),
+              tags$style(HTML('#uploadCustomModel{background-color:green}')),
+              tags$style(HTML('#uploadCustomModel{color:white}')),
+              actionButton("uploadCustomModel",
+                           "Add Model")
             )
           )
         )
