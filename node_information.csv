@@ -17,6 +17,6 @@ Obsolescence,"Essential equipment, hardware or software required to access the b
 Bit_Preservation,A term used to denote a very basic level of preservation of digital resource as it was submitted (literally preservation of the bits forming a digital resource).,2020,https://www.nationalarchives.gov.uk,Storage,BooleanSlider
 Op_Environment,Whether the conditions are optimal and you have mitigation strategies in place to protect against physical disasters.,2020,https://www.nationalarchives.gov.uk,Storage,BooleanSlider
 ReplicationAndRefreshment,Whether you will always have access to at least two copies of the digital material.,2020,https://www.nationalarchives.gov.uk,Preservation Planning,radiobuttons
-Physical_Disaster,A sudden accident or a natural catastrophe that causes great physical damage.,2020,https://www.nationalarchives.gov.uk,Storage,radiobuttons
+Physical_Disaster,A sudden accident or a natural catastrophe that causes great physical damage.,2020,https://www.nationalarchives.gov.uk,Storage,BooleanSlider
 Storage_Life,Whether the storage media is undamaged and functioning as expected.,2020,https://www.nationalarchives.gov.uk,Storage,slider
 Storage_Medium,The type of medium on which the digital objects are stored.,2020,https://www.nationalarchives.gov.uk,Storage,slider
