@@ -7,240 +7,187 @@
 # @author: Stephen James Krol, Monash University, Melbourne
 # @email: stephen.james.krol@gmail.com
 
+# Updated 21/02/2020 to relfect lastest model
+
 
 library(bnlearn)
+node.names <- c("Op_Environment","Integrity","System_Security","Info_Management","Storage_Medium", "ReplicationAndRefreshment", 
+                "Digital_Object","Content_Metadata","Tech_Metadata","File_Format", "Checksum", "Obsolescence",
+                "Tools_to_Render", "Intellectual_Control","Conditions_of_Use","Renderability","Bit_Preservation","Identity",
+                "Physical_Disaster","Storage_Life","Technical_Skills")
 
-names.NA = c("Service_continuity", "Permited_access",
-             "System_security",  "Provenance","Findability","Digital_data_type",
-             "Cataloguing","Renderability","Technical_metadata",
-             "Content_metadata",  "Tools","Obsolecence","Physical_disaster",
-             "Economic_political_upheaval","Technological_upheaval",
-             "Operating_environment", "Storage_life","Storage_media","Institution_type",
-             "Copy_protocol", "Replacement_protocol", "Preservation",
-             "Processing")
-dag.NA = empty.graph(nodes = names.NA)
+#empty graph
+TNA.dag <- empty.graph(nodes = node.names)
 
-dag.NA = set.arc(dag.NA, from = "Service_continuity", to = "Preservation")
-dag.NA = set.arc(dag.NA, from = "Institution_type", to = "Service_continuity")
-dag.NA = set.arc(dag.NA, from = "Processing", to = "Cataloguing")
-dag.NA = set.arc(dag.NA, from = "Digital_data_type", to = "Processing")
-dag.NA = set.arc(dag.NA, from = "Permited_access", to = "Findability")
-dag.NA = set.arc(dag.NA, from = "Cataloguing", to = "Findability")
-dag.NA = set.arc(dag.NA, from = "Tools", to = "Renderability")
-dag.NA = set.arc(dag.NA, from = "Obsolecence", to = "Tools")
-dag.NA = set.arc(dag.NA, from = "Physical_disaster", to = "Operating_environment")
-dag.NA = set.arc(dag.NA, from = "Economic_political_upheaval", to = "Service_continuity")
-dag.NA = set.arc(dag.NA, from = "Economic_political_upheaval", to = "Copy_protocol")
-dag.NA = set.arc(dag.NA, from = "Technological_upheaval", to = "Storage_media")
-dag.NA = set.arc(dag.NA, from = "Content_metadata", to = "Provenance")
-dag.NA = set.arc(dag.NA, from = "Content_metadata", to = "Cataloguing")
-dag.NA = set.arc(dag.NA, from = "Operating_environment", to = "Storage_life")
-dag.NA = set.arc(dag.NA, from = "Storage_life", to = "Preservation")
-dag.NA = set.arc(dag.NA, from = "System_security", to = "Preservation")
-dag.NA = set.arc(dag.NA, from = "Storage_media", to = "Obsolecence")
-dag.NA = set.arc(dag.NA, from = "Storage_media", to = "Operating_environment")
-dag.NA = set.arc(dag.NA, from = "Preservation", to = "Renderability")
-dag.NA = set.arc(dag.NA, from = "Technical_metadata", to = "Tools")
-dag.NA = set.arc(dag.NA, from = "Technical_metadata", to = "Obsolecence")
-dag.NA = set.arc(dag.NA, from = "Provenance", to = "Preservation")
-dag.NA = set.arc(dag.NA, from = "Digital_data_type", to = "Technical_metadata")
-dag.NA = set.arc(dag.NA, from = "Digital_data_type", to = "Content_metadata")
-dag.NA = set.arc(dag.NA, from = "Storage_media", to = "Storage_life")
-dag.NA = set.arc(dag.NA, from = "Replacement_protocol", to = "Storage_life")
-dag.NA = set.arc(dag.NA, from = "Copy_protocol", to = "Processing")
-dag.NA = set.arc(dag.NA, from = "Processing", to = "Operating_environment")
-dag.NA = set.arc(dag.NA, from = "Technical_metadata", to = "Processing")
-dag.NA = set.arc(dag.NA, from = "Content_metadata", to = "Permited_access")
+#set edges
 
-graphviz.plot(dag.NA, layout = "dot",
-              highlight = list(nodes=c("Renderability","Findability"), fill="lightgrey"),
+#data management - from Digital_Object
+TNA.dag <- set.arc(TNA.dag, from="Digital_Object", to="Content_Metadata")
+TNA.dag <- set.arc(TNA.dag, from="Digital_Object", to="Tech_Metadata")
+TNA.dag <- set.arc(TNA.dag, from="Digital_Object", to="Conditions_of_Use")
+TNA.dag <- set.arc(TNA.dag, from="Digital_Object", to="File_Format")
+
+#data management/access - to Identity and Intellectual_Control
+TNA.dag <- set.arc(TNA.dag, from="Content_Metadata", to="Identity")
+TNA.dag <- set.arc(TNA.dag, from="Info_Management", to="Identity")
+
+TNA.dag <- set.arc(TNA.dag, from="Identity", to="Intellectual_Control")
+TNA.dag <- set.arc(TNA.dag, from="Conditions_of_Use", to="Intellectual_Control")
+
+#preservation planning - obsolescence 
+TNA.dag <- set.arc(TNA.dag, from="Technical_Skills", to="Obsolescence")
+TNA.dag <- set.arc(TNA.dag, from="Technical_Skills", to="Tools_to_Render")
+TNA.dag <- set.arc(TNA.dag, from="Technical_Skills", to="Tech_Metadata")
+
+TNA.dag <- set.arc(TNA.dag, from="File_Format", to="Tools_to_Render")
+TNA.dag <- set.arc(TNA.dag, from="Storage_Medium", to="Obsolescence")
+TNA.dag <- set.arc(TNA.dag, from="Obsolescence", to="Bit_Preservation")
+
+#preservation planning - Integrity
+TNA.dag <- set.arc(TNA.dag, from="Info_Management", to="Integrity") 
+TNA.dag <- set.arc(TNA.dag, from="Checksum", to="Integrity") 
+TNA.dag <- set.arc(TNA.dag, from="System_Security", to="Integrity")
+TNA.dag <- set.arc(TNA.dag, from="Integrity", to="Bit_Preservation")
+
+#storage - to Storage_Life
+TNA.dag <- set.arc(TNA.dag, from="Storage_Medium", to="Storage_Life")
+TNA.dag <- set.arc(TNA.dag, from="Physical_Disaster", to="Storage_Life")
+TNA.dag <- set.arc(TNA.dag, from="Op_Environment", to="Storage_Life")
+TNA.dag <- set.arc(TNA.dag, from="ReplicationAndRefreshment", to="Storage_Life")
+
+TNA.dag <- set.arc(TNA.dag, from="Storage_Life", to="Bit_Preservation")
+
+#preservation planning - to renderability
+TNA.dag <- set.arc(TNA.dag, from="Tools_to_Render", to="Renderability")
+TNA.dag <- set.arc(TNA.dag, from="Bit_Preservation", to="Renderability")
+TNA.dag <- set.arc(TNA.dag, from="Tech_Metadata", to="Renderability")
+
+
+graphviz.plot(TNA.dag, layout = "dot",
+              highlight = list(nodes=c("Renderability","Intellectual_Control"), fill="lightgrey"),
               shape = "ellipse",
               render = TRUE,
-              main="Proposed network")
+              main="DiAGRAM Network")
+
 
 
 # Create prob tables for each node
-# Institution_type
-prob.institution_type <- matrix(c(0.2, 0.2, 0.2, 0.2, 0.2), ncol = 5, dimnames = list(NULL, c("Government Central", 
-                                                                                              "Government Local",
-                                                                                              "Charity",
-                                                                                              "Private Corporate",
-                                                                                              "Higher Education")))
 
-# Economic_political_upheaval
-prob.economic <- matrix(c(0.5, 0.5), ncol = 2, dimnames = list(NULL, c("True", "False")))
+#Digital_Object
+prob.digital_object = matrix(c(0.05, 0.20, 0.75), ncol = 3, 
+                             dimnames = list(NULL,c("Born_digital","Digitised","Surrogate")))
 
-# Digital_data_type
-prob.digital_data_type <- matrix(c(0.5, 0.5), ncol = 2, dimnames = list(NULL, c("Digitised", "Surrogate")))
+#Technical_Skills
+prob.technical_skills = matrix(c(0.5,0.5), ncol = 2, 
+                               dimnames = list(NULL,c("Good","Poor")))
 
-# Technical Upheaval
-prob.technical_upheaval <- matrix(c(0.5, 0.5), ncol = 2, dimnames = list(NULL, c("True", "False")))
+#Op_Environment
+prob.op_environment = matrix(c(0.5,0.5), ncol = 2, 
+                             dimnames = list(NULL,c("Good","Poor")))
 
-# Physical_disaster
-prob.physical_disaster <- matrix(c(0.5, 0.5), ncol = 2, dimnames = list(NULL, c("High", "Low")))
+#System_Security
+prob.system_security = matrix(c(0.5,0.5), ncol = 2, 
+                              dimnames = list(NULL,c("Good","Poor")))
 
-# Replacement_protocol
-prob.replacement_protocol <- matrix(c(0.5, 0.5), ncol = 2, dimnames = list(NULL, c("True", "False")))
+#ReplicationAndRefreshment
+prob.replication_refreshment = matrix(c(0.5,0.5), ncol = 2, 
+                                      dimnames = list(NULL,c("Yes","No")))
 
-# System_security
-prob.system_security <- matrix(c(0.5, 0.5), ncol = 2, dimnames = list(NULL, c("True", "False")))
+#Storage_Medium
+prob.storage_medium = matrix(c(0.05, 0.90, 0.05), ncol = 3, 
+                             dimnames = list(NULL,c("A","B","C")))
+
+#Checksum
+prob.checksum = matrix(c(0.05, 0.90, 0.05), ncol = 3, 
+                       dimnames = list(NULL,c("Yes","No_but_generated","No")))
+
+#Physical_Distaster
+prob.physical_disaster = matrix(c(0.01,0.99), ncol = 2, 
+                                dimnames = list(NULL,c("High","Low")))
+
+#Info_Management
+prob.info_management = matrix(c(0.6,0.4), ncol = 2, 
+                              dimnames = list(NULL,c("Yes","No")))
+
+#Conditions_of_Use
+prob.conditions_of_use = array(c(0.5, 0.5, 0.95, 0.05, 0.95, 0.05), dim = c(2, 3),
+                               dimnames = list("Conditions_of_Use" = c("Yes","No"), "Digital_Object" = c("Born_digital","Digitised","Surrogate")))
+
+#Content_Metadata
+prob.content_metadata = array(c(0.2, 0.3, 0.5, 0.5, 0.4, 0.1, 0.7, 0.25, 0.05), dim = c(3, 3),
+                              dimnames = list("Content_Metadata" = c("Yes","Can_acquire","No"), "Digital_Object" = c("Born_digital","Digitised","Surrogate")))
+
+#File_Format
+prob.file_format = array(c(0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25),
+                         dim = c(4, 3),
+                         dimnames = list("File_Format" = c("Ubiquous_open","Ubiquous_notopen","Notubiquous_open","Notubiquous_notopen"), 
+                                         "Digital_Object" = c("Born_digital","Digitised","Surrogate")))
+
+#Identity
+prob.identity = array(c(1, 0, 0.9, 0.1, 0, 1, 0, 1, 0,1, 0, 1), dim = c(2, 3, 2),
+                      dimnames = list("Identity" = c("Yes","No"), "Content_Metadata" = c("Yes","Can_acquire","No"), "Info_Management" = c("Yes","No")))
+
+#Intellectual_Control
+prob.intellectual_control = array(c(1, 0, 0, 1, 0, 1, 0, 1), dim = c(2, 2, 2),
+                                  dimnames = list("Intellectual_Control" = c("Yes","No"), "Identity" = c("Yes","No"), "Conditions_of_Use" = c("Yes","No")))
+
+#Tech_Metadata
+prob.tech_metadata = array(c(0.5, 0.5, 0.8, 0.2, 0.8, 0.2, 0.3, 0.7, 0.5, 0.5, 0.5, 0.5), dim = c(2, 3, 2),
+                           dimnames = list("Tech_Metadata" = c("Yes","No"), "Digital_Object" = c("Born_digital","Digitised","Surrogate"), "Technical_Skills" = c("Good","Poor")))
+
+#Tools_to_Render
+prob.tools_to_render = array(c(1, 0, 0.9, 0.1, 0.5, 0.5, 0.1, 0.9, 0.9, 0.1, 0.8, 0.2, 0.2, 0.8, 0, 1), dim = c(2, 4, 2),
+                             dimnames = list("Tools_to_Render" = c("Yes","No"), 
+                                             "File_Format" = c("Ubiquous_open","Ubiquous_notopen","Notubiquous_open","Notubiquous_notopen"), 
+                                             "Technical_Skills" = c("Good","Poor")))
+
+#Obscolescence
+prob.obsolescence = array(c(0.5, 0.5, 0.8, 0.2, 0.95, 0.05, 0.3, 0.7, 0.5, 0.5, 0.95, 0.05), dim = c(2, 3, 2),
+                          dimnames = list("Obsolescence" = c("Yes","No"), "Storage_Medium" = c("A","B","C"), "Technical_Skills" = c("Good","Poor")))
+
+#Integrity
+prob.integrity = array(c(1, 0, 0.5, 0.5, 0.9, 0.1, 0.4, 0.6, 0.9, 0.1, 0.4, 0.6, 0.5, 0.5, 0.2, 0.8, 0, 1, 0, 1, 0, 1, 0, 1),dim = c(2, 2, 2, 3),
+                       dimnames = list("Integrity" = c("Yes","No"),"Info_Management" = c("Yes","No"), "System_Security" = c("Good","Poor"), "Checksum" = c("Yes","No_but_generated","No")))
+
+#Bit_Preservation
+prob.bit_preservation = array(c(0, 1, 0, 1, 0.9, 0.1, 0.1, 0.9, 0, 1, 0, 1, 1, 0, 0.8, 0.2), dim = c(2, 2, 2, 2),
+                              dimnames = list("Bit_Preservation" = c("Yes","No"), "Integrity" = c("Yes","No"),"Obsolescence" = c("Yes","No"), "Storage_Life" = c("<Year",">Year")))
+
+#Renderability
+prob.renderability = array(c(1, 0, 0, 1, 0, 1, 0, 1, 0.2, 0.8, 0, 1, 0, 1, 0, 1), dim = c(2, 2, 2, 2),
+                           dimnames = list("Renderability" = c("Yes","No"),"Bit_Preservation" = c("Yes","No"), "Tools_to_Render" = c("Yes","No"),"Tech_Metadata" = c("Yes","No")))
+
+#Storage_Life
+prob.storage_life = array(c(0, 1, 0, 1, 0.8, 0.2, 0.5, 0.5, 0, 1, 0, 1, 0.9, 0.1, 0.8, 0.2, 0, 1, 0, 1, 0.2, 0.8, 0.1, 0.9,
+                            0, 1, 0, 1, 0.7, 0.3, 0.5, 0.5, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1),
+                          dim = c(2, 2, 2, 2, 3),
+                          dimnames = list("Storage_Life" = c("<Year",">Year"),"Physical_Disaster" = c("High","Low"), "ReplicationAndRefreshment" = c("Yes","No"), "Op_Environment" = c("Good","Poor"),  "Storage_Medium" = c("A","B","C")))
 
 
-# Copy_protocol
-prob.copy_protocol <- c(0.4, 0.3, 0.3, 0.4, 0.3, 0.3)
-dim(prob.copy_protocol) <- c(3, 2)
-dimnames(prob.copy_protocol) <- list("Copy_protocol"=c("All", "Partial", "None"), 
-                                     "Economic_political_upheaval"=c("True", "False"))
-
-# Technical_metadata
-prob.technical_metadata <- c(0.5, 0.5, 0.5, 0.5)
-dim(prob.technical_metadata) <- c(2, 2)
-dimnames(prob.technical_metadata) <- list("Technical_metadata"=c("True", "False"), 
-                                          "Digital_data_type"=c("Digitised", "Surrogate"))
-
-# Storage_media
-prob.storage_media <- c(0.2, 0.2, 0.2, 0.2, 0.2,
-                        0.2
-                        , 0.2, 0.2, 0.2, 0.2)
-dim(prob.storage_media) <- c(5, 2)
-dimnames(prob.storage_media) <- list("Storage_media"=c("Tape", "Optical", "SSD", "HDD", "Cloud"), 
-                                     "Technological_upheaval"=c("True", "False"))
-
-# Content_metadata
-prob.content_metadata<- c(0.5, 0.5, 0.5, 0.5)
-dim(prob.content_metadata) <- c(2, 2)
-dimnames(prob.content_metadata) <- list("Content_metadata"=c("True", "False"), 
-                                        "Digital_data_type"=c("Digitised", "Surrogate"))
-
-# Permitted Access
-prob.permited_access<- c(0.5, 0.5, 0.5, 0.5)
-dim(prob.permited_access) <- c(2, 2)
-dimnames(prob.permited_access) <- list("Permited_access"=c("True", "False"), 
-                                        "Content_metadata"=c("True", "False"))
-# Provenance
-prob.provenance<- c(0.5, 0.5, 0.5, 0.5)
-dim(prob.provenance) <- c(2, 2)
-dimnames(prob.provenance) <- list("Provenance"=c("True", "False"), 
-                                  "Content_metadata"=c("True", "False"))
-
-# Service_continuity
-prob.service_continuity <- c(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
-                             0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
-dim(prob.service_continuity) <- c(2, 5, 2)
-dimnames(prob.service_continuity) <- list("Service_continuity"=c("True", "False"), 
-                                          "Institution_type"=c("Government Central", 
-                                                               "Government Local",
-                                                               "Charity",
-                                                               "Private Corporate",
-                                                               "Higher Education"),
-                                          "Economic_political_upheaval"=c("True", "False"))
-
-# Cataloguing
-prob.cataloguing <- c(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
-dim(prob.cataloguing) <- c(2, 2, 2)
-dimnames(prob.cataloguing) <- list("Cataloguing"=c("True", "False"), 
-                                   "Content_metadata"=c("True", "False"),
-                                   "Processing"=c("True", "False"))
-
-# Obsolecence
-prob.obsolecence <- c(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
-                      0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
-dim(prob.obsolecence) <- c(2, 5, 2)
-dimnames(prob.obsolecence) <- list("Obsolecence"=c("True", "False"), 
-                                   "Storage_media"=c("Tape", "Optical", "SSD", "HDD", "Cloud"),
-                                   "Technical_metadata"=c("True", "False"))
-
-# Tools
-prob.tools <- c(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
-dim(prob.tools) <- c(2, 2, 2)
-dimnames(prob.tools) <- list("Tools"=c("True", "False"), 
-                             "Obsolecence"=c("True", "False"),
-                             "Technical_metadata"=c("True", "False"))
-
-# Renderability
-prob.renderability <- c(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
-dim(prob.renderability) <- c(2, 2, 2)
-dimnames(prob.renderability) <- list("Renderability"=c("True", "False"), 
-                                     "Preservation"=c("True", "False"),
-                                     "Tools"=c("True", "False"))
-
-# Processing
-prob.processing <- c(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
-                     0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
-                     0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
-dim(prob.processing) <- c(2, 3, 2, 2)
-dimnames(prob.processing) <- list("Processing"=c("True", "False"), 
-                             "Copy_protocol"=c("All", "Partial", "None"),
-                             "Digital_data_type"=c("Digitised", "Surrogate"),
-                             "Technical_metadata"=c("True", "False"))
-
-# Operating_environment
-prob.operating_environment <- c(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
-                                0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
-                                0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
-                                0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
-dim(prob.operating_environment) <- c(2, 2, 2, 5)
-dimnames(prob.operating_environment) <- list("Operating_environment"=c("True", "False"), 
-                                             "Processing"=c("True", "False"),
-                                             "Physical_disaster"=c("High", "Low"),
-                                             "Storage_media"=c("Tape", "Optical", "SSD", "HDD", "Cloud"))
-
-# Findability
-prob.findability <- c(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
-dim(prob.findability) <- c(2, 2, 2)
-dimnames(prob.findability) <- list("Findability"=c("True", "False"),
-                                   "Permited_access"=c("True", "False"),
-                                   "Cataloguing"=c("True", "False"))
-
-# Storage_life
-prob.storage_life<- c(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
-                      0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
-                      0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
-                      0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
-dim(prob.storage_life) <- c(2, 2, 2, 5)
-dimnames(prob.storage_life) <- list("Storage_life"=c("True", "False"), 
-                                    "Operating_environment"=c("True", "False"),
-                                    "Replacement_protocol"=c("True", "False"),
-                                    "Storage_media"=c("Tape", "Optical", "SSD", "HDD", "Cloud"))
-
-# Preservation
-prob.preservation <- c(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
-                       0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
-                       0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
-                       0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
-dim(prob.preservation) <- c(2, 2, 2, 2, 2)
-dimnames(prob.preservation) <- list("Preservation"=c("True", "False"), 
-                                    "Provenance"=c("True", "False"),
-                                    "Service_continuity"=c("True", "False"),
-                                    "System_security"=c("True", "False"),
-                                    "Storage_life"=c("True", "False"))
-
-model.fit <- custom.fit(dag.NA,
-                        dist=list("Institution_type"=prob.institution_type,
-                                  "Economic_political_upheaval"=prob.economic,
-                                  "Digital_data_type"=prob.digital_data_type,
-                                  "Technological_upheaval"=prob.technical_upheaval,
-                                  "Physical_disaster"=prob.physical_disaster,
-                                  "Replacement_protocol"=prob.replacement_protocol,
-                                  "System_security"=prob.system_security,
-                                  "Copy_protocol"=prob.copy_protocol,
-                                  "Technical_metadata"=prob.technical_metadata,
-                                  "Storage_media"=prob.storage_media,
-                                  "Content_metadata"=prob.content_metadata,
-                                  "Permited_access"=prob.permited_access,
-                                  "Provenance"=prob.provenance,
-                                  "Service_continuity"=prob.service_continuity,
-                                  "Cataloguing"=prob.cataloguing,
-                                  "Obsolecence"=prob.obsolecence,
-                                  "Tools"=prob.tools,
-                                  "Processing"=prob.processing,
-                                  "Operating_environment"=prob.operating_environment,
+model.fit <- custom.fit(TNA.dag,
+                        dist=list("Op_Environment"=prob.op_environment,
+                                  "Storage_Medium"=prob.storage_medium,
+                                  "ReplicationAndRefreshment"=prob.replication_refreshment,
+                                  "System_Security"=prob.system_security,
+                                  "Digital_Object"=prob.digital_object,
+                                  "Content_Metadata"=prob.content_metadata,
+                                  "Tech_Metadata"=prob.tech_metadata,
+                                  "Checksum"=prob.checksum,
+                                  "File_Format"=prob.file_format,
+                                  "Identity"=prob.identity,
+                                  "Intellectual_Control"=prob.intellectual_control,
+                                  "Tools_to_Render"=prob.tools_to_render,
+                                  "Integrity"=prob.integrity,
+                                  "Conditions_of_Use"=prob.conditions_of_use,
                                   "Renderability"=prob.renderability,
-                                  "Findability"=prob.findability,
-                                  "Storage_life"=prob.storage_life,
-                                  "Preservation"=prob.preservation))
+                                  "Bit_Preservation"=prob.bit_preservation,
+                                  "Obsolescence"=prob.obsolescence,
+                                  "Physical_Disaster"=prob.physical_disaster,
+                                  "Info_Management"=prob.info_management,
+                                  "Storage_Life"=prob.storage_life,
+                                  "Technical_Skills"=prob.technical_skills))
 
-write.bif("Model.bif", model.fit)
+write.bif("Model_copy.bif", model.fit)
 
 # temp.names <- c("A", "B", "C", "D")# , "E", "F", "G")
 # dag.temp <- empty.graph(nodes=temp.names)

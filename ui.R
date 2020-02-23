@@ -61,12 +61,6 @@ dashboardPage(
                            tabName = "AdvancedCustomiseNode")
       ),
       
-      
-      # Create Network ajdustment page
-      menuItem("Policies",
-               tabName="Policies",
-               icon=icon("calculator")),
-      
       # Create Report Tab
       menuItem("Report",
                tabName="Report",
@@ -201,12 +195,26 @@ dashboardPage(
         ),
         fluidRow(
           column(
-            width=12,
+            width=8,
             box(
               title="Utility Plot",
               width=NULL,
               collapsible=TRUE,
               plotOutput("BasicUtilityComparison")
+            )
+          ),
+          column(
+            width=4,
+            box(
+              title="Upload Custom Model",
+              collapsible=TRUE,
+              width=NULL,
+              strong("Please ensure any models uploaded have been generated from DiAGRAM"),
+              br(),
+              br(),
+              fileInput("customModel",
+                        "Choose Custom Model",
+                        accept=c(".bif"))
             )
           )
         )
@@ -287,91 +295,118 @@ dashboardPage(
       
       # Policy Tab
       tabItem(
-        tabName="Policies",
+        tabName="AdvancedCustomiseNode",
         h1("Policy Selection"),
         br(),
         fluidRow(
-          column(
-            width=8,
-            fluidRow(
-              column(width=12,
-                     
-                     # Plot the bayesian network
-                     box(
-                       title="Network",
-                       collapsible=TRUE,
-                       width=NULL,
-                       plotOutput("netPlot")
-                     )
-              )
-            ),
-            fluidRow(
-              column(width=6,
-                     box(
-                       title="Pollution",
-                       hotable("pollutionHotable"),
-                       width=NULL,
-                       collapsible=TRUE,
-                       collapsed=FALSE
-                     )
-              ),
-              column(width=6,
-                     box(
-                       title="Smoker",
-                       hotable("smokerHotable"),
-                       width=NULL,
-                       collapsible=TRUE,
-                       collapsed=FALSE
-                     )
-              )
-            ),
-            fluidRow(
-              column(width=12,
-                     box(
-                       title="Cancer",
-                       radioButtons("CancerProbTable",
-                                    "Cancer Probability Table",
-                                    c("Independent Probability Table",
-                                      "Conditional Probability Table"),
-                                    selected="Independent Probability Table"),
-                       hotable("cancerHotable"),
-                       width=NULL,
-                       collapsible=TRUE,
-                       collapsed=FALSE
-                     )
-              )
-            ),
-            fluidRow(
-              column(
-                width=4,
-                textInput("policyName",
-                          label=NULL,
-                          value="Enter Policy Name...")
-              ),
-              column(width=2,
-                     style='padding:0px;',
-                     tags$style(HTML('#networkUpdate{background-color:green}')),
-                     tags$style(HTML('#networkUpdate{color:white}')),
-                     actionButton("networkUpdate",
-                                  "Add Policy", 
-                                  width='100%')
-              ),
-              column(
-                width=2,
-                offset=4,
-                tags$style(HTML('#networkReset{width: 100%')),
+          width=8,
+          fluidRow(
+            column(width=12,
+                   # Plot the bayesian network
+                   box(
+                     title="Network",
+                     collapsible=TRUE,
+                     width=NULL,
+                     plotOutput("netPlot")
+                   )
+            )
+          ),
+          fluidRow(
+            column(
+              width=4,
+              box(
+                width=NULL,
+                selectInput("model_version",
+                            "Select Model",
+                            choices=c("TNA")),
+                selectInput("nodeProbTable",
+                            "Select Node",
+                            choices=c("nodes loading")),
+                tags$style(HTML('#networkReset{background-color:gray}')),
+                tags$style(HTML('#networkReset{color:white}')),
                 actionButton('networkReset',
-                             'Reset')
+                             'Reset Model')
+              )
+            ),
+            column(
+              width=8,
+              box(
+                title="Probability Table",
+                width=NULL,
+                column(
+                  width=4,
+                  radioButtons("probtabltype",
+                               "Table Type",
+                               choices=c("Independent Probability Table",
+                                         "Conditional Probability Table")),
+                  tags$style(HTML('#updateProb{background-color:green}')),
+                  tags$style(HTML('#updateProb{color:white}')),
+                  actionButton("updateProb",
+                               "Add Changes")
+                  
+                ),
+                column(
+                  width=8,
+                  hotable("probabilityTable")
+                )
+
               )
             )
           ),
-          column(
-            width=4,
-            box(
-              title="Policy Summary",
-              width=NULL,
-              collapsible=TRUE,
-              plotOutput("utilityComparison")
+          fluidRow(
+            column(
+              width=4,
+              box(
+                title="Changed Nodes",
+                width=NULL,
+                collapsible=TRUE,
+                tags$ul(
+                  uiOutput("ChangeNodes")
+                )
+              ),
+              box(
+                title="Save Network",
+                width=NULL,
+                collapsible=TRUE,
+                textInput("policyName",
+                          label="Modified network name:",
+                          value=""),
+                tags$style(HTML('#networkUpdate{background-color:green}')),
+                tags$style(HTML('#networkUpdate{color:white}')),
+                actionButton("networkUpdate",
+                             "Add as policy"),
+                tags$style(HTML('#addModelAdvanced{background-color:green}')),
+                tags$style(HTML('#addModelAdvanced{color:white}')),
+                actionButton("addModelAdvanced",
+                             "Add as custom model")
+              )
+            ),
+            column(
+              width=8,
+              box(
+                title="Node Probability",
+                width=NULL,
+                collapsible=TRUE,
+                plotOutput("nodeProbability")
+              )
+            )
+          ),
+          fluidRow(
+            column(
+              width=6,
+              box(
+                title="Policy Comparison",
+                width=NULL,
+                plotOutput("PolicyComparison")
+              )
+            ),
+            column(
+              width=6,
+              box(
+                title="Model Base Utility Comparison",
+                width=NULL,
+                plotOutput("BaseUtilityComparison")
+              )
             )
           )
         )

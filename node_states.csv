@@ -1,54 +1,49 @@
 node_name,node_state,state_definition
-Service_continuity,TRUE,Insert state definition
-Service_continuity,FALSE,Insert state definition
-Permited_access,TRUE,Insert state definition
-Permited_access,FALSE,Insert state definition
-System_security,TRUE,Insert state definition
-System_security,FALSE,Insert state definition
-Provenance,TRUE,Insert state definition
-Provenance,FALSE,Insert state definition
-Findability,TRUE,Insert state definition
-Findability,FALSE,Insert state definition
-Digital_data_type,Digitised,Insert state definition
-Digital_data_type,Surrogate,Insert state definition
-Cataloguing,TRUE,Insert state definition
-Cataloguing,FALSE,Insert state definition
-Renderability,TRUE,Insert state definition
-Renderability,FALSE,Insert state definition
-Technical_metadata,TRUE,Insert state definition
-Technical_metadata,FALSE,Insert state definition
-Content_metadata,TRUE,Insert state definition
-Content_metadata,FALSE,Insert state definition
-Tools,TRUE,Insert state definition
-Tools,FALSE,Insert state definition
-Obsolecence,TRUE,Insert state definition
-Obsolecence,FALSE,Insert state definition
-Physical_disaster,High,Insert state definition
-Physical_disaster,Low,Insert state definition
-Economic_political_upheaval,TRUE,Insert state definition
-Economic_political_upheaval,FALSE,Insert state definition
-Technological_upheaval,TRUE,Insert state definition
-Technological_upheaval,FALSE,Insert state definition
-Operating_environment,TRUE,Insert state definition
-Operating_environment,FALSE,Insert state definition
-Storage_life,TRUE,Insert state definition
-Storage_life,FALSE,Insert state definition
-Storage_media,Tape,Insert state definition
-Storage_media,SSD,Insert state definition
-Storage_media,Optical,Insert state definition
-Storage_media,HDD,Insert state definition
-Storage_media,Cloud,Insert state definition
-Institution_type,Government Central,Insert state definition
-Institution_type,Government Local,Insert state definition
-Institution_type,Charity,Insert state definition
-Institution_type,Private Corporate,Insert state definition
-Institution_type,Higher Education,Insert state definition
-Copy_protocol,All,Insert state definition
-Copy_protocol,Partial,Insert state definition
-Copy_protocol,None,Insert state definition
-Replacement_protocol,TRUE,Insert state definition
-Replacement_protocol,FALSE,Insert state definition
-Preservation,TRUE,Insert state definition
-Preservation,FALSE,Insert state definition
-Processing,TRUE,Insert state definition
-Processing,FALSE,Insert state definition
+Digital_Object,Born_digital,Insert state definition
+Digital_Object,Digitised,Insert state definition
+Digital_Object,Surrogate,Insert state definition
+Content_Metadata,Yes,Insert state definition
+Content_Metadata,Can_acquire,Insert state definition
+Content_Metadata,No,Insert state definition
+Conditions_of_Use,Yes,Insert state definition
+Conditions_of_Use,No,Insert state definition
+Intellectual_Control,Yes,Insert state definition
+Intellectual_Control,No,Insert state definition
+Identity,Yes,Insert state definition
+Identity,No,Insert state definition
+Checksum,Yes,Checksum received on deposit
+Checksum,No_but_generated,Checksum generated instantly
+Checksum,No,Neither
+File_Format,Ubiquitous_open,Insert state definition
+File_Format,Ubiquitous_notopen,Insert state definition
+File_Format,Notubiquitous_open,Insert state definition
+File_Format,Notubiquitous_notopen,Insert state definition
+Tech_Metadata,Yes,Technical metadata is complete
+Tech_Metadata,No,Technical metadata is not complete
+Tools_to_Render,Yes,Tools and software are available to render the file
+Tools_to_Render,No,Tools and software are not available to render the file
+Renderability,Yes,The digital material is renderable
+Renderability,No,The digitial material is not renderable
+Integrity,Yes,Insert state definition
+Integrity,No,Insert state definition
+System_Security,Good,Insert state definition
+System_Security,Poor,Insert state definition
+Info_Management,Yes,Insert state definition
+Info_Management,No,Insert state definition
+Technical_Skills,Good,Insert state definition
+Technical_Skills,Poor,Insert state definition
+Obsolescence,Yes,Insert state definition
+Obsolescence,No,Insert state definition
+Bit_Preservation,Yes,Insert state definition
+Bit_Preservation,No,Insert state definition
+Op_Environment,Good,Insert state definition
+Op_Environment,Poor,Insert state definition
+ReplicationAndRefreshment,Yes,Insert state definition
+ReplicationAndRefreshment,No,Insert state definition
+Physical_Disaster,High,"Combiniation of medium, high and very high from gov.uk"
+Physical_Disaster,Low,Combiniation of low and very low from gov.uk
+Storage_Life,<Year,Insert state definition
+Storage_Life,>Year,Insert state definition
+Storage_Medium,A,unstable
+Storage_Medium,B,stable
+Storage_Medium,C,cloud/outsourced

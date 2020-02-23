@@ -22,6 +22,7 @@ library(shinyalert)
 library(gridExtra)
 
 options(repos = BiocManager::repositories())
+options(shiny.fullstacktrace = FALSE)
 
 shinyServer(function(input, output, session) {
   
@@ -32,14 +33,14 @@ shinyServer(function(input, output, session) {
     # convert model to grain object
     model.grain <- as.grain(model)
     
-    # find probability of findability and renderability
-    query.results <- querygrain(model.grain, nodes=c("Findability", "Renderability"))
+    # find probability of Intellectual_Control and renderability
+    query.results <- querygrain(model.grain, nodes=c("Intellectual_Control", "Renderability"))
     
     # Extract probabilities
-    prob.findability <- as.numeric(query.results$Findability["True"])
-    prob.renderability <- as.numeric(query.results$Renderability["True"])
+    prob.Intellectual_Control <- as.numeric(query.results$Intellectual_Control["Yes"])
+    prob.renderability <- as.numeric(query.results$Renderability["Yes"])
     
-    utility <- list("Findability"=prob.findability,
+    utility <- list("Intellectual_Control"=prob.Intellectual_Control,
                     "Renderability"=prob.renderability)
     
     return(utility)    
@@ -61,7 +62,6 @@ shinyServer(function(input, output, session) {
     # list of nodes with corresponding state sliders
     return(nodeStateSlider)
   }
-  
   
   # Function collects inputs from generated sliders and combines into dataframe
   collect_slider_inputs <- function(name){
@@ -124,11 +124,11 @@ shinyServer(function(input, output, session) {
     # collect node states and corresponding probabilities
     node_states <- input.probability.df$state
     state_probabilities <- input.probability.df$probability
+
     # iterate through states and update model probability table
     i <- 1
     for (state in node_states){
       current.probability <- state_probabilities[i]
-      print(state)
       model.probability.df <- model.probability.df %>%
         mutate(Freq=ifelse(model.probability.df[[node]]==state, current.probability, Freq))
       
@@ -137,12 +137,11 @@ shinyServer(function(input, output, session) {
     
     # normalise probability range between 0 and 1
     model.probability.df <- model.probability.df %>% mutate(Freq=Freq/100)
-    
+
     # convert from data.frame to table
     model.probability.table <- xtabs(Freq~., model.probability.df)
     return(model.probability.table)
   }
-  
   
   # STATIC VALUES
   stable.fit <- read.bif("Model.bif")
@@ -159,7 +158,8 @@ shinyServer(function(input, output, session) {
   
   # REACTIVE VALUES
   # initialise stable plot (unchanging) and reactive plot
-  network <- reactiveValues(cancer.fit = read.bif("cancer.bif"))
+  network <- reactiveValues(model.fit = read.bif("Model.bif"),
+                            advanced.fit = stable.fit)
   
   # Initialise Question Counter for model setup
   questionValues <- reactiveValues(question_number=1)
@@ -176,7 +176,7 @@ shinyServer(function(input, output, session) {
   
   # Customised models
   CustomModels <- reactiveValues(base_utility.df=tibble(name="TNA",
-                                                        findability=tna_utility$Findability,
+                                                        Intellectual_Control=tna_utility$Intellectual_Control,
                                                         renderability=tna_utility$Renderability),
                                  custom_networks=list("TNA"=stable.fit))
   
@@ -190,73 +190,7 @@ shinyServer(function(input, output, session) {
   CustomPolicies <- reactiveValues(archiveList=list(),
                                    models=list())
   
-  
-  # Construct smoker probability table
-  smoker <- reactive({
-    # Convert to dataframe and multiply probability by 100
-    # so it is more intuitive to non-statistical users
-    smoker.df <- data.frame(network$cancer.fit$Smoker$prob) %>%
-      rename(Probability=Freq)
-    
-    if ("Var1" %in% colnames(smoker.df)) {
-      
-      # When loaded var1 is originally given to smoker variables
-      # Once changed it does not revert back which can cause renaming errors
-      # Program cannot find Var1 because it has already been changed to smoker
-      smoker.df <- smoker.df %>% rename(Smoker=Var1)
-      
-    }
-    
-    smoker.df
-  })
-  
-  # Construct Pollution Probability Table
-  pollution <- reactive({
-    
-    pollution.df <- data.frame(network$cancer.fit$Pollution$prob) %>%
-      rename(Probability=Freq)
-    
-    # When loaded var1 is originally given to pollution variables
-    # Once changed it does not revert back which can cause renaming errors
-    # Program cannot find Var1 because it has already been changed to pollution
-    if ("Var1" %in% colnames(pollution.df)){
-      
-      pollution.df <- pollution.df %>% rename(Pollution=Var1)
-      
-    }
-    
-    pollution.df
-    
-  })
-  
-  # Construct Cancer Probability Table
-  cancer <- reactive({
-    
-    # Create initial cancer dataframe
-    cancer.df <- data.frame(network$cancer.fit$Cancer$prob) %>% 
-      rename(Probability=Freq)
-    
-    if (input$CancerProbTable =="Conditional Probability Table") {
-      # Spread the conditional table to make it easier for the user to understand
-      cancer.df %>% 
-        mutate(Probability=Probability*100) %>%
-        pivot_wider(names_from=Cancer, values_from=Probability) %>%
-        rename(`Cancer=True`=True,
-               `Cancer=False`=False)
-      
-    } else {
-      
-      # Get probability that cancer = False
-      cancer.false <- calculateUtility(cancer.df, smoker(), pollution())$TotalProb
-      
-      # Use probability to create independent table
-      tibble("Cancer"=c("True", "False"), "Probability"=c(1-cancer.false, cancer.false)) %>%
-        mutate(Probability=Probability*100)
-      
-    }
-    
-    
-  })
+
   
   # create utility barchart
   utility.plot <- reactive({
@@ -518,10 +452,10 @@ shinyServer(function(input, output, session) {
   # Add question to setup page.
   # TODO: Make dynamic check rather than hardcoded 6
   output$Question <- renderUI({
-    if (questionValues$question_number < 6 && questionValues$question_number>=1){
+    if (questionValues$question_number < nrow(setup_questions)+1 && questionValues$question_number>=1){
       h4(strong(setup_questions[questionValues$question_number,]$node_question))
     } else {
-      h4(strong("All Questions Answered."))
+      h4(strong("All Questions Answered. Please give model a name:"))
     }
   })
   
@@ -565,7 +499,7 @@ shinyServer(function(input, output, session) {
       session=session,
       id="Question_Progress",
       value=questionValues$question_number,
-      total=5
+      total=nrow(setup_questions)
     )
     
     # update question number
@@ -602,7 +536,7 @@ shinyServer(function(input, output, session) {
         session=session,
         id="Question_Progress",
         value=questionValues$question_number - 1,
-        total=5
+        total=nrow(setup_questions)
       )
     }
   })
@@ -617,7 +551,7 @@ shinyServer(function(input, output, session) {
       return()
     }
     
-    if (input$CustomisedModelName %in% names(CustomModels$custom_network)){
+    if (input$CustomisedModelName %in% names(CustomModels$custom_networks)){
       errorMsg <-"You have already used this name for another custom model!"
       shinyalert("Oops!", errorMsg, type = "error")
       
@@ -627,12 +561,14 @@ shinyServer(function(input, output, session) {
     # first update inputs from radio buttons
     custom_model <- mutilated(stable.fit, evidence=answers$radio_answers)
     
-    # second update states with inputs as sliders
+    # second, update states with inputs as sliders
     for (node in names(answers$slider_answers)) {
       input.probability.df <- answers$slider_answers[[node]]
       model.probability.df <- as.data.frame(custom_model[[node]]$prob)
+      if ("Var1" %in% colnames(model.probability.df)){
+        model.probability.df <- rename(model.probability.df, !!node:=Var1)
+      }
       model.probability.table <- update_probability(node, model.probability.df, input.probability.df)
-      
       # update probability table for node
       custom_model[[node]] = model.probability.table
     }
@@ -642,29 +578,29 @@ shinyServer(function(input, output, session) {
       input.probability.df <- answers$boolean_slider_answers[[node]]
       model.probability.df <- as.data.frame(custom_model[[node]]$prob)
       model.probability.df <- rename(model.probability.df, !!node:=Var1)
-      
       model.probability.table <- update_probability(node, model.probability.df, input.probability.df)
-  
       # update probability table for node
       custom_model[[node]] = model.probability.table
     }
+
     # Add custom network to memory 
-    CustomModels$custom_network[[input$CustomisedModelName]] = custom_model
+    CustomModels$custom_networks[[input$CustomisedModelName]] = custom_model
     CustomPolicies$models[[input$CustomisedModelName]] = list('Base'=custom_model)
-    
+
     # calculate utility and store
     utility <- calculate_utility(custom_model)
     CustomModels$base_utility.df <- CustomModels$base_utility.df %>% add_row(name=input$CustomisedModelName,
-                                                                             findability=utility$Findability,
+                                                                             Intellectual_Control=utility$Intellectual_Control,
                                                                              renderability=utility$Renderability)
     # TODO: Why do we have two structures saving the same information?
     CustomPolicies$archiveList[[input$CustomisedModelName]] <- tibble(name=input$CustomisedModelName,
-                                                                      findability=utility$Findability,
+                                                                      Intellectual_Control=utility$Intellectual_Control,
                                                                       renderability=utility$Renderability)
     
     # setting choices for the drop down list in the Simple view Node customisation tab
-    updateSelectInput(session, 'customModelSelection', choices=CustomModels$base_utility.df$name)
-    
+    customModelChoices <- CustomModels$base_utility.df %>% select(name)
+    updateSelectInput(session, 'customModelSelection', choices=customModelChoices)
+    updateSelectInput(session, "model_version", label="Select Model", choices=customModelChoices)
     # set choices for the drop down list in the Report tab
     updateSelectInput(session, 'reportTabModelSelection', choices=CustomModels$base_utility.df$name)
   })
@@ -673,8 +609,8 @@ shinyServer(function(input, output, session) {
   output$BasicUtilityComparison <- renderPlot({
     
     CustomModels$base_utility.df %>%
-      mutate(utility=findability+renderability) %>% 
-      pivot_longer(c(findability, renderability), names_to="node") %>%
+      mutate(utility=Intellectual_Control+renderability) %>% 
+      pivot_longer(c(Intellectual_Control, renderability), names_to="node") %>%
       ggplot(aes(x=name, fill=node, y=value)) +
       geom_bar(position="stack", stat="identity")
   })
@@ -685,9 +621,6 @@ shinyServer(function(input, output, session) {
     # reset question number to 1
     questionValues$question_number = 1
     
-    # reset answers to an empty list
-    # answers$states <- list()
-    
     # update radio buttons
     updateRadioButtons(session, "StateSelection", choices=first_states$node_state)
     
@@ -696,7 +629,7 @@ shinyServer(function(input, output, session) {
       session=session,
       id="Question_Progress",
       value=questionValues$question_number - 1,
-      total=5
+      total=nrow(setup_questions)
     )
     
   })
@@ -707,8 +640,8 @@ shinyServer(function(input, output, session) {
   output$policyTabUtilityScorePlot <- renderPlot(
     {
       CustomPolicies$archiveList[[input$customModelSelection]] %>%
-        mutate(utility=findability+renderability) %>%
-        pivot_longer(c(findability, renderability), names_to="policy") %>%
+        mutate(utility=Intellectual_Control+renderability) %>%
+        pivot_longer(c(Intellectual_Control, renderability), names_to="policy") %>%
         ggplot(aes(x=name, fill=policy, y=value)) +
         geom_bar(position="stack", stat="identity")
     }
@@ -1012,132 +945,289 @@ shinyServer(function(input, output, session) {
     # update reactive policy list
     CustomPolicies$archiveList[[input$customModelSelection]] <- CustomPolicies$archiveList[[input$customModelSelection]] %>%
       add_row(name=input$SimpleViewPolicyName,
-              findability=currPolicyUtility$Findability,
+              Intellectual_Control=currPolicyUtility$Intellectual_Control,
               renderability=currPolicyUtility$Renderability)
     
     CustomPolicies$models[[input$customModelSelection]][[input$SimpleViewPolicyName]] <- currModel$model
   })
   
+
   
+  # ADVANCED POLICIES
+  advanced <- reactiveValues(updated_nodes = list(),
+                             node_counter = 1)
   
-  # POLICIES TAB -- OLD
+  # add nodes to drop down list
+  updateSelectInput(session, inputId="nodeProbTable", label="Select Node", choices=node.definitions$node_name)
   
   # Plot network which changes for policy inputs
   output$netPlot <- renderPlot({
     
-    first <- graphviz.chart(network$cancer.fit, type = "barprob", grid=TRUE, main="Test Network")
-    graphviz.chart(network$cancer.fit, type = "barprob", grid=TRUE, main="Test Network")
+    model.label <- paste(input$model_version, "model", sep=" ")
+    
+    graphviz.plot(network$advanced.fit, layout = "dot",
+                  highlight = list(nodes=c(input$nodeProbTable), fill="lightgrey"),
+                  shape = "ellipse",
+                  render = TRUE,
+                  main=model.label)
     
   })
   
-  # Output Smoker Probability table
-  output$smokerHotable <- renderHotable({
+  # update model if different model version is selected
+  observe({
+    network$advanced.fit <- CustomModels$custom_networks[[input$model_version]]
+  })
+  
+  # output probability table
+  output$probabilityTable <- renderHotable({
     
-    smoker() %>% mutate(Probability=Probability*100)
+    if (input$probtabltype == "Conditional Probability Table") {
+      conditional.table <- as.data.frame(network$advanced.fit[[input$nodeProbTable]]$prob)
+      
+      # If a column is named Var1, rename to be variable name
+      if ("Var1" %in% colnames(conditional.table)){
+        conditional.table <- rename(conditional.table, !!input$nodeProbTable:=Var1)
+      }
+      
+      # Spread dataframe so that it is easier to see which probabilities should add to 1.0
+      conditional.table <- conditional.table %>%
+                           mutate(Freq=Freq*100) %>%
+                           pivot_wider(names_from=!!input$nodeProbTable, values_from=Freq)
+      
+      # Change column names to make them easier to understand
+      # collect states
+      node.states <- state.definitions %>% filter(node_name==input$nodeProbTable)
+      # create read only vector
+      read_table_temp <- rep(TRUE, ncol(conditional.table))
+      
+      # iterate and change names 
+      i <- 0
+      for (state in node.states$node_state){
+        label <- paste(input$nodeProbTable, state, sep="=")
+        conditional.table <- rename(conditional.table, !!label:=!!state)
+        read_table_temp[length(read_table_temp) - i] <- FALSE
+        i <- i + 1
+      }
+
+      
+      data <- conditional.table
+        
+    } else {
+      # convert model to grain object
+      model.grain <- as.grain(network$advanced.fit)
+      
+      # find probability of findability and renderability
+      query.results <- querygrain(model.grain, nodes=c(input$nodeProbTable))
+      # control which columns can be read
+      read_table_temp <- c(TRUE, FALSE)
+      # return independent probability table
+      data <- data.frame(query.results) %>%
+      rownames_to_column() %>%
+      rename(probability:=!!input$nodeProbTable,
+             !!input$nodeProbTable:=rowname) %>%
+      mutate(probability=100*probability)
+    }
+    
+    
+    test$t <- read_table_temp
+    print(test$t)
+    data
     
   }, readOnly=FALSE)
   
-  # Output Pollution Probability table
-  output$pollutionHotable <- renderHotable({
-    
-    pollution() %>% mutate(Probability=Probability*100)
-    
-  }, readOnly=FALSE)
+
+   test <- reactiveValues(t=c())
   
-  # Output cancer probability table
-  output$cancerHotable <- renderHotable({
-    
-    cancer()
-    
-  }, readOnly=FALSE)
+  output$nodeProbability <- renderPlot({
+    bn.fit.barchart(network$advanced.fit[[input$nodeProbTable]])
+  })
   
-  # plot utility barchart for policy page
-  output$utilityComparison <- renderPlot({
+  # update node probability when changed
+  observeEvent(input$updateProb, {
+  
+    data.df <- as.data.frame(hot.to.df(input$probabilityTable))
+    custom_model <- network$advanced.fit
     
-    utility.plot()
+    # update model if table is conditional
+    if (input$probtabltype == "Conditional Probability Table") {
+      # collect column names related to probability
+      probability_columns <- data.df %>% select(starts_with(input$nodeProbTable)) %>% colnames()
+      remove_pattern <- paste(input$nodeProbTable, "=", sep="")
+      new_columns <- c()
+      
+      # Check if all probabilities sum to 100% if not give error message
+      prob_sum <- rowSums(data.df[, probability_columns])
+      for (sum in prob_sum){
+        if (sum != 100){
+          errorMsg <-"One or more conditional probabilities do not sum to 100%."
+          shinyalert("Oops!", errorMsg, type = "error")
+          return()
+        }
+      }
+
+      # iterate through columns and change to state name
+      for (probability_column in probability_columns){
+        
+        # create new column name and rename old one, add to new columns vector
+        new_column_name <- str_remove(probability_column, remove_pattern)
+        data.df <- rename(data.df, !!new_column_name:=!!probability_column)
+        new_columns <- c(new_column_name, new_columns)
+      }
+      
+      # convert df to long form and divide probabilities by 100
+      data.df <- data.df %>%
+                 pivot_longer(new_columns,
+                              names_to=input$nodeProbTable,
+                              values_to="Freq") %>%
+                 mutate(Freq=Freq/100)
+      
+      # columns need to be reordered so it can be correctly converted to a table
+      # get column names except for node column to rearrange column order
+      data.columns <- data.df %>% select(-!!input$nodeProbTable) %>% colnames
+      data.columns <- c(input$nodeProbTable, data.columns)
+      data.df <- data.df[data.columns]
+      
+      # convert df to table
+      model.probability.table <- xtabs(Freq~., data.df)
+
+    # update model if table is marginal
+    } else{
+      # check if the marginal probabilities sum to 100%
+      sum <- data.df %>% summarise(total_prob=sum(probability))
+      if (sum$total_prob != 100){
+        errorMsg <-"The marginal probabilities do not sum to 100%."
+        shinyalert("Oops!", errorMsg, type = "error")
+        return()
+      }
+      
+      # prepare table for update probability function
+      data.df <- rename(data.df, state:=!!input$nodeProbTable)
+      
+      # collect model probability
+      model.probability <- as.data.frame(custom_model[[input$nodeProbTable]]$prob)
+      
+      # if var1 is a column name, rename to be variable name
+      if ("Var1" %in% colnames(model.probability)){
+        model.probability <- rename(model.probability, !!input$nodeProbTable:=Var1)
+      }
+      
+      model.probability.table <- update_probability(input$nodeProbTable,
+                                                    model.probability, 
+                                                    data.df)
+    }
+    # update model with new table
+    custom_model[[input$nodeProbTable]] <- model.probability.table
     
+    # update reactive value
+    network$advanced.fit <- custom_model
+    
+    # check if node has already been added to checked list
+    for (updated_node in advanced$updated_nodes){
+      if (input$nodeProbTable == updated_node$children){
+        return()
+      }
+    }
+    
+    advanced$updated_nodes[[advanced$node_counter]] <- tags$li(input$nodeProbTable)
+    advanced$node_counter <- advanced$node_counter + 1
+    
+  })
+  
+  # update list of changed nodes
+  output$ChangeNodes <- renderUI({
+    advanced$updated_nodes
+  })
+  
+  # add policy
+  observeEvent(input$networkUpdate, {
+    # check if a name has been provided
+    if (input$policyName == ""){
+      errorMsg <-"No name was provided for the model!"
+      shinyalert("Oops!", errorMsg, type = "error")
+      return()
+    }
+    
+    # check if name has already been used for another policy
+    current_policies <- CustomPolicies$archiveList[[input$model_version]]
+    if (input$policyName %in% current_policies$name){
+      errorMsg <-"You have already used this policy name!"
+      shinyalert("Oops!", errorMsg, type = "error")
+      return()
+    }
+    
+    utility <- calculate_utility(network$advanced.fit)
+    
+    CustomPolicies$archiveList[[input$model_version]] <- current_policies %>% 
+                                                         add_row(name=input$policyName,
+                                                                 Intellectual_Control=utility$Intellectual_Control,
+                                                                 renderability=utility$Renderability)
+    
+    CustomPolicies$models[[input$model_version]][[input$policyName]] = network$advanced.fit
+  
+  })
+  
+  # add custom model
+  observeEvent(input$addModelAdvanced, {
+    # check if a name has been provided
+    if (input$policyName == ""){
+      errorMsg <-"No name was provided for the model!"
+      shinyalert("Oops!", errorMsg, type = "error")
+      return()
+    }
+    
+    # check if name is already being used for another custom model
+    if (input$policyName %in% names(CustomModels$custom_networks)){
+      errorMsg <-"You are already using this name for another custom model!"
+      shinyalert("Oops!", errorMsg, type = "error")
+      return()
+    }
+    
+    # Add custom network to memory 
+    CustomModels$custom_networks[[input$policyName]] = network$advanced.fit
+    CustomPolicies$models[[input$policyName]] = list('Base'= network$advanced.fit)
+    
+    # calculate utility and store
+    utility <- calculate_utility(network$advanced.fit)
+    CustomModels$base_utility.df <- CustomModels$base_utility.df %>% add_row(name=input$policyName,
+                                                                             Intellectual_Control=utility$Intellectual_Control,
+                                                                             renderability=utility$Renderability)
+    # TODO: Why do we have two structures saving the same information?
+    CustomPolicies$archiveList[[input$policyName]] <- tibble(name=input$policyName,
+                                                             Intellectual_Control=utility$Intellectual_Control,
+                                                             renderability=utility$Renderability)
+    
+    # setting choices for the drop down list in the Simple view Node customisation tab
+    customModelChoices <- CustomModels$base_utility.df %>% select(name)
+    updateSelectInput(session, 'customModelSelection', choices=customModelChoices)
+    updateSelectInput(session, "model_version", label="Select Model", choices=customModelChoices)
   })
   
   # Reset network to original probabilities
   observeEvent(input$networkReset, {
     
-    network$cancer.fit <- stable.fit
+    network$advanced.fit <- CustomModels$custom_networks[[input$model_version]]
+    advanced$updated_nodes <- list()
+    advanced$node_counter <- 1
     
   })
-  
-  # update network based off input changes
-  observeEvent(input$networkUpdate, {
-    
-    # retrieve updated table data and convert to dataframe
-    # normalise probabilities between 0 and 1
-    smoker.df <- as.data.frame(hot.to.df(input$smokerHotable)) %>%
-      mutate(Probability=Probability/100)
-    pollution.df <- as.data.frame(hot.to.df(input$pollutionHotable)) %>%
-      mutate(Probability=Probability/100)
-    cancer.df <- as.data.frame(hot.to.df(input$cancerHotable))
-    
-    # Convert independent table to conditional table to update model
-    if (input$CancerProbTable == "Independent Probability Table") {
-      cancer.true <- cancer.df %>% filter(Cancer=="True") %>% select(Probability)
-      cancer.true <- cancer.true$Probability/100
-      cancer.df <- convertToConditional(cancer.true, 1 - cancer.true)
-      
-    } else{
-      # Convert conditional table from wide form to long form
-      cancer.df <- cancer.df %>%
-        rename(True=`Cancer=True`, False=`Cancer=False`) %>%
-        pivot_longer(c(True, False),
-                     names_to="Cancer",
-                     values_to="Probability") %>%
-        mutate(Probability=Probability/100)
-      
-    }
-    
-    # convert dataframes to table
-    updatedSmokerTable <- xtabs(Probability~Smoker, smoker.df)
-    updatedPollutionTable <- xtabs(Probability~Pollution, pollution.df)
-    updatedCancerTable <- xtabs(Probability~Cancer+Smoker+Pollution, cancer.df)
-    print(updatedCancerTable)
-    
-    
-    # retrieve model
-    model.fit <- network$cancer.fit
-    
-    # updated model probabilities
-    model.fit$Smoker <- updatedSmokerTable
-    model.fit$Pollution <- updatedPollutionTable
-    model.fit$Cancer <- updatedCancerTable
-    
-    # update reactive model
-    network$cancer.fit <- model.fit
-    
-    # Save policy
-    if (input$policyName != "Enter Policy Name...") {
-      
-      # Save updated model
-      networks <- Utility$policy_networks
-      networks[[input$policyName]] = model.fit
-      Utility$policy_networks <- networks
-      
-      # calculate utility score
-      utility <- calculateUtility(cancer.df, smoker.df, pollution.df)
-      
-      # update reactive utility dataframe
-      Utility$utility.df <- Utility$utility.df %>% 
-        add_row(name=input$policyName, utility=utility$TotalProb)
-      
-      # Create new policy list
-      policy.names <- Utility$utility.df %>% select(name) %>% unique()
-      
-      # update possible policy selections
-      updateSelectInput(session,
-                        "policySelection",
-                        label="Select Policy",
-                        choices=policy.names$name)
-    }
-    
+
+  # plot policy comparison
+  output$PolicyComparison <- renderPlot({
+    CustomPolicies$archiveList[[input$model_version]] %>%
+      mutate(utility=Intellectual_Control+renderability) %>% 
+      pivot_longer(c(Intellectual_Control, renderability), names_to="node") %>%
+      ggplot(aes(x=name, fill=node, y=value)) +
+      geom_bar(position="stack", stat="identity")
   })
   
+  # plot custom model comparison
+  output$BaseUtilityComparison <- renderPlot({
+    CustomModels$base_utility.df %>%
+      mutate(utility=Intellectual_Control+renderability) %>% 
+      pivot_longer(c(Intellectual_Control, renderability), names_to="node") %>%
+      ggplot(aes(x=name, fill=node, y=value)) +
+      geom_bar(position="stack", stat="identity")
+  })
   
   # REPORT TAB
   
@@ -1153,8 +1243,8 @@ shinyServer(function(input, output, session) {
 
     # getting list of policies
     for(policy in currModel$name){
-      policyUtility <- currModel %>% filter(name==policy) %>% select(renderability, findability)
-      currUtility <- policyUtility$findability + policyUtility$renderability 
+      policyUtility <- currModel %>% filter(name==policy) %>% select(renderability, Intellectual_Control)
+      currUtility <- policyUtility$Intellectual_Control + policyUtility$renderability 
       
       summary <- paste(summary, policy, "\t", currUtility, "<br/>", sep = "")
       
@@ -1177,7 +1267,7 @@ shinyServer(function(input, output, session) {
     ## Initial Model and Pop setup flags
     if(initialModelSetup$flag){
       CustomPolicies$archiveList[['TNA']] <- tibble(name="Base", 
-                                                    findability=tna_utility$Findability,
+                                                    Intellectual_Control=tna_utility$Intellectual_Control,
                                                     renderability=tna_utility$Renderability)
       
       CustomPolicies$models[['TNA']][['Base']] <- stable.fit
@@ -1226,8 +1316,8 @@ shinyServer(function(input, output, session) {
   
   plotUtility <- reactive({
     CustomPolicies$archiveList[[input$reportTabModelSelection]] %>%
-      mutate(utility=findability+renderability) %>%
-      pivot_longer(c(findability, renderability), names_to="policy") %>%
+      mutate(utility=Intellectual_Control+renderability) %>%
+      pivot_longer(c(Intellectual_Control, renderability), names_to="policy") %>%
       ggplot(aes(x=name, fill=policy, y=value)) +
       geom_bar(position="stack", stat="identity")
   })
@@ -1325,41 +1415,40 @@ shinyServer(function(input, output, session) {
     utility.plot()
     
   })
-  
-  
-  
-  
-  
-  
-  # Function calculates utility
-  calculateUtility <- function(cancer.df, smoker.df, pollution.df){
+
+  # Download selected files
+  output$Download <- downloadHandler(
     
-    cancer.true <- cancer.df %>% filter(Cancer == "True")
-    cancer.prob <- cancer.true %>% 
-      left_join(smoker.df, by="Smoker") %>% 
-      left_join(pollution.df, by="Pollution") %>%
-      rename(CancerProb=Probability.x,
-             SmokerProb=Probability.y,
-             PollutionProb=Probability) %>%
-      mutate(SummedProb = CancerProb*SmokerProb*PollutionProb) %>%
-      summarise(TotalProb = 1- sum(SummedProb))
+    filename = function() {
+      paste0(input$policySelection, ".zip")
+    },
     
-    return(cancer.prob)
-  }
-  
-  # Function converts independent cancer table to conditional cancer table
-  # TODO: make more elegant solution for more complicated network
-  convertToConditional <- function(cancer.true, cancer.false){
-    
-    cancer <- c("True", "False", "True", "False", "True", "False", "True", "False")
-    pollution <- c("low", "low", "high", "high", "low", "low", "high", "high")
-    smoker <- c("True","True","True","True", "False", "False", "False", "False")
-    Probability <- c(cancer.true, cancer.false, cancer.true, cancer.false,
-                     cancer.true, cancer.false, cancer.true, cancer.false)
-    
-    cancer.df <- tibble("Cancer"=cancer, "Pollution"=pollution,
-                        "Smoker"=smoker, "Probability"=Probability)
-    
-    return(cancer.df)
-  }
+    content = function(file){
+      
+      # write model
+      if ("Model" %in% input$downloadOptions) {
+        write.bif(paste0(input$policySelection, ".bif"),
+                  Utility$policy_networks[[input$policySelection]])
+      }
+      
+      # write utility plot
+      if ("Utility Plot" %in% input$downloadOptions) {
+        png(filename=paste0(input$policySelection, ".png"))
+        dev.off()
+      }
+      
+      
+      # create zip file to return
+      filenames <- c(paste0(input$policySelection, ".bif"),
+                     paste0(input$policySelection, ".png"))
+      
+      zip(file, filenames)
+      
+      # delete all files on server
+      for (filename in filenames){
+        file.remove(filename)
+      }
+    }
+  )
 })
+
