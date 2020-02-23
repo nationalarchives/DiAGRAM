@@ -1,6 +1,10 @@
 node_name,node_question,type
-Storage_media,What is the storage media being used to store these digital assets?,slider
-Physical_disaster,How high is your flood risk?,slider
-Institution_type,What is your institution type?,radiobuttons
-Copy_protocol,How many of the listed items are part of your archive's copy protocol?,radiobuttons
-Digital_data_type,What is the digital data type of these digital assets?,slider
+Digital_Object,What proportion (number of files) of your digital archive are the the following?,slider
+Checksum,"For what proportionof your files do you have a checksum from the depositor? If not, have you generated a checksum instantly upon reciept?",slider
+System_Security,How would you describe your system security practices?,BooleanSlider
+Info_Management,Do you have sufficient internal knowledge management systems to track the preservation actions since acquisition?,BooleanSlider
+Technical_Skills,"Do you have the expertise within your institution to implement technical digital preservation techniques such as file format migration, software emulation, data recovery or extraction of technical metadata?",radiobuttons
+Op_Environment,Do you keep your storage conditions optimal and have mitigation strategies to protect against damage from a physical disaster?,BooleanSlider
+ReplicationAndRefreshment,"For your digital material, do you have at least one additional copy of the bitstream? Do you have a refreshment policy to ensure you always have at least one additional copy of the bitstream in the event of one version becoming damaged or lost? If yes to both, then 'good'. Otherwise, please aswer as 'poor'.",radiobuttons
+Physical_Disaster,What is your flood risk?,radiobuttons
+Storage_Medium,What proportion of your digital objects are stored on the following medium types?,slider

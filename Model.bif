@@ -1,240 +1,207 @@
 network unknown {
 }
-variable Service_continuity {
-  type discrete [ 2 ] { True, False };
+variable Op_Environment {
+  type discrete [ 2 ] { Good, Poor };
 }
-variable Permited_access {
-  type discrete [ 2 ] { True, False };
+variable Integrity {
+  type discrete [ 2 ] { Yes, No };
 }
-variable System_security {
-  type discrete [ 2 ] { True, False };
+variable System_Security {
+  type discrete [ 2 ] { Good, Poor };
 }
-variable Provenance {
-  type discrete [ 2 ] { True, False };
+variable Info_Management {
+  type discrete [ 2 ] { Yes, No };
 }
-variable Findability {
-  type discrete [ 2 ] { True, False };
+variable Storage_Medium {
+  type discrete [ 3 ] { A, B, C };
 }
-variable Digital_data_type {
-  type discrete [ 2 ] { Digitised, Surrogate };
+variable ReplicationAndRefreshment {
+  type discrete [ 2 ] { Yes, No };
 }
-variable Cataloguing {
-  type discrete [ 2 ] { True, False };
+variable Digital_Object {
+  type discrete [ 3 ] { Born_digital, Digitised, Surrogate };
+}
+variable Content_Metadata {
+  type discrete [ 3 ] { Yes, Can_acquire, No };
+}
+variable Tech_Metadata {
+  type discrete [ 2 ] { Yes, No };
+}
+variable File_Format {
+  type discrete [ 4 ] { Ubiquous_open, Ubiquous_notopen, Notubiquous_open, Notubiquous_notopen };
+}
+variable Checksum {
+  type discrete [ 3 ] { Yes, No_but_generated, No };
+}
+variable Obsolescence {
+  type discrete [ 2 ] { Yes, No };
+}
+variable Tools_to_Render {
+  type discrete [ 2 ] { Yes, No };
+}
+variable Intellectual_Control {
+  type discrete [ 2 ] { Yes, No };
+}
+variable Conditions_of_Use {
+  type discrete [ 2 ] { Yes, No };
 }
 variable Renderability {
-  type discrete [ 2 ] { True, False };
+  type discrete [ 2 ] { Yes, No };
 }
-variable Technical_metadata {
-  type discrete [ 2 ] { True, False };
+variable Bit_Preservation {
+  type discrete [ 2 ] { Yes, No };
 }
-variable Content_metadata {
-  type discrete [ 2 ] { True, False };
+variable Identity {
+  type discrete [ 2 ] { Yes, No };
 }
-variable Tools {
-  type discrete [ 2 ] { True, False };
-}
-variable Obsolecence {
-  type discrete [ 2 ] { True, False };
-}
-variable Physical_disaster {
+variable Physical_Disaster {
   type discrete [ 2 ] { High, Low };
 }
-variable Economic_political_upheaval {
-  type discrete [ 2 ] { True, False };
+variable Storage_Life {
+  type discrete [ 2 ] { <Year, >Year };
 }
-variable Technological_upheaval {
-  type discrete [ 2 ] { True, False };
+variable Technical_Skills {
+  type discrete [ 2 ] { Good, Poor };
 }
-variable Operating_environment {
-  type discrete [ 2 ] { True, False };
-}
-variable Storage_life {
-  type discrete [ 2 ] { True, False };
-}
-variable Storage_media {
-  type discrete [ 5 ] { Tape, Optical, SSD, HDD, Cloud };
-}
-variable Institution_type {
-  type discrete [ 5 ] { Government Central, Government Local, Charity, Private Corporate, Higher Education };
-}
-variable Copy_protocol {
-  type discrete [ 3 ] { All, Partial, None };
-}
-variable Replacement_protocol {
-  type discrete [ 2 ] { True, False };
-}
-variable Preservation {
-  type discrete [ 2 ] { True, False };
-}
-variable Processing {
-  type discrete [ 2 ] { True, False };
-}
-probability ( Service_continuity | Economic_political_upheaval, Institution_type ) {
-  (True, Government Central) 0.5, 0.5;
-  (False, Government Central) 0.5, 0.5;
-  (True, Government Local) 0.5, 0.5;
-  (False, Government Local) 0.5, 0.5;
-  (True, Charity) 0.5, 0.5;
-  (False, Charity) 0.5, 0.5;
-  (True, Private Corporate) 0.5, 0.5;
-  (False, Private Corporate) 0.5, 0.5;
-  (True, Higher Education) 0.5, 0.5;
-  (False, Higher Education) 0.5, 0.5;
-}
-probability ( Permited_access | Content_metadata ) {
-  (True) 0.5, 0.5;
-  (False) 0.5, 0.5;
-}
-probability ( System_security ) {
+probability ( Op_Environment ) {
   table 0.5, 0.5;
 }
-probability ( Provenance | Content_metadata ) {
-  (True) 0.5, 0.5;
-  (False) 0.5, 0.5;
+probability ( Integrity | System_Security, Info_Management, Checksum ) {
+  (Good, Yes, Yes) 1.0, 0.0;
+  (Poor, Yes, Yes) 0.9, 0.1;
+  (Good, No, Yes) 0.5, 0.5;
+  (Poor, No, Yes) 0.4, 0.6;
+  (Good, Yes, No_but_generated) 0.9, 0.1;
+  (Poor, Yes, No_but_generated) 0.5, 0.5;
+  (Good, No, No_but_generated) 0.4, 0.6;
+  (Poor, No, No_but_generated) 0.2, 0.8;
+  (Good, Yes, No) 0.0, 1.0;
+  (Poor, Yes, No) 0.0, 1.0;
+  (Good, No, No) 0.0, 1.0;
+  (Poor, No, No) 0.0, 1.0;
 }
-probability ( Findability | Permited_access, Cataloguing ) {
-  (True, True) 0.5, 0.5;
-  (False, True) 0.5, 0.5;
-  (True, False) 0.5, 0.5;
-  (False, False) 0.5, 0.5;
-}
-probability ( Digital_data_type ) {
+probability ( System_Security ) {
   table 0.5, 0.5;
 }
-probability ( Cataloguing | Content_metadata, Processing ) {
-  (True, True) 0.5, 0.5;
-  (False, True) 0.5, 0.5;
-  (True, False) 0.5, 0.5;
-  (False, False) 0.5, 0.5;
+probability ( Info_Management ) {
+  table 0.6, 0.4;
 }
-probability ( Renderability | Tools, Preservation ) {
-  (True, True) 0.5, 0.5;
-  (False, True) 0.5, 0.5;
-  (True, False) 0.5, 0.5;
-  (False, False) 0.5, 0.5;
+probability ( Storage_Medium ) {
+  table 0.05, 0.90, 0.05;
 }
-probability ( Technical_metadata | Digital_data_type ) {
-  (Digitised) 0.5, 0.5;
-  (Surrogate) 0.5, 0.5;
-}
-probability ( Content_metadata | Digital_data_type ) {
-  (Digitised) 0.5, 0.5;
-  (Surrogate) 0.5, 0.5;
-}
-probability ( Tools | Technical_metadata, Obsolecence ) {
-  (True, True) 0.5, 0.5;
-  (False, True) 0.5, 0.5;
-  (True, False) 0.5, 0.5;
-  (False, False) 0.5, 0.5;
-}
-probability ( Obsolecence | Technical_metadata, Storage_media ) {
-  (True, Tape) 0.5, 0.5;
-  (False, Tape) 0.5, 0.5;
-  (True, Optical) 0.5, 0.5;
-  (False, Optical) 0.5, 0.5;
-  (True, SSD) 0.5, 0.5;
-  (False, SSD) 0.5, 0.5;
-  (True, HDD) 0.5, 0.5;
-  (False, HDD) 0.5, 0.5;
-  (True, Cloud) 0.5, 0.5;
-  (False, Cloud) 0.5, 0.5;
-}
-probability ( Physical_disaster ) {
+probability ( ReplicationAndRefreshment ) {
   table 0.5, 0.5;
 }
-probability ( Economic_political_upheaval ) {
+probability ( Digital_Object ) {
+  table 0.05, 0.20, 0.75;
+}
+probability ( Content_Metadata | Digital_Object ) {
+  (Born_digital) 0.2, 0.3, 0.5;
+  (Digitised) 0.5, 0.4, 0.1;
+  (Surrogate) 0.70, 0.25, 0.05;
+}
+probability ( Tech_Metadata | Digital_Object, Technical_Skills ) {
+  (Born_digital, Good) 0.5, 0.5;
+  (Digitised, Good) 0.8, 0.2;
+  (Surrogate, Good) 0.8, 0.2;
+  (Born_digital, Poor) 0.3, 0.7;
+  (Digitised, Poor) 0.5, 0.5;
+  (Surrogate, Poor) 0.5, 0.5;
+}
+probability ( File_Format | Digital_Object ) {
+  (Born_digital) 0.25, 0.25, 0.25, 0.25;
+  (Digitised) 0.25, 0.25, 0.25, 0.25;
+  (Surrogate) 0.25, 0.25, 0.25, 0.25;
+}
+probability ( Checksum ) {
+  table 0.05, 0.90, 0.05;
+}
+probability ( Obsolescence | Storage_Medium, Technical_Skills ) {
+  (A, Good) 0.5, 0.5;
+  (B, Good) 0.8, 0.2;
+  (C, Good) 0.95, 0.05;
+  (A, Poor) 0.3, 0.7;
+  (B, Poor) 0.5, 0.5;
+  (C, Poor) 0.95, 0.05;
+}
+probability ( Tools_to_Render | File_Format, Technical_Skills ) {
+  (Ubiquous_open, Good) 1.0, 0.0;
+  (Ubiquous_notopen, Good) 0.9, 0.1;
+  (Notubiquous_open, Good) 0.5, 0.5;
+  (Notubiquous_notopen, Good) 0.1, 0.9;
+  (Ubiquous_open, Poor) 0.9, 0.1;
+  (Ubiquous_notopen, Poor) 0.8, 0.2;
+  (Notubiquous_open, Poor) 0.2, 0.8;
+  (Notubiquous_notopen, Poor) 0.0, 1.0;
+}
+probability ( Intellectual_Control | Conditions_of_Use, Identity ) {
+  (Yes, Yes) 1.0, 0.0;
+  (No, Yes) 0.0, 1.0;
+  (Yes, No) 0.0, 1.0;
+  (No, No) 0.0, 1.0;
+}
+probability ( Conditions_of_Use | Digital_Object ) {
+  (Born_digital) 0.5, 0.5;
+  (Digitised) 0.95, 0.05;
+  (Surrogate) 0.95, 0.05;
+}
+probability ( Renderability | Tech_Metadata, Tools_to_Render, Bit_Preservation ) {
+  (Yes, Yes, Yes) 1.0, 0.0;
+  (No, Yes, Yes) 0.2, 0.8;
+  (Yes, No, Yes) 0.0, 1.0;
+  (No, No, Yes) 0.0, 1.0;
+  (Yes, Yes, No) 0.0, 1.0;
+  (No, Yes, No) 0.0, 1.0;
+  (Yes, No, No) 0.0, 1.0;
+  (No, No, No) 0.0, 1.0;
+}
+probability ( Bit_Preservation | Integrity, Obsolescence, Storage_Life ) {
+  (Yes, Yes, <Year) 0.0, 1.0;
+  (No, Yes, <Year) 0.0, 1.0;
+  (Yes, No, <Year) 0.9, 0.1;
+  (No, No, <Year) 0.1, 0.9;
+  (Yes, Yes, >Year) 0.0, 1.0;
+  (No, Yes, >Year) 0.0, 1.0;
+  (Yes, No, >Year) 1.0, 0.0;
+  (No, No, >Year) 0.8, 0.2;
+}
+probability ( Identity | Info_Management, Content_Metadata ) {
+  (Yes, Yes) 1.0, 0.0;
+  (No, Yes) 0.0, 1.0;
+  (Yes, Can_acquire) 0.9, 0.1;
+  (No, Can_acquire) 0.0, 1.0;
+  (Yes, No) 0.0, 1.0;
+  (No, No) 0.0, 1.0;
+}
+probability ( Physical_Disaster ) {
+  table 0.01, 0.99;
+}
+probability ( Storage_Life | Op_Environment, Storage_Medium, ReplicationAndRefreshment, Physical_Disaster ) {
+  (Good, A, Yes, High) 0.0, 1.0;
+  (Poor, A, Yes, High) 0.0, 1.0;
+  (Good, B, Yes, High) 0.0, 1.0;
+  (Poor, B, Yes, High) 0.0, 1.0;
+  (Good, C, Yes, High) 0.0, 1.0;
+  (Poor, C, Yes, High) 0.0, 1.0;
+  (Good, A, No, High) 0.8, 0.2;
+  (Poor, A, No, High) 0.9, 0.1;
+  (Good, B, No, High) 0.2, 0.8;
+  (Poor, B, No, High) 0.7, 0.3;
+  (Good, C, No, High) 0.0, 1.0;
+  (Poor, C, No, High) 0.0, 1.0;
+  (Good, A, Yes, Low) 0.0, 1.0;
+  (Poor, A, Yes, Low) 0.0, 1.0;
+  (Good, B, Yes, Low) 0.0, 1.0;
+  (Poor, B, Yes, Low) 0.0, 1.0;
+  (Good, C, Yes, Low) 0.0, 1.0;
+  (Poor, C, Yes, Low) 0.0, 1.0;
+  (Good, A, No, Low) 0.5, 0.5;
+  (Poor, A, No, Low) 0.8, 0.2;
+  (Good, B, No, Low) 0.1, 0.9;
+  (Poor, B, No, Low) 0.5, 0.5;
+  (Good, C, No, Low) 0.0, 1.0;
+  (Poor, C, No, Low) 0.0, 1.0;
+}
+probability ( Technical_Skills ) {
   table 0.5, 0.5;
-}
-probability ( Technological_upheaval ) {
-  table 0.5, 0.5;
-}
-probability ( Operating_environment | Physical_disaster, Storage_media, Processing ) {
-  (High, Tape, True) 0.5, 0.5;
-  (Low, Tape, True) 0.5, 0.5;
-  (High, Optical, True) 0.5, 0.5;
-  (Low, Optical, True) 0.5, 0.5;
-  (High, SSD, True) 0.5, 0.5;
-  (Low, SSD, True) 0.5, 0.5;
-  (High, HDD, True) 0.5, 0.5;
-  (Low, HDD, True) 0.5, 0.5;
-  (High, Cloud, True) 0.5, 0.5;
-  (Low, Cloud, True) 0.5, 0.5;
-  (High, Tape, False) 0.5, 0.5;
-  (Low, Tape, False) 0.5, 0.5;
-  (High, Optical, False) 0.5, 0.5;
-  (Low, Optical, False) 0.5, 0.5;
-  (High, SSD, False) 0.5, 0.5;
-  (Low, SSD, False) 0.5, 0.5;
-  (High, HDD, False) 0.5, 0.5;
-  (Low, HDD, False) 0.5, 0.5;
-  (High, Cloud, False) 0.5, 0.5;
-  (Low, Cloud, False) 0.5, 0.5;
-}
-probability ( Storage_life | Operating_environment, Storage_media, Replacement_protocol ) {
-  (True, Tape, True) 0.5, 0.5;
-  (False, Tape, True) 0.5, 0.5;
-  (True, Optical, True) 0.5, 0.5;
-  (False, Optical, True) 0.5, 0.5;
-  (True, SSD, True) 0.5, 0.5;
-  (False, SSD, True) 0.5, 0.5;
-  (True, HDD, True) 0.5, 0.5;
-  (False, HDD, True) 0.5, 0.5;
-  (True, Cloud, True) 0.5, 0.5;
-  (False, Cloud, True) 0.5, 0.5;
-  (True, Tape, False) 0.5, 0.5;
-  (False, Tape, False) 0.5, 0.5;
-  (True, Optical, False) 0.5, 0.5;
-  (False, Optical, False) 0.5, 0.5;
-  (True, SSD, False) 0.5, 0.5;
-  (False, SSD, False) 0.5, 0.5;
-  (True, HDD, False) 0.5, 0.5;
-  (False, HDD, False) 0.5, 0.5;
-  (True, Cloud, False) 0.5, 0.5;
-  (False, Cloud, False) 0.5, 0.5;
-}
-probability ( Storage_media | Technological_upheaval ) {
-  (True) 0.2, 0.2, 0.2, 0.2, 0.2;
-  (False) 0.2, 0.2, 0.2, 0.2, 0.2;
-}
-probability ( Institution_type ) {
-  table 0.2, 0.2, 0.2, 0.2, 0.2;
-}
-probability ( Copy_protocol | Economic_political_upheaval ) {
-  (True) 0.4, 0.3, 0.3;
-  (False) 0.4, 0.3, 0.3;
-}
-probability ( Replacement_protocol ) {
-  table 0.5, 0.5;
-}
-probability ( Preservation | Service_continuity, System_security, Provenance, Storage_life ) {
-  (True, True, True, True) 0.5, 0.5;
-  (False, True, True, True) 0.5, 0.5;
-  (True, False, True, True) 0.5, 0.5;
-  (False, False, True, True) 0.5, 0.5;
-  (True, True, False, True) 0.5, 0.5;
-  (False, True, False, True) 0.5, 0.5;
-  (True, False, False, True) 0.5, 0.5;
-  (False, False, False, True) 0.5, 0.5;
-  (True, True, True, False) 0.5, 0.5;
-  (False, True, True, False) 0.5, 0.5;
-  (True, False, True, False) 0.5, 0.5;
-  (False, False, True, False) 0.5, 0.5;
-  (True, True, False, False) 0.5, 0.5;
-  (False, True, False, False) 0.5, 0.5;
-  (True, False, False, False) 0.5, 0.5;
-  (False, False, False, False) 0.5, 0.5;
-}
-probability ( Processing | Digital_data_type, Technical_metadata, Copy_protocol ) {
-  (Digitised, True, All) 0.5, 0.5;
-  (Surrogate, True, All) 0.5, 0.5;
-  (Digitised, False, All) 0.5, 0.5;
-  (Surrogate, False, All) 0.5, 0.5;
-  (Digitised, True, Partial) 0.5, 0.5;
-  (Surrogate, True, Partial) 0.5, 0.5;
-  (Digitised, False, Partial) 0.5, 0.5;
-  (Surrogate, False, Partial) 0.5, 0.5;
-  (Digitised, True, None) 0.5, 0.5;
-  (Surrogate, True, None) 0.5, 0.5;
-  (Digitised, False, None) 0.5, 0.5;
-  (Surrogate, False, None) 0.5, 0.5;
 }

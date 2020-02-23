@@ -195,12 +195,26 @@ dashboardPage(
         ),
         fluidRow(
           column(
-            width=12,
+            width=8,
             box(
               title="Utility Plot",
               width=NULL,
               collapsible=TRUE,
               plotOutput("BasicUtilityComparison")
+            )
+          ),
+          column(
+            width=4,
+            box(
+              title="Upload Custom Model",
+              collapsible=TRUE,
+              width=NULL,
+              strong("Please ensure any models uploaded have been generated from DiAGRAM"),
+              br(),
+              br(),
+              fileInput("customModel",
+                        "Choose Custom Model",
+                        accept=c(".bif"))
             )
           )
         )

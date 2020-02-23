@@ -1,24 +1,22 @@
 node_name,node_definition,node_year,data_source,OAIS_Entity,type
-Service_continuity,"Continuing to provide an archival service, even with changing institutions, staff or policies.",2020,https://www.nationalarchives.gov.uk,Administration,BooleanSlider
-Permited_access,Legal and administrative rights of the digital object.,2020,https://www.nationalarchives.gov.uk,Access,BooleanSlider
-System_security,Record is secure against malicious or accidental damage.,2020,https://www.nationalarchives.gov.uk,Storage,BooleanSlider
-Provenance,Keeping it the way the records are meant to be.,2020,https://www.nationalarchives.gov.uk,Ingest,BooleanSlider
-Findability,Target community can locate record of interest in collection.,2020,https://www.nationalarchives.gov.uk,Access,BooleanSlider
-Digital_data_type,Whether the record is born digital or digitised (or a digital surrogate).,2020,https://www.nationalarchives.gov.uk,Data Management,BooleanSlider
-Cataloguing,The web tool used to access the catalogue and acquire the records.,2020,https://www.nationalarchives.gov.uk,Ingest,BooleanSlider
-Renderability,Target community can access and use the digital object and its content metadata.,2020,https://www.nationalarchives.gov.uk,,BooleanSlider
-Technical_metadata,"Includes technical information that applies to any file type, such as information about the software and hardware on which the digital object can be rendered or executed, or checksums and digital signatures to ensure fixity and authenticity.",2020,https://www.nationalarchives.gov.uk,Data Management,BooleanSlider
-Content_metadata,"Describes the intellectual entity through properties such as author and title, and supports discovery and delivery of digital content. It may also provide an historic context, by, for example, specifying which print- based material was the original source for a digital derivative (source provenance).",2020,https://www.nationalarchives.gov.uk,Data Management,BooleanSlider
-Tools,"Tools to render the digital records, inculding tools to do format migrations and emulations.",2020,https://www.nationalarchives.gov.uk,Preservation Planning,BooleanSlider
-Obsolecence,Essential hardware or software required to render the records becoming obsolete.,2020,https://www.nationalarchives.gov.uk,Preservation Planning,BooleanSlider
-Physical_disaster,A sudden accident or a natural catastrophe that causes great damage.,2020,https://www.nationalarchives.gov.uk,Storage,BooleanSlider
-Economic_political_upheaval,"Economic or political upheaval, for example financial disruption, national recession, change of focus.",2020,https://www.nationalarchives.gov.uk,Administration,BooleanSlider
-Technological_upheaval,Change in technology used in digital archiving.,2020,https://www.nationalarchives.gov.uk,Preservation Planning,BooleanSlider
-Operating_environment,"The conditions under which the records are stored, including location, environment, security etc.",2020,https://www.nationalarchives.gov.uk,Storage,BooleanSlider
-Storage_life,How long the digital record can be stored.,2020,https://www.nationalarchives.gov.uk,Storage,BooleanSlider
-Storage_media,"The type of media on which the digital records are stored e.g (hard drive disk, magnetic tape, flash drives).",2020,https://www.nationalarchives.gov.uk,Storage,slider
-Institution_type,"Breakdown of the type of institution i.e. education, local, private, national, special....",2020,https://www.nationalarchives.gov.uk,Administration,radiobuttons
-Copy_protocol,"The archives policies on copies of the digital record, e.g. number, diversity of storage media, geographical storage locations etc.",2020,https://www.nationalarchives.gov.uk,Access,radiobuttons
-Replacement_protocol,Whether or not a storage device is replaced and when.,2020,https://www.nationalarchives.gov.uk,Storage,BooleanSlider
-Preservation,The digital record and content metadata are in tact.,2020,https://www.nationalarchives.gov.uk,,BooleanSlider
-Processing,Procedures to prepare data and documentation for storage and preservation.,2020,https://www.nationalarchives.gov.uk,Access,BooleanSlider
+Digital_Object,"Whether it is a born-digital record, digitised record or surrogate.Born-Digital records are digital materials which have have originated from a digital source.Surrogates are digital materials which have been created as a result of converting analogue originals where we do hold the analogue original. (They are surrogate as the analogue is the official record).Digitised records are digital materials which have been created as a result of converting analogue originals, but we do not hold the analogue original.",2020,https://www.nationalarchives.gov.uk,Data Management,slider
+Content_Metadata,Descriptive metadata and custodial history information.,2020,https://www.nationalarchives.gov.uk,Data Management,slider
+Conditions_of_Use,"Knowing of the conditions of use and any restrictions, including the legal status, copyright, who owns the intellectual property, Freedom of Information restrictions etc. ",2020,https://www.nationalarchives.gov.uk,Access,BooleanSlider
+Intellectual_Control,"Having full knowledge of the material content, provenance and conditions of use.",2020,https://www.nationalarchives.gov.uk,Access,BooleanSlider
+Identity,Knowing what the material is and where it is from. ,2020,https://www.nationalarchives.gov.uk,Data Management,BooleanSlider
+Checksum,Information to allow for fixity checks on the file.,2020,https://www.nationalarchives.gov.uk,Preservation Planning,slider
+File_Format,"Whether the file format is open or proprietary, and whether or not it is ubiquitous.",2020,https://www.nationalarchives.gov.uk,Preservation Planning,slider
+Tech_Metadata,Whether the technical metadata has the complete information required to know what to expct from a full render.,2020,https://www.nationalarchives.gov.uk,Data Management,BooleanSlider
+Tools_to_Render,"Availability of tools and software to render the digital material, inculding to do format migrations and emulations.",2020,https://www.nationalarchives.gov.uk,Preservation Planning,BooleanSlider
+Renderability,The ability to render the digital object as originally intended.,2020,https://www.nationalarchives.gov.uk,Access,BooleanSlider
+Integrity,Maintaining the integrity of a digital object and verifying it has not been altered or corrupted.,2020,https://www.nationalarchives.gov.uk,Preservation Planning,BooleanSlider
+System_Security,The bit stream is secure against malicious or accidental damage,2020,https://www.nationalarchives.gov.uk,Preservation Planning,BooleanSlider
+Info_Management,Internal systems and support for coherent information management and documentation of preservation actions,2020,https://www.nationalarchives.gov.uk,Data Management,BooleanSlider
+Technical_Skills,"Bespoke digital preservation skills such as awareness of tecnological trends, detailed knowledge of storage media, hardware and software, skills to perform file format migration, skills to find or build emulating software etc.",2020,https://www.nationalarchives.gov.uk,Preservation Planning,BooleanSlider
+Obsolescence,"Essential equipment, hardware or software required to access the bit stream becoming obsolete.",2020,https://www.nationalarchives.gov.uk,Preservation Planning,BooleanSlider
+Bit_Preservation,A term used to denote a very basic level of preservation of digital resource as it was submitted (literally preservation of the bits forming a digital resource).,2020,https://www.nationalarchives.gov.uk,Storage,BooleanSlider
+Op_Environment,Whether the conditions are optimal and you have mitigation strategies in place to protect against physical disasters.,2020,https://www.nationalarchives.gov.uk,Storage,BooleanSlider
+ReplicationAndRefreshment,Whether you will always have access to at least two copies of the digital material.,2020,https://www.nationalarchives.gov.uk,Preservation Planning,radiobuttons
+Physical_Disaster,A sudden accident or a natural catastrophe that causes great physical damage.,2020,https://www.nationalarchives.gov.uk,Storage,radiobuttons
+Storage_Life,Whether the storage media is undamaged and functioning as expected.,2020,https://www.nationalarchives.gov.uk,Storage,slider
+Storage_Medium,The type of medium on which the digital objects are stored.,2020,https://www.nationalarchives.gov.uk,Storage,slider

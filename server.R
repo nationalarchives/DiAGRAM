@@ -22,6 +22,7 @@ library(shinyalert)
 library(gridExtra)
 
 options(repos = BiocManager::repositories())
+options(shiny.fullstacktrace = FALSE)
 
 shinyServer(function(input, output, session) {
   
@@ -32,14 +33,14 @@ shinyServer(function(input, output, session) {
     # convert model to grain object
     model.grain <- as.grain(model)
     
-    # find probability of findability and renderability
-    query.results <- querygrain(model.grain, nodes=c("Findability", "Renderability"))
+    # find probability of Intellectual_Control and renderability
+    query.results <- querygrain(model.grain, nodes=c("Intellectual_Control", "Renderability"))
     
     # Extract probabilities
-    prob.findability <- as.numeric(query.results$Findability["True"])
-    prob.renderability <- as.numeric(query.results$Renderability["True"])
+    prob.Intellectual_Control <- as.numeric(query.results$Intellectual_Control["Yes"])
+    prob.renderability <- as.numeric(query.results$Renderability["Yes"])
     
-    utility <- list("Findability"=prob.findability,
+    utility <- list("Intellectual_Control"=prob.Intellectual_Control,
                     "Renderability"=prob.renderability)
     
     return(utility)    
@@ -123,6 +124,7 @@ shinyServer(function(input, output, session) {
     # collect node states and corresponding probabilities
     node_states <- input.probability.df$state
     state_probabilities <- input.probability.df$probability
+
     # iterate through states and update model probability table
     i <- 1
     for (state in node_states){
@@ -135,7 +137,7 @@ shinyServer(function(input, output, session) {
     
     # normalise probability range between 0 and 1
     model.probability.df <- model.probability.df %>% mutate(Freq=Freq/100)
-    
+
     # convert from data.frame to table
     model.probability.table <- xtabs(Freq~., model.probability.df)
     return(model.probability.table)
@@ -174,7 +176,7 @@ shinyServer(function(input, output, session) {
   
   # Customised models
   CustomModels <- reactiveValues(base_utility.df=tibble(name="TNA",
-                                                        findability=tna_utility$Findability,
+                                                        Intellectual_Control=tna_utility$Intellectual_Control,
                                                         renderability=tna_utility$Renderability),
                                  custom_networks=list("TNA"=stable.fit))
   
@@ -450,7 +452,7 @@ shinyServer(function(input, output, session) {
   # Add question to setup page.
   # TODO: Make dynamic check rather than hardcoded 6
   output$Question <- renderUI({
-    if (questionValues$question_number < 6 && questionValues$question_number>=1){
+    if (questionValues$question_number < nrow(setup_questions)+1 && questionValues$question_number>=1){
       h4(strong(setup_questions[questionValues$question_number,]$node_question))
     } else {
       h4(strong("All Questions Answered. Please give model a name:"))
@@ -497,7 +499,7 @@ shinyServer(function(input, output, session) {
       session=session,
       id="Question_Progress",
       value=questionValues$question_number,
-      total=5
+      total=nrow(setup_questions)
     )
     
     # update question number
@@ -534,7 +536,7 @@ shinyServer(function(input, output, session) {
         session=session,
         id="Question_Progress",
         value=questionValues$question_number - 1,
-        total=5
+        total=nrow(setup_questions)
       )
     }
   })
@@ -559,12 +561,14 @@ shinyServer(function(input, output, session) {
     # first update inputs from radio buttons
     custom_model <- mutilated(stable.fit, evidence=answers$radio_answers)
     
-    # second update states with inputs as sliders
+    # second, update states with inputs as sliders
     for (node in names(answers$slider_answers)) {
       input.probability.df <- answers$slider_answers[[node]]
       model.probability.df <- as.data.frame(custom_model[[node]]$prob)
+      if ("Var1" %in% colnames(model.probability.df)){
+        model.probability.df <- rename(model.probability.df, !!node:=Var1)
+      }
       model.probability.table <- update_probability(node, model.probability.df, input.probability.df)
-      
       # update probability table for node
       custom_model[[node]] = model.probability.table
     }
@@ -574,28 +578,26 @@ shinyServer(function(input, output, session) {
       input.probability.df <- answers$boolean_slider_answers[[node]]
       model.probability.df <- as.data.frame(custom_model[[node]]$prob)
       model.probability.df <- rename(model.probability.df, !!node:=Var1)
-      
       model.probability.table <- update_probability(node, model.probability.df, input.probability.df)
-  
       # update probability table for node
       custom_model[[node]] = model.probability.table
     }
+
     # Add custom network to memory 
     CustomModels$custom_networks[[input$CustomisedModelName]] = custom_model
     CustomPolicies$models[[input$CustomisedModelName]] = list('Base'=custom_model)
-    
+
     # calculate utility and store
     utility <- calculate_utility(custom_model)
     CustomModels$base_utility.df <- CustomModels$base_utility.df %>% add_row(name=input$CustomisedModelName,
-                                                                             findability=utility$Findability,
+                                                                             Intellectual_Control=utility$Intellectual_Control,
                                                                              renderability=utility$Renderability)
     # TODO: Why do we have two structures saving the same information?
     CustomPolicies$archiveList[[input$CustomisedModelName]] <- tibble(name=input$CustomisedModelName,
-                                                                      findability=utility$Findability,
+                                                                      Intellectual_Control=utility$Intellectual_Control,
                                                                       renderability=utility$Renderability)
     
     # setting choices for the drop down list in the Simple view Node customisation tab
-
     customModelChoices <- CustomModels$base_utility.df %>% select(name)
     updateSelectInput(session, 'customModelSelection', choices=customModelChoices)
     updateSelectInput(session, "model_version", label="Select Model", choices=customModelChoices)
@@ -607,8 +609,8 @@ shinyServer(function(input, output, session) {
   output$BasicUtilityComparison <- renderPlot({
     
     CustomModels$base_utility.df %>%
-      mutate(utility=findability+renderability) %>% 
-      pivot_longer(c(findability, renderability), names_to="node") %>%
+      mutate(utility=Intellectual_Control+renderability) %>% 
+      pivot_longer(c(Intellectual_Control, renderability), names_to="node") %>%
       ggplot(aes(x=name, fill=node, y=value)) +
       geom_bar(position="stack", stat="identity")
   })
@@ -627,7 +629,7 @@ shinyServer(function(input, output, session) {
       session=session,
       id="Question_Progress",
       value=questionValues$question_number - 1,
-      total=5
+      total=nrow(setup_questions)
     )
     
   })
@@ -638,8 +640,8 @@ shinyServer(function(input, output, session) {
   output$policyTabUtilityScorePlot <- renderPlot(
     {
       CustomPolicies$archiveList[[input$customModelSelection]] %>%
-        mutate(utility=findability+renderability) %>%
-        pivot_longer(c(findability, renderability), names_to="policy") %>%
+        mutate(utility=Intellectual_Control+renderability) %>%
+        pivot_longer(c(Intellectual_Control, renderability), names_to="policy") %>%
         ggplot(aes(x=name, fill=policy, y=value)) +
         geom_bar(position="stack", stat="identity")
     }
@@ -943,7 +945,7 @@ shinyServer(function(input, output, session) {
     # update reactive policy list
     CustomPolicies$archiveList[[input$customModelSelection]] <- CustomPolicies$archiveList[[input$customModelSelection]] %>%
       add_row(name=input$SimpleViewPolicyName,
-              findability=currPolicyUtility$Findability,
+              Intellectual_Control=currPolicyUtility$Intellectual_Control,
               renderability=currPolicyUtility$Renderability)
     
     CustomPolicies$models[[input$customModelSelection]][[input$SimpleViewPolicyName]] <- currModel$model
@@ -986,9 +988,6 @@ shinyServer(function(input, output, session) {
       if ("Var1" %in% colnames(conditional.table)){
         conditional.table <- rename(conditional.table, !!input$nodeProbTable:=Var1)
       }
-
-      true.label <- paste(input$nodeProbTable, "True", sep="=")
-      false.label <- paste(input$nodeProbTable, "False", sep="=")
       
       # Spread dataframe so that it is easier to see which probabilities should add to 1.0
       conditional.table <- conditional.table %>%
@@ -998,14 +997,20 @@ shinyServer(function(input, output, session) {
       # Change column names to make them easier to understand
       # collect states
       node.states <- state.definitions %>% filter(node_name==input$nodeProbTable)
+      # create read only vector
+      read_table_temp <- rep(TRUE, ncol(conditional.table))
       
       # iterate and change names 
+      i <- 0
       for (state in node.states$node_state){
         label <- paste(input$nodeProbTable, state, sep="=")
         conditional.table <- rename(conditional.table, !!label:=!!state)
+        read_table_temp[length(read_table_temp) - i] <- FALSE
+        i <- i + 1
       }
+
       
-      conditional.table
+      data <- conditional.table
         
     } else {
       # convert model to grain object
@@ -1013,16 +1018,25 @@ shinyServer(function(input, output, session) {
       
       # find probability of findability and renderability
       query.results <- querygrain(model.grain, nodes=c(input$nodeProbTable))
-      
+      # control which columns can be read
+      read_table_temp <- c(TRUE, FALSE)
       # return independent probability table
-      data.frame(query.results) %>%
+      data <- data.frame(query.results) %>%
       rownames_to_column() %>%
       rename(probability:=!!input$nodeProbTable,
              !!input$nodeProbTable:=rowname) %>%
       mutate(probability=100*probability)
     }
     
+    
+    test$t <- read_table_temp
+    print(test$t)
+    data
+    
   }, readOnly=FALSE)
+  
+
+   test <- reactiveValues(t=c())
   
   output$nodeProbability <- renderPlot({
     bn.fit.barchart(network$advanced.fit[[input$nodeProbTable]])
@@ -1145,7 +1159,7 @@ shinyServer(function(input, output, session) {
     
     CustomPolicies$archiveList[[input$model_version]] <- current_policies %>% 
                                                          add_row(name=input$policyName,
-                                                                 findability=utility$Findability,
+                                                                 Intellectual_Control=utility$Intellectual_Control,
                                                                  renderability=utility$Renderability)
     
     CustomPolicies$models[[input$model_version]][[input$policyName]] = network$advanced.fit
@@ -1175,11 +1189,11 @@ shinyServer(function(input, output, session) {
     # calculate utility and store
     utility <- calculate_utility(network$advanced.fit)
     CustomModels$base_utility.df <- CustomModels$base_utility.df %>% add_row(name=input$policyName,
-                                                                             findability=utility$Findability,
+                                                                             Intellectual_Control=utility$Intellectual_Control,
                                                                              renderability=utility$Renderability)
     # TODO: Why do we have two structures saving the same information?
     CustomPolicies$archiveList[[input$policyName]] <- tibble(name=input$policyName,
-                                                             findability=utility$Findability,
+                                                             Intellectual_Control=utility$Intellectual_Control,
                                                              renderability=utility$Renderability)
     
     # setting choices for the drop down list in the Simple view Node customisation tab
@@ -1200,8 +1214,8 @@ shinyServer(function(input, output, session) {
   # plot policy comparison
   output$PolicyComparison <- renderPlot({
     CustomPolicies$archiveList[[input$model_version]] %>%
-      mutate(utility=findability+renderability) %>% 
-      pivot_longer(c(findability, renderability), names_to="node") %>%
+      mutate(utility=Intellectual_Control+renderability) %>% 
+      pivot_longer(c(Intellectual_Control, renderability), names_to="node") %>%
       ggplot(aes(x=name, fill=node, y=value)) +
       geom_bar(position="stack", stat="identity")
   })
@@ -1209,8 +1223,8 @@ shinyServer(function(input, output, session) {
   # plot custom model comparison
   output$BaseUtilityComparison <- renderPlot({
     CustomModels$base_utility.df %>%
-      mutate(utility=findability+renderability) %>% 
-      pivot_longer(c(findability, renderability), names_to="node") %>%
+      mutate(utility=Intellectual_Control+renderability) %>% 
+      pivot_longer(c(Intellectual_Control, renderability), names_to="node") %>%
       ggplot(aes(x=name, fill=node, y=value)) +
       geom_bar(position="stack", stat="identity")
   })
@@ -1229,8 +1243,8 @@ shinyServer(function(input, output, session) {
 
     # getting list of policies
     for(policy in currModel$name){
-      policyUtility <- currModel %>% filter(name==policy) %>% select(renderability, findability)
-      currUtility <- policyUtility$findability + policyUtility$renderability 
+      policyUtility <- currModel %>% filter(name==policy) %>% select(renderability, Intellectual_Control)
+      currUtility <- policyUtility$Intellectual_Control + policyUtility$renderability 
       
       summary <- paste(summary, policy, "\t", currUtility, "<br/>", sep = "")
       
@@ -1253,7 +1267,7 @@ shinyServer(function(input, output, session) {
     ## Initial Model and Pop setup flags
     if(initialModelSetup$flag){
       CustomPolicies$archiveList[['TNA']] <- tibble(name="Base", 
-                                                    findability=tna_utility$Findability,
+                                                    Intellectual_Control=tna_utility$Intellectual_Control,
                                                     renderability=tna_utility$Renderability)
       
       CustomPolicies$models[['TNA']][['Base']] <- stable.fit
@@ -1302,8 +1316,8 @@ shinyServer(function(input, output, session) {
   
   plotUtility <- reactive({
     CustomPolicies$archiveList[[input$reportTabModelSelection]] %>%
-      mutate(utility=findability+renderability) %>%
-      pivot_longer(c(findability, renderability), names_to="policy") %>%
+      mutate(utility=Intellectual_Control+renderability) %>%
+      pivot_longer(c(Intellectual_Control, renderability), names_to="policy") %>%
       ggplot(aes(x=name, fill=policy, y=value)) +
       geom_bar(position="stack", stat="identity")
   })
