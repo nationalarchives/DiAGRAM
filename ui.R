@@ -17,6 +17,7 @@ library(shinysky)
 library(shinyWidgets)
 library(shinyjs)
 library(shinyalert)
+library(tidyverse)
 
 options(repos = BiocManager::repositories())
 nquestions <- read_csv("setup_questions.csv") %>% nrow()
