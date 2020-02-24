@@ -184,6 +184,9 @@ shinyServer(function(input, output, session) {
   #                                  models=list("TNA"=list("Base"=stable.fit)))
   CustomPolicies <- reactiveValues(archiveList=list(),
                                    models=list())
+  
+  utility_weighting <- reactiveValues(renderability=1,
+                                      intellectual=1)
 
   
   # NODE DEFINITION TAB
@@ -1267,6 +1270,11 @@ shinyServer(function(input, output, session) {
   # REPORT TAB
   
   setReportTabSummary <- function(currModelName, currModel){
+    
+    # utility weighting
+    a <- input$renderabilityWeighting
+    b <- input$IntellectualWeighting
+    
     # constructing text for the summary section
     summary <- paste("The", currModelName, "model has", length(currModel$name), "policy(ies) customised by the user (including base):<br/><br/>")
     
@@ -1279,7 +1287,7 @@ shinyServer(function(input, output, session) {
     # getting list of policies
     for(policy in currModel$name){
       policyUtility <- currModel %>% filter(name==policy) %>% select(renderability, Intellectual_Control)
-      currUtility <- policyUtility$Intellectual_Control + policyUtility$renderability 
+      currUtility <- b*policyUtility$Intellectual_Control + a*policyUtility$renderability 
       
       summary <- paste(summary, policy, "\t", currUtility, "<br/>", sep = "")
       
@@ -1319,12 +1327,20 @@ shinyServer(function(input, output, session) {
     
     # FOR REPORT TAB
     
+    summary <- reactive({
+      input$renderabilityWeighting
+      input$IntellectualWeighting
+      
+      setReportTabSummary(currModel, 
+                          CustomPolicies$archiveList[[currModel]])
+    })
+    
     if(input$sidebarMenu == "Report"){
       currModel <- input$reportTabModelSelection
-      summary <- setReportTabSummary(currModel, 
-                                     CustomPolicies$archiveList[[currModel]])
+      # summary <- setReportTabSummary(currModel, 
+      #                                CustomPolicies$archiveList[[currModel]])
       
-      output$ReportTabSummaryText <- renderText(summary)
+      output$ReportTabSummaryText <- renderText(summary())
       
       # set the list of policies in drop down
       updateSelectInput(session, 
@@ -1349,10 +1365,19 @@ shinyServer(function(input, output, session) {
     
   })
   
+  # Check if utiltiy weighting changes
+  observe({
+    utility_weighting$renderability <- input$renderabilityWeighting
+    utility_weighting$intellectual <- input$IntellectualWeighting
+  })
+  
   plotUtility <- reactive({
+    a <- utility_weighting$renderability
+    b <- utility_weighting$intellectual
+    
     CustomPolicies$archiveList[[input$reportTabModelSelection]] %>%
-      mutate(utility=Intellectual_Control+renderability) %>%
       pivot_longer(c(Intellectual_Control, renderability), names_to="policy") %>%
+      mutate(value=ifelse(policy=="renderability", value*a, value*b)) %>%
       ggplot(aes(x=name, fill=policy, y=value)) +
       geom_bar(position="stack", stat="identity")
   })

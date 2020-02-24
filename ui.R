@@ -439,6 +439,22 @@ dashboardPage(
               htmlOutput("ReportTabSummaryText")
             ),
             box(
+              title="Utility Weighting",
+              width=NULL,
+              sliderInput(inputId="renderabilityWeighting",
+                          label="Renderability Weighting",
+                          min=0,
+                          max=1,
+                          value=1,
+                          step=0.1),
+              sliderInput(inputId="IntellectualWeighting",
+                          label="Intellectual Weighting",
+                          min=0,
+                          max=1,
+                          value=1,
+                          step=0.1)
+            ),
+            box(
               title=NULL,
               width=NULL,
               selectInput("ReportTabPolicySelection",
