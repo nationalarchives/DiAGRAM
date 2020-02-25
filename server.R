@@ -963,6 +963,11 @@ shinyServer(function(input, output, session) {
     for(node in input$policyTabNodesChecklist){
       # conditional probability table (cpt) of each node
       cpt <- as.data.frame(currModel$model[[node]]$prob)
+      if ("Var1" %in% colnames(cpt)){
+        cpt<- rename(cpt, !!node:=Var1)
+      }
+      
+      ## For debugging
       # print(node)
       # print(cpt)
       # print("----------------------\n")
@@ -976,10 +981,10 @@ shinyServer(function(input, output, session) {
       # extract and set the values in CPT based on the input type -- BooleanSlider, slider, radiobutton
       if(nodeStateType == 'BooleanSlider'){
         # update cpt for the True state as the single slider signifies input for True %
-        index <- cpt[[node]] == 'True'
+        index <- cpt[[node]] == 'Yes'
         cpt$Freq[index] <- input[[node]]/100
         
-        index <- cpt[[node]] == 'False'
+        index <- cpt[[node]] == 'No'
         cpt$Freq[index] <- 1 - input[[node]]/100
       }
       else if(nodeStateType == "slider"){
@@ -1004,6 +1009,11 @@ shinyServer(function(input, output, session) {
         }
       }
       
+      ## For debugging
+      # print("Updated CPT")
+      # print(cpt)
+      # print("---------------------------")
+      
       # Updating the model
       # The data frame should be converted to a contigency and then the model is updated.
       # The table should be Freq~'all other columns'
@@ -1017,7 +1027,7 @@ shinyServer(function(input, output, session) {
       # update the model
       currModel$model[[node]] <- xtabs(formula, cpt)
       
-      # print(as.data.frame(currModel$model[[node]]$prob))
+      print(as.data.frame(currModel$model[[node]]$prob))
     }
     
     # Calculate the utility of the new model
