@@ -379,9 +379,9 @@ dashboardPage(
                 textInput("policyName",
                           label="Modified network name:",
                           value=""),
-                tags$style(HTML('#networkUpdate{background-color:green}')),
-                tags$style(HTML('#networkUpdate{color:white}')),
-                actionButton("networkUpdate",
+                tags$style(HTML('#addPolicy{background-color:green}')),
+                tags$style(HTML('#addPolicy{color:white}')),
+                actionButton("addPolicy",
                              "Add as policy"),
                 tags$style(HTML('#addModelAdvanced{background-color:green}')),
                 tags$style(HTML('#addModelAdvanced{color:white}')),
@@ -486,63 +486,7 @@ dashboardPage(
               plotOutput("ReportTabUtilityComparisonPlot")
             )
           )
-          # column(
-          #   width=4,
-          #   box(
-          #     title="Summary",
-          #     width=NULL,
-          #     htmlOutput("ReportTabSummaryText")
-          #   )
-          # ),
-          # column(
-          #   width=8,
-          #   box(
-          #     title="Utility Comparison",
-          #     width=NULL,
-          #       plotOutput("ReportTabUtiltiyComparisonPlot")
-          #   )
-          # ),
-          
-        ),
-        # fluidRow(
-        #   column(
-        #     width=4,
-        #     box(
-        #       title=NULL,
-        #       width=NULL,
-        #       selectInput("ReportTabPolicySelection",
-        #                   "Select Policy",
-        #                   choices="No policies added")
-        #     ),
-        #     box(
-        #       title="Download",
-        #       width=NULL,
-        #       "Select what you would like to download:",
-        #       br(),
-        #       br(),
-        #       checkboxGroupInput("downloadOptions",
-        #                          NULL,
-        #                          choices=c("Model",
-        #                                    "Model Plot",
-        #                                    "Utility Plot",
-        #                                    "Policy Summary")),
-        #       br(),
-        #       tags$style(HTML('#Download{background-color:green}')),
-        #       tags$style(HTML('#Download{color:white}')),
-        #       downloadButton("Download",
-        #                      "Download")
-        #       
-        #     )
-        #   ),
-        #   column(
-        #     width=8,
-        #     box(
-        #       title="Model",
-        #       width=NULL,
-        #       plotOutput("ReportModel")
-        #     )
-        #   )
-        # )
+        )
       )
     )
   )

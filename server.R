@@ -26,7 +26,7 @@ options(shiny.fullstacktrace = FALSE)
 
 shinyServer(function(input, output, session) {
   
-  # FUNCTIONS
+  # -------------------- FUNCTIONS --------------------
   # function which caluclates utility
   calculate_utility <- function(model) {
     
@@ -143,7 +143,19 @@ shinyServer(function(input, output, session) {
     return(model.probability.table)
   }
   
-  # STATIC VALUES
+  
+  # --------------------   FUNCTIONS   --------------------
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  # -------------------- STATIC VALUES --------------------
   stable.fit <- read.bif("Model.bif")
   
   # node definitions and state definitions
@@ -156,7 +168,19 @@ shinyServer(function(input, output, session) {
   # TNA default risk
   tna_utility <- calculate_utility(stable.fit)
   
-  # REACTIVE VALUES
+  # --------------------   STATIC VALUES    --------------------
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  # --------------------   REACTIVE VALUES  ---------------------
+  
   # initialise stable plot (unchanging) and reactive plot
   network <- reactiveValues(model.fit = read.bif("Model.bif"),
                             advanced.fit = stable.fit)
@@ -188,8 +212,17 @@ shinyServer(function(input, output, session) {
   utility_weighting <- reactiveValues(renderability=1,
                                       intellectual=1)
 
+  # --------------------   REACTIVE VALUES  ---------------------
   
-  # NODE DEFINITION TAB
+  
+  
+  
+  
+  
+  
+
+  
+  # -------------------- NODE DEFINITION TAB --------------------
   
   # Update node drop down list with node names
   updateSelectInput(session,
@@ -256,8 +289,17 @@ shinyServer(function(input, output, session) {
     
   })
   
-  # SIMPLE TAB
-  # MODEL CUSTOMISATION
+  # -------------------- NODE DEFINITION TAB --------------------
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  # -------------------- MODEL CUSTOMISATION --------------------
   
   # Update state selection radio buttons
   # Collect the first node
@@ -449,7 +491,6 @@ shinyServer(function(input, output, session) {
   
   
   # Add question to setup page.
-  # TODO: Make dynamic check rather than hardcoded 6
   output$Question <- renderUI({
     if (questionValues$question_number < nrow(setup_questions)+1 && questionValues$question_number>=1){
       h4(strong(setup_questions[questionValues$question_number,]$node_question))
@@ -575,9 +616,10 @@ shinyServer(function(input, output, session) {
     # third update states with boolean sliders as inputs
     for (node in names(answers$boolean_slider_answers)) {
       input.probability.df <- answers$boolean_slider_answers[[node]]
-      model.probability.df <- as.data.frame(custom_model[[node]]$prob)
-      model.probability.df <- rename(model.probability.df, !!node:=Var1)
+      model.probability.df <- as.data.frame(custom_model[[node]]$prob) %>% rename(!!node:=Var1)
+
       model.probability.table <- update_probability(node, model.probability.df, input.probability.df)
+      
       # update probability table for node
       custom_model[[node]] = model.probability.table
     }
@@ -600,6 +642,7 @@ shinyServer(function(input, output, session) {
     customModelChoices <- CustomModels$base_utility.df %>% select(name)
     updateSelectInput(session, 'customModelSelection', choices=customModelChoices)
     updateSelectInput(session, "model_version", label="Select Model", choices=customModelChoices)
+
     # set choices for the drop down list in the Report tab
     updateSelectInput(session, 'reportTabModelSelection', choices=CustomModels$base_utility.df$name)
   })
@@ -992,6 +1035,7 @@ shinyServer(function(input, output, session) {
 
   
   # ADVANCED POLICIES
+  # save changes user has made
   advanced <- reactiveValues(updated_nodes = list(),
                              node_counter = 1)
   
@@ -1065,17 +1109,12 @@ shinyServer(function(input, output, session) {
              !!input$nodeProbTable:=rowname) %>%
       mutate(probability=100*probability)
     }
-    
-    
-    test$t <- read_table_temp
-    print(test$t)
+
     data
     
   }, readOnly=FALSE)
-  
 
-   test <- reactiveValues(t=c())
-  
+  # plot node conditional probabilities
   output$nodeProbability <- renderPlot({
     bn.fit.barchart(network$advanced.fit[[input$nodeProbTable]])
   })
@@ -1177,7 +1216,7 @@ shinyServer(function(input, output, session) {
   })
   
   # add policy
-  observeEvent(input$networkUpdate, {
+  observeEvent(input$addPolicy, {
     # check if a name has been provided
     if (input$policyName == ""){
       errorMsg <-"No name was provided for the model!"
@@ -1238,6 +1277,7 @@ shinyServer(function(input, output, session) {
     customModelChoices <- CustomModels$base_utility.df %>% select(name)
     updateSelectInput(session, 'customModelSelection', choices=customModelChoices)
     updateSelectInput(session, "model_version", label="Select Model", choices=customModelChoices)
+    updateSelectInput(session, 'reportTabModelSelection', choices=CustomModels$base_utility.df$name)
   })
   
   # Reset network to original probabilities
@@ -1435,73 +1475,6 @@ shinyServer(function(input, output, session) {
       }
     }
   )
-  
-  
-  
-  
-  
-  ## OLD CODE BUT STILL KEEPING TO AVOID CRASH
-  
-  
-  
-  
-  
-  
-  # Plot network for report page
-  output$ReportModel <- renderPlot({
-    
-    if (input$policySelection != "No policies added") {
-      model.fit <- Utility$policy_networks[[input$policySelection]]
-      first <- graphviz.chart(model.fit, type = "barprob", grid=TRUE, main="Test Network")
-      graphviz.chart(model.fit, type = "barprob", grid=TRUE, main="Test Network")
-    }
-    
-  })
-  
-  # Render text for summary on report page
-  output$TextReport <- renderText({
-    
-    if (dim(Utility$utility.df)[1] == 0) {
-      
-      "No Policies have been added yet."
-      
-    }
-    
-  })
 
-  # Download selected files
-  output$Download <- downloadHandler(
-    
-    filename = function() {
-      paste0(input$policySelection, ".zip")
-    },
-    
-    content = function(file){
-      
-      # write model
-      if ("Model" %in% input$downloadOptions) {
-        write.bif(paste0(input$policySelection, ".bif"),
-                  Utility$policy_networks[[input$policySelection]])
-      }
-      
-      # write utility plot
-      if ("Utility Plot" %in% input$downloadOptions) {
-        png(filename=paste0(input$policySelection, ".png"))
-        dev.off()
-      }
-      
-      
-      # create zip file to return
-      filenames <- c(paste0(input$policySelection, ".bif"),
-                     paste0(input$policySelection, ".png"))
-      
-      zip(file, filenames)
-      
-      # delete all files on server
-      for (filename in filenames){
-        file.remove(filename)
-      }
-    }
-  )
 })
 
