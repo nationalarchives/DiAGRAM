@@ -292,13 +292,6 @@ dashboardPage(
             plotOutput("policyTabUtilityScorePlot")
           )
         )
-        # sidebarLayout(
-        #   sidebarPanel(h3("Nodes"), 
-        #                uiOutput("policyTabNodes")),
-        #   mainPanel(h3("Network"),
-        #             plotOutput("policyTabNetwork"))
-        # )
-        
       ),
       
       # Policy Tab

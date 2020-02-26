@@ -24,6 +24,8 @@ library(gridExtra)
 options(repos = BiocManager::repositories())
 options(shiny.fullstacktrace = FALSE)
 
+# TODO: policy plotting should be one reactive variable
+
 shinyServer(function(input, output, session) {
   
   # -------------------- FUNCTIONS --------------------
@@ -653,8 +655,8 @@ shinyServer(function(input, output, session) {
     CustomModels$base_utility.df %>%
       mutate(utility=Intellectual_Control+renderability) %>% 
       pivot_longer(c(Intellectual_Control, renderability), names_to="node") %>%
-      ggplot(aes(x=name, fill=node, y=value)) +
-      geom_bar(position="stack", stat="identity")
+      ggplot(aes(x=reorder(name, -value), fill=node, y=value)) +
+      geom_bar(position="stack", stat="identity") + xlab("Model Name")
   })
   
   # Reset so new custom model can be created
@@ -723,8 +725,8 @@ shinyServer(function(input, output, session) {
       CustomPolicies$archiveList[[input$customModelSelection]] %>%
         mutate(utility=Intellectual_Control+renderability) %>%
         pivot_longer(c(Intellectual_Control, renderability), names_to="policy") %>%
-        ggplot(aes(x=name, fill=policy, y=value)) +
-        geom_bar(position="stack", stat="identity")
+        ggplot(aes(x=reorder(name, -value), fill=policy, y=value)) +
+        geom_bar(position="stack", stat="identity") + xlab("Policy")
     }
   )
   
@@ -1304,8 +1306,8 @@ shinyServer(function(input, output, session) {
     CustomPolicies$archiveList[[input$model_version]] %>%
       mutate(utility=Intellectual_Control+renderability) %>% 
       pivot_longer(c(Intellectual_Control, renderability), names_to="node") %>%
-      ggplot(aes(x=name, fill=node, y=value)) +
-      geom_bar(position="stack", stat="identity")
+      ggplot(aes(x=reorder(name, -value), fill=node, y=value)) +
+      geom_bar(position="stack", stat="identity") + xlab("Policy")
   })
   
   # plot custom model comparison
@@ -1313,8 +1315,8 @@ shinyServer(function(input, output, session) {
     CustomModels$base_utility.df %>%
       mutate(utility=Intellectual_Control+renderability) %>% 
       pivot_longer(c(Intellectual_Control, renderability), names_to="node") %>%
-      ggplot(aes(x=name, fill=node, y=value)) +
-      geom_bar(position="stack", stat="identity")
+      ggplot(aes(x=reorder(name, -value), fill=node, y=value)) +
+      geom_bar(position="stack", stat="identity") + xlab("Model Name")
   })
   
   # REPORT TAB
@@ -1428,8 +1430,8 @@ shinyServer(function(input, output, session) {
     CustomPolicies$archiveList[[input$reportTabModelSelection]] %>%
       pivot_longer(c(Intellectual_Control, renderability), names_to="policy") %>%
       mutate(value=ifelse(policy=="renderability", value*a, value*b)) %>%
-      ggplot(aes(x=name, fill=policy, y=value)) +
-      geom_bar(position="stack", stat="identity")
+      ggplot(aes(x=reorder(name, -value), fill=policy, y=value)) +
+      geom_bar(position="stack", stat="identity") + xlab("Policy")
   })
   
   # Plot the policy comparison stacked bar chart
