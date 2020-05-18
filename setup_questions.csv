@@ -1,10 +1,46 @@
 node_name,node_question,type
-Digital_Object,What proportion (number of files) of your digital archive are the the following?,slider
-Checksum,"For what proportionof your files do you have a checksum from the depositor? If not, have you generated a checksum instantly upon reciept?",slider
-System_Security,How would you describe your system security practices?,BooleanSlider
-Info_Management,Do you have sufficient internal knowledge management systems to track the preservation actions since acquisition?,BooleanSlider
-Technical_Skills,"Do you have the expertise within your institution to implement technical digital preservation techniques such as file format migration, software emulation, data recovery or extraction of technical metadata?",radiobuttons
-Op_Environment,Do you keep your storage conditions optimal and have mitigation strategies to protect against damage from a physical disaster?,BooleanSlider
-ReplicationAndRefreshment,"For your digital material, do you have at least one additional copy of the bitstream? Do you have a refreshment policy to ensure you always have at least one additional copy of the bitstream in the event of one version becoming damaged or lost? If yes to both, then 'good'. Otherwise, please aswer as 'poor'.",radiobuttons
-Physical_Disaster,What is your flood risk?,radiobuttons
-Storage_Medium,What proportion of your digital objects are stored on the following medium types?,slider
+Technical_Skills,"How would you rate the digital preservation technical skills within your archive?
+
+Questions to consider when answering include...
+
+Does capability exist within your organisation to:
+- carry out file format migration?
+- carry out software emulation?
+- carry out data recovery from damaged/obsolete media?
+- extract technical metadata from born digital objects?
+
+Do you have the ability to investigate and manipulate data, including intermediate Excel skills (e.g. ability to make pivot tables) and basic coding skills (e.g. python)?",BooleanSlider
+System_Security,"How would you rate the system security within your archive?
+
+Questions to consider when answering include...
+ 
+Do you have regular security audits? 
+Do you have appropriate IT support? 
+Do you check for viruses on acquisition? 
+Do server communications go through a restrictive firewall? 
+Is physical access to equipment appropriately restricted? 
+Is server access retricted to select personnel? 
+Is there active account management to archival systems? 
+Do you ensure no member of staff has access to all copies?",BooleanSlider
+Checksum,"For what proportion of files do you have a checksum from the depositor?  
+If not, for how many have you generated a checksum instantly upon reciept?
+",slider
+Info_Management,"For all your files today, what proportion do you have sufficient internal information management systems to track the preservation actions since acquisition?",BooleanSlider
+Digital_Object,"What proportion (no. of files) of your digital archive are the following:",slider
+Storage_Medium,"What proportion of your records are stored on the following media types? For explanations of the categories, see the node definitions page",slider
+ReplicationAndRefreshment,"For what proportion of your files do you have at least one additional copy of the bitstream?
+And do you have a refreshment policy to ensure you always have at least one additional copy of the bitstream in the event of another copy becoming damaged or lost? 
+
+Answer 'good' for the proportion of files for which you answer yes to both. 
+",BooleanSlider
+Op_Environment,"Do you have a copy of the material stored in a different geographical location? 
+If not, do you have adequate mitigation strategies in place in case of a flood? 
+Factors to consider:
+- Building design 
+- Location of storage media within the building 
+- Local flood defences 
+- Having flash flood doors and sandbags 
+
+Answer 'no' only if all your copies are in the same location and you do not have adequate mitigations in case of a flood.",BooleanSlider
+Physical_Disaster,"Based on the the goverments long term flood risk assesssment, how likely is it that your safest digital storage location will experience a flood? 
+Where the risk level varies for different risk types (i.e. flood risks from rivers or the sea, flood risks from surcase water, flood risks from reservoirs), please answer based on the highest result.",BooleanSlider
