@@ -269,12 +269,12 @@ dashboardPage(
               width=NULL,
               div(id="nodeSliderPlaceholder", h4('No nodes selected')),
               uiOutput("policyTabNodesSlider"),
-              tags$style(HTML('#SimpleViewPolicyNext{background-color:green}')),
-              tags$style(HTML('#SimpleViewPolicyNext{color:white}')),
-              actionButton("SimpleViewPolicyNext", label = "Next"),
               tags$style(HTML('#SimpleViewPolicyPrevious{background-color:grey}')),
               tags$style(HTML('#SimpleViewPolicyPrevious{color:white}')),
               actionButton("SimpleViewPolicyPrevious", label = "Previous"),
+              tags$style(HTML('#SimpleViewPolicyNext{background-color:green}')),
+              tags$style(HTML('#SimpleViewPolicyNext{color:white}')),
+              actionButton("SimpleViewPolicyNext", label = "Next"),
               br()
             ),
             box(

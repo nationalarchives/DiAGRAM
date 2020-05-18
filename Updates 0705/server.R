@@ -169,14 +169,14 @@ shinyServer(function(input, output, session) {
   
   
   # -------------------- STATIC VALUES --------------------
-  stable.fit <- read.bif("Updates 0705/Model.bif")
+  stable.fit <- read.bif("Model.bif")
   
   # node definitions and state definitions
-  node.definitions <- read_csv("Updates 0705/node_information.csv") %>% arrange(node_name)
-  state.definitions <- read_csv("Updates 0705/node_states.csv")
+  node.definitions <- read_csv("node_information.csv") %>% arrange(node_name)
+  state.definitions <- read_csv("node_states.csv")
   
   # csv containing nodes and questions used during setup
-  setup_questions <- read_csv("Updates 0705/setup_questions.csv")
+  setup_questions <- read_csv("setup_questions.csv")
   
   # TNA default risk
   tna_utility <- calculate_utility(stable.fit)
@@ -195,7 +195,7 @@ shinyServer(function(input, output, session) {
   # --------------------   REACTIVE VALUES  ---------------------
   
   # initialise stable plot (unchanging) and reactive plot
-  network <- reactiveValues(model.fit = read.bif("Updates 0705/Model.bif"),
+  network <- reactiveValues(model.fit = read.bif("Model.bif"),
                             advanced.fit = stable.fit)
   
   # Initialise Question Counter for model setup
@@ -356,16 +356,16 @@ shinyServer(function(input, output, session) {
                             fluidRow(
                               column(
                                 width=2,
-                                tags$style(HTML('#NextQuestion{background-color:grey}')),
-                                tags$style(HTML('#NextQuestion{color:white}')),
-                                tags$style(HTML('#NextQuestion{width:100%}')),
+                                tags$style(HTML('#BackButton{background-color:grey}')),
+                                tags$style(HTML('#BackButton{color:white}')),
+                                tags$style(HTML('#BackButton{width:100%}')),
                                 actionButton("BackButton", "Back") #changed to uk order
                               ),
                               column(
                                 width=2,
-                                tags$style(HTML('#BackButton{background-color:green}')),
-                                tags$style(HTML('#BackButton{color:white}')),
-                                tags$style(HTML('#BackButton{width:100%')),
+                                tags$style(HTML('#NextQuestion{background-color:green}')),
+                                tags$style(HTML('#NextQuestion{color:white}')),
+                                tags$style(HTML('#NextQuestion{width:100%')),
                                 actionButton("NextQuestion", "Next") #changed to uk order
                               )
                             )
@@ -392,16 +392,16 @@ shinyServer(function(input, output, session) {
         fluidRow(
           column(
             width=2,
-            tags$style(HTML('#NextQuestion{background-color:grey}')),
-            tags$style(HTML('#NextQuestion{color:white}')),
-            tags$style(HTML('#NextQuestion{width:100%}')),
+            tags$style(HTML('#BackButton{background-color:grey}')),
+            tags$style(HTML('#BackButton{color:white}')),
+            tags$style(HTML('#BackButton{width:100%}')),
             actionButton("BackButton", "Back") #changed to uk order
           ),
           column(
             width=2,
-            tags$style(HTML('#BackButton{background-color:green}')),
-            tags$style(HTML('#BackButton{color:white}')),
-            tags$style(HTML('#BackButton{width:100%')),
+            tags$style(HTML('#NextQuestion{background-color:green}')),
+            tags$style(HTML('#NextQuestion{color:white}')),
+            tags$style(HTML('#NextQuestion{width:100%')),
             actionButton("NextQuestion", "Next") #changed to uk order
           )
         )
@@ -435,16 +435,16 @@ shinyServer(function(input, output, session) {
           fluidRow(
             column(
               width=2,
-              tags$style(HTML('#NextQuestion{background-color:grey}')),
-              tags$style(HTML('#NextQuestion{color:white}')),
-              tags$style(HTML('#NextQuestion{width:100%}')),
+              tags$style(HTML('#BackButton{background-color:grey}')),
+              tags$style(HTML('#BackButton{color:white}')),
+              tags$style(HTML('#BackButton{width:100%}')),
               actionButton("BackButton", "Back") #changed to uk order
             ),
             column(
               width=2,
-              tags$style(HTML('#BackButton{background-color:green}')),
-              tags$style(HTML('#BackButton{color:white}')),
-              tags$style(HTML('#BackButton{width:100%')),
+              tags$style(HTML('#NextQuestion{background-color:green}')),
+              tags$style(HTML('#NextQuestion{color:white}')),
+              tags$style(HTML('#NextQuestion{width:100%')),
               actionButton("NextQuestion", "Next") #changed to uk order
             )
           )
@@ -465,16 +465,16 @@ shinyServer(function(input, output, session) {
         fluidRow(
           column(
             width=2,
-            tags$style(HTML('#NextQuestion{background-color:grey}')),
-            tags$style(HTML('#NextQuestion{color:white}')),
-            tags$style(HTML('#NextQuestion{width:100%}')),
+            tags$style(HTML('#BackButton{background-color:grey}')),
+            tags$style(HTML('#BackButton{color:white}')),
+            tags$style(HTML('#BackButton{width:100%}')),
             actionButton("BackButton", "Back") #changed to uk order
           ),
           column(
             width=2,
-            tags$style(HTML('#BackButton{background-color:green}')),
-            tags$style(HTML('#BackButton{color:white}')),
-            tags$style(HTML('#BackButton{width:100%')),
+            tags$style(HTML('#NextQuestion{background-color:green}')),
+            tags$style(HTML('#NextQuestion{color:white}')),
+            tags$style(HTML('#NextQuestion{width:100%')),
             actionButton("NextQuestion", "Next") #changed to uk order
           )
         )
