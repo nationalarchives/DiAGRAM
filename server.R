@@ -356,16 +356,16 @@ shinyServer(function(input, output, session) {
                             fluidRow(
                               column(
                                 width=2,
-                                tags$style(HTML('#NextQuestion{background-color:grey}')),
-                                tags$style(HTML('#NextQuestion{color:white}')),
-                                tags$style(HTML('#NextQuestion{width:100%}')),
+                                tags$style(HTML('#BackButton{background-color:grey}')),
+                                tags$style(HTML('#BackButton{color:white}')),
+                                tags$style(HTML('#BackButton{width:100%}')),
                                 actionButton("BackButton", "Back") #changed to uk order
                               ),
                               column(
                                 width=2,
-                                tags$style(HTML('#BackButton{background-color:green}')),
-                                tags$style(HTML('#BackButton{color:white}')),
-                                tags$style(HTML('#BackButton{width:100%')),
+                                tags$style(HTML('#NextQuestion{background-color:green}')),
+                                tags$style(HTML('#NextQuestion{color:white}')),
+                                tags$style(HTML('#NextQuestion{width:100%')),
                                 actionButton("NextQuestion", "Next") #changed to uk order
                               )
                             )
@@ -392,16 +392,16 @@ shinyServer(function(input, output, session) {
         fluidRow(
           column(
             width=2,
-            tags$style(HTML('#NextQuestion{background-color:grey}')),
-            tags$style(HTML('#NextQuestion{color:white}')),
-            tags$style(HTML('#NextQuestion{width:100%}')),
+            tags$style(HTML('#BackButton{background-color:grey}')),
+            tags$style(HTML('#BackButton{color:white}')),
+            tags$style(HTML('#BackButton{width:100%}')),
             actionButton("BackButton", "Back") #changed to uk order
           ),
           column(
             width=2,
-            tags$style(HTML('#BackButton{background-color:green}')),
-            tags$style(HTML('#BackButton{color:white}')),
-            tags$style(HTML('#BackButton{width:100%')),
+            tags$style(HTML('#NextQuestion{background-color:green}')),
+            tags$style(HTML('#NextQuestion{color:white}')),
+            tags$style(HTML('#NextQuestion{width:100%')),
             actionButton("NextQuestion", "Next") #changed to uk order
           )
         )
@@ -435,16 +435,16 @@ shinyServer(function(input, output, session) {
           fluidRow(
             column(
               width=2,
-              tags$style(HTML('#NextQuestion{background-color:grey}')),
-              tags$style(HTML('#NextQuestion{color:white}')),
-              tags$style(HTML('#NextQuestion{width:100%}')),
+              tags$style(HTML('#BackButton{background-color:grey}')),
+              tags$style(HTML('#BackButton{color:white}')),
+              tags$style(HTML('#BackButton{width:100%}')),
               actionButton("BackButton", "Back") #changed to uk order
             ),
             column(
               width=2,
-              tags$style(HTML('#BackButton{background-color:green}')),
-              tags$style(HTML('#BackButton{color:white}')),
-              tags$style(HTML('#BackButton{width:100%')),
+              tags$style(HTML('#NextQuestion{background-color:green}')),
+              tags$style(HTML('#NextQuestion{color:white}')),
+              tags$style(HTML('#NextQuestion{width:100%')),
               actionButton("NextQuestion", "Next") #changed to uk order
             )
           )
@@ -465,16 +465,16 @@ shinyServer(function(input, output, session) {
         fluidRow(
           column(
             width=2,
-            tags$style(HTML('#NextQuestion{background-color:grey}')),
-            tags$style(HTML('#NextQuestion{color:white}')),
-            tags$style(HTML('#NextQuestion{width:100%}')),
+            tags$style(HTML('#BackButton{background-color:grey}')),
+            tags$style(HTML('#BackButton{color:white}')),
+            tags$style(HTML('#BackButton{width:100%}')),
             actionButton("BackButton", "Back") #changed to uk order
           ),
           column(
             width=2,
-            tags$style(HTML('#BackButton{background-color:green}')),
-            tags$style(HTML('#BackButton{color:white}')),
-            tags$style(HTML('#BackButton{width:100%')),
+            tags$style(HTML('#NextQuestion{background-color:green}')),
+            tags$style(HTML('#NextQuestion{color:white}')),
+            tags$style(HTML('#NextQuestion{width:100%')),
             actionButton("NextQuestion", "Next") #changed to uk order
           )
         )
