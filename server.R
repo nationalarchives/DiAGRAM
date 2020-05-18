@@ -618,11 +618,12 @@ shinyServer(function(input, output, session) {
       return()
     }
     # create custom model and save to memory
-    custom_model <- stable.fit
     # first update inputs from radio buttons
-    if(length(names(answers$radio_answers))>0) {
-    custom_model <- mutilated(stable.fit, evidence=answers$radio_answers)
+    if(is.null(dim(answers$radio_answers))) {
+      custom_model <- stable.fit
     }
+    else {custom_model <- mutilated(stable.fit, evidence=answers$radio_answers)}
+    
     # second, update states with inputs as sliders
     for (node in names(answers$slider_answers)) {
       input.probability.df <- answers$slider_answers[[node]]
@@ -633,8 +634,7 @@ shinyServer(function(input, output, session) {
       model.probability.table <- update_probability(node, model.probability.df, input.probability.df)
       # update probability table for node
       custom_model[[node]] = model.probability.table
-    }
-    
+      }
     # third update states with boolean sliders as inputs
     for (node in names(answers$boolean_slider_answers)) {
       input.probability.df <- answers$boolean_slider_answers[[node]]
@@ -645,6 +645,8 @@ shinyServer(function(input, output, session) {
       # update probability table for node
       custom_model[[node]] = model.probability.table
     }
+    
+    
 
     # Add custom network to memory 
     CustomModels$custom_networks[[input$CustomisedModelName]] = custom_model
