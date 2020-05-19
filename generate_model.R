@@ -7,7 +7,7 @@
 # @author: Stephen James Krol, Monash University, Melbourne
 # @email: stephen.james.krol@gmail.com
 
-# Updated 21/02/2020 to relfect lastest model
+# Updated 19/05/2020 to relfect lastest model by HM at The National Archives UK
 
 
 library(bnlearn)
@@ -23,7 +23,6 @@ TNA.dag <- empty.graph(nodes = node.names)
 
 #data management - from Digital_Object
 TNA.dag <- set.arc(TNA.dag, from="Digital_Object", to="Content_Metadata")
-TNA.dag <- set.arc(TNA.dag, from="Digital_Object", to="Tech_Metadata")
 TNA.dag <- set.arc(TNA.dag, from="Digital_Object", to="Conditions_of_Use")
 TNA.dag <- set.arc(TNA.dag, from="Digital_Object", to="File_Format")
 
