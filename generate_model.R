@@ -7,7 +7,7 @@
 # @author: Stephen James Krol, Monash University, Melbourne
 # @email: stephen.james.krol@gmail.com
 
-# Updated 21/02/2020 to relfect lastest model
+# Updated 20/05/2020 to relfect latest model and elicitation data by HM at The National Archives UK
 
 
 library(bnlearn)
@@ -23,7 +23,6 @@ TNA.dag <- empty.graph(nodes = node.names)
 
 #data management - from Digital_Object
 TNA.dag <- set.arc(TNA.dag, from="Digital_Object", to="Content_Metadata")
-TNA.dag <- set.arc(TNA.dag, from="Digital_Object", to="Tech_Metadata")
 TNA.dag <- set.arc(TNA.dag, from="Digital_Object", to="Conditions_of_Use")
 TNA.dag <- set.arc(TNA.dag, from="Digital_Object", to="File_Format")
 
@@ -71,19 +70,19 @@ graphviz.plot(TNA.dag, layout = "dot",
 
 
 
-# Create prob tables for each node
+# Create prob tables for each node with TNA default values in
 
-#Digital_Object
-prob.digital_object = matrix(c(0.05, 0.20, 0.75), ncol = 3, 
-                             dimnames = list(NULL,c("Born_digital","Digitised","Surrogate")))
+#Digital_Object - updated with TNA data 20/05
+prob.digital_object = matrix(c(0.0473, 0.2034, 0.7493), ncol = 3, 
+                             dimnames = list(NULL,c("Born_digital","Digitised","Surrogate"))) 
 
 #Technical_Skills
 prob.technical_skills = matrix(c(0.5,0.5), ncol = 2, 
-                               dimnames = list(NULL,c("Good","Poor")))
+                               dimnames = list(NULL,c("Good","Poor"))) 
 
 #Op_Environment
 prob.op_environment = matrix(c(0.5,0.5), ncol = 2, 
-                             dimnames = list(NULL,c("Good","Poor")))
+                             dimnames = list(NULL,c("Yes","No")))
 
 #System_Security
 prob.system_security = matrix(c(0.5,0.5), ncol = 2, 
@@ -91,80 +90,85 @@ prob.system_security = matrix(c(0.5,0.5), ncol = 2,
 
 #ReplicationAndRefreshment
 prob.replication_refreshment = matrix(c(0.5,0.5), ncol = 2, 
-                                      dimnames = list(NULL,c("Yes","No")))
+                                      dimnames = list(NULL,c("Good","Poor"))) #0327 state names
 
 #Storage_Medium
-prob.storage_medium = matrix(c(0.05, 0.90, 0.05), ncol = 3, 
-                             dimnames = list(NULL,c("A","B","C")))
+prob.storage_medium = matrix(c(0.90, 0.05, 0.05), ncol = 3,   
+                             dimnames = list(NULL,c("A","B","C"))) #0327 probs
 
 #Checksum
-prob.checksum = matrix(c(0.05, 0.90, 0.05), ncol = 3, 
-                       dimnames = list(NULL,c("Yes","No_but_generated","No")))
+prob.checksum = matrix(c(0.90, 0.05, 0.05), ncol = 3, 
+                       dimnames = list(NULL,c("Yes","Self_Generated","No"))) 
 
 #Physical_Distaster
 prob.physical_disaster = matrix(c(0.01,0.99), ncol = 2, 
-                                dimnames = list(NULL,c("High","Low")))
+                                dimnames = list(NULL,c("Yes","No"))) #0327 state names
 
 #Info_Management
-prob.info_management = matrix(c(0.6,0.4), ncol = 2, 
-                              dimnames = list(NULL,c("Yes","No")))
+prob.info_management = matrix(c(0.5,0.5), ncol = 2, 
+                              dimnames = list(NULL,c("Sufficient","Insufficient"))) #0327 probs
 
-#Conditions_of_Use
-prob.conditions_of_use = array(c(0.5, 0.5, 0.95, 0.05, 0.95, 0.05), dim = c(2, 3),
+#Conditions_of_Use - updated with elicitation data 22/05
+prob.conditions_of_use = array(c(0.611, 0.389, 0.745, 0.255, 0.7896, 0.2104), dim = c(2, 3),
                                dimnames = list("Conditions_of_Use" = c("Yes","No"), "Digital_Object" = c("Born_digital","Digitised","Surrogate")))
 
-#Content_Metadata
-prob.content_metadata = array(c(0.2, 0.3, 0.5, 0.5, 0.4, 0.1, 0.7, 0.25, 0.05), dim = c(3, 3),
-                              dimnames = list("Content_Metadata" = c("Yes","Can_acquire","No"), "Digital_Object" = c("Born_digital","Digitised","Surrogate")))
+#Content_Metadata - updated with elicitation data 22/05
+prob.content_metadata = array(c(0.4539, 0.5461, 0.7492, 0.2508, 0.7261, 0.2739), dim = c(2, 3),
+                              dimnames = list("Content_Metadata" = c("Yes","No"), "Digital_Object" = c("Born_digital","Digitised","Surrogate"))) #0327 state numbers and probs
 
-#File_Format
-prob.file_format = array(c(0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25),
-                         dim = c(4, 3),
-                         dimnames = list("File_Format" = c("Ubiquous_open","Ubiquous_notopen","Notubiquous_open","Notubiquous_notopen"), 
-                                         "Digital_Object" = c("Born_digital","Digitised","Surrogate")))
+#File_Format - updated with TNA data 20/05
+prob.file_format = array(c(0.8826, 0.1174, 1, 0, 1, 0),
+                         dim = c(2, 3),
+                         dimnames = list("File_Format" = c("Yes","No"),
+                                         "Digital_Object" = c("Born_digital","Digitised","Surrogate"))) #0327 state names and numbers
 
-#Identity
-prob.identity = array(c(1, 0, 0.9, 0.1, 0, 1, 0, 1, 0,1, 0, 1), dim = c(2, 3, 2),
-                      dimnames = list("Identity" = c("Yes","No"), "Content_Metadata" = c("Yes","Can_acquire","No"), "Info_Management" = c("Yes","No")))
+#Identity - updated with elicitation data 22/05
+prob.identity = array(c(1, 0, 0.5348, 0.4652, 0, 1, 0, 1), dim = c(2, 2, 2),
+                      dimnames = list("Identity" = c("Yes","No"), "Content_Metadata" = c("Yes","No"), "Info_Management" = c("Sufficient","Insufficient"))) #0327 state names and numbers and probs
 
 #Intellectual_Control
 prob.intellectual_control = array(c(1, 0, 0, 1, 0, 1, 0, 1), dim = c(2, 2, 2),
                                   dimnames = list("Intellectual_Control" = c("Yes","No"), "Identity" = c("Yes","No"), "Conditions_of_Use" = c("Yes","No")))
 
-#Tech_Metadata
-prob.tech_metadata = array(c(0.5, 0.5, 0.8, 0.2, 0.8, 0.2, 0.3, 0.7, 0.5, 0.5, 0.5, 0.5), dim = c(2, 3, 2),
-                           dimnames = list("Tech_Metadata" = c("Yes","No"), "Digital_Object" = c("Born_digital","Digitised","Surrogate"), "Technical_Skills" = c("Good","Poor")))
+#Tech_Metadata - updated with elicitation data 22/05
+prob.tech_metadata = array(c(0.7729, 0.2271, 0.427, 0.573), dim = c(2, 2),
+                           dimnames = list("Tech_Metadata" = c("Sufficient","Insufficient"), "Technical_Skills" = c("Good","Poor"))) #0327 state numbers and probs
 
-#Tools_to_Render
-prob.tools_to_render = array(c(1, 0, 0.9, 0.1, 0.5, 0.5, 0.1, 0.9, 0.9, 0.1, 0.8, 0.2, 0.2, 0.8, 0, 1), dim = c(2, 4, 2),
+#Tools_to_Render - updated with elicitation data 22/05
+prob.tools_to_render = array(c(0.8111, 0.1889, 0.4343, 0.5657, 0.8111, 0.1889, 0, 1), dim = c(2, 2, 2),
                              dimnames = list("Tools_to_Render" = c("Yes","No"), 
-                                             "File_Format" = c("Ubiquous_open","Ubiquous_notopen","Notubiquous_open","Notubiquous_notopen"), 
-                                             "Technical_Skills" = c("Good","Poor")))
+                                             "File_Format" = c("Yes","No"),  "Technical_Skills" = c("Good","Poor"))) #0327 state numbers and probs
 
-#Obscolescence
-prob.obsolescence = array(c(0.5, 0.5, 0.8, 0.2, 0.95, 0.05, 0.3, 0.7, 0.5, 0.5, 0.95, 0.05), dim = c(2, 3, 2),
-                          dimnames = list("Obsolescence" = c("Yes","No"), "Storage_Medium" = c("A","B","C"), "Technical_Skills" = c("Good","Poor")))
+#Obscolescence - updated with elicitation data and cloud data 22/05
+prob.obsolescence = array(c(0.2985, 0.7015, 0.1405, 0.8595, 0.001, 0.999, 0.6422, 0.3578, 0.419, 0.581, 0.001, 0.999), dim = c(2, 3, 2),
+                          dimnames = list("Obsolescence" = c("Yes","No"), "Storage_Medium" = c("A","B","C"), "Technical_Skills" = c("Good","Poor"))) #0327 probs
 
-#Integrity
-prob.integrity = array(c(1, 0, 0.5, 0.5, 0.9, 0.1, 0.4, 0.6, 0.9, 0.1, 0.4, 0.6, 0.5, 0.5, 0.2, 0.8, 0, 1, 0, 1, 0, 1, 0, 1),dim = c(2, 2, 2, 3),
-                       dimnames = list("Integrity" = c("Yes","No"),"Info_Management" = c("Yes","No"), "System_Security" = c("Good","Poor"), "Checksum" = c("Yes","No_but_generated","No")))
+#Integrity - updated with elicitation data 22/05 CHECK THIS CAREFULLY
+prob.integrity = array(c(1, 0, 0, 1, 0.5325, 0.4675, 0, 1, 0.9099, 0.0901, 0, 1, 0.4424, 0.5576, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1),dim = c(2, 2, 2, 3),
+                       dimnames = list("Integrity" = c("Yes","No"),"Info_Management" = c("Sufficient","Insufficient"), "System_Security" = c("Good","Poor"),
+                                       "Checksum" = c("Yes","Self_Generated","No"))) #0327 probs
 
-#Bit_Preservation
-prob.bit_preservation = array(c(0, 1, 0, 1, 0.9, 0.1, 0.1, 0.9, 0, 1, 0, 1, 1, 0, 0.8, 0.2), dim = c(2, 2, 2, 2),
-                              dimnames = list("Bit_Preservation" = c("Yes","No"), "Integrity" = c("Yes","No"),"Obsolescence" = c("Yes","No"), "Storage_Life" = c("<Year",">Year")))
+#Bit_Preservation - updated with elicitation data 22/05
+prob.bit_preservation = array(c(0, 1, 0, 1, 1, 0, 0.7158, 0.2842, 0, 1, 0, 1, 0, 1, 0, 1), dim = c(2, 2, 2, 2),
+                              dimnames = list("Bit_Preservation" = c("Yes","No"), "Integrity" = c("Yes","No"),
+                                              "Obsolescence" = c("Yes","No"), "Storage_Life" = c("Yes","No"))) #0327 state names and probs
 
-#Renderability
-prob.renderability = array(c(1, 0, 0, 1, 0, 1, 0, 1, 0.2, 0.8, 0, 1, 0, 1, 0, 1), dim = c(2, 2, 2, 2),
-                           dimnames = list("Renderability" = c("Yes","No"),"Bit_Preservation" = c("Yes","No"), "Tools_to_Render" = c("Yes","No"),"Tech_Metadata" = c("Yes","No")))
+#Renderability - updated with elicitation data 22/05
+prob.renderability = array(c(1, 0, 0, 1, 0, 1, 0, 1, 0.5993, 0.4007, 0, 1, 0, 1, 0, 1), dim = c(2, 2, 2, 2),
+                           dimnames = list("Renderability" = c("Yes","No"),"Bit_Preservation" = c("Yes","No"),
+                                           "Tools_to_Render" = c("Yes","No"),"Tech_Metadata" = c("Sufficient","Insufficient"))) #0327 probs
 
-#Storage_Life
-prob.storage_life = array(c(0, 1, 0, 1, 0.8, 0.2, 0.5, 0.5, 0, 1, 0, 1, 0.9, 0.1, 0.8, 0.2, 0, 1, 0, 1, 0.2, 0.8, 0.1, 0.9,
-                            0, 1, 0, 1, 0.7, 0.3, 0.5, 0.5, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1),
+#Storage_Life - updated with elicitation data 22/05 CHECK THIS CAREFULLY
+prob.storage_life = array(c(1,0,1,0,0.7588,0.2412,0.7588,0.2412,0.5393,0.4607,1,0,0.3212,0.6788,0.7588,0.2412,
+                            1,0,1,0,0.945,0.055,0.945,0.055,0.8747,0.1253,1,0,0.646,0.354,0.945,0.055,
+                            1,0,1,0,1,0,1,0,1,0,1,0),
                           dim = c(2, 2, 2, 2, 3),
-                          dimnames = list("Storage_Life" = c("<Year",">Year"),"Physical_Disaster" = c("High","Low"), "ReplicationAndRefreshment" = c("Yes","No"), "Op_Environment" = c("Good","Poor"),  "Storage_Medium" = c("A","B","C")))
+                          dimnames = list("Storage_Life" = c("Yes","No"),"Physical_Disaster" = c("Yes","No"),
+                                          "ReplicationAndRefreshment" = c("Good","Poor"), "Op_Environment" = c("Yes","No"),
+                                          "Storage_Medium" = c("A","B","C"))) #0327 state names and probs
 
 
-model.fit <- custom.fit(TNA.dag,
+TNA.model <- custom.fit(TNA.dag,
                         dist=list("Op_Environment"=prob.op_environment,
                                   "Storage_Medium"=prob.storage_medium,
                                   "ReplicationAndRefreshment"=prob.replication_refreshment,
@@ -187,7 +191,12 @@ model.fit <- custom.fit(TNA.dag,
                                   "Storage_Life"=prob.storage_life,
                                   "Technical_Skills"=prob.technical_skills))
 
-write.bif("Model_copy.bif", model.fit)
+
+library("gRain")
+graphviz.chart(TNA.model, scale=c(0.6,1), grid=TRUE, bar.col="darkgreen", strip.bg="lightskyblue", main="DiAGRAM")
+
+#write.bif("Model.bif", TNA.model)
+
 
 # temp.names <- c("A", "B", "C", "D")# , "E", "F", "G")
 # dag.temp <- empty.graph(nodes=temp.names)

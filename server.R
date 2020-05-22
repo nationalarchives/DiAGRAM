@@ -112,9 +112,20 @@ shinyServer(function(input, output, session) {
     inputId <- paste(name, primary_state, sep="-")
     
     # collect probabilities
-    primary_prob <- input[[inputId]]
+    if(name=="Physical_Disaster"){
+      # High is above 3.3%. For the purposes of the model, treat as 5%
+      if(input[[inputId]]=="High") {primary_prob <- 5}
+      # Medium is between 1% and 3.3% .For the purposes of the model, treat as 2%
+      if(input[[inputId]]=="Medium") {primary_prob <- 2}
+      # Low is between 0.1% and 1%. For the purposes of the model, treat as 0.5%
+      if(input[[inputId]]=="Low") {primary_prob <- 0.5}
+      # Very low is less than 0.1%. For the purposes of the model, treat as 0.05%
+      if(input[[inputId]]=="Very Low") {primary_prob <- 0.05}
+    }
+    else {
+      primary_prob <- input[[inputId]]
+    }
     secondary_prob <- 100 - primary_prob
-    
     # return tibble of probabilities
     return(tibble(state=c(primary_state, secondary_state),
                   probability=c(primary_prob, secondary_prob)))
@@ -345,17 +356,17 @@ shinyServer(function(input, output, session) {
                             fluidRow(
                               column(
                                 width=2,
-                                tags$style(HTML('#NextQuestion{background-color:green}')),
-                                tags$style(HTML('#NextQuestion{color:white}')),
-                                tags$style(HTML('#NextQuestion{width:100%}')),
-                                actionButton("NextQuestion", "Next")
+                                tags$style(HTML('#BackButton{background-color:grey}')),
+                                tags$style(HTML('#BackButton{color:white}')),
+                                tags$style(HTML('#BackButton{width:100%}')),
+                                actionButton("BackButton", "Back") #changed to uk order
                               ),
                               column(
                                 width=2,
-                                tags$style(HTML('#BackButton{background-color:grey}')),
-                                tags$style(HTML('#BackButton{color:white}')),
-                                tags$style(HTML('#BackButton{width:100%')),
-                                actionButton("BackButton", "Back")
+                                tags$style(HTML('#NextQuestion{background-color:green}')),
+                                tags$style(HTML('#NextQuestion{color:white}')),
+                                tags$style(HTML('#NextQuestion{width:100%')),
+                                actionButton("NextQuestion", "Next") #changed to uk order
                               )
                             )
                           )
@@ -363,27 +374,8 @@ shinyServer(function(input, output, session) {
       
       # collect next node name
       # next_node <- setup_questions[questionValues$question_number,]$node_name
-      
-      # if node is equal to Copy_protocol, add description
-      if (next_node$node_name == "Copy_protocol"){
-        text_description <- column(
-          width=5,
-          tags$ol(
-            tags$li("The archive has multiple independent copies of the
-                                         digital materials."),
-            tags$li("Copies are geographically separated
-                                         into different locations."),
-            tags$li("Copies use different storage technologies."),
-            tags$li("Copies use a combination of online and
-                                         offline storage techniques."),
-            tags$li("Storage is actively monitored to ensure any
-                                         problems are detected and corrected quickly.")
-          )
-        )
-      } else{
         text_description <- column(width=5)
-      }
-      
+        
       # collect states of the next node
       next_states <- state.definitions %>%
         filter(node_name==next_node$node_name) %>%
@@ -400,17 +392,17 @@ shinyServer(function(input, output, session) {
         fluidRow(
           column(
             width=2,
-            tags$style(HTML('#NextQuestion{background-color:green}')),
-            tags$style(HTML('#NextQuestion{color:white}')),
-            tags$style(HTML('#NextQuestion{width:100%}')),
-            actionButton("NextQuestion", "Next")
+            tags$style(HTML('#BackButton{background-color:grey}')),
+            tags$style(HTML('#BackButton{color:white}')),
+            tags$style(HTML('#BackButton{width:100%}')),
+            actionButton("BackButton", "Back") #changed to uk order
           ),
           column(
             width=2,
-            tags$style(HTML('#BackButton{background-color:grey}')),
-            tags$style(HTML('#BackButton{color:white}')),
-            tags$style(HTML('#BackButton{width:100%')),
-            actionButton("BackButton", "Back")
+            tags$style(HTML('#NextQuestion{background-color:green}')),
+            tags$style(HTML('#NextQuestion{color:white}')),
+            tags$style(HTML('#NextQuestion{width:100%')),
+            actionButton("NextQuestion", "Next") #changed to uk order
           )
         )
       )
@@ -429,11 +421,37 @@ shinyServer(function(input, output, session) {
       if (next_node$node_name == "Physical_Disaster"){
         node_text <- a(href="https://flood-warning-information.service.gov.uk/long-term-flood-risk/postcode",
                        'Click here to check your flood risk here.')
+        rendered_element <- div(
+          fluidRow(
+            column(
+              width=5,
+              node_text,
+              br(),
+              br(),
+              sliderTextInput(inputId, "Risk rating from gov.uk", grid = TRUE, force_edges = TRUE,
+                              choices = c("Very Low", "Low", "Medium", "High"))
+            )
+          ),
+          fluidRow(
+            column(
+              width=2,
+              tags$style(HTML('#BackButton{background-color:grey}')),
+              tags$style(HTML('#BackButton{color:white}')),
+              tags$style(HTML('#BackButton{width:100%}')),
+              actionButton("BackButton", "Back") #changed to uk order
+            ),
+            column(
+              width=2,
+              tags$style(HTML('#NextQuestion{background-color:green}')),
+              tags$style(HTML('#NextQuestion{color:white}')),
+              tags$style(HTML('#NextQuestion{width:100%')),
+              actionButton("NextQuestion", "Next") #changed to uk order
+            )
+          )
+        )
       }
       else{
         node_text <- ""
-      }
-      
       rendered_element <- div(
         fluidRow(
           column(
@@ -447,22 +465,22 @@ shinyServer(function(input, output, session) {
         fluidRow(
           column(
             width=2,
-            tags$style(HTML('#NextQuestion{background-color:green}')),
-            tags$style(HTML('#NextQuestion{color:white}')),
-            tags$style(HTML('#NextQuestion{width:100%}')),
-            actionButton("NextQuestion", "Next")
+            tags$style(HTML('#BackButton{background-color:grey}')),
+            tags$style(HTML('#BackButton{color:white}')),
+            tags$style(HTML('#BackButton{width:100%}')),
+            actionButton("BackButton", "Back") #changed to uk order
           ),
           column(
             width=2,
-            tags$style(HTML('#BackButton{background-color:grey}')),
-            tags$style(HTML('#BackButton{color:white}')),
-            tags$style(HTML('#BackButton{width:100%')),
-            actionButton("BackButton", "Back")
+            tags$style(HTML('#NextQuestion{background-color:green}')),
+            tags$style(HTML('#NextQuestion{color:white}')),
+            tags$style(HTML('#NextQuestion{width:100%')),
+            actionButton("NextQuestion", "Next") #changed to uk order
           )
         )
       )
       
-    } else {
+    }} else {
       rendered_element <- fluidRow(
         column(
           width=3,
@@ -601,7 +619,10 @@ shinyServer(function(input, output, session) {
     }
     # create custom model and save to memory
     # first update inputs from radio buttons
-    custom_model <- mutilated(stable.fit, evidence=answers$radio_answers)
+    if(is.null(dim(answers$radio_answers))) {
+      custom_model <- stable.fit
+    }
+    else {custom_model <- mutilated(stable.fit, evidence=answers$radio_answers)}
     
     # second, update states with inputs as sliders
     for (node in names(answers$slider_answers)) {
@@ -613,8 +634,7 @@ shinyServer(function(input, output, session) {
       model.probability.table <- update_probability(node, model.probability.df, input.probability.df)
       # update probability table for node
       custom_model[[node]] = model.probability.table
-    }
-    
+      }
     # third update states with boolean sliders as inputs
     for (node in names(answers$boolean_slider_answers)) {
       input.probability.df <- answers$boolean_slider_answers[[node]]
@@ -625,6 +645,8 @@ shinyServer(function(input, output, session) {
       # update probability table for node
       custom_model[[node]] = model.probability.table
     }
+    
+    
 
     # Add custom network to memory 
     CustomModels$custom_networks[[input$CustomisedModelName]] = custom_model
