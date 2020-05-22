@@ -1,7 +1,7 @@
 network unknown {
 }
 variable Op_Environment {
-  type discrete [ 2 ] { Good, Poor };
+  type discrete [ 2 ] { Yes, No };
 }
 variable Integrity {
   type discrete [ 2 ] { Yes, No };
@@ -10,28 +10,28 @@ variable System_Security {
   type discrete [ 2 ] { Good, Poor };
 }
 variable Info_Management {
-  type discrete [ 2 ] { Yes, No };
+  type discrete [ 2 ] { Sufficient, Insufficient };
 }
 variable Storage_Medium {
   type discrete [ 3 ] { A, B, C };
 }
 variable ReplicationAndRefreshment {
-  type discrete [ 2 ] { Yes, No };
+  type discrete [ 2 ] { Good, Poor };
 }
 variable Digital_Object {
   type discrete [ 3 ] { Born_digital, Digitised, Surrogate };
 }
 variable Content_Metadata {
-  type discrete [ 3 ] { Yes, Can_acquire, No };
-}
-variable Tech_Metadata {
   type discrete [ 2 ] { Yes, No };
 }
+variable Tech_Metadata {
+  type discrete [ 2 ] { Sufficient, Insufficient };
+}
 variable File_Format {
-  type discrete [ 4 ] { Ubiquous_open, Ubiquous_notopen, Notubiquous_open, Notubiquous_notopen };
+  type discrete [ 2 ] { Yes, No };
 }
 variable Checksum {
-  type discrete [ 3 ] { Yes, No_but_generated, No };
+  type discrete [ 3 ] { Yes, Self_Generated, No };
 }
 variable Obsolescence {
   type discrete [ 2 ] { Yes, No };
@@ -55,10 +55,10 @@ variable Identity {
   type discrete [ 2 ] { Yes, No };
 }
 variable Physical_Disaster {
-  type discrete [ 2 ] { High, Low };
+  type discrete [ 2 ] { Yes, No };
 }
 variable Storage_Life {
-  type discrete [ 2 ] { <Year, >Year };
+  type discrete [ 2 ] { Yes, No };
 }
 variable Technical_Skills {
   type discrete [ 2 ] { Good, Poor };
@@ -67,72 +67,64 @@ probability ( Op_Environment ) {
   table 0.5, 0.5;
 }
 probability ( Integrity | System_Security, Info_Management, Checksum ) {
-  (Good, Yes, Yes) 1.0, 0.0;
-  (Poor, Yes, Yes) 0.9, 0.1;
-  (Good, No, Yes) 0.5, 0.5;
-  (Poor, No, Yes) 0.4, 0.6;
-  (Good, Yes, No_but_generated) 0.9, 0.1;
-  (Poor, Yes, No_but_generated) 0.5, 0.5;
-  (Good, No, No_but_generated) 0.4, 0.6;
-  (Poor, No, No_but_generated) 0.2, 0.8;
-  (Good, Yes, No) 0.0, 1.0;
-  (Poor, Yes, No) 0.0, 1.0;
-  (Good, No, No) 0.0, 1.0;
-  (Poor, No, No) 0.0, 1.0;
+  (Good, Sufficient, Yes) 1.0, 0.0;
+  (Poor, Sufficient, Yes) 0.5325, 0.4675;
+  (Good, Insufficient, Yes) 0.0, 1.0;
+  (Poor, Insufficient, Yes) 0.0, 1.0;
+  (Good, Sufficient, Self_Generated) 0.9099, 0.0901;
+  (Poor, Sufficient, Self_Generated) 0.4424, 0.5576;
+  (Good, Insufficient, Self_Generated) 0.0, 1.0;
+  (Poor, Insufficient, Self_Generated) 0.0, 1.0;
+  (Good, Sufficient, No) 0.0, 1.0;
+  (Poor, Sufficient, No) 0.0, 1.0;
+  (Good, Insufficient, No) 0.0, 1.0;
+  (Poor, Insufficient, No) 0.0, 1.0;
 }
 probability ( System_Security ) {
   table 0.5, 0.5;
 }
 probability ( Info_Management ) {
-  table 0.6, 0.4;
+  table 0.5, 0.5;
 }
 probability ( Storage_Medium ) {
-  table 0.05, 0.90, 0.05;
+  table 0.90, 0.05, 0.05;
 }
 probability ( ReplicationAndRefreshment ) {
   table 0.5, 0.5;
 }
 probability ( Digital_Object ) {
-  table 0.05, 0.20, 0.75;
+  table 0.0473, 0.2034, 0.7493;
 }
 probability ( Content_Metadata | Digital_Object ) {
-  (Born_digital) 0.2, 0.3, 0.5;
-  (Digitised) 0.5, 0.4, 0.1;
-  (Surrogate) 0.70, 0.25, 0.05;
+  (Born_digital) 0.4539, 0.5461;
+  (Digitised) 0.7492, 0.2508;
+  (Surrogate) 0.7261, 0.2739;
 }
-probability ( Tech_Metadata | Digital_Object, Technical_Skills ) {
-  (Born_digital, Good) 0.5, 0.5;
-  (Digitised, Good) 0.8, 0.2;
-  (Surrogate, Good) 0.8, 0.2;
-  (Born_digital, Poor) 0.3, 0.7;
-  (Digitised, Poor) 0.5, 0.5;
-  (Surrogate, Poor) 0.5, 0.5;
+probability ( Tech_Metadata | Technical_Skills ) {
+  (Good) 0.7729, 0.2271;
+  (Poor) 0.427, 0.573;
 }
 probability ( File_Format | Digital_Object ) {
-  (Born_digital) 0.25, 0.25, 0.25, 0.25;
-  (Digitised) 0.25, 0.25, 0.25, 0.25;
-  (Surrogate) 0.25, 0.25, 0.25, 0.25;
+  (Born_digital) 0.8826, 0.1174;
+  (Digitised) 1.0, 0.0;
+  (Surrogate) 1.0, 0.0;
 }
 probability ( Checksum ) {
-  table 0.05, 0.90, 0.05;
+  table 0.90, 0.05, 0.05;
 }
 probability ( Obsolescence | Storage_Medium, Technical_Skills ) {
-  (A, Good) 0.5, 0.5;
-  (B, Good) 0.8, 0.2;
-  (C, Good) 0.95, 0.05;
-  (A, Poor) 0.3, 0.7;
-  (B, Poor) 0.5, 0.5;
-  (C, Poor) 0.95, 0.05;
+  (A, Good) 0.2985, 0.7015;
+  (B, Good) 0.1405, 0.8595;
+  (C, Good) 0.001, 0.999;
+  (A, Poor) 0.6422, 0.3578;
+  (B, Poor) 0.419, 0.581;
+  (C, Poor) 0.001, 0.999;
 }
 probability ( Tools_to_Render | File_Format, Technical_Skills ) {
-  (Ubiquous_open, Good) 1.0, 0.0;
-  (Ubiquous_notopen, Good) 0.9, 0.1;
-  (Notubiquous_open, Good) 0.5, 0.5;
-  (Notubiquous_notopen, Good) 0.1, 0.9;
-  (Ubiquous_open, Poor) 0.9, 0.1;
-  (Ubiquous_notopen, Poor) 0.8, 0.2;
-  (Notubiquous_open, Poor) 0.2, 0.8;
-  (Notubiquous_notopen, Poor) 0.0, 1.0;
+  (Yes, Good) 0.8111, 0.1889;
+  (No, Good) 0.4343, 0.5657;
+  (Yes, Poor) 0.8111, 0.1889;
+  (No, Poor) 0.0, 1.0;
 }
 probability ( Intellectual_Control | Conditions_of_Use, Identity ) {
   (Yes, Yes) 1.0, 0.0;
@@ -141,66 +133,64 @@ probability ( Intellectual_Control | Conditions_of_Use, Identity ) {
   (No, No) 0.0, 1.0;
 }
 probability ( Conditions_of_Use | Digital_Object ) {
-  (Born_digital) 0.5, 0.5;
-  (Digitised) 0.95, 0.05;
-  (Surrogate) 0.95, 0.05;
+  (Born_digital) 0.611, 0.389;
+  (Digitised) 0.745, 0.255;
+  (Surrogate) 0.7896, 0.2104;
 }
 probability ( Renderability | Tech_Metadata, Tools_to_Render, Bit_Preservation ) {
-  (Yes, Yes, Yes) 1.0, 0.0;
-  (No, Yes, Yes) 0.2, 0.8;
-  (Yes, No, Yes) 0.0, 1.0;
-  (No, No, Yes) 0.0, 1.0;
+  (Sufficient, Yes, Yes) 1.0, 0.0;
+  (Insufficient, Yes, Yes) 0.5993, 0.4007;
+  (Sufficient, No, Yes) 0.0, 1.0;
+  (Insufficient, No, Yes) 0.0, 1.0;
+  (Sufficient, Yes, No) 0.0, 1.0;
+  (Insufficient, Yes, No) 0.0, 1.0;
+  (Sufficient, No, No) 0.0, 1.0;
+  (Insufficient, No, No) 0.0, 1.0;
+}
+probability ( Bit_Preservation | Integrity, Obsolescence, Storage_Life ) {
+  (Yes, Yes, Yes) 0.0, 1.0;
+  (No, Yes, Yes) 0.0, 1.0;
+  (Yes, No, Yes) 1.0, 0.0;
+  (No, No, Yes) 0.7158, 0.2842;
   (Yes, Yes, No) 0.0, 1.0;
   (No, Yes, No) 0.0, 1.0;
   (Yes, No, No) 0.0, 1.0;
   (No, No, No) 0.0, 1.0;
 }
-probability ( Bit_Preservation | Integrity, Obsolescence, Storage_Life ) {
-  (Yes, Yes, <Year) 0.0, 1.0;
-  (No, Yes, <Year) 0.0, 1.0;
-  (Yes, No, <Year) 0.9, 0.1;
-  (No, No, <Year) 0.1, 0.9;
-  (Yes, Yes, >Year) 0.0, 1.0;
-  (No, Yes, >Year) 0.0, 1.0;
-  (Yes, No, >Year) 1.0, 0.0;
-  (No, No, >Year) 0.8, 0.2;
-}
 probability ( Identity | Info_Management, Content_Metadata ) {
-  (Yes, Yes) 1.0, 0.0;
-  (No, Yes) 0.0, 1.0;
-  (Yes, Can_acquire) 0.9, 0.1;
-  (No, Can_acquire) 0.0, 1.0;
-  (Yes, No) 0.0, 1.0;
-  (No, No) 0.0, 1.0;
+  (Sufficient, Yes) 1.0, 0.0;
+  (Insufficient, Yes) 0.0, 1.0;
+  (Sufficient, No) 0.5348, 0.4652;
+  (Insufficient, No) 0.0, 1.0;
 }
 probability ( Physical_Disaster ) {
   table 0.01, 0.99;
 }
 probability ( Storage_Life | Op_Environment, Storage_Medium, ReplicationAndRefreshment, Physical_Disaster ) {
-  (Good, A, Yes, High) 0.0, 1.0;
-  (Poor, A, Yes, High) 0.0, 1.0;
-  (Good, B, Yes, High) 0.0, 1.0;
-  (Poor, B, Yes, High) 0.0, 1.0;
-  (Good, C, Yes, High) 0.0, 1.0;
-  (Poor, C, Yes, High) 0.0, 1.0;
-  (Good, A, No, High) 0.8, 0.2;
-  (Poor, A, No, High) 0.9, 0.1;
-  (Good, B, No, High) 0.2, 0.8;
-  (Poor, B, No, High) 0.7, 0.3;
-  (Good, C, No, High) 0.0, 1.0;
-  (Poor, C, No, High) 0.0, 1.0;
-  (Good, A, Yes, Low) 0.0, 1.0;
-  (Poor, A, Yes, Low) 0.0, 1.0;
-  (Good, B, Yes, Low) 0.0, 1.0;
-  (Poor, B, Yes, Low) 0.0, 1.0;
-  (Good, C, Yes, Low) 0.0, 1.0;
-  (Poor, C, Yes, Low) 0.0, 1.0;
-  (Good, A, No, Low) 0.5, 0.5;
-  (Poor, A, No, Low) 0.8, 0.2;
-  (Good, B, No, Low) 0.1, 0.9;
-  (Poor, B, No, Low) 0.5, 0.5;
-  (Good, C, No, Low) 0.0, 1.0;
-  (Poor, C, No, Low) 0.0, 1.0;
+  (Yes, A, Good, Yes) 1.0, 0.0;
+  (No, A, Good, Yes) 0.5393, 0.4607;
+  (Yes, B, Good, Yes) 1.0, 0.0;
+  (No, B, Good, Yes) 0.8747, 0.1253;
+  (Yes, C, Good, Yes) 1.0, 0.0;
+  (No, C, Good, Yes) 1.0, 0.0;
+  (Yes, A, Poor, Yes) 0.7588, 0.2412;
+  (No, A, Poor, Yes) 0.3212, 0.6788;
+  (Yes, B, Poor, Yes) 0.945, 0.055;
+  (No, B, Poor, Yes) 0.646, 0.354;
+  (Yes, C, Poor, Yes) 1.0, 0.0;
+  (No, C, Poor, Yes) 1.0, 0.0;
+  (Yes, A, Good, No) 1.0, 0.0;
+  (No, A, Good, No) 1.0, 0.0;
+  (Yes, B, Good, No) 1.0, 0.0;
+  (No, B, Good, No) 1.0, 0.0;
+  (Yes, C, Good, No) 1.0, 0.0;
+  (No, C, Good, No) 1.0, 0.0;
+  (Yes, A, Poor, No) 0.7588, 0.2412;
+  (No, A, Poor, No) 0.7588, 0.2412;
+  (Yes, B, Poor, No) 0.945, 0.055;
+  (No, B, Poor, No) 0.945, 0.055;
+  (Yes, C, Poor, No) 1.0, 0.0;
+  (No, C, Poor, No) 1.0, 0.0;
 }
 probability ( Technical_Skills ) {
   table 0.5, 0.5;
