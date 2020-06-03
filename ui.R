@@ -46,25 +46,27 @@ dashboardPage(
       ),
       
       # Create Network Info Page
-      menuItem("Node Definitions",
-               tabName="Node_Definitions",
-               icon=icon("globe")),
+      menuItem("Definitions",
+               tabName="Node_definitions",
+               icon=icon("info")),
       
       # Customise model tab
-      menuItem("1. Customise Model",
-               tabName="CustomiseModel"),
+      menuItem("1. Create your model",
+               tabName="CustomiseModel",
+               icon=icon("user-edit")),
       
       # Simple View Page
-      menuItem("2. Policy",
-               tabName = "PolicyView",
-               menuSubItem("Simple Customisation", 
-                           tabName = "CustomiseNode"),
-               menuSubItem("Advanced Customisation", 
-                           tabName = "AdvancedCustomiseNode")
-      ),
+      menuItem("2. Compare policies",
+               tabName = "CustomiseNode",
+               icon=icon("chart-bar")),
+      
+      # Advanced Page
+      menuItem("3. Advanced customisation", 
+                 tabName = "AdvancedCustomiseNode",
+                 icon=icon("project-diagram")),
       
       # Create Report Tab
-      menuItem("Report",
+      menuItem("4. Report",
                tabName="Report",
                icon=icon("book"))
     )
@@ -90,22 +92,39 @@ dashboardPage(
           shinydashboard::box(
             title = "Welcome",
             width = 12,
-            shiny::h2("Version 0.9.0"), #update in May
+            shiny::h2("Version 0.9.1"), #update in May
             br(),
-            p("This an initial version of the decision support system
-              built by the ",
+            p("This is the prototype version of the Digital Archiving Graphical 
+              Risk Assessment Model built by the ",
               a(href="https://warwick.ac.uk", "University of Warwick"),
               " and ",
-              a(href="https://www.nationalarchives.gov.uk"," The National Archives.")),
-            p("This decision support tools enables users to compare different policies
-              used in the preservation of digital assets."),
-            p("This interface enbables users to complete the following tasks:"),
+              a(href="https://www.nationalarchives.gov.uk"," The National Archives"), 
+              "with suport from the ",
+              a(href="https://www.heritagefund.org.uk/", "National Lottery Heritage Fund.")),
+            p("This decision support tool enables users to score their Archive's
+            digital presservation risk and then explore how this would change under
+            different policies and risk scenarios. The risk score is based on the proportion of 
+              files in the archive that are renderable and where the archivist can have full
+              intellectual control."),
+            p("The underlying methodology used to create this model is based on a Bayesian network
+            - a probabilistic graphical model that captures the conditional dependencies of risk 
+            events. When historical data was unavailable, data from an expert elicitation 
+            session conducted in April 2020 has been used to inform the probabilities needed for
+            this model. For more information about the statistical techniques used, please see 
+              the supporting documentation."),
+            p("This interface supports the users to complete the following tasks:"),
             tags$ul(
-              tags$li("View Bayesian Network"),
-              tags$li("Adjust Probabilities in Bayesian Network"),
-              tags$li("Compare Different Policies"),
-              tags$li("Save Policies and Bayesian Networks"),
-              tags$li("Upload pre-built Bayesian Networks and Policies")
+              tags$li("Understand the risk definitions used in the model and 
+                      how the risk events are linked together"),
+              tags$li("Create a model that relects the policies and practises for your 
+                      Digital Archive"),
+              tags$li("Test alternative policies to see how this impacts your risk score"),
+              tags$li("Download your model and a summary of the results"),
+              tags$li("Upload a pre-built model and continue exploring scenarios from there"),
+              tags$li("Update the probability tables for your model based on your own data or 
+                      experience"),
+              tags$li("Create bespoke scenarios by directly manipulating the probabilities
+              used in the model")
             ),
             br(),
             # Adding National Archives and University of Warwick Logos
@@ -114,7 +133,10 @@ dashboardPage(
                 width=100),
             img(src='https://www.underconsideration.com/brandnew/archives/university_of_warwick_logo_detail.png',
                 height=80,
-                width=120)
+                width=120),
+            img(src="https://www.heritagefund.org.uk/sites/default/files/media/attachments/English%20logo%20-%20Colour%20%28JPEG%29.jpg",
+                height=80,
+                width=216)
             
           )
         )
@@ -122,19 +144,21 @@ dashboardPage(
       
       # Network Tab
       tabItem(
-        tabName="Node_Definitions",
-        h1("Node Definitions"),
+        tabName="Node_definitions",
+        h1("Definitions"),
         br(),
         fluidRow(
           column(
             width=4,
             box(
-              title="Node Selection",
+              title="Node selection",
               width=NULL,
               collapsible=TRUE,
-              strong("Please select a node from the menu to view its definition."),
+              h4("Please select a node from the menu to view its definition."),
               br(),
               br(),
+              tags$style(type='text/css', ".selectize-input { font-size: 15px; line-height: 15px;} 
+                     .selectize-dropdown { font-size: 15px; line-height: 15px; }"),
               selectInput(
                 inputId="NodeSelection",
                 label=NULL,
@@ -145,7 +169,7 @@ dashboardPage(
           column(
             width=8,
             box(
-              title="Node Description",
+              title="Node description",
               width=NULL,
               collapsible=TRUE,
               column(
@@ -166,7 +190,7 @@ dashboardPage(
         fluidRow(
           column(width=12,
                  box(
-                   title="Network Structure",
+                   title="DiAGRAM structure",
                    collapsible=TRUE,
                    width=NULL,
                    plotOutput("NetworkStructure")
@@ -178,7 +202,7 @@ dashboardPage(
       # Policy Tab
       tabItem(
         tabName="CustomiseModel",
-        h1("Customise Model"),
+        h1("Create your model"),
         br(),
         fluidRow(
           column(
@@ -187,7 +211,7 @@ dashboardPage(
               title=NULL,
               width=NULL,
               progressBar("Question_Progress", value=0, total=nquestions),
-              h3("Please answer the following questions: "),
+              h3("Please answer the following question: "),
               uiOutput("Question"),
               useShinyjs(),
               br(),
@@ -199,7 +223,7 @@ dashboardPage(
           column(
             width=8,
             box(
-              title="Utility Plot",
+              title="Model risk score",
               width=NULL,
               collapsible=TRUE,
               plotOutput("BasicUtilityComparison")
@@ -208,21 +232,21 @@ dashboardPage(
           column(
             width=4,
             box(
-              title="Upload Custom Model",
+              title="Upload a previous model",
               collapsible=TRUE,
               width=NULL,
               strong("Please ensure any models uploaded have been generated from DiAGRAM"),
               br(),
               br(),
               fileInput("customModel",
-                        "Choose Custom Model",
+                        "Choose custom model",
                         accept=c(".bif")),
               textInput("uploadName",
                         label="Custom Model Name"),
               tags$style(HTML('#uploadCustomModel{background-color:green}')),
               tags$style(HTML('#uploadCustomModel{color:white}')),
               actionButton("uploadCustomModel",
-                           "Add Model")
+                           "Add model")
             )
           )
         )
@@ -232,28 +256,22 @@ dashboardPage(
       tabItem(
         useShinyalert(),
         tabName="CustomiseNode",
-        h1("Policy Selection Support"),
+        h1("Create and compare different policies"),
         br(),
-        fluidRow(
-          column(
-            width = 3,
-            selectInput("customModelSelection",
-                        "Select Model",
-                        choices="TNA")
-          ),
-          column(
-            width = 3,
-            selectInput("customOaisEntitySelection",
-                        "Select OAIS Function Entity",
-                        choices="None", 
-                        multiple = TRUE)
-          )
+        div(
+          selectInput("customModelSelection",
+                      h3("Select model"),
+                      choices = "Default")
         ),
         fluidRow(
           column(
-            width=3,
+            width = 3,
+            selectInput("customOaisEntitySelection",
+                        h5("Select OAIS Function Entity"),
+                        choices="None", 
+                        multiple = TRUE),
             box(
-              title="Nodes Checklist",
+              title="Nodes checklist",
               width=NULL,
               checkboxGroupInput("policyTabNodesChecklist", 
                                  label=NULL,
@@ -284,8 +302,11 @@ dashboardPage(
               textInput("SimpleViewPolicyName", label = h4("Enter policy name"), value = ""),
               tags$style(HTML('#SimpleViewAddPolicy{background-color:green}')),
               tags$style(HTML('#SimpleViewAddPolicy{color:white}')),
-              actionButton("SimpleViewAddPolicy", "Add Policy")
-            )
+              actionButton("SimpleViewAddPolicy", "Add policy")
+            ),
+              tags$style(HTML('#SimplePolicyReset{background-color:gray}')),
+               tags$style(HTML('#SimplePolicyReset{color:white}')),
+               div(actionButton('SimplePolicyReset', 'Reset model'), style="float:right")
           ),
           column(
             width=5,
@@ -297,7 +318,7 @@ dashboardPage(
       # Policy Tab
       tabItem(
         tabName="AdvancedCustomiseNode",
-        h1("Policy Selection"),
+        h1("Advanced model customisation"),
         br(),
         fluidRow(
           width=8,
@@ -305,7 +326,7 @@ dashboardPage(
             column(width=12,
                    # Plot the bayesian network
                    box(
-                     title="Network",
+                     title="DiAGRAM structure",
                      collapsible=TRUE,
                      width=NULL,
                      plotOutput("netPlot")
@@ -318,21 +339,20 @@ dashboardPage(
               box(
                 width=NULL,
                 selectInput("model_version",
-                            "Select Model",
-                            choices=c("TNA")),
+                            h3("Select Model"),
+                            choices="Default"),
                 selectInput("nodeProbTable",
-                            "Select Node",
+                            h4("Select Node"),
                             choices=c("nodes loading")),
                 tags$style(HTML('#networkReset{background-color:gray}')),
                 tags$style(HTML('#networkReset{color:white}')),
-                actionButton('networkReset',
-                             'Reset Model')
+                actionButton('networkReset','Reset model')
               )
             ),
             column(
               width=8,
               box(
-                title="Probability Table",
+                title="Probability table",
                 width=NULL,
                 column(
                   width=4,
@@ -342,8 +362,7 @@ dashboardPage(
                                          "Conditional Probability Table")),
                   tags$style(HTML('#updateProb{background-color:green}')),
                   tags$style(HTML('#updateProb{color:white}')),
-                  actionButton("updateProb",
-                               "Add Changes")
+                  actionButton("updateProb", "Add changes")
                   
                 ),
                 column(
@@ -358,7 +377,7 @@ dashboardPage(
             column(
               width=4,
               box(
-                title="Changed Nodes",
+                title="Changed nodes",
                 width=NULL,
                 collapsible=TRUE,
                 tags$ul(
@@ -366,11 +385,11 @@ dashboardPage(
                 )
               ),
               box(
-                title="Save Network",
+                title="Save model",
                 width=NULL,
                 collapsible=TRUE,
                 textInput("policyName",
-                          label="Modified network name:",
+                          label="Modified model name:",
                           value=""),
                 tags$style(HTML('#addPolicy{background-color:green}')),
                 tags$style(HTML('#addPolicy{color:white}')),
@@ -385,7 +404,7 @@ dashboardPage(
             column(
               width=8,
               box(
-                title="Node Probability",
+                title="Node probability",
                 width=NULL,
                 collapsible=TRUE,
                 plotOutput("nodeProbability")
@@ -396,7 +415,7 @@ dashboardPage(
             column(
               width=6,
               box(
-                title="Policy Comparison",
+                title="Policy comparison",
                 width=NULL,
                 plotOutput("PolicyComparison")
               )
@@ -404,7 +423,7 @@ dashboardPage(
             column(
               width=6,
               box(
-                title="Model Base Utility Comparison",
+                title="Model comparison",
                 width=NULL,
                 plotOutput("BaseUtilityComparison")
               )
@@ -419,9 +438,8 @@ dashboardPage(
         div(
           selectInput(
             "reportTabModelSelection",
-            "Select Model",
-            choices = "TNA"
-          )
+            h3("Select model"),
+            choices ="Default")
         ),
         fluidRow(
           column(
@@ -432,26 +450,28 @@ dashboardPage(
               htmlOutput("ReportTabSummaryText")
             ),
             box(
-              title="Utility Weighting",
+              title="Utility weightings",
               width=NULL,
-              sliderInput(inputId="renderabilityWeighting",
-                          label="Renderability Weighting",
+              collapsible = TRUE,
+              collapsed = TRUE,
+              sliderInput(inputId="RenderabilityWeighting",
+                          label="Renderability weighting",
                           min=0,
                           max=1,
                           value=1,
                           step=0.1),
               sliderInput(inputId="IntellectualWeighting",
-                          label="Intellectual Weighting",
+                          label="Intellectual control weighting",
                           min=0,
                           max=1,
                           value=1,
                           step=0.1)
             ),
             box(
-              title=NULL,
+              title="Download model",
               width=NULL,
               selectInput("ReportTabPolicySelection",
-                          "Select Policy",
+                          h5("Select policy"),
                           choices="No policies added"),
               br(),
               "Select what you would like to download:",
@@ -459,8 +479,8 @@ dashboardPage(
               br(),
               checkboxGroupInput("downloadOptions",
                                  NULL,
-                                 choices=c("Archive Model Utility Comparison Plot",
-                                           "Policy Model"
+                                 choices=c("Policy comparison plot",
+                                           "This policy model"
                                            #,"Documented Report"
                                            )),
               br(),
@@ -474,7 +494,7 @@ dashboardPage(
           column(
             width=6,
             box(
-              title="Utility Comparison",
+              title="Comparing Policies",
               width=NULL,
               plotOutput("ReportTabUtilityComparisonPlot")
             )
