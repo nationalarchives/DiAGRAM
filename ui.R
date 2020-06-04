@@ -450,7 +450,7 @@ dashboardPage(
               htmlOutput("ReportTabSummaryText")
             ),
             box(
-              title="Utility weightings",
+              title="Score function weightings",
               width=NULL,
               collapsible = TRUE,
               collapsed = TRUE,

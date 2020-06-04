@@ -287,7 +287,7 @@ shinyServer(function(input, output, session) {
       select(node_year) %>%
       as.character()
     
-    tagList(strong("Data last updated: "), year)
+    tagList(strong("Data collected: "), year)
     
   })
   
@@ -1399,7 +1399,7 @@ shinyServer(function(input, output, session) {
       }
     }
     summary <- paste(summary, "</pre>", sep="")
-    summary <- paste(summary, "<br/>", "The policy with maximum utility score for intellectual control and renderability is: <b>", maxUtilityPolicyName, "</b>")
+    summary <- paste(summary, "<br/>", "The policy with best score for intellectual control and renderability is: <b>", maxUtilityPolicyName, "</b>")
     
     return(summary)
   }
@@ -1507,7 +1507,7 @@ shinyServer(function(input, output, session) {
       }
       
       # write utility plot
-      if ("Archive Model Utility Comparison Plot" %in% input$downloadOptions) {
+      if ("Archive Model Score Comparison Plot" %in% input$downloadOptions) {
         png(filename=paste0(input$reportTabModelSelection, ".png"))
         print(plotUtility())
         dev.off()
