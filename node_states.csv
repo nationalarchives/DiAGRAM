@@ -42,7 +42,5 @@ Identity,Yes,We know what the material is and where it is from.
 Identity,No,We do not know what the material is and where it is from.
 Conditions_of_Use,Yes,We know the conditions of use and any restrictions on the digital material. 
 Conditions_of_Use,No,We do not know the conditions of use of the digital material. 
-Physical_Disaster,High ,This area has a chance of flooding greater than 3.3% each year.
-Physical_Disaster,Medium,This area has a chance of flooding between 1% and 3.3% each year.
-Physical_Disaster,Low,This area has a chance of flooding between 0.1% and 1% each year.
-Physical_Disaster,Very Low,This area has a chance of flooding of less than 0.1% each year.
+Physical_Disaster,Yes,There will be a flood this year.
+Physical_Disaster,No,There will not be a flood this eyear.
