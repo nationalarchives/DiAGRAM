@@ -1501,13 +1501,13 @@ shinyServer(function(input, output, session) {
     content = function(file){
       
       # write model
-      if ("Policy Model" %in% input$downloadOptions) {
+      if ("This policy model" %in% input$downloadOptions) {
         write.bif(paste0(input$ReportTabPolicySelection, ".bif"),
                   CustomPolicies$models[[input$reportTabModelSelection]][[input$ReportTabPolicySelection]])
       }
       
       # write utility plot
-      if ("Archive Model Score Comparison Plot" %in% input$downloadOptions) {
+      if ("Policy comparison plot" %in% input$downloadOptions) {
         png(filename=paste0(input$reportTabModelSelection, ".png"))
         print(plotUtility())
         dev.off()

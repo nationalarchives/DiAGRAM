@@ -494,7 +494,7 @@ dashboardPage(
           column(
             width=6,
             box(
-              title="Comparing Policies",
+              title="Comparing policies",
               width=NULL,
               plotOutput("ReportTabUtilityComparisonPlot")
             )
