@@ -64,11 +64,11 @@ variable Technical_Skills {
   type discrete [ 2 ] { Good, Poor };
 }
 probability ( Op_Environment ) {
-  table 0.5, 0.5;
+  table 0.54, 0.46;
 }
 probability ( Integrity | System_Security, Info_Management, Checksum ) {
   (Good, Sufficient, Yes) 1.0, 0.0;
-  (Poor, Sufficient, Yes) 0.5325, 0.4675;
+  (Poor, Sufficient, Yes) 0.5326, 0.4674;
   (Good, Insufficient, Yes) 0.0, 1.0;
   (Poor, Insufficient, Yes) 0.0, 1.0;
   (Good, Sufficient, Self_Generated) 0.9099, 0.0901;
@@ -81,19 +81,19 @@ probability ( Integrity | System_Security, Info_Management, Checksum ) {
   (Poor, Insufficient, No) 0.0, 1.0;
 }
 probability ( System_Security ) {
-  table 0.5, 0.5;
+  table 0.17, 0.83;
 }
 probability ( Info_Management ) {
-  table 0.5, 0.5;
+  table 0.55, 0.45;
 }
 probability ( Storage_Medium ) {
-  table 0.90, 0.05, 0.05;
+  table 0.50, 0.45, 0.05;
 }
 probability ( ReplicationAndRefreshment ) {
-  table 0.5, 0.5;
+  table 0.65, 0.35;
 }
 probability ( Digital_Object ) {
-  table 0.0473, 0.2034, 0.7493;
+  table 0.34, 0.10, 0.56;
 }
 probability ( Content_Metadata | Digital_Object ) {
   (Born_digital) 0.4539, 0.5461;
@@ -105,12 +105,12 @@ probability ( Tech_Metadata | Technical_Skills ) {
   (Poor) 0.427, 0.573;
 }
 probability ( File_Format | Digital_Object ) {
-  (Born_digital) 0.8826, 0.1174;
-  (Digitised) 1.0, 0.0;
-  (Surrogate) 1.0, 0.0;
+  (Born_digital) 0.8589, 0.1411;
+  (Digitised) 0.9999, 0.0001;
+  (Surrogate) 0.9999, 0.0001;
 }
 probability ( Checksum ) {
-  table 0.90, 0.05, 0.05;
+  table 0.05, 0.50, 0.45;
 }
 probability ( Obsolescence | Storage_Medium, Technical_Skills ) {
   (A, Good) 0.2985, 0.7015;
@@ -164,7 +164,7 @@ probability ( Identity | Info_Management, Content_Metadata ) {
   (Insufficient, No) 0.0, 1.0;
 }
 probability ( Physical_Disaster ) {
-  table 0.01, 0.99;
+  table 0.02, 0.98;
 }
 probability ( Storage_Life | Op_Environment, Storage_Medium, ReplicationAndRefreshment, Physical_Disaster ) {
   (Yes, A, Good, Yes) 1.0, 0.0;
@@ -193,5 +193,5 @@ probability ( Storage_Life | Op_Environment, Storage_Medium, ReplicationAndRefre
   (No, C, Poor, No) 1.0, 0.0;
 }
 probability ( Technical_Skills ) {
-  table 0.5, 0.5;
+  table 0.15, 0.85;
 }

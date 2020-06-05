@@ -92,7 +92,7 @@ dashboardPage(
           shinydashboard::box(
             title = "Welcome",
             width = 12,
-            shiny::h2("Version 0.9.1"), #update in May
+            shiny::h2("Version 0.9.2"), #update in June
             br(),
             p("This is the prototype version of the Digital Archiving Graphical 
               Risk Assessment Model built by the ",
