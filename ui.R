@@ -144,7 +144,7 @@ dashboardPage(
             width = 12,
             h3("Guidance"),
             br(),
-            p(tags$b("Definitions"),": This page a visualisation of the underlying network of digital preservation risks and
+            p(tags$b("Definitions"),": This page has a visualisation of the underlying network of digital preservation risks and
               allows you to see the full definitions, states and data sources used for each 'node'."),
             p(tags$b("1. Create your model"),": This takes you through 9 questions to create a risk model and score bespoke to
               your archive and policies."),

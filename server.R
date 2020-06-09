@@ -417,10 +417,31 @@ shinyServer(function(input, output, session) {
       primary_state <- next_states$node_state[1]
       inputId <- paste(next_node$node_name, primary_state, sep="-")
       label <- paste(primary_state, "%")
-      
+      node_text <- ""
+      if (next_node$node_name == "Technical_Skills"){
+        node_text <- h5("The default is based on responses to the JISC digital skills 
+        survey and how many said that there was full capability within their organisation 
+        to do file format migration, software emulation or data recovery. (15%)")}
+      if (next_node$node_name == "System_Security"){
+        node_text <- h5("The default is based on responses to the JISC digital skills 
+        survey and how many agreed that their IT provider supports the requirements of 
+        the archival activities of your organisation toa large or very great extent and 
+        that their digital collections are protected with access restrictions/
+        permissions. (17%)")}
+      if (next_node$node_name == "Info_Management"){
+        node_text <- h5("The default is based on responses to the JISC digital skills 
+                        survey. 70% of respondents agreed that their catalogue management 
+                        system meets the needs of the organisation and 40% that their 
+                        digital asset management system meets the needs of the organisation. 
+                        We have estimated that 55% would therefore have sufficient 
+                        information management systems, as you don’t need a bespoke 
+                        digital asset management system to have support for coherent 
+                        information management and documentation of preservation actions, 
+                        but you may need more than just a catalogue system.")}
+        
       if (next_node$node_name == "Physical_Disaster"){
         node_text <- a(href="https://flood-warning-information.service.gov.uk/long-term-flood-risk/postcode",
-                       'Click here to check your flood risk here.',target="_blank")
+                       'Click here to check your flood risk.',target="_blank")
         rendered_element <- div(
           fluidRow(
             column(
@@ -451,15 +472,15 @@ shinyServer(function(input, output, session) {
         )
       }
       else{
-        node_text <- ""
       rendered_element <- div(
         fluidRow(
           column(
             width=5,
-            node_text,
-            br(),
-            br(),
             sliderInput(inputId, label, min = 0, max = 100, step = 1, value = 0, post = "%")
+          ),
+          column(
+            width=5, offset=1,
+            node_text
           )
         ),
         fluidRow(
@@ -513,7 +534,7 @@ shinyServer(function(input, output, session) {
   # Add question to setup page.
   output$Question <- renderUI({
     if (questionValues$question_number < nrow(setup_questions)+1 && questionValues$question_number>=1){
-      h4(strong(setup_questions[questionValues$question_number,]$node_question))
+      h4((setup_questions[questionValues$question_number,]$node_question))
     } else {
       h4(strong("All questions answered. Please give model a name:"))
     }
