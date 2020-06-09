@@ -1468,7 +1468,7 @@ shinyServer(function(input, output, session) {
       # set the list of policies in drop down
       updateSelectInput(session, 
                         "ReportTabPolicySelection",
-                        choices = CustomPolicies$archiveList[[currModel]]$name)
+                        choices = CustomPolicies$archiveList[[currModel]]$name[-1])
     }
   })
   
@@ -1484,7 +1484,7 @@ shinyServer(function(input, output, session) {
     # set the list of policies in drop down
     updateSelectInput(session, 
                       "ReportTabPolicySelection",
-                      choices = CustomPolicies$archiveList[[currModel]]$name)
+                      choices = CustomPolicies$archiveList[[currModel]]$name[-1])
     
   })
   
@@ -1521,14 +1521,18 @@ shinyServer(function(input, output, session) {
     
     content = function(file){
       
-      # write model
-      if ("This policy model" %in% input$downloadOptions) {
+      # write policy
+      if ("A policy" %in% input$downloadOptions) {
         write.bif(paste0(input$ReportTabPolicySelection, ".bif"),
-                  CustomPolicies$archiveList[[input$reportTabModelSelection]][[input$ReportTabPolicySelection]])
+                  CustomPolicies$models[[input$reportTabModelSelection]][[input$ReportTabPolicySelection]])
       }
-      
+      # write model
+      if ("The model" %in% input$downloadOptions) {
+        write.bif(paste0(input$reportTabModelSelection, ".bif"),
+                  CustomPolicies$models[[input$reportTabModelSelection]]$Base)
+      }
       # write utility plot
-      if ("Policy comparison plot" %in% input$downloadOptions) {
+      if ("The plot" %in% input$downloadOptions) {
         png(filename=paste0(input$reportTabModelSelection, ".png"))
         print(plotUtility())
         dev.off()

@@ -94,7 +94,7 @@ dashboardPage(
             width = 12,
             shiny::h2("DiAGRAM - The ",tags$b("Di",.noWS="outside"),"gital ",tags$b("A",.noWS="outside"),"rchiving ",tags$b("G",.noWS="outside"),"raphical 
                       ",tags$b("R",.noWS="outside"),"isk ",tags$b("A",.noWS="outside"),"ssessment ",tags$b("M",.noWS="outside"),"odel", align="center"),
-            h3("Version 0.9.3", align="center"), #update in June   
+            h3("Version 0.9.4", align="center"), #update in June   
             br(),
             #h3("Introduction"),
             p("This is the prototype version of the Digital Archiving Graphical 
@@ -485,21 +485,20 @@ dashboardPage(
                           step=0.1)
             ),
             box(
-              title="Download model",
+              title="Downloads",
               width=NULL,
-              selectInput("ReportTabPolicySelection",
-                          h5("Select policy"),
-                          choices="No policies added"),
-              br(),
               "Select what you would like to download:",
               br(),
               br(),
               checkboxGroupInput("downloadOptions",
                                  NULL,
-                                 choices=c("Policy comparison plot",
-                                           "This policy model"
-                                           #,"Documented Report"
-                                           )),
+                                 choices=c("The plot",
+                                 "The model",
+                                  "A policy")),
+              br(),
+              selectInput("ReportTabPolicySelection",
+                          h5("Select policy to download"),
+                          choices="No policies added"),
               br(),
               tags$style(HTML('#Download{background-color:green}')),
               tags$style(HTML('#Download{color:white}')),
