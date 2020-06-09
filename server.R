@@ -1529,7 +1529,7 @@ shinyServer(function(input, output, session) {
       # write model
       if ("The model" %in% input$downloadOptions) {
         write.bif(paste0(input$reportTabModelSelection, ".bif"),
-                  CustomPolicies$models[[input$reportTabModelSelection]]$Base)
+                  CustomPolicies$models[[input$reportTabModelSelection]][['Base']])
       }
       # write utility plot
       if ("The plot" %in% input$downloadOptions) {
