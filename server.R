@@ -1520,7 +1520,7 @@ shinyServer(function(input, output, session) {
     },
     
     content = function(file){
-      
+      #edit to make three options 09/06
       # write policy
       if ("A policy" %in% input$downloadOptions) {
         write.bif(paste0(input$ReportTabPolicySelection, ".bif"),
