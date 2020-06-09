@@ -1523,8 +1523,14 @@ shinyServer(function(input, output, session) {
       
       # write model
       if ("This policy model" %in% input$downloadOptions) {
-        write.bif(paste0(input$ReportTabPolicySelection, ".bif"),
-                  CustomPolicies$archiveList[[input$reportTabModelSelection]][[input$ReportTabPolicySelection]])
+        if (input$ReportTabPolicySelection==input$reportTabModelSelection) {
+        write.bif(paste0(input$ReportTabModelSelection, ".bif"),
+                  CustomPolicies$models[[input$reportTabModelSelection]][['Base']])
+      }
+      else {
+      write.bif(paste0(input$ReportTabPolicySelection, ".bif"),
+                CustomPolicies$models[[input$reportTabModelSelection]][[input$ReportTabPolicySelection]])
+      }
       }
       
       # write utility plot
