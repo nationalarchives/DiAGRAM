@@ -90,10 +90,13 @@ dashboardPage(
           
           # Welcome box
           shinydashboard::box(
-            title = "Welcome",
+            title = NULL,
             width = 12,
-            shiny::h2("Version 0.9.2"), #update in June
+            shiny::h2("DiAGRAM - The ",tags$b("Di",.noWS="outside"),"gital ",tags$b("A",.noWS="outside"),"rchiving ",tags$b("G",.noWS="outside"),"raphical 
+                      ",tags$b("R",.noWS="outside"),"isk ",tags$b("A",.noWS="outside"),"ssessment ",tags$b("M",.noWS="outside"),"odel", align="center"),
+            h3("Version 0.9.3", align="center"), #update in June   
             br(),
+            #h3("Introduction"),
             p("This is the prototype version of the Digital Archiving Graphical 
               Risk Assessment Model built by the ",
               a(href="https://warwick.ac.uk", "University of Warwick"),
@@ -127,7 +130,7 @@ dashboardPage(
               used in the model")
             ),
             br(),
-            # Adding National Archives and University of Warwick Logos
+            # Adding Logos
             img(src="http://www.nationalarchives.gov.uk/wp-content/uploads/2019/06/TNA-SQUARE-LOGO-POSITIVE-01-720x720.jpg",
                 height=100,
                 width=100),
@@ -136,8 +139,23 @@ dashboardPage(
                 width=120),
             img(src="https://www.heritagefund.org.uk/sites/default/files/media/attachments/English%20logo%20-%20Colour%20%28JPEG%29.jpg",
                 height=80,
-                width=216)
-            
+                width=216)  ),
+          box(
+            width = 12,
+            h3("Guidance"),
+            br(),
+            p(tags$b("Definitions"),": This page a visualisation of the underlying network of digital preservation risks and
+              allows you to see the full definitions, states and data sources used for each 'node'."),
+            p(tags$b("1. Create your model"),": This takes you through 9 questions to create a risk model and score bespoke to
+              your archive and policies."),
+            p(tags$b("2. Compare policies"),": Create and save different policies and see how the risk score changes."),
+            p(tags$b("3. Advanced customisation"),": This tab allows users to edit the marginal and conditional probabilities
+              in the model directly. This allows for users to input their own data for any nodes within the model 
+              or create scenarios by altering conditional probabilities."),
+            p(tags$b("4. Report"),": This contains a summary and comparison of the policies for each model, and allows you to 
+              download the model and plots."),
+            br(),
+            p("If you have further questions, please talk to the workshop facilitator. Full user guidance coming soon.")
           )
         )
       ),
@@ -198,7 +216,6 @@ dashboardPage(
           )
         )
       ),
-      
       # Policy Tab
       tabItem(
         tabName="CustomiseModel",

@@ -15,7 +15,7 @@ variable Info_Management {
 variable Storage_Medium {
   type discrete [ 3 ] { A, B, C };
 }
-variable ReplicationAndRefreshment {
+variable Rep_and_Refresh {
   type discrete [ 2 ] { Good, Poor };
 }
 variable Digital_Object {
@@ -89,7 +89,7 @@ probability ( Info_Management ) {
 probability ( Storage_Medium ) {
   table 0.50, 0.45, 0.05;
 }
-probability ( ReplicationAndRefreshment ) {
+probability ( Rep_and_Refresh ) {
   table 0.65, 0.35;
 }
 probability ( Digital_Object ) {
@@ -166,7 +166,7 @@ probability ( Identity | Info_Management, Content_Metadata ) {
 probability ( Physical_Disaster ) {
   table 0.02, 0.98;
 }
-probability ( Storage_Life | Op_Environment, Storage_Medium, ReplicationAndRefreshment, Physical_Disaster ) {
+probability ( Storage_Life | Op_Environment, Storage_Medium, Rep_and_Refresh, Physical_Disaster ) {
   (Yes, A, Good, Yes) 1.0, 0.0;
   (No, A, Good, Yes) 0.5393, 0.4607;
   (Yes, B, Good, Yes) 1.0, 0.0;

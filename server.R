@@ -420,7 +420,7 @@ shinyServer(function(input, output, session) {
       
       if (next_node$node_name == "Physical_Disaster"){
         node_text <- a(href="https://flood-warning-information.service.gov.uk/long-term-flood-risk/postcode",
-                       'Click here to check your flood risk here.')
+                       'Click here to check your flood risk here.',target="_blank")
         rendered_element <- div(
           fluidRow(
             column(
@@ -1503,7 +1503,7 @@ shinyServer(function(input, output, session) {
       # write model
       if ("This policy model" %in% input$downloadOptions) {
         write.bif(paste0(input$ReportTabPolicySelection, ".bif"),
-                  CustomPolicies$models[[input$reportTabModelSelection]][[input$ReportTabPolicySelection]])
+                  CustomPolicies$archiveList[[input$reportTabModelSelection]][[input$ReportTabPolicySelection]])
       }
       
       # write utility plot

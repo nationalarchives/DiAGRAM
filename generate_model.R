@@ -11,7 +11,7 @@
 
 
 library(bnlearn)
-node.names <- c("Op_Environment","Integrity","System_Security","Info_Management","Storage_Medium", "ReplicationAndRefreshment", 
+node.names <- c("Op_Environment","Integrity","System_Security","Info_Management","Storage_Medium", "Rep_and_Refresh", 
                 "Digital_Object","Content_Metadata","Tech_Metadata","File_Format", "Checksum", "Obsolescence",
                 "Tools_to_Render", "Intellectual_Control","Conditions_of_Use","Renderability","Bit_Preservation","Identity",
                 "Physical_Disaster","Storage_Life","Technical_Skills")
@@ -52,7 +52,7 @@ TNA.dag <- set.arc(TNA.dag, from="Integrity", to="Bit_Preservation")
 TNA.dag <- set.arc(TNA.dag, from="Storage_Medium", to="Storage_Life")
 TNA.dag <- set.arc(TNA.dag, from="Physical_Disaster", to="Storage_Life")
 TNA.dag <- set.arc(TNA.dag, from="Op_Environment", to="Storage_Life")
-TNA.dag <- set.arc(TNA.dag, from="ReplicationAndRefreshment", to="Storage_Life")
+TNA.dag <- set.arc(TNA.dag, from="Rep_and_Refresh", to="Storage_Life")
 
 TNA.dag <- set.arc(TNA.dag, from="Storage_Life", to="Bit_Preservation")
 
@@ -88,7 +88,7 @@ prob.op_environment = matrix(c(0.54, 0.46), ncol = 2,
 prob.system_security = matrix(c(0.17, 0.83), ncol = 2, 
                               dimnames = list(NULL,c("Good","Poor")))
 
-#ReplicationAndRefreshment - updated based on JISC data 05/06
+#Rep_and_Refresh - updated based on JISC data 05/06
 prob.replication_refreshment = matrix(c(0.65,0.35), ncol = 2, 
                                       dimnames = list(NULL,c("Good","Poor"))) #0327 state names
 
@@ -164,14 +164,14 @@ prob.storage_life = array(c(1,0,1,0,0.7588,0.2412,0.7588,0.2412,0.5393,0.4607,1,
                             1,0,1,0,1,0,1,0,1,0,1,0),
                           dim = c(2, 2, 2, 2, 3),
                           dimnames = list("Storage_Life" = c("Yes","No"),"Physical_Disaster" = c("Yes","No"),
-                                          "ReplicationAndRefreshment" = c("Good","Poor"), "Op_Environment" = c("Yes","No"),
+                                          "Rep_and_Refresh" = c("Good","Poor"), "Op_Environment" = c("Yes","No"),
                                           "Storage_Medium" = c("A","B","C"))) #0327 state names and probs
 
 
 TNA.model <- custom.fit(TNA.dag,
                         dist=list("Op_Environment"=prob.op_environment,
                                   "Storage_Medium"=prob.storage_medium,
-                                  "ReplicationAndRefreshment"=prob.replication_refreshment,
+                                  "Rep_and_Refresh"=prob.replication_refreshment,
                                   "System_Security"=prob.system_security,
                                   "Digital_Object"=prob.digital_object,
                                   "Content_Metadata"=prob.content_metadata,
