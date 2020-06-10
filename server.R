@@ -876,9 +876,10 @@ shinyServer(function(input, output, session) {
         select(-node_name) 
       
       nodeStateType <- node.definitions %>% filter(node_name==node) %>% select(type)
-      
+      primary_state <- nodeStates$node_state[1]
+      label <- paste(primary_state, "%")
       if(nodeStateType == 'BooleanSlider'){
-        nodeStateSlider <- sliderInput(node, "True (%)", min = 0, max = 100, step = 1, value = 0, post = "%")
+        nodeStateSlider <- sliderInput(node, label, min = 0, max = 100, step = 1, value = 0, post = "%")
       }
       else if(nodeStateType == "slider"){
         nodeStateSlider <- create_sliders(node, nodeStates$node_state)
@@ -1030,20 +1031,20 @@ shinyServer(function(input, output, session) {
       # print(node)
       # print(cpt)
       # print("----------------------\n")
-      
+
       nodeStates <- state.definitions %>%
         filter(node_name==node) %>%
         select(-node_name)
       
       nodeStateType <- node.definitions %>% filter(node_name==node) %>% select(type)
-      
+      primary_state <- nodeStates$node_state[1]
       # extract and set the values in CPT based on the input type -- BooleanSlider, slider, radiobutton
       if(nodeStateType == 'BooleanSlider'){
         # update cpt for the True state as the single slider signifies input for True %
-        index <- cpt[[node]] == 'Yes'
+        index <- cpt[[node]] == primary_state
         cpt$Freq[index] <- input[[node]]/100
         
-        index <- cpt[[node]] == 'No'
+        index <- cpt[[node]] != primary_state
         cpt$Freq[index] <- 1 - input[[node]]/100
       }
       else if(nodeStateType == "slider"){
