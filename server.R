@@ -756,8 +756,20 @@ shinyServer(function(input, output, session) {
                                                                          Intellectual_Control=utility$Intellectual_Control,
                                                                          Renderability=utility$Renderability)
       
-      CustomModels$custom_networks[[input$uploadName]] <- custom_model
+      CustomPolicies$archiveList[[input$uploadName]] <- tibble(name=input$uploadName,
+                                                                        Intellectual_Control=utility$Intellectual_Control,
+                                                                        Renderability=utility$Renderability)
       
+      CustomModels$custom_networks[[input$uploadName]] <- custom_model
+      CustomPolicies$models[[input$uploadName]] = list('Base'=custom_model)
+      
+      # setting choices for the drop down list in the Simple view Node customisation tab
+      customModelChoices <- CustomModels$base_utility.df %>% select(name)
+      updateSelectInput(session, 'customModelSelection', choices=customModelChoices)
+      updateSelectInput(session, "model_version", label="Select Model", choices=customModelChoices)
+      
+      # set choices for the drop down list in the Report tab
+      updateSelectInput(session, 'reportTabModelSelection', choices=CustomModels$base_utility.df$name)
     }
   })
   
