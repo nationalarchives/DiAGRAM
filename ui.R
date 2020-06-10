@@ -498,7 +498,7 @@ dashboardPage(
               br(),
               selectInput("ReportTabPolicySelection",
                           h5("Select policy to download"),
-                          choices="No policies added"),
+                          choices="Base"),
               br(),
               tags$style(HTML('#Download{background-color:green}')),
               tags$style(HTML('#Download{color:white}')),
