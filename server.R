@@ -1512,7 +1512,6 @@ shinyServer(function(input, output, session) {
       plotUtility()
     }
   )
-  
   output$reportTabDownloadBtn <- downloadHandler(
     filename = function() {
       paste0(input$reportTabModelSelection, ".zip")
@@ -1528,11 +1527,11 @@ shinyServer(function(input, output, session) {
       # write model
       if ("The model" %in% input$downloadOptions) {
         write.bif(paste0(input$reportTabModelSelection, ".bif"),
-                  CustomPolicies$models[[input$reportTabModelSelection]]$Base)
+                  CustomPolicies$models[[input$reportTabModelSelection]][[1]])
       }
       # write utility plot
       if ("The plot" %in% input$downloadOptions) {
-        png(filename=paste0(input$reportTabModelSelection, ".png"))
+        png(filename=paste0(input$reportTabModelSelection, "_plot.png"))
         print(plotUtility())
         dev.off()
       }
@@ -1550,7 +1549,8 @@ shinyServer(function(input, output, session) {
       
       # create zip file to return
       filenames <- c(paste0(input$ReportTabPolicySelection, ".bif"),
-                     paste0(input$reportTabModelSelection, ".png")
+                     paste0(input$reportTabModelSelection, ".bif"),
+                     paste0(input$reportTabModelSelection, "_plot.png")
                      #,paste0(input$reportTabModelSelection, ".pdf")
                      )
       
