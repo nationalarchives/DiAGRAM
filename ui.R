@@ -60,15 +60,15 @@ dashboardPage(
                tabName = "CustomiseNode",
                icon=icon("chart-bar")),
       
-      # Advanced Page
-      menuItem("3. Advanced customisation", 
-                 tabName = "AdvancedCustomiseNode",
-                 icon=icon("project-diagram")),
-      
       # Create Report Tab
-      menuItem("4. Report",
+      menuItem("3. Report",
                tabName="Report",
-               icon=icon("book"))
+               icon=icon("book")),
+      
+      # Advanced Page
+      menuItem("Advanced customisation", 
+                 tabName = "AdvancedCustomiseNode",
+                 icon=icon("project-diagram"))
     )
   ),
   
@@ -94,7 +94,7 @@ dashboardPage(
             width = 12,
             shiny::h2("DiAGRAM - The ",tags$b("Di",.noWS="outside"),"gital ",tags$b("A",.noWS="outside"),"rchiving ",tags$b("G",.noWS="outside"),"raphical 
                       ",tags$b("R",.noWS="outside"),"isk ",tags$b("A",.noWS="outside"),"ssessment ",tags$b("M",.noWS="outside"),"odel", align="center"),
-            h3("Version 0.9.5", align="center"), #update in June   
+            h3("Version 0.9.6", align="center"), #update in June   
             br(),
             #h3("Introduction"),
             p("This is the prototype version of the Digital Archiving Graphical 
@@ -105,29 +105,28 @@ dashboardPage(
               "with suport from the ",
               a(href="https://www.heritagefund.org.uk/", "National Lottery Heritage Fund.")),
             p("This decision support tool enables users to score their Archive's
-            digital presservation risk and then explore how this would change under
+            digital preservation risk and then explore how this would change under
             different policies and risk scenarios. The risk score is based on the proportion of 
-              files in the archive that are renderable and where the archivist can have full
+              files in the archive that are renderable and where the archivist has full
               intellectual control."),
             p("The underlying methodology used to create this model is based on a Bayesian network
             - a probabilistic graphical model that captures the conditional dependencies of risk 
-            events. When historical data was unavailable, data from an expert elicitation 
-            session conducted in April 2020 has been used to inform the probabilities needed for
-            this model. For more information about the statistical techniques used, please see 
-              the supporting documentation."),
-            p("This interface supports the users to complete the following tasks:"),
+            events. When historical data were unavailable, data from an expert elicitation 
+            session conducted in April 2020 were used to inform the probabilities needed for
+            this model."),
+            p("This interface enables users to:"),
             tags$ul(
               tags$li("Understand the risk definitions used in the model and 
                       how the risk events are linked together"),
-              tags$li("Create a model that relects the policies and practises for your 
+              tags$li("Create a model that reflects the policies and practices for their 
                       Digital Archive"),
-              tags$li("Test alternative policies to see how this impacts your risk score"),
-              tags$li("Download your model and a summary of the results"),
+              tags$li("Test alternative policies to see how this impacts the risk score"),
+              tags$li("Download the model and a summary of the results"),
               tags$li("Upload a pre-built model and continue exploring scenarios from there"),
-              tags$li("Update the probability tables for your model based on your own data or 
+              tags$li("Update the probability tables for the model based on the user's own data or 
                       experience"),
               tags$li("Create bespoke scenarios by directly manipulating the probabilities
-              used in the model")
+                      used in the model")
             ),
             br(),
             # Adding Logos
@@ -146,16 +145,16 @@ dashboardPage(
             br(),
             p(tags$b("Definitions"),": This page has a visualisation of the underlying network of digital preservation risks and
               allows you to see the full definitions, states and data sources used for each 'node'."),
-            p(tags$b("1. Create your model"),": This takes you through 9 questions to create a risk model and score bespoke to
-              your archive and policies."),
+            p(tags$b("1. Create your model"),": This goes through 9 questions to create a risk model and a score which is
+              based on the user's archive and policies."),
             p(tags$b("2. Compare policies"),": Create and save different policies and see how the risk score changes."),
             p(tags$b("3. Advanced customisation"),": This tab allows users to edit the marginal and conditional probabilities
               in the model directly. This allows for users to input their own data for any nodes within the model 
               or create scenarios by altering conditional probabilities."),
-            p(tags$b("4. Report"),": This contains a summary and comparison of the policies for each model, and allows you to 
-              download the model and plots."),
+            p(tags$b("4. Report"),": This contains a summary and comparison of the policies for each model, and allows 
+              the model and plots to be downloaded."),
             br(),
-            p("If you have further questions, please talk to the workshop facilitator. Full user guidance coming soon.")
+            p("If you have further questions, please contact the workshop facilitator.")
           )
         )
       ),
