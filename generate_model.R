@@ -7,11 +7,11 @@
 # @author: Stephen James Krol, Monash University, Melbourne
 # @email: stephen.james.krol@gmail.com
 
-# Updated 20/05/2020 to relfect latest model and elicitation data by HM at The National Archives UK
+# Updated 05/06/2020 to relfect latest model and elicitation data by HM at The National Archives UK
 
 
 library(bnlearn)
-node.names <- c("Op_Environment","Integrity","System_Security","Info_Management","Storage_Medium", "ReplicationAndRefreshment", 
+node.names <- c("Op_Environment","Integrity","System_Security","Info_Management","Storage_Medium", "Rep_and_Refresh", 
                 "Digital_Object","Content_Metadata","Tech_Metadata","File_Format", "Checksum", "Obsolescence",
                 "Tools_to_Render", "Intellectual_Control","Conditions_of_Use","Renderability","Bit_Preservation","Identity",
                 "Physical_Disaster","Storage_Life","Technical_Skills")
@@ -52,7 +52,7 @@ TNA.dag <- set.arc(TNA.dag, from="Integrity", to="Bit_Preservation")
 TNA.dag <- set.arc(TNA.dag, from="Storage_Medium", to="Storage_Life")
 TNA.dag <- set.arc(TNA.dag, from="Physical_Disaster", to="Storage_Life")
 TNA.dag <- set.arc(TNA.dag, from="Op_Environment", to="Storage_Life")
-TNA.dag <- set.arc(TNA.dag, from="ReplicationAndRefreshment", to="Storage_Life")
+TNA.dag <- set.arc(TNA.dag, from="Rep_and_Refresh", to="Storage_Life")
 
 TNA.dag <- set.arc(TNA.dag, from="Storage_Life", to="Bit_Preservation")
 
@@ -72,52 +72,52 @@ graphviz.plot(TNA.dag, layout = "dot",
 
 # Create prob tables for each node with TNA default values in
 
-#Digital_Object - updated with TNA data 20/05
-prob.digital_object = matrix(c(0.0473, 0.2034, 0.7493), ncol = 3, 
+#Digital_Object - updated based on TNA and JISC data 05/06
+prob.digital_object = matrix(c(0.34, 0.10, 0.56), ncol = 3, 
                              dimnames = list(NULL,c("Born_digital","Digitised","Surrogate"))) 
 
-#Technical_Skills
-prob.technical_skills = matrix(c(0.5,0.5), ncol = 2, 
+#Technical_Skills - updated based on JISC data 05/06
+prob.technical_skills = matrix(c(0.15, 0.85), ncol = 2, 
                                dimnames = list(NULL,c("Good","Poor"))) 
 
-#Op_Environment
-prob.op_environment = matrix(c(0.5,0.5), ncol = 2, 
+#Op_Environment - updated based on JISC data 05/06
+prob.op_environment = matrix(c(0.54, 0.46), ncol = 2, 
                              dimnames = list(NULL,c("Yes","No")))
 
-#System_Security
-prob.system_security = matrix(c(0.5,0.5), ncol = 2, 
+#System_Security - updated based on JISC data 05/06
+prob.system_security = matrix(c(0.17, 0.83), ncol = 2, 
                               dimnames = list(NULL,c("Good","Poor")))
 
-#ReplicationAndRefreshment
-prob.replication_refreshment = matrix(c(0.5,0.5), ncol = 2, 
+#Rep_and_Refresh - updated based on JISC data 05/06
+prob.replication_refreshment = matrix(c(0.65,0.35), ncol = 2, 
                                       dimnames = list(NULL,c("Good","Poor"))) #0327 state names
 
-#Storage_Medium
-prob.storage_medium = matrix(c(0.90, 0.05, 0.05), ncol = 3,   
+#Storage_Medium - updated 05/06
+prob.storage_medium = matrix(c(0.50, 0.45, 0.05), ncol = 3,   
                              dimnames = list(NULL,c("A","B","C"))) #0327 probs
 
-#Checksum
-prob.checksum = matrix(c(0.90, 0.05, 0.05), ncol = 3, 
+#Checksum - updated 05/06
+prob.checksum = matrix(c(0.05, 0.50, 0.45), ncol = 3, 
                        dimnames = list(NULL,c("Yes","Self_Generated","No"))) 
 
-#Physical_Distaster
-prob.physical_disaster = matrix(c(0.01,0.99), ncol = 2, 
+#Physical_Distaster - updated 05/06
+prob.physical_disaster = matrix(c(0.02,0.98), ncol = 2, 
                                 dimnames = list(NULL,c("Yes","No"))) #0327 state names
 
-#Info_Management
-prob.info_management = matrix(c(0.5,0.5), ncol = 2, 
+#Info_Management - updated based on JISC data 05/06
+prob.info_management = matrix(c(0.55, 0.45), ncol = 2, 
                               dimnames = list(NULL,c("Sufficient","Insufficient"))) #0327 probs
 
 #Conditions_of_Use - updated with elicitation data 22/05
-prob.conditions_of_use = array(c(0.611, 0.389, 0.745, 0.255, 0.7896, 0.2104), dim = c(2, 3),
+prob.conditions_of_use = array(c(0.6110, 0.3890, 0.7450, 0.2550, 0.7896, 0.2104), dim = c(2, 3),
                                dimnames = list("Conditions_of_Use" = c("Yes","No"), "Digital_Object" = c("Born_digital","Digitised","Surrogate")))
 
 #Content_Metadata - updated with elicitation data 22/05
 prob.content_metadata = array(c(0.4539, 0.5461, 0.7492, 0.2508, 0.7261, 0.2739), dim = c(2, 3),
                               dimnames = list("Content_Metadata" = c("Yes","No"), "Digital_Object" = c("Born_digital","Digitised","Surrogate"))) #0327 state numbers and probs
 
-#File_Format - updated with TNA data 20/05
-prob.file_format = array(c(0.8826, 0.1174, 1, 0, 1, 0),
+#File_Format - updated with TNA data 05/06
+prob.file_format = array(c(0.8589, 0.1411, 0.9999, 0.0001, 0.9999, 0.0001),
                          dim = c(2, 3),
                          dimnames = list("File_Format" = c("Yes","No"),
                                          "Digital_Object" = c("Born_digital","Digitised","Surrogate"))) #0327 state names and numbers
@@ -131,7 +131,7 @@ prob.intellectual_control = array(c(1, 0, 0, 1, 0, 1, 0, 1), dim = c(2, 2, 2),
                                   dimnames = list("Intellectual_Control" = c("Yes","No"), "Identity" = c("Yes","No"), "Conditions_of_Use" = c("Yes","No")))
 
 #Tech_Metadata - updated with elicitation data 22/05
-prob.tech_metadata = array(c(0.7729, 0.2271, 0.427, 0.573), dim = c(2, 2),
+prob.tech_metadata = array(c(0.7729, 0.2271, 0.4270, 0.5730), dim = c(2, 2),
                            dimnames = list("Tech_Metadata" = c("Sufficient","Insufficient"), "Technical_Skills" = c("Good","Poor"))) #0327 state numbers and probs
 
 #Tools_to_Render - updated with elicitation data 22/05
@@ -140,11 +140,11 @@ prob.tools_to_render = array(c(0.8111, 0.1889, 0.4343, 0.5657, 0.8111, 0.1889, 0
                                              "File_Format" = c("Yes","No"),  "Technical_Skills" = c("Good","Poor"))) #0327 state numbers and probs
 
 #Obscolescence - updated with elicitation data and cloud data 22/05
-prob.obsolescence = array(c(0.2985, 0.7015, 0.1405, 0.8595, 0.001, 0.999, 0.6422, 0.3578, 0.419, 0.581, 0.001, 0.999), dim = c(2, 3, 2),
+prob.obsolescence = array(c(0.2985, 0.7015, 0.1405, 0.8595, 0.001, 0.999, 0.6422, 0.3578, 0.4190, 0.5810, 0.001, 0.999), dim = c(2, 3, 2),
                           dimnames = list("Obsolescence" = c("Yes","No"), "Storage_Medium" = c("A","B","C"), "Technical_Skills" = c("Good","Poor"))) #0327 probs
 
 #Integrity - updated with elicitation data 22/05 CHECK THIS CAREFULLY
-prob.integrity = array(c(1, 0, 0, 1, 0.5325, 0.4675, 0, 1, 0.9099, 0.0901, 0, 1, 0.4424, 0.5576, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1),dim = c(2, 2, 2, 3),
+prob.integrity = array(c(1, 0, 0, 1, 0.5326, 0.4674, 0, 1, 0.9099, 0.0901, 0, 1, 0.4424, 0.5576, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1),dim = c(2, 2, 2, 3),
                        dimnames = list("Integrity" = c("Yes","No"),"Info_Management" = c("Sufficient","Insufficient"), "System_Security" = c("Good","Poor"),
                                        "Checksum" = c("Yes","Self_Generated","No"))) #0327 probs
 
@@ -160,18 +160,18 @@ prob.renderability = array(c(1, 0, 0, 1, 0, 1, 0, 1, 0.5993, 0.4007, 0, 1, 0, 1,
 
 #Storage_Life - updated with elicitation data 22/05 CHECK THIS CAREFULLY
 prob.storage_life = array(c(1,0,1,0,0.7588,0.2412,0.7588,0.2412,0.5393,0.4607,1,0,0.3212,0.6788,0.7588,0.2412,
-                            1,0,1,0,0.945,0.055,0.945,0.055,0.8747,0.1253,1,0,0.646,0.354,0.945,0.055,
+                            1,0,1,0,0.9450,0.0550,0.9450,0.0550,0.8747,0.1253,1,0,0.646,0.354,0.9450,0.0550,
                             1,0,1,0,1,0,1,0,1,0,1,0),
                           dim = c(2, 2, 2, 2, 3),
                           dimnames = list("Storage_Life" = c("Yes","No"),"Physical_Disaster" = c("Yes","No"),
-                                          "ReplicationAndRefreshment" = c("Good","Poor"), "Op_Environment" = c("Yes","No"),
+                                          "Rep_and_Refresh" = c("Good","Poor"), "Op_Environment" = c("Yes","No"),
                                           "Storage_Medium" = c("A","B","C"))) #0327 state names and probs
 
 
 TNA.model <- custom.fit(TNA.dag,
                         dist=list("Op_Environment"=prob.op_environment,
                                   "Storage_Medium"=prob.storage_medium,
-                                  "ReplicationAndRefreshment"=prob.replication_refreshment,
+                                  "Rep_and_Refresh"=prob.replication_refreshment,
                                   "System_Security"=prob.system_security,
                                   "Digital_Object"=prob.digital_object,
                                   "Content_Metadata"=prob.content_metadata,
@@ -195,7 +195,7 @@ TNA.model <- custom.fit(TNA.dag,
 library("gRain")
 graphviz.chart(TNA.model, scale=c(0.6,1), grid=TRUE, bar.col="darkgreen", strip.bg="lightskyblue", main="DiAGRAM")
 
-#write.bif("Model.bif", TNA.model)
+write.bif("Model.bif", TNA.model)
 
 
 # temp.names <- c("A", "B", "C", "D")# , "E", "F", "G")
