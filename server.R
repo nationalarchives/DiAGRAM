@@ -345,12 +345,29 @@ shinyServer(function(input, output, session) {
       next_states <- state.definitions %>%
         filter(node_name==next_node$node_name) %>%
         select(node_state)
-      
+      node_text <- ""
+      if (next_node$node_name == "Storage_Medium"){
+        node_text <- HTML(paste( 
+            h5(tags$b("A"),"- Expected lifespan below 10 years or unknown, highly susceptible to physical 
+                        damage, requires specific environmental conditions and very sensitive to changes,
+                        does not support error-detection methods, supporting technology is novel, proprietary 
+                        and limited. Examples include USB flash drive, floppy disk, SD drive and CD-R discs."),
+            h5(tags$b("B"),"- A proven lifespan of at least 10 years, low susceptibility to physical damage, 
+                        tolerant of a wide range of environmental conditions without data loss, supports 
+                        robust error-detection methods, supporting technology is well established and widely 
+                        available. Examples include LTO tapes, blu ray discs and CD-ROM discs."),
+               h5(tags$b("C"),"- An external company is taking responsibility for our data storage. Examples 
+                        include Amazon Simple Storage Service, Microsoft Azure Archive Storage and Google 
+                        Cloud Storage.")))}
       rendered_element <- div(
                             fluidRow(
                               column(
                                 width=5,
                                 create_sliders(next_node$node_name, next_states$node_state)
+                              ),
+                              column(
+                                width=5, offset=1,
+                                node_text
                               )
                             ),
                             fluidRow(
