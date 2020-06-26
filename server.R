@@ -444,6 +444,7 @@ shinyServer(function(input, output, session) {
                        'Click here to check your flood risk.',target="_blank")
         rendered_element <- div(
           fluidRow(
+            
             column(
               width=5,
               node_text,
@@ -476,7 +477,7 @@ shinyServer(function(input, output, session) {
         fluidRow(
           column(
             width=5,
-            sliderInput(inputId, label, min = 0, max = 100, step = 1, value = 0, post = "%")
+           sliderInput(inputId, label, min = 0, max = 100, step = 1, value = 0, post = "%")
           ),
           column(
             width=5, offset=1,
@@ -534,7 +535,14 @@ shinyServer(function(input, output, session) {
   # Add question to setup page.
   output$Question <- renderUI({
     if (questionValues$question_number < nrow(setup_questions)+1 && questionValues$question_number>=1){
-      h4((setup_questions[questionValues$question_number,]$node_question))
+    HTML(
+      paste(
+        h4(
+          strong(
+            paste0(questionValues$question_number, ". ", setup_questions[questionValues$question_number,]$node_name)
+            )
+          ),
+        h4(setup_questions[questionValues$question_number,]$node_question)))
     } else {
       h4(strong("All questions answered. Please give model a name:"))
     }
@@ -563,7 +571,7 @@ shinyServer(function(input, output, session) {
       # if sum of probability is not 100 alert user and break out of function
       if (prob.summary$prob_sum != 100){
         errorMsg <- paste("Probabilities for '", next_node$node_name, "' do not add up to to 100%")
-        shinyalert("Oops!", errorMsg, type = "error")
+        shinyalert("Error:", errorMsg, type = "error")
         
         return()
         
@@ -626,15 +634,15 @@ shinyServer(function(input, output, session) {
   observeEvent(input$SaveModel, {
     # Check if model has been named correctly
     if (input$CustomisedModelName == "") {
-      errorMsg <-"Please give your custom model a name!"
-      shinyalert("Oops!", errorMsg, type = "error")
+      errorMsg <-"Please give your custom model a name."
+      shinyalert("Error:", errorMsg, type = "error")
       
       return()
     }
     
     if (input$CustomisedModelName %in% names(CustomModels$custom_networks)){
-      errorMsg <-"You have already used this name for another custom model!"
-      shinyalert("Oops!", errorMsg, type = "error")
+      errorMsg <-"You have already used this name for another custom model."
+      shinyalert("Error:", errorMsg, type = "error")
       
       return()
     }
@@ -699,7 +707,10 @@ shinyServer(function(input, output, session) {
       mutate(utility=Intellectual_Control+Renderability) %>% 
       pivot_longer(c(Intellectual_Control, Renderability), names_to="node") %>%
       ggplot(aes(x=reorder(name, -value), fill=node, y=value)) +
-      geom_bar(position="stack", stat="identity") + xlab("Model Name") + ylab("Score") +
+      geom_bar(position="stack", stat="identity") + xlab("Policy") + ylab("Score") +
+      geom_text(aes(label=format(round(value,2),nsmall=2)), size=7, colour="white", 
+                fontface = "bold", position = position_stack(vjust = 0.5)) + theme_light() + 
+      theme(panel.border = element_blank(), text = element_text(size =20), legend.position="top", legend.title = element_blank())  +
       scale_fill_manual(values=c("#FF6E3A","#8400CD")) #colour blind scheme
   })
   
@@ -730,20 +741,20 @@ shinyServer(function(input, output, session) {
     
     if (is.null(input$customModel)){
       errorMsg <-"You have not uploaded a model."
-      shinyalert("Oops!", errorMsg, type = "error")
+      shinyalert("Error:", errorMsg, type = "error")
       return()
     } else{
       # check if name is already being used
       if(input$uploadName %in% names(CustomModels$custom_networks)){
-        errorMsg <-"You have already used this name for another custom model!"
-        shinyalert("Oops!", errorMsg, type = "error")
+        errorMsg <-"You have already used this name for another custom model."
+        shinyalert("Error:", errorMsg, type = "error")
         return()
       }
       
       # check if name is empty
       if (input$uploadName == ""){
-        errorMsg <-"Please provide uploaded model a name!"
-        shinyalert("Oops!", errorMsg, type = "error")
+        errorMsg <-"Please provide uploaded model a name."
+        shinyalert("Error:", errorMsg, type = "error")
         return()
       }
       
@@ -783,6 +794,9 @@ shinyServer(function(input, output, session) {
         pivot_longer(c(Intellectual_Control, Renderability), names_to="policy") %>%
         ggplot(aes(x=reorder(name, -value), fill=policy, y=value)) +
         geom_bar(position="stack", stat="identity") + xlab("Policy") + ylab("Score") +
+        geom_text(aes(label=format(round(value,2),nsmall=2)), size=7, colour="white", 
+                  fontface = "bold", position = position_stack(vjust = 0.5)) + theme_light() + 
+        theme(panel.border = element_blank(), text = element_text(size =20), legend.position="top", legend.title = element_blank())  +
         scale_fill_manual(values=c("#FF6E3A","#8400CD")) #colour blind scheme
     }
   )
@@ -811,7 +825,7 @@ shinyServer(function(input, output, session) {
         
         # display error if 'None' is still selected alongwith other OAIS entities. 
         if(oaisEntity == 'None'){
-          shinyalert("Oops!", "You can't select 'None' and other OAIS Entities together. If you wish to view features within an OAIS
+          shinyalert("Error:", "You can't select 'None' and other OAIS Entities together. If you wish to view features within an OAIS
                     entity, please click on 'None' and delete/backspace, followed by selection of the desired OAIS entities", type = "error")
           return()
         }
@@ -970,7 +984,7 @@ shinyServer(function(input, output, session) {
         nodeLabel <- paste(nodeLabel[[1]], collapse = ' ')
         
         errorMsg <- paste("Probabilities for '", nodeLabel, "' does not add up to to 100")
-        shinyalert("Oops!", errorMsg, type = "error")
+        shinyalert("Error:", errorMsg, type = "error")
         
         return(FALSE)
       }
@@ -1008,13 +1022,13 @@ shinyServer(function(input, output, session) {
     }
     
     if(input$SimpleViewPolicyName == ""){
-      shinyalert("Oops!", "Please provide a policy name", type = "error")
+      shinyalert("Error:", "Please provide a policy name", type = "error")
       return()
     }
     
     for(existingPolicyModel in names(CustomPolicies$models[[input$customModelSelection]])){
       if(input$SimpleViewPolicyName == existingPolicyModel){
-        shinyalert("Oops!", "Policy name already exists", type = "error")
+        shinyalert("Error:", "Policy name already exists", type = "error")
         return()
       }
     }
@@ -1232,7 +1246,7 @@ shinyServer(function(input, output, session) {
       for (sum in prob_sum){
         if (sum != 100){
           errorMsg <-"One or more conditional probabilities do not sum to 100%."
-          shinyalert("Oops!", errorMsg, type = "error")
+          shinyalert("Error:", errorMsg, type = "error")
           return()
         }
       }
@@ -1268,7 +1282,7 @@ shinyServer(function(input, output, session) {
       sum <- data.df %>% summarise(total_prob=sum(probability))
       if (sum$total_prob != 100){
         errorMsg <-"The marginal probabilities do not sum to 100%."
-        shinyalert("Oops!", errorMsg, type = "error")
+        shinyalert("Error:", errorMsg, type = "error")
         return()
       }
       
@@ -1314,16 +1328,16 @@ shinyServer(function(input, output, session) {
   observeEvent(input$addPolicy, {
     # check if a name has been provided
     if (input$policyName == ""){
-      errorMsg <-"No name was provided for the model!"
-      shinyalert("Oops!", errorMsg, type = "error")
+      errorMsg <-"No name was provided for the model."
+      shinyalert("Error:", errorMsg, type = "error")
       return()
     }
     
     # check if name has already been used for another policy
     current_policies <- CustomPolicies$archiveList[[input$model_version]]
     if (input$policyName %in% current_policies$name){
-      errorMsg <-"You have already used this policy name!"
-      shinyalert("Oops!", errorMsg, type = "error")
+      errorMsg <-"You have already used this policy name."
+      shinyalert("Error:", errorMsg, type = "error")
       return()
     }
     
@@ -1342,15 +1356,15 @@ shinyServer(function(input, output, session) {
   observeEvent(input$addModelAdvanced, {
     # check if a name has been provided
     if (input$policyName == ""){
-      errorMsg <-"No name was provided for the model!"
-      shinyalert("Oops!", errorMsg, type = "error")
+      errorMsg <-"No name was provided for the model."
+      shinyalert("Error:", errorMsg, type = "error")
       return()
     }
     
     # check if name is already being used for another custom model
     if (input$policyName %in% names(CustomModels$custom_networks)){
-      errorMsg <-"You are already using this name for another custom model!"
-      shinyalert("Oops!", errorMsg, type = "error")
+      errorMsg <-"You are already using this name for another custom model."
+      shinyalert("Error:", errorMsg, type = "error")
       return()
     }
     
@@ -1390,6 +1404,9 @@ shinyServer(function(input, output, session) {
       pivot_longer(c(Intellectual_Control, Renderability), names_to="node") %>%
       ggplot(aes(x=reorder(name, -value), fill=node, y=value)) +
       geom_bar(position="stack", stat="identity") + xlab("Policy") + ylab("Score") +
+      geom_text(aes(label=format(round(value,2),nsmall=2)), size=7, colour="white", 
+                fontface = "bold", position = position_stack(vjust = 0.5)) + theme_light() + 
+      theme(panel.border = element_blank(), text = element_text(size =20), legend.position="top", legend.title = element_blank())  +
       scale_fill_manual(values=c("#FF6E3A","#8400CD")) #colour blind scheme
   })
   
@@ -1399,7 +1416,10 @@ shinyServer(function(input, output, session) {
       mutate(utility=Intellectual_Control+Renderability) %>% 
       pivot_longer(c(Intellectual_Control, Renderability), names_to="node") %>%
       ggplot(aes(x=reorder(name, -value), fill=node, y=value)) +
-      geom_bar(position="stack", stat="identity") + xlab("Model") + ylab("Score") +
+      geom_bar(position="stack", stat="identity") + xlab("Policy") + ylab("Score") +
+      geom_text(aes(label=format(round(value,2),nsmall=2)), size=7, colour="white", 
+                fontface = "bold", position = position_stack(vjust = 0.5)) + theme_light() + 
+      theme(panel.border = element_blank(), text = element_text(size =20), legend.position="top", legend.title = element_blank())  +
       scale_fill_manual(values=c("#FF6E3A","#8400CD")) #colour blind scheme
   })
   
@@ -1412,28 +1432,30 @@ shinyServer(function(input, output, session) {
     b <- input$IntellectualWeighting
     
     # constructing text for the summary section
-    summary <- paste("The", currModelName, "model has", length(currModel$name), "policy(ies) customised by the user (including the original):<br/><br/>")
+    summary <- paste("The", currModelName, "model has", length(currModel$name), "policy(ies) ,
+                     including the original. The overall risk scores for each are:<br/><br/>")
     
     # to keep track of best policy
     maxUtility <- -99999
     maxUtilityPolicyName <- ""
     
     summary <- paste(summary, "<pre>", sep="")
-
+    
     # getting list of policies
     for(policy in currModel$name){
       policyUtility <- currModel %>% filter(name==policy) %>% select(Renderability, Intellectual_Control)
       currUtility <- b*policyUtility$Intellectual_Control + a*policyUtility$Renderability 
       
-      summary <- paste(summary, policy, "\t", currUtility, "<br/>", sep = "")
+      summary <- paste(summary, policy, "\t", format(round(currUtility,4),nsmall=4), "<br/>", sep = "")
       
       if(currUtility > maxUtility){
         maxUtility <- currUtility
         maxUtilityPolicyName <- policy
       }
     }
+    
     summary <- paste(summary, "</pre>", sep="")
-    summary <- paste(summary, "<br/>", "The policy with best score for intellectual control and renderability is: <b>", maxUtilityPolicyName, "</b>")
+    summary <- paste(summary, "<br/>", "The policy with best score is <b>", maxUtilityPolicyName, "</b>")
     
     return(summary)
   }
@@ -1455,8 +1477,8 @@ shinyServer(function(input, output, session) {
     }
     
     if(input$sidebarMenu == 'CustomiseNode' & initialSimpleCustomisationPopup$flag){
-      shinyalert("Please select the model for your archive. If you skipped step 1 - 'Customise Model', please create a model for your own archive by navigating to the tab 
-                 '1. Customise Model'", type = "info")
+      shinyalert("Please select the model for your archive"," 
+      If you skipped '1. Create your model', please return to this page and create or upload a customised model.", type = "info")
       
       initialSimpleCustomisationPopup$flag = FALSE
     }
@@ -1516,6 +1538,9 @@ shinyServer(function(input, output, session) {
       mutate(value=ifelse(policy=="Renderability", value*a, value*b)) %>%
       ggplot(aes(x=reorder(name, -value), fill=policy, y=value)) +
       geom_bar(position="stack", stat="identity") + xlab("Policy") + ylab("Score") +
+      geom_text(aes(label=format(round(value,2),nsmall=2)), size=7, colour="white", 
+                fontface = "bold", position = position_stack(vjust = 0.5)) + theme_light() + 
+      theme(panel.border = element_blank(), text = element_text(size =20), legend.position="top", legend.title = element_blank())  +
       scale_fill_manual(values=c("#FF6E3A","#8400CD")) #colour blind scheme
   })
   
