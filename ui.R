@@ -89,22 +89,41 @@ dashboardPage(
         shiny::fluidRow(
           
           # Welcome box
-          shinydashboard::box(
+          shinydashboard::
+          box(title = NULL,
+              width = 12,
+              background="orange",
+              h3(strong("Important note: This model is still in development")),
+              p("There will be further user interface changes and additional functionality added as the 
+              project progresses. Any feedback to inform the future development would be welcome 
+                - please send your comments to a member of the project team.")),
+          box(
             title = NULL,
             width = 12,
             shiny::h2("DiAGRAM - The ",tags$b("Di",.noWS="outside"),"gital ",tags$b("A",.noWS="outside"),"rchiving ",tags$b("G",.noWS="outside"),"raphical 
                       ",tags$b("R",.noWS="outside"),"isk ",tags$b("A",.noWS="outside"),"ssessment ",tags$b("M",.noWS="outside"),"odel", align="center"),
-            h3("Version 0.9.6", align="center"), #update in June   
+            h3("Version 0.9.6 (Prototype)", align="center"), #update in June   
             br(),
-            #h3("Introduction"),
-            p("This is the prototype version of the Digital Archiving Graphical 
-              Risk Assessment Model built by the ",
+            
+            p("This is the Digital Archiving Graphical Risk Assessment Model (DiAGRAM) built by the ",
               a(href="https://warwick.ac.uk", "University of Warwick"),
               " and ",
               a(href="https://www.nationalarchives.gov.uk"," The National Archives"), 
-              "with suport from the ",
-              a(href="https://www.heritagefund.org.uk/", "National Lottery Heritage Fund.")),
-            p("This decision support tool enables users to score their Archive's
+              "with support from the ",
+              a(href="https://www.heritagefund.org.uk/", "National Lottery Heritage Fund"),
+              " and the ",
+              a(href="https://epsrc.ukri.org/", "Engineering and Physical Sciences Research Council."),
+              "For more information about the project please see our ",
+              a(href="https://www.nationalarchives.gov.uk/information-management/manage-information/preserving-digital-records/research-collaboration/safeguarding-the-nations-digital-memory/",
+                "project page.")),
+            p("Before using the tool for the first time, we would advise you to read the ",
+              a(href="https://www.dpconline.org/events/past-events/quantifying-digital-preservation-risk-online-workshop",
+              "presentations")," from our online workshop with the Digital Preservation Coalition, where there is also an ",
+              a(href="https://www.dpconline.org/docs/miscellaneous/events/2020-events/2288-workshop-exercise/file", "exercise sheet"),
+              " you can work though."),
+            br(),
+            h3("Introduction"),
+            p("This decision support tool enables users to score their archive's
             digital preservation risk and then explore how this would change under
             different policies and risk scenarios. The risk score is based on the proportion of 
               files in the archive that are renderable and where the archivist has full
@@ -114,6 +133,7 @@ dashboardPage(
             events. When historical data were unavailable, data from an expert elicitation 
             session conducted in April 2020 were used to inform the probabilities needed for
             this model."),
+            
             p("This interface enables users to:"),
             tags$ul(
               tags$li("Understand the risk definitions used in the model and 
@@ -126,8 +146,7 @@ dashboardPage(
               tags$li("Update the probability tables for the model based on the user's own data or 
                       experience"),
               tags$li("Create bespoke scenarios by directly manipulating the probabilities
-                      used in the model")
-            ),
+                      used in the model")),
             br(),
             # Adding Logos
             img(src="http://www.nationalarchives.gov.uk/wp-content/uploads/2019/06/TNA-SQUARE-LOGO-POSITIVE-01-720x720.jpg",
@@ -136,9 +155,10 @@ dashboardPage(
             img(src='https://www.underconsideration.com/brandnew/archives/university_of_warwick_logo_detail.png',
                 height=80,
                 width=120),
-            img(src="https://www.heritagefund.org.uk/sites/default/files/media/attachments/English%20logo%20-%20Colour%20%28JPEG%29.jpg",
+                        img(src="https://www.heritagefund.org.uk/sites/default/files/media/attachments/English%20logo%20-%20Colour%20%28JPEG%29.jpg",
                 height=80,
-                width=216)  ),
+                width=216),
+            img(src="UKRI_EPSR_Council-Logo_Horiz-RGB.png", height=75)),
           box(
             width = 12,
             h3("Guidance"),
@@ -162,6 +182,13 @@ dashboardPage(
       # Network Tab
       tabItem(
         tabName="Node_definitions",
+        box(title = NULL,
+            width = 12,
+            background="orange",
+            h3(strong("Important note: This model is still in development")),
+            p("There will be further user interface changes and additional functionality added as the 
+              project progresses. Any feedback to inform the future development would be welcome 
+                - please send your comments to a member of the project team.")),
         h1("Definitions"),
         br(),
         fluidRow(
@@ -218,6 +245,13 @@ dashboardPage(
       # Policy Tab
       tabItem(
         tabName="CustomiseModel",
+        box(title = NULL,
+            width = 12,
+            background="orange",
+            h3(strong("Important note: This model is still in development")),
+            p("There will be further user interface changes and additional functionality added as the 
+              project progresses. Any feedback to inform the future development would be welcome 
+                - please send your comments to a member of the project team.")),
         h1("Create your model"),
         br(),
         fluidRow(
@@ -270,8 +304,15 @@ dashboardPage(
       
       # TODO:sid - change policyTab identifier to the most appropriate (once decided)
       tabItem(
-        useShinyalert(),
         tabName="CustomiseNode",
+        useShinyalert(),
+        box(title = NULL,
+            width = 12,
+            background="orange",
+            h3(strong("Important note: This model is still in development")),
+            p("There will be further user interface changes and additional functionality added as the 
+              project progresses. Any feedback to inform the future development would be welcome 
+                - please send your comments to a member of the project team.")),
         h1("Create and compare different policies"),
         br(),
         div(
@@ -334,6 +375,13 @@ dashboardPage(
       # Policy Tab
       tabItem(
         tabName="AdvancedCustomiseNode",
+        box(title = NULL,
+            width = 12,
+            background="orange",
+            h3(strong("Important note: This model is still in development")),
+            p("There will be further user interface changes and additional functionality added as the 
+              project progresses. Any feedback to inform the future development would be welcome 
+                - please send your comments to a member of the project team.")),
         h1("Advanced model customisation"),
         br(),
         fluidRow(
@@ -449,6 +497,13 @@ dashboardPage(
       ),
       tabItem(
         tabName="Report",
+        box(title = NULL,
+            width = 12,
+            background="orange",
+            h3(strong("Important note: This model is still in development")),
+            p("There will be further user interface changes and additional functionality added as the 
+              project progresses. Any feedback to inform the future development would be welcome 
+                - please send your comments to a member of the project team.")),
         h1("Report"),
         br(),
         div(
