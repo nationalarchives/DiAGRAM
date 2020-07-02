@@ -20,6 +20,7 @@ library(tidyverse)
 library(shinyjs)
 library(shinyalert)
 library(gridExtra)
+library(data.table)
 
 options(repos = BiocManager::repositories())
 options(shiny.fullstacktrace = FALSE)
@@ -33,7 +34,11 @@ shinyServer(function(input, output, session) {
   calculate_utility <- function(model) {
     
     # convert model to grain object
+    
+    if(is.grain(model)==FALSE) {
     model.grain <- as.grain(model)
+    }
+    else {model.grain <- model}
     
     # find probability of Intellectual_Control and Renderability
     query.results <- querygrain(model.grain, nodes=c("Intellectual_Control", "Renderability"))
@@ -154,6 +159,70 @@ shinyServer(function(input, output, session) {
     # convert from data.frame to table
     model.probability.table <- xtabs(Freq~., model.probability.df)
     return(model.probability.table)
+  }
+  
+  
+  #Function to sensitivity test based on hard evidence
+  hard.test <- function(model) { #work with custom_model which is a bif
+    hard.evidence <- as.data.table(state.definitions[,1:2])
+    input.nodes <- as.list(setup_questions)$node_name
+    
+    #remove renderability and intellectual control
+    hard.evidence <-
+      hard.evidence[node_name != "Renderability" &
+                      node_name != "Intellectual_Control", ]
+    
+    hard.evidence[, Type := ifelse((node_name %in% input.nodes), "Input", "Cond")] #Inputs and conditionals
+    
+    #Make a note that this test has each of these probabilities being 1
+    hard.evidence[, Prob := 1]
+    hard.evidence[, R_score := as.numeric()]
+    hard.evidence[, IC_score := as.numeric()]
+    hard.evidence[, R_diff := as.numeric()]
+    hard.evidence[, IC_diff := as.numeric()]
+    
+    
+    R_orig <- as.numeric(calculate_utility(model)$Renderability)
+    IC_orig <- as.numeric(calculate_utility(model)$Intellectual_Control)
+    
+    for (i in 1:(dim(hard.evidence)[1])) {
+      #reset node probability
+      temp.model <- model
+      
+      #if (hard.evidence$Type[i]=="Input") { #might be an unneccessary condition, but will speed things up
+        
+      node <- hard.evidence$node_name[i]
+      #   default.probability.df <- as.data.frame(stable.fit[[node]]$prob) #relies on default all being 'soft'
+      #   model.probability.df <- as.data.frame(model[[node]]$prob)
+      # 
+      # temp.probability.table <- update_probability(node, model.probability.df, default.probability.df)
+      # # update probability table for node
+      temp.model[[node]] <- as.array(stable.fit[[node]]$prob)
+      
+      #}
+      
+      grain.model <- as.grain(temp.model)
+      
+      test <- setEvidence(
+        grain.model,
+        as.character(hard.evidence$node_name[i]), #node name
+        as.character(hard.evidence$node_state[i]) #node state
+      )
+      
+      R_new <- as.numeric(calculate_utility(test)$Renderability)
+      IC_new <- as.numeric(calculate_utility(test)$Intellectual_Control)
+      
+      hard.evidence$R_score[i] <- as.numeric(format(round(R_new,4),nsmall=4))
+      hard.evidence$IC_score[i] <- as.numeric(format(round(IC_new,4),nsmall=4))
+      
+      hard.evidence$R_diff[i] <- as.numeric(format(round(R_new - R_orig,4),nsmall=4))
+      hard.evidence$IC_diff[i] <- as.numeric(format(round(IC_new - IC_orig,4),nsmall=4))
+      
+      rm(test,R_new,IC_new)
+      
+      i <- i + 1
+    }
+    hard.evidence[order(-R_diff)]
   }
   
   
@@ -713,8 +782,9 @@ shinyServer(function(input, output, session) {
     updateSelectInput(session, 'customModelSelection', choices=customModelChoices)
     updateSelectInput(session, "model_version", label="Select Model", choices=customModelChoices)
 
-    # set choices for the drop down list in the Report tab
+    # set choices for the drop down list in the Report ans sens tab
     updateSelectInput(session, 'reportTabModelSelection', choices=CustomModels$base_utility.df$name)
+    updateSelectInput(session, 'sensTabModelSelection', choices=CustomModels$base_utility.df$name)
   })
   
   # plot utility
@@ -796,8 +866,9 @@ shinyServer(function(input, output, session) {
       updateSelectInput(session, 'customModelSelection', choices=customModelChoices)
       updateSelectInput(session, "model_version", label="Select Model", choices=customModelChoices)
       
-      # set choices for the drop down list in the Report tab
+      # set choices for the drop down list in the Report and sens tab
       updateSelectInput(session, 'reportTabModelSelection', choices=CustomModels$base_utility.df$name)
+      updateSelectInput(session, 'sensTabModelSelection', choices=CustomModels$base_utility.df$name)
     }
   })
   
@@ -833,7 +904,7 @@ shinyServer(function(input, output, session) {
     oaisSelected <- TRUE
     
     if(length(input$customOaisEntitySelection) == 1 & input$customOaisEntitySelection[1] == 'None'){
-      uiNode$checklist <- node.definitions$node_name
+      uiNode$checklist <- list("Technical_Skills","Checksum","Digital_Object","System_Security","Info_Management","Storage_Medium","Op_Environment","Rep_and_Refresh")
       oaisSelected <- FALSE
     }
     else{
@@ -1404,6 +1475,7 @@ shinyServer(function(input, output, session) {
     updateSelectInput(session, 'customModelSelection', choices=customModelChoices)
     updateSelectInput(session, "model_version", label="Select Model", choices=customModelChoices)
     updateSelectInput(session, 'reportTabModelSelection', choices=CustomModels$base_utility.df$name)
+    updateSelectInput(session, 'sensTabModelSelection', choices=CustomModels$base_utility.df$name)
   })
   
   # Reset network to original probabilities
@@ -1617,6 +1689,24 @@ shinyServer(function(input, output, session) {
       }
     }
   )
-
+  output$SensitivityTable <- renderDataTable({
+    datatable(hard.test(CustomModels$custom_networks[[input$sensTabModelSelection]]))
+  })
+  # output$SensitivityText <- renderPrint({
+  #   str(CustomModels$custom_networks[[input$sensTabModelSelection]])
+  # })
+  output$SensitivityPlot <- renderPlotly({
+    plot_ly(
+      hard.test(CustomModels$custom_networks[[input$sensTabModelSelection]])[!is.na(R_score), ],
+      x =  ~ R_diff,
+      y =  ~ IC_diff,
+      type = 'scatter',
+      mode = 'markers',
+      text =  ~ paste0(node_name, ":", node_state),
+      color = ~ Type,
+      marker = list(size = 10, symbol = 'circle')
+    )
+    #ggplot(hard.test(CustomModels$custom_networks[[input$sensTabModelSelection]]), aes(R_diff,IC_diff)) + geom_jitter() + theme_bw() + scale_shape(solid = FALSE)
+  })
 })
 

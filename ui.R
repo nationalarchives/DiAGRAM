@@ -18,6 +18,8 @@ library(shinyWidgets)
 library(shinyjs)
 library(shinyalert)
 library(tidyverse)
+library(plotly)
+library(DT)
 
 options(repos = BiocManager::repositories())
 nquestions <- read_csv("setup_questions.csv") %>% nrow()
@@ -68,7 +70,12 @@ dashboardPage(
       # Advanced Page
       menuItem("Advanced customisation", 
                  tabName = "AdvancedCustomiseNode",
-                 icon=icon("project-diagram"))
+                 icon=icon("project-diagram")),
+      
+      # Sensitivity Page
+      menuItem("Recommendations", 
+               tabName = "Sensitivity",
+               icon=icon("pencil"))
     )
   ),
   
@@ -567,6 +574,44 @@ dashboardPage(
               title="Comparing policies",
               width=NULL,
               plotOutput("ReportTabUtilityComparisonPlot")
+            )
+          )
+        )
+      ),
+      tabItem(
+        tabName="Sensitivity",
+        box(title = NULL,
+            width = 12,
+            background="orange",
+            h3(strong("Important note: This model is still in development")),
+            p("There will be further user interface changes and additional functionality added as the 
+              project progresses. Any feedback to inform the future development would be welcome 
+                - please send your comments to a member of the project team.")),
+        h1("Recommendations"),
+        br(),
+        div(
+          selectInput(
+            "sensTabModelSelection",
+            h3("Select model"),
+            choices ="Default")
+        ),
+        fluidRow(
+          column(
+            width=12,
+             # box(
+             #   title="Testing",
+             #   width=NULL,
+             #   verbatimTextOutput("SensitivityText")
+             # ),
+            box(
+              title="Sensitivity Analysis Visualisation",
+              width=NULL,
+              plotlyOutput("SensitivityPlot")
+            ),
+            box(
+              title="Summary of Sensitivity Analysis",
+              width=NULL,
+              dataTableOutput("SensitivityTable")
             )
           )
         )
