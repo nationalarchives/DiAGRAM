@@ -20,6 +20,7 @@ library(shinyalert)
 library(tidyverse)
 library(plotly)
 library(DT)
+library(V8)
 
 options(repos = BiocManager::repositories())
 nquestions <- read_csv("setup_questions.csv") %>% nrow()
