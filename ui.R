@@ -57,6 +57,11 @@ dashboardPage(
                tabName="CustomiseModel",
                icon=icon("user-edit")),
       
+      # Sensitivity Page
+      menuItem("Recommendations", 
+               tabName = "Sensitivity",
+               icon=icon("clipboard")),
+      
       # Simple View Page
       menuItem("2. Compare policies",
                tabName = "CustomiseNode",
@@ -70,12 +75,9 @@ dashboardPage(
       # Advanced Page
       menuItem("Advanced customisation", 
                  tabName = "AdvancedCustomiseNode",
-                 icon=icon("project-diagram")),
+                 icon=icon("project-diagram"))
       
-      # Sensitivity Page
-      menuItem("Recommendations", 
-               tabName = "Sensitivity",
-               icon=icon("pencil"))
+      
     )
   ),
   
@@ -113,7 +115,7 @@ dashboardPage(
             br(),
             
             p("This is the Digital Archiving Graphical Risk Assessment Model (DiAGRAM) built by the ",
-              a(href="https://warwick.ac.uk", "University of Warwick"),
+             a(href="https://warwick.ac.uk", "University of Warwick"),
               " and ",
               a(href="https://www.nationalarchives.gov.uk"," The National Archives"), 
               "with support from the ",
@@ -155,6 +157,11 @@ dashboardPage(
               tags$li("Create bespoke scenarios by directly manipulating the probabilities
                       used in the model")),
             br(),
+            tags$style(HTML('#createModel{background-color:green}')),
+            tags$style(HTML('#createModel{color:white}')),
+            tags$style(HTML('#createModel{width:30%')),
+            div(actionButton("createModel","Create your model"), style="text-align:center"),
+            br(),
             # Adding Logos
             img(src="http://www.nationalarchives.gov.uk/wp-content/uploads/2019/06/TNA-SQUARE-LOGO-POSITIVE-01-720x720.jpg",
                 height=100,
@@ -189,6 +196,7 @@ dashboardPage(
       # Network Tab
       tabItem(
         tabName="Node_definitions",
+        useShinyalert(),
         box(title = NULL,
             width = 12,
             background="orange",
@@ -252,6 +260,7 @@ dashboardPage(
       # Policy Tab
       tabItem(
         tabName="CustomiseModel",
+        useShinyalert(),
         box(title = NULL,
             width = 12,
             background="orange",
@@ -267,8 +276,8 @@ dashboardPage(
             box(
               title=NULL,
               width=NULL,
-              progressBar("Question_Progress", value=0, total=nquestions),
-              h3("Please answer the following question: "),
+              progressBar("Question_Progress", value=1, total=nquestions),
+              #h4("Please answer the following question: "),
               uiOutput("Question"),
               useShinyjs(),
               br(),
@@ -374,14 +383,25 @@ dashboardPage(
           ),
           column(
             width=5,
-            plotOutput("policyTabUtilityScorePlot")
-          )
+            plotOutput("policyTabUtilityScorePlot"),
+            br(),
+            box(id="RemovePolicyBox",
+                width=NULL,
+                title="Remove policy",
+                selectInput("policyTabPolicyRemove",
+                        h5("Select policy to remove"),
+                        choices=""),
+            tags$style(HTML('#RemovePolicy{background-color:red}')),
+            tags$style(HTML('#RemovePolicy{color:white}')),
+            div(actionButton('RemovePolicy', 'Remove'), style="float:right")
+          )       
         )
-      ),
+      )),
       
       # Policy Tab
       tabItem(
         tabName="AdvancedCustomiseNode",
+        useShinyalert(),
         box(title = NULL,
             width = 12,
             background="orange",
@@ -574,6 +594,16 @@ dashboardPage(
               title="Comparing policies",
               width=NULL,
               plotOutput("ReportTabUtilityComparisonPlot")
+            ),
+            box(id="RemovePolicyBoxReport",
+                width=NULL,
+                title="Remove policy",
+                selectInput("reportTabPolicyRemove",
+                            h5("Select policy to remove"),
+                            choices=""),
+                tags$style(HTML('#RemovePolicyReport{background-color:red}')),
+                tags$style(HTML('#RemovePolicyReport{color:white}')),
+                div(actionButton('RemovePolicyReport', 'Remove'), style="float:right")
             )
           )
         )
@@ -596,18 +626,23 @@ dashboardPage(
             choices ="Default")
         ),
         fluidRow(
+          useShinyjs(),
+          # code to reset plotlys event_data("plotly_click", source="A") to NULL -> executed upon action button click
+          # note that "A" needs to be replaced with plotly source string if used
+          extendShinyjs(text = "shinyjs.resetClick = function() { Shiny.onInputChange('plotly_click-A', 'null'); }"),
           column(
             width=12,
-             # box(
-             #   title="Testing",
-             #   width=NULL,
-             #   verbatimTextOutput("SensitivityText")
-             # ),
+             
             box(
               title="Sensitivity Analysis Visualisation",
               width=NULL,
               plotlyOutput("SensitivityPlot")
             ),
+             box(
+               title="Selected Node",
+               width=NULL,
+               textOutput("clickevent")
+             ),
             box(
               title="Summary of Sensitivity Analysis",
               width=NULL,
