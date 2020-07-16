@@ -801,14 +801,16 @@ shinyServer(function(input, output, session) {
     CustomModels$base_utility.df %>%
       mutate(utility=Intellectual_Control+Renderability) %>% 
       pivot_longer(c(Intellectual_Control, Renderability), names_to="node") %>%
-      ggplot(aes(x=reorder(name, -value), fill=node, y=value)) +
+      ggplot(aes(x=reorder(name, -value), fill=node, y=value*50)) +
       geom_bar(position="stack", stat="identity") + xlab("Policy") + ylab("Score") +
-      geom_hline(yintercept=0.1013, linetype="dashed", color = "black") +
-      geom_hline(yintercept=1.4255, linetype="dashed", color = "black") +
+      geom_hline(yintercept=0.1013*50, linetype="dashed", color = "black") +
+      geom_hline(yintercept=1.4255*50, linetype="dashed", color = "black") +
       #geom_rect(aes(xmin=0, xmax=Inf, ymin=0, ymax=0.3), alpha=0.1, fill="Red") +
       #geom_rect(aes(xmin=0, xmax=Inf, ymin=1.3, ymax=Inf), alpha=0.1, fill="Green") +
       #geom_text(aes(1,0.3,label = "Min", vjust = -1)) + geom_text(aes(1,1.3,label = "Max", vjust = -1)) +
-      geom_text(aes(label=format(round(value,2),nsmall=2)), size=7, colour="white", 
+      stat_summary(fun.y = sum, aes(label = format(round(..y..,0),nsmall=0), group = name),
+                   geom = "text", size=7, fontface="bold", vjust=-0.25) +
+      geom_text(aes(label=format(round(value*50,0),nsmall=0)), size=5, colour="white", 
                 fontface = "bold", position = position_stack(vjust = 0.5)) + theme_light() + 
       theme(panel.border = element_blank(), text = element_text(size =20), legend.position="top", legend.title = element_blank())  +
       scale_fill_manual(values=c("#FF6E3A","#8400CD")) #colour blind scheme
@@ -893,12 +895,14 @@ shinyServer(function(input, output, session) {
       CustomPolicies$archiveList[[input$customModelSelection]] %>%
         mutate(utility=Intellectual_Control+Renderability) %>% 
         pivot_longer(c(Intellectual_Control, Renderability), names_to="node") %>%
-        ggplot(aes(x=reorder(name, -value), fill=node, y=value)) +
+        ggplot(aes(x=reorder(name, -value), fill=node, y=value*50)) +
         geom_bar(position="stack", stat="identity") + xlab("Policy") + ylab("Score") +
-        geom_hline(yintercept=0.1013, linetype="dashed", color = "black") +
-        geom_hline(yintercept=1.4255, linetype="dashed", color = "black") +
+        geom_hline(yintercept=0.1013*50, linetype="dashed", color = "black") +
+        geom_hline(yintercept=1.4255*50, linetype="dashed", color = "black") +
         #geom_text(aes(1,0.3,label = "Min", vjust = -1)) + geom_text(aes(1,1.3,label = "Max", vjust = -1)) +
-        geom_text(aes(label=format(round(value,2),nsmall=2)), size=7, colour="white", 
+        stat_summary(fun.y = sum, aes(label = format(round(..y..,0),nsmall=0), group = name),
+                     geom = "text", size=7, fontface="bold", vjust=-0.25) +
+        geom_text(aes(label=format(round(value*50,0),nsmall=0)), size=5, colour="white", 
                   fontface = "bold", position = position_stack(vjust = 0.5)) + theme_light() + 
         theme(panel.border = element_blank(), text = element_text(size =20), legend.position="top", legend.title = element_blank())  +
         scale_fill_manual(values=c("#FF6E3A","#8400CD")) #colour blind scheme
@@ -908,6 +912,8 @@ shinyServer(function(input, output, session) {
   # OAIS Entities list
   OAISentities <- node.definitions$OAIS_Entity
   OAISentities <- c('None', unique(OAISentities)) # adding None to provide option of listing all nodes
+  #remove NA (Renderability nad Intellectual Control are blanks)
+  OAISentities <- OAISentities[-which(is.na(OAISentities))]
   
   updateSelectInput(session, 
                     "customOaisEntitySelection",
@@ -920,7 +926,10 @@ shinyServer(function(input, output, session) {
     oaisSelected <- TRUE
     
     if(length(input$customOaisEntitySelection) == 1 & input$customOaisEntitySelection[1] == 'None'){
-      uiNode$checklist <- list("Technical_Skills","Checksum","Digital_Object","System_Security","Info_Management","Storage_Medium","Op_Environment","Rep_and_Refresh")
+      uiNode$checklist <- node.definitions$node_name
+      #remove.outcomes <- node.definitions$node_name[-which(node.definitions$node_name %in% c("Intellectual_Control","Renderability"))]
+      #uiNode$checklist <- remove.outcomes
+      #uiNode$checklist <- list("Technical_Skills","Checksum","Digital_Object","System_Security","Info_Management","Storage_Medium","Op_Environment","Rep_and_Refresh")
       oaisSelected <- FALSE
     }
     else{
@@ -979,6 +988,18 @@ shinyServer(function(input, output, session) {
     nodeStateProgress$progress <- 0
     uiNodeSlider$node <- c()
     
+    #reset the checklist
+    updateCheckboxGroupInput(session,
+                             "policyTabNodesChecklist",
+                             label=NULL,
+                             choices = uiNode$checklist, 
+                             selected = c())
+    
+    #reset OAIS
+    updateSelectInput(session, 
+                      "customOaisEntitySelection",
+                      choices = OAISentities, 
+                      selected = 'None')
     
   })
   
@@ -1534,12 +1555,14 @@ shinyServer(function(input, output, session) {
     CustomPolicies$archiveList[[input$model_version]] %>%
       mutate(utility=Intellectual_Control+Renderability) %>% 
       pivot_longer(c(Intellectual_Control, Renderability), names_to="node") %>%
-      ggplot(aes(x=reorder(name, -value), fill=node, y=value)) +
+      ggplot(aes(x=reorder(name, -value), fill=node, y=value*50)) +
       geom_bar(position="stack", stat="identity") + xlab("Policy") + ylab("Score") +
-      geom_hline(yintercept=0.05065, linetype="dashed", color = "black") +
-      geom_hline(yintercept=0.71275, linetype="dashed", color = "black") +
+      geom_hline(yintercept=0.1013*50, linetype="dashed", color = "black") +
+      geom_hline(yintercept=1.4255*50, linetype="dashed", color = "black") +
       #geom_text(aes(1,0.3,label = "Min", vjust = -1)) + geom_text(aes(1,1.3,label = "Max", vjust = -1)) +
-      geom_text(aes(label=format(round(value,2),nsmall=2)), size=7, colour="white", 
+      stat_summary(fun.y = sum, aes(label = format(round(..y..,0),nsmall=0), group = name),
+                   geom = "text", size=7, fontface="bold", vjust=-0.25) +
+      geom_text(aes(label=format(round(value*50,0),nsmall=0)), size=5, colour="white", 
                 fontface = "bold", position = position_stack(vjust = 0.5)) + theme_light() + 
       theme(panel.border = element_blank(), text = element_text(size =20), legend.position="top", legend.title = element_blank())  +
       scale_fill_manual(values=c("#FF6E3A","#8400CD")) #colour blind scheme
@@ -1550,12 +1573,16 @@ shinyServer(function(input, output, session) {
     CustomModels$base_utility.df %>%
       mutate(utility=Intellectual_Control+Renderability) %>% 
       pivot_longer(c(Intellectual_Control, Renderability), names_to="node") %>%
-      ggplot(aes(x=reorder(name, -value), fill=node, y=value)) +
-      geom_bar(position="stack", stat="identity") + xlab("Policy") + ylab("Score") +
-      geom_hline(yintercept=0.1013, linetype="dashed", color = "black") +
-      geom_hline(yintercept=1.4255, linetype="dashed", color = "black") +
+      ggplot(aes(x=reorder(name, -value), fill=node, y=value*50)) +
+      geom_bar(position="stack", stat="identity") + xlab("Model") + ylab("Score") +
+      geom_hline(yintercept=0.1013*50, linetype="dashed", color = "black") +
+      geom_hline(yintercept=1.4255*50, linetype="dashed", color = "black") +
       #geom_text(aes(1,0.3,label = "Min", vjust = -1)) + geom_text(aes(1,1.3,label = "Max", vjust = -1)) +
-      geom_text(aes(label=format(round(value,2),nsmall=2)), size=7, colour="white", 
+      stat_summary(fun.y = sum, aes(label = format(round(..y..,0),nsmall=0), group = name),
+                   geom = "text", size=7, fontface="bold", vjust=-0.25) +
+    #geom_text(aes(label = stat(y), group = name), stat = 'summary', fun.y = sum, vjust = -1, size = 7) +
+      #geom_text(aes(label=format(round(sum(value)*50,0))),vjust=-0.3, color="black", size=3.5)+
+      geom_text(aes(label=format(round(value*50,0),nsmall=0)), size=5, colour="white", 
                 fontface = "bold", position = position_stack(vjust = 0.5)) + theme_light() + 
       theme(panel.border = element_blank(), text = element_text(size =20), legend.position="top", legend.title = element_blank())  +
       scale_fill_manual(values=c("#FF6E3A","#8400CD")) #colour blind scheme
@@ -1582,7 +1609,7 @@ shinyServer(function(input, output, session) {
     # getting list of policies
     for(policy in currModel$name){
       policyUtility <- currModel %>% filter(name==policy) %>% select(Renderability, Intellectual_Control)
-      currUtility <- (b*policyUtility$Intellectual_Control + a*policyUtility$Renderability) /(a+b)
+      currUtility <- (b*policyUtility$Intellectual_Control + a*policyUtility$Renderability) /(a+b)*100
       
       summary <- paste(summary, policy, "\t", format(round(currUtility,4),nsmall=4), "<br/>", sep = "")
       
@@ -1673,13 +1700,15 @@ shinyServer(function(input, output, session) {
     
     CustomPolicies$archiveList[[input$reportTabModelSelection]] %>%
       pivot_longer(c(Intellectual_Control, Renderability), names_to="policy") %>%
-      mutate(value=ifelse(policy=="Renderability", value*a/(a+b)*2, value*b/(a+b)*2)) %>%
+      mutate(value=ifelse(policy=="Renderability", value*a/(a+b)*100, value*b/(a+b)*100)) %>%
       ggplot(aes(x=reorder(name, -value), fill=policy, y=value)) +
       geom_bar(position="stack", stat="identity") + xlab("Policy") + ylab("Score") +
-      geom_hline(yintercept=0.1013, linetype="dashed", color = "black") +
-      geom_hline(yintercept=1.4255, linetype="dashed", color = "black") +
+      geom_hline(yintercept=0.1013*50, linetype="dashed", color = "black") +
+      geom_hline(yintercept=1.4255*50, linetype="dashed", color = "black") +
       #geom_text(aes(1,0.3,label = "Min", vjust = -1)) + geom_text(aes(1,1.3,label = "Max", vjust = -1)) +
-      geom_text(aes(label=format(round(value,2),nsmall=2)), size=7, colour="white", 
+      stat_summary(fun.y = sum, aes(label = format(round(..y..,0),nsmall=0), group = name),
+                   geom = "text", size=7, fontface="bold", vjust=-0.25) +
+      geom_text(aes(label=format(round(value,0),nsmall=0)), size=5, colour="white", 
                 fontface = "bold", position = position_stack(vjust = 0.5)) + theme_light() + 
       theme(panel.border = element_blank(), text = element_text(size =20), legend.position="top", legend.title = element_blank())  +
       scale_fill_manual(values=c("#FF6E3A","#8400CD")) #colour blind scheme
@@ -1760,34 +1789,33 @@ shinyServer(function(input, output, session) {
     }
   )
   output$SensitivityTable <- renderDataTable({
-    datatable(hard.test(CustomModels$custom_networks[[input$sensTabModelSelection]]))
+    datatable(hard.test(CustomModels$custom_networks[[input$sensTabModelSelection]])[Type=="Input",])
   })
-   output$clickevent <- renderPrint({
-     clickData <- event_data("plotly_click")
-     if (is.null(clickData)) return(NULL)
-     
-     # Obtain the clicked x/y variables and fit linear model
-     #vars <- c(clickData[["x"]], clickData[["y"]])
-     tb <- hard.test(CustomModels$custom_networks[[input$sensTabModelSelection]])[!is.na(R_score), ]
-     tb2 <- tb[(R_diff==clickData[["x"]]) & (IC_diff==clickData[["y"]]),]
-     #d <- setNames(mtcars[vars], c("x", "y"))
-     #yhat <- fitted(lm(y ~ x, data = d))
-     summary0 <- paste0("The node selected is ", tb2$node_name,". ")
-     if(tb2$Type=="Input") {
-       summary1 <- paste0(summary0, "In most cases, you should be able to make changes to this node directly. Go to '2. Compare Policies' and give it a try.")
-     }
-     if(tb2$Type=="Cond") {
-       summary1 <- paste0(summary0, "In most cases, you would not be able to make changes to this node directly. ",
-       "Instead, you should consider changing the nodes that are parents or ancestors to ",tb2$node_name, 
-       #"The parents are ", CustomModels$custom_networks[[input$sensTabModelSelection]][[tb2$node_name]]$parents,
-       ". To find out what these are, go to the 'Definitions' page.")
-     }
-     return(summary1)
-     
-   })
+   # output$clickevent <- renderPrint({
+   #   clickData <- event_data("plotly_click")
+   #   if (is.null(clickData)) return(NULL)
+   #   
+   #   # Obtain the clicked x/y variables and fit linear model
+   #   #vars <- c(clickData[["x"]], clickData[["y"]])
+   #   tb <- hard.test(CustomModels$custom_networks[[input$sensTabModelSelection]])[!is.na(R_score), ]
+   #   tb2 <- tb[(R_diff==clickData[["x"]]) & (IC_diff==clickData[["y"]]),]
+   #   #d <- setNames(mtcars[vars], c("x", "y"))
+   #   #yhat <- fitted(lm(y ~ x, data = d))
+   #   summary0 <- paste0("The node selected is ", tb2$node_name,". ")
+   #   if(tb2$Type=="Input") {
+   #     summary1 <- paste0(summary0, "In most cases, you should be able to make changes to this node directly. Go to '2. Compare Policies' and give it a try.")
+   #   }
+   #   if(tb2$Type=="Cond") {
+   #     summary1 <- paste0(summary0, "In most cases, you would not be able to make changes to this node directly. ",
+   #     "Instead, you should consider changing the nodes that are parents or ancestors to ",tb2$node_name, 
+   #     #"The parents are ", CustomModels$custom_networks[[input$sensTabModelSelection]][[tb2$node_name]]$parents,
+   #     ". To find out what these are, go to the 'Definitions' page.")
+   #   }
+   #   return(summary1)
+   #   })
   output$SensitivityPlot <- renderPlotly({
     plot_ly(
-      hard.test(CustomModels$custom_networks[[input$sensTabModelSelection]])[!is.na(R_score), ],
+      hard.test(CustomModels$custom_networks[[input$sensTabModelSelection]])[!is.na(R_score)&Type=="Input", ],
       x =  ~ R_diff,
       y =  ~ IC_diff,
       type = 'scatter',

@@ -112,7 +112,7 @@ dashboardPage(
             width = 12,
             shiny::h2("DiAGRAM - The ",tags$b("Di",.noWS="outside"),"gital ",tags$b("A",.noWS="outside"),"rchiving ",tags$b("G",.noWS="outside"),"raphical 
                       ",tags$b("R",.noWS="outside"),"isk ",tags$b("A",.noWS="outside"),"ssessment ",tags$b("M",.noWS="outside"),"odel", align="center"),
-            h3("Version 0.9.6 (Prototype)", align="center"), #update in June   
+            h3("Version 0.9.7 (Prototype)", align="center"), #update in June   
             br(),
             
             p("This is the Digital Archiving Graphical Risk Assessment Model (DiAGRAM) built by the ",
@@ -131,6 +131,11 @@ dashboardPage(
               "presentations")," from our online workshop with the Digital Preservation Coalition, where there is also an ",
               a(href="https://www.dpconline.org/docs/miscellaneous/events/2020-events/2288-workshop-exercise/file", "exercise sheet"),
               " you can work though."),
+            br(),
+            tags$style(HTML('#createModel{background-color:green}')),
+            tags$style(HTML('#createModel{color:white}')),
+            tags$style(HTML('#createModel{width:30%')),
+            div(actionButton("createModel","Create your model"), style="text-align:center"),
             br(),
             h3("Introduction"),
             p("This decision support tool enables users to score their archive's
@@ -158,11 +163,6 @@ dashboardPage(
               tags$li("Create bespoke scenarios by directly manipulating the probabilities
                       used in the model")),
             br(),
-            tags$style(HTML('#createModel{background-color:green}')),
-            tags$style(HTML('#createModel{color:white}')),
-            tags$style(HTML('#createModel{width:30%')),
-            div(actionButton("createModel","Create your model"), style="text-align:center"),
-            br(),
             # Adding Logos
             img(src="http://www.nationalarchives.gov.uk/wp-content/uploads/2019/06/TNA-SQUARE-LOGO-POSITIVE-01-720x720.jpg",
                 height=100,
@@ -182,14 +182,16 @@ dashboardPage(
               allows you to see the full definitions, states and data sources used for each 'node'."),
             p(tags$b("1. Create your model"),": This goes through 9 questions to create a risk model and a score which is
               based on the user's archive and policies."),
+            p(tags$b("Reccomendations"),": This page looks at the impact changing each of the answers to the input questions would
+              have to the risk score."),
             p(tags$b("2. Compare policies"),": Create and save different policies and see how the risk score changes."),
             p(tags$b("3. Advanced customisation"),": This tab allows users to edit the marginal and conditional probabilities
               in the model directly. This allows for users to input their own data for any nodes within the model 
               or create scenarios by altering conditional probabilities."),
             p(tags$b("4. Report"),": This contains a summary and comparison of the policies for each model, and allows 
-              the model and plots to be downloaded."),
-            br(),
-            p("If you have further questions, please contact the workshop facilitator.")
+              the model and plots to be downloaded.")
+            #br(),
+            #p("If you have further questions, please contact the workshop facilitator.")
           )
         )
       ),
@@ -635,17 +637,17 @@ dashboardPage(
             width=12,
              
             box(
-              title="Sensitivity Analysis Visualisation",
+              title="Visualisation of potential policy changes",
               width=NULL,
               plotlyOutput("SensitivityPlot")
             ),
-             box(
-               title="Selected Node",
-               width=NULL,
-               textOutput("clickevent")
-             ),
+             # box(
+             #   title="Selected Node",
+             #   width=NULL,
+             #   textOutput("clickevent")
+             # ),
             box(
-              title="Summary of Sensitivity Analysis",
+              title="Summary table of potential policy changes",
               width=NULL,
               dataTableOutput("SensitivityTable")
             )

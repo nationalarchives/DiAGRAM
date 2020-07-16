@@ -18,9 +18,9 @@ Op_Environment,"Short for operating environment. The conditions under which the 
 Integrity,The assurance that the bit-stream is identical to when it was added to the archive.,April 2020,"Elicit conditional probabilities with some deterministic results
 ",Archival Storage,BooleanSlider
 Bit_Preservation,"A term used to denote a very basic level of preservation of digital resource as it was submitted (literally preservation of the bits forming a digital resource). Activities may include maintaining onsite and offsite backup copies, virus checking, fixity-checking, and periodic refreshment to new storage media.",April 2020,Deterministic mostly but includes elicited data too,Archival Storage,BooleanSlider
-Renderability,The object is a sufficiently useful representation of the original file.,April 2020,Deterministic mostly but includes elicited data too,Access,BooleanSlider
+Renderability,The object is a sufficiently useful representation of the original file.,April 2020,Deterministic mostly but includes elicited data too,,BooleanSlider
 Intellectual_Control,"Having full knowledge of the material content, provenance and conditions of use.",2020,"Deterministic
-",Access,BooleanSlider
+",,BooleanSlider
 Identity,Knowing what the material is and where it is from. Specifically... Can you locate the file? Is it sufficiently described for you to know this is what you want? Can you understand its context within the archive? Can you find other versions of the file which were created by preservation actions? Can you find the provenance of the file?,April 2020,Deterministic mostly but includes elicited data too,Access,BooleanSlider
 Conditions_of_Use,"Knowing of the conditions of use and any restrictions on the digital material, including the legal status, copyright, who owns the intellectual property and Freedom of Information restrictions.",April 2020,Elicitation data,Access,BooleanSlider
 Physical_Disaster,"For this first version, we will only consider the risk of a flood at your primary storage location.",2020,"Gov.uk flood checker
