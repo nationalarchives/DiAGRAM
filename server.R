@@ -1001,6 +1001,15 @@ shinyServer(function(input, output, session) {
                       choices = OAISentities, 
                       selected = 'None')
     
+    #set the remove policy options 
+    updateSelectInput(session, 
+                      "policyTabPolicyRemove",
+                      choices = CustomPolicies$archiveList[[input$customModelSelection]]$name[-1])
+    
+    updateSelectInput(session, 
+                      "reportTabPolicyRemove",
+                      choices = CustomPolicies$archiveList[[input$customModelSelection]]$name[-1])
+    
   })
   
   # observe the input for checklist to update uiNodeSlider$node with respective states

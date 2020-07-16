@@ -597,17 +597,17 @@ dashboardPage(
               title="Comparing policies",
               width=NULL,
               plotOutput("ReportTabUtilityComparisonPlot")
-            ),
-            box(id="RemovePolicyBoxReport",
-                width=NULL,
-                title="Remove policy",
-                selectInput("reportTabPolicyRemove",
-                            h5("Select policy to remove"),
-                            choices=""),
-                tags$style(HTML('#RemovePolicyReport{background-color:red}')),
-                tags$style(HTML('#RemovePolicyReport{color:white}')),
-                div(actionButton('RemovePolicyReport', 'Remove'), style="float:right")
-            )
+            ) #,
+            #box(id="RemovePolicyBoxReport",
+            #    width=NULL,
+            #    title="Remove policy",
+            #    selectInput("reportTabPolicyRemove",
+            #                h5("Select policy to remove"),
+            #                choices=""),
+            #    tags$style(HTML('#RemovePolicyReport{background-color:red}')),
+            #    tags$style(HTML('#RemovePolicyReport{color:white}')),
+            #    div(actionButton('RemovePolicyReport', 'Remove'), style="float:right")
+            #)
           )
         )
       ),
