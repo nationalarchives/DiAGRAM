@@ -183,8 +183,8 @@ shinyServer(function(input, output, session) {
     hard.evidence[, IC_diff := as.numeric()]
     
     
-    R_orig <- as.numeric(calculate_utility(model)$Renderability)
-    IC_orig <- as.numeric(calculate_utility(model)$Intellectual_Control)
+    R_orig <- as.numeric(calculate_utility(model)$Renderability)*50
+    IC_orig <- as.numeric(calculate_utility(model)$Intellectual_Control)*50
     
     for (i in 1:(dim(hard.evidence)[1])) {
       #reset node probability
@@ -210,17 +210,17 @@ shinyServer(function(input, output, session) {
         as.character(hard.evidence$node_state[i]) #node state
       )
       
-      R_new <- as.numeric(calculate_utility(test)$Renderability)
-      IC_new <- as.numeric(calculate_utility(test)$Intellectual_Control)
+      R_new <- as.numeric(calculate_utility(test)$Renderability)*50
+      IC_new <- as.numeric(calculate_utility(test)$Intellectual_Control)*50
       
-      hard.evidence$Score[i] <- as.numeric(format(round(R_new+IC_new,4),nsmall=4))
-      hard.evidence$R_score[i] <- as.numeric(format(round(R_new,4),nsmall=4))
-      hard.evidence$IC_score[i] <- as.numeric(format(round(IC_new,4),nsmall=4))
+      hard.evidence$Score[i] <- as.numeric(format(round(R_new+IC_new,2),nsmall=2))
+      hard.evidence$R_score[i] <- as.numeric(format(round(R_new,2),nsmall=2))
+      hard.evidence$IC_score[i] <- as.numeric(format(round(IC_new,2),nsmall=2))
       
       
-      hard.evidence$Difference[i] <- as.numeric(format(round(R_new+IC_new - R_orig-IC_orig,4),nsmall=4))
-      hard.evidence$R_diff[i] <- as.numeric(format(round(R_new - R_orig,4),nsmall=4))
-      hard.evidence$IC_diff[i] <- as.numeric(format(round(IC_new - IC_orig,4),nsmall=4))
+      hard.evidence$Difference[i] <- as.numeric(format(round(R_new+IC_new - R_orig-IC_orig,2),nsmall=2))
+      hard.evidence$R_diff[i] <- as.numeric(format(round(R_new - R_orig,2),nsmall=2))
+      hard.evidence$IC_diff[i] <- as.numeric(format(round(IC_new - IC_orig,2),nsmall=2))
       
       rm(test,R_new,IC_new)
       
@@ -1292,7 +1292,7 @@ shinyServer(function(input, output, session) {
   observeEvent(input$RemovePolicy, {
     
     CustomPolicies$archiveList[[input$customModelSelection]] <- CustomPolicies$archiveList[[input$customModelSelection]] %>% filter(name != input$policyTabPolicyRemove)
-
+    
     updateSelectInput(session, 
                       "policyTabPolicyRemove",
                       choices = CustomPolicies$archiveList[[input$customModelSelection]]$name[-1])
@@ -1732,19 +1732,19 @@ shinyServer(function(input, output, session) {
   )
   
   #remove policy
-  observeEvent(input$RemovePolicyReport, {
-    
-    CustomPolicies$archiveList[[input$customModelSelection]] <- CustomPolicies$archiveList[[input$customModelSelection]] %>% filter(name != input$reportTabPolicyRemove)
-    
-    updateSelectInput(session, 
-                      "policyTabPolicyRemove",
-                      choices = CustomPolicies$archiveList[[input$customModelSelection]]$name[-1])
-    
-    updateSelectInput(session, 
-                      "reportTabPolicyRemove",
-                      choices = CustomPolicies$archiveList[[input$customModelSelection]]$name[-1])
-    
-  })
+  # observeEvent(input$RemovePolicyReport, {
+  #   
+  #   CustomPolicies$archiveList[[input$customModelSelection]] <- CustomPolicies$archiveList[[input$customModelSelection]] %>% filter(name != input$reportTabPolicyRemove)
+  #   
+  #   updateSelectInput(session, 
+  #                     "policyTabPolicyRemove",
+  #                     choices = CustomPolicies$archiveList[[input$customModelSelection]]$name[-1])
+  #   
+  # updateSelectInput(session, 
+  #                   "reportTabPolicyRemove",
+  #                   choices = CustomPolicies$archiveList[[input$customModelSelection]]$name[-1])
+  # 
+  #})
   
   #Download
   output$reportTabDownloadBtn <- downloadHandler(
