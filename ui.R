@@ -182,7 +182,7 @@ dashboardPage(
               allows you to see the full definitions, states and data sources used for each 'node'."),
             p(tags$b("1. Create your model"),": This goes through 9 questions to create a risk model and a score which is
               based on the user's archive and policies."),
-            p(tags$b("Reccomendations"),": This page looks at the impact changing each of the answers to the input questions would
+            p(tags$b("Recommendations"),": This page looks at the impact changing each of the answers to the input questions would
               have to the risk score."),
             p(tags$b("2. Compare policies"),": Create and save different policies and see how the risk score changes."),
             p(tags$b("3. Advanced customisation"),": This tab allows users to edit the marginal and conditional probabilities
