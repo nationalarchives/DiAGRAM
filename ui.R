@@ -164,7 +164,7 @@ dashboardPage(
                       used in the model")),
             br(),
             # Adding Logos
-            img(src="http://www.nationalarchives.gov.uk/wp-content/uploads/2019/06/TNA-SQUARE-LOGO-POSITIVE-01-720x720.jpg",
+            img(src="https://www.nationalarchives.gov.uk/wp-content/uploads/2019/06/TNA-SQUARE-LOGO-POSITIVE-01-720x720.jpg",
                 height=100,
                 width=100),
             img(src='https://www.underconsideration.com/brandnew/archives/university_of_warwick_logo_detail.png',
@@ -639,6 +639,12 @@ dashboardPage(
             box(
               title="Visualisation of potential policy changes",
               width=NULL,
+              h5("This plot shows how changing your answers to the input questions will impact the score for renderability
+                 (on the x axis) and intellectual control (on the y axis). Changes that improve the score will appear as 
+                 points above and to the right of the origin (where the axes meet) and changes that decrease the score 
+                 will be to the bottom and left."),
+              h5("Note: All input nodes are considered changable here but some may not be in your control."),
+              br(),
               plotlyOutput("SensitivityPlot")
             ),
              # box(
@@ -649,6 +655,8 @@ dashboardPage(
             box(
               title="Summary table of potential policy changes",
               width=NULL,
+              h5("Note: All input nodes are considered changable here but some may not be in your control."),
+              br(),
               dataTableOutput("SensitivityTable")
             )
           )
