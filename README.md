@@ -35,3 +35,4 @@ The packages used for this version of the model are as follows:
 * DT_0.14
 * plotly_4.9.2.1
 * forcats_0.5.0
+* rintrojs_0.2.2
