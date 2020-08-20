@@ -8,7 +8,7 @@
 # @email: stephen.james.krol@gmail.com
 
 library(shiny)
-library(rintrojs)
+#library(rintrojs)
 library(networkD3)
 library(shinydashboard)
 library(gRbase)
@@ -18,6 +18,9 @@ library(shinyWidgets)
 library(shinyjs)
 library(shinyalert)
 library(tidyverse)
+library(plotly)
+library(DT)
+library(V8)
 
 options(repos = BiocManager::repositories())
 nquestions <- read_csv("setup_questions.csv") %>% nrow()
@@ -55,6 +58,11 @@ dashboardPage(
                tabName="CustomiseModel",
                icon=icon("user-edit")),
       
+      # Sensitivity Page
+      menuItem("Recommendations", 
+               tabName = "Sensitivity",
+               icon=icon("clipboard")),
+      
       # Simple View Page
       menuItem("2. Compare policies",
                tabName = "CustomiseNode",
@@ -69,6 +77,8 @@ dashboardPage(
       menuItem("Advanced customisation", 
                  tabName = "AdvancedCustomiseNode",
                  icon=icon("project-diagram"))
+      
+      
     )
   ),
   
@@ -102,11 +112,11 @@ dashboardPage(
             width = 12,
             shiny::h2("DiAGRAM - The ",tags$b("Di",.noWS="outside"),"gital ",tags$b("A",.noWS="outside"),"rchiving ",tags$b("G",.noWS="outside"),"raphical 
                       ",tags$b("R",.noWS="outside"),"isk ",tags$b("A",.noWS="outside"),"ssessment ",tags$b("M",.noWS="outside"),"odel", align="center"),
-            h3("Version 0.9.6 (Prototype)", align="center"), #update in June   
+            h3("Version 0.9.7 (Prototype)", align="center"), #update in June   
             br(),
             
             p("This is the Digital Archiving Graphical Risk Assessment Model (DiAGRAM) built by the ",
-              a(href="https://warwick.ac.uk", "University of Warwick"),
+             a(href="https://warwick.ac.uk", "University of Warwick"),
               " and ",
               a(href="https://www.nationalarchives.gov.uk"," The National Archives"), 
               "with support from the ",
@@ -117,10 +127,15 @@ dashboardPage(
               a(href="https://www.nationalarchives.gov.uk/information-management/manage-information/preserving-digital-records/research-collaboration/safeguarding-the-nations-digital-memory/",
                 "project page.")),
             p("Before using the tool for the first time, we would advise you to read the ",
-              a(href="https://www.dpconline.org/events/past-events/quantifying-digital-preservation-risk-online-workshop",
+              a(href="https://www.dpconline.org/events/past-events/quantifying-digital-preservation-risk-online-workshop-2",
               "presentations")," from our online workshop with the Digital Preservation Coalition, where there is also an ",
-              a(href="https://www.dpconline.org/docs/miscellaneous/events/2020-events/2288-workshop-exercise/file", "exercise sheet"),
+              a(href="https://www.dpconline.org/docs/miscellaneous/events/2020-events/2307-dpc-workshop-2-exercise/file", "exercise sheet"),
               " you can work though."),
+            br(),
+            tags$style(HTML('#createModel{background-color:green}')),
+            tags$style(HTML('#createModel{color:white}')),
+            tags$style(HTML('#createModel{width:30%')),
+            div(actionButton("createModel","Create your model"), style="text-align:center"),
             br(),
             h3("Introduction"),
             p("This decision support tool enables users to score their archive's
@@ -149,7 +164,7 @@ dashboardPage(
                       used in the model")),
             br(),
             # Adding Logos
-            img(src="http://www.nationalarchives.gov.uk/wp-content/uploads/2019/06/TNA-SQUARE-LOGO-POSITIVE-01-720x720.jpg",
+            img(src="https://www.nationalarchives.gov.uk/wp-content/uploads/2019/06/TNA-SQUARE-LOGO-POSITIVE-01-720x720.jpg",
                 height=100,
                 width=100),
             img(src='https://www.underconsideration.com/brandnew/archives/university_of_warwick_logo_detail.png',
@@ -167,14 +182,16 @@ dashboardPage(
               allows you to see the full definitions, states and data sources used for each 'node'."),
             p(tags$b("1. Create your model"),": This goes through 9 questions to create a risk model and a score which is
               based on the user's archive and policies."),
+            p(tags$b("Recommendations"),": This page looks at the impact changing each of the answers to the input questions would
+              have to the risk score."),
             p(tags$b("2. Compare policies"),": Create and save different policies and see how the risk score changes."),
             p(tags$b("3. Advanced customisation"),": This tab allows users to edit the marginal and conditional probabilities
               in the model directly. This allows for users to input their own data for any nodes within the model 
               or create scenarios by altering conditional probabilities."),
             p(tags$b("4. Report"),": This contains a summary and comparison of the policies for each model, and allows 
-              the model and plots to be downloaded."),
-            br(),
-            p("If you have further questions, please contact the workshop facilitator.")
+              the model and plots to be downloaded.")
+            #br(),
+            #p("If you have further questions, please contact the workshop facilitator.")
           )
         )
       ),
@@ -182,6 +199,7 @@ dashboardPage(
       # Network Tab
       tabItem(
         tabName="Node_definitions",
+        useShinyalert(),
         box(title = NULL,
             width = 12,
             background="orange",
@@ -245,6 +263,7 @@ dashboardPage(
       # Policy Tab
       tabItem(
         tabName="CustomiseModel",
+        useShinyalert(),
         box(title = NULL,
             width = 12,
             background="orange",
@@ -260,8 +279,8 @@ dashboardPage(
             box(
               title=NULL,
               width=NULL,
-              progressBar("Question_Progress", value=0, total=nquestions),
-              h3("Please answer the following question: "),
+              progressBar("Question_Progress", value=1, total=nquestions),
+              #h4("Please answer the following question: "),
               uiOutput("Question"),
               useShinyjs(),
               br(),
@@ -367,14 +386,25 @@ dashboardPage(
           ),
           column(
             width=5,
-            plotOutput("policyTabUtilityScorePlot")
-          )
+            plotOutput("policyTabUtilityScorePlot"),
+            br(),
+            box(id="RemovePolicyBox",
+                width=NULL,
+                title="Remove policy",
+                selectInput("policyTabPolicyRemove",
+                        h5("Select policy to remove"),
+                        choices=""),
+            tags$style(HTML('#RemovePolicy{background-color:red}')),
+            tags$style(HTML('#RemovePolicy{color:white}')),
+            div(actionButton('RemovePolicy', 'Remove'), style="float:right")
+          )       
         )
-      ),
+      )),
       
       # Policy Tab
       tabItem(
         tabName="AdvancedCustomiseNode",
+        useShinyalert(),
         box(title = NULL,
             width = 12,
             background="orange",
@@ -567,6 +597,67 @@ dashboardPage(
               title="Comparing policies",
               width=NULL,
               plotOutput("ReportTabUtilityComparisonPlot")
+            ) #,
+            #box(id="RemovePolicyBoxReport",
+            #    width=NULL,
+            #    title="Remove policy",
+            #    selectInput("reportTabPolicyRemove",
+            #                h5("Select policy to remove"),
+            #                choices=""),
+            #    tags$style(HTML('#RemovePolicyReport{background-color:red}')),
+            #    tags$style(HTML('#RemovePolicyReport{color:white}')),
+            #    div(actionButton('RemovePolicyReport', 'Remove'), style="float:right")
+            #)
+          )
+        )
+      ),
+      tabItem(
+        tabName="Sensitivity",
+        box(title = NULL,
+            width = 12,
+            background="orange",
+            h3(strong("Important note: This model is still in development")),
+            p("There will be further user interface changes and additional functionality added as the 
+              project progresses. Any feedback to inform the future development would be welcome 
+                - please send your comments to a member of the project team.")),
+        h1("Recommendations"),
+        br(),
+        div(
+          selectInput(
+            "sensTabModelSelection",
+            h3("Select model"),
+            choices ="Default")
+        ),
+        fluidRow(
+          useShinyjs(),
+          # code to reset plotlys event_data("plotly_click", source="A") to NULL -> executed upon action button click
+          # note that "A" needs to be replaced with plotly source string if used
+          extendShinyjs(text = "shinyjs.resetClick = function() { Shiny.onInputChange('plotly_click-A', 'null'); }"),
+          column(
+            width=12,
+             
+            box(
+              title="Visualisation of potential policy changes",
+              width=NULL,
+              h5("This plot shows how changing your answers to the input questions will impact the score for renderability
+                 (on the x axis) and intellectual control (on the y axis). Changes that improve the score will appear as 
+                 points above and to the right of the origin (where the axes meet) and changes that decrease the score 
+                 will be to the bottom and left."),
+              h5("Note: All input nodes are considered changable here but some may not be in your control."),
+              br(),
+              plotlyOutput("SensitivityPlot")
+            ),
+             # box(
+             #   title="Selected Node",
+             #   width=NULL,
+             #   textOutput("clickevent")
+             # ),
+            box(
+              title="Summary table of potential policy changes",
+              width=NULL,
+              h5("Note: All input nodes are considered changable here but some may not be in your control."),
+              br(),
+              dataTableOutput("SensitivityTable")
             )
           )
         )

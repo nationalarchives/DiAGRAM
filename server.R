@@ -20,6 +20,7 @@ library(tidyverse)
 library(shinyjs)
 library(shinyalert)
 library(gridExtra)
+library(data.table)
 
 options(repos = BiocManager::repositories())
 options(shiny.fullstacktrace = FALSE)
@@ -33,7 +34,11 @@ shinyServer(function(input, output, session) {
   calculate_utility <- function(model) {
     
     # convert model to grain object
+    
+    if(is.grain(model)==FALSE) {
     model.grain <- as.grain(model)
+    }
+    else {model.grain <- model}
     
     # find probability of Intellectual_Control and Renderability
     query.results <- querygrain(model.grain, nodes=c("Intellectual_Control", "Renderability"))
@@ -154,6 +159,74 @@ shinyServer(function(input, output, session) {
     # convert from data.frame to table
     model.probability.table <- xtabs(Freq~., model.probability.df)
     return(model.probability.table)
+  }
+  
+  
+  #Function to sensitivity test based on hard evidence
+  hard.test <- function(model) { #work with custom_model which is a bif
+    hard.evidence <- as.data.table(state.definitions[,1:2])
+    input.nodes <- as.list(setup_questions)$node_name
+    
+    #remove renderability and intellectual control
+    hard.evidence <-
+      hard.evidence[node_name != "Renderability" &
+                      node_name != "Intellectual_Control", ]
+    
+    hard.evidence[, Type := ifelse((node_name %in% input.nodes), "Input", "Cond")] #Inputs and conditionals
+    
+    #Set up columns
+    hard.evidence[, Score := as.numeric()]
+    hard.evidence[, R_score := as.numeric()]
+    hard.evidence[, IC_score := as.numeric()]
+    hard.evidence[, Difference := as.numeric()]             
+    hard.evidence[, R_diff := as.numeric()]
+    hard.evidence[, IC_diff := as.numeric()]
+    
+    
+    R_orig <- as.numeric(calculate_utility(model)$Renderability)*50
+    IC_orig <- as.numeric(calculate_utility(model)$Intellectual_Control)*50
+    
+    for (i in 1:(dim(hard.evidence)[1])) {
+      #reset node probability
+      temp.model <- model
+      
+      #if (hard.evidence$Type[i]=="Input") { #might be an unneccessary condition, but will speed things up
+        
+      node <- hard.evidence$node_name[i]
+      #   default.probability.df <- as.data.frame(stable.fit[[node]]$prob) #relies on default all being 'soft'
+      #   model.probability.df <- as.data.frame(model[[node]]$prob)
+      # 
+      # temp.probability.table <- update_probability(node, model.probability.df, default.probability.df)
+      # # update probability table for node
+      temp.model[[node]] <- as.array(stable.fit[[node]]$prob)
+      
+      #}
+      
+      grain.model <- as.grain(temp.model)
+      
+      test <- setEvidence(
+        grain.model,
+        as.character(hard.evidence$node_name[i]), #node name
+        as.character(hard.evidence$node_state[i]) #node state
+      )
+      
+      R_new <- as.numeric(calculate_utility(test)$Renderability)*50
+      IC_new <- as.numeric(calculate_utility(test)$Intellectual_Control)*50
+      
+      hard.evidence$Score[i] <- as.numeric(format(round(R_new+IC_new,2),nsmall=2))
+      hard.evidence$R_score[i] <- as.numeric(format(round(R_new,2),nsmall=2))
+      hard.evidence$IC_score[i] <- as.numeric(format(round(IC_new,2),nsmall=2))
+      
+      
+      hard.evidence$Difference[i] <- as.numeric(format(round(R_new+IC_new - R_orig-IC_orig,2),nsmall=2))
+      hard.evidence$R_diff[i] <- as.numeric(format(round(R_new - R_orig,2),nsmall=2))
+      hard.evidence$IC_diff[i] <- as.numeric(format(round(IC_new - IC_orig,2),nsmall=2))
+      
+      rm(test,R_new,IC_new)
+      
+      i <- i + 1
+    }
+    hard.evidence[order(-Score)]
   }
   
   
@@ -313,7 +386,9 @@ shinyServer(function(input, output, session) {
   
   
   # -------------------- MODEL CUSTOMISATION --------------------
-  
+  observeEvent(input$createModel, {
+    updateTabItems(session, "sidebarMenu", "CustomiseModel")
+  })
   # Update state selection radio buttons
   # Collect the first node
   first_node <- setup_questions[1,]$node_name
@@ -533,7 +608,7 @@ shinyServer(function(input, output, session) {
           tags$style(HTML('#SaveModel{background-color:green}')),
           tags$style(HTML('#SaveModel{color:white}')),
           actionButton("SaveModel",
-                       "Save Model")
+                       "Name Model")
         ),
         column(
           width=1,
@@ -554,11 +629,12 @@ shinyServer(function(input, output, session) {
     if (questionValues$question_number < nrow(setup_questions)+1 && questionValues$question_number>=1){
     HTML(
       paste(
-        h4(
+        h3(
           strong(
             paste0(questionValues$question_number, ". ", setup_questions[questionValues$question_number,]$node_name)
             )
           ),
+        h4("Please answer the following question:"),
         h4(setup_questions[questionValues$question_number,]$node_question)))
     } else {
       h4(strong("All questions answered. Please give model a name:"))
@@ -588,7 +664,7 @@ shinyServer(function(input, output, session) {
       # if sum of probability is not 100 alert user and break out of function
       if (prob.summary$prob_sum != 100){
         errorMsg <- paste("Probabilities for '", next_node$node_name, "' do not add up to to 100%")
-        shinyalert("Error:", errorMsg, type = "error")
+        shinyalert::shinyalert("Error:", errorMsg, type = "error")
         
         return()
         
@@ -600,17 +676,18 @@ shinyServer(function(input, output, session) {
       answers$boolean_slider_answers[[next_node$node_name]] = input.probabilities
     }
     
-    # update progress bar
-    updateProgressBar(
-      session=session,
-      id="Question_Progress",
-      value=questionValues$question_number,
-      total=nrow(setup_questions)
-    )
+    
     
     # update question number
     questionValues$question_number <- questionValues$question_number + 1
     
+    # update progress bar
+    updateProgressBar(
+      session=session,
+      id="Question_Progress",
+      value=min(questionValues$question_number,nrow(setup_questions)),
+      total=nrow(setup_questions)
+    )
   })
   
   # Update questions when back button is pressed
@@ -641,7 +718,7 @@ shinyServer(function(input, output, session) {
       updateProgressBar(
         session=session,
         id="Question_Progress",
-        value=questionValues$question_number - 1,
+        value=questionValues$question_number,
         total=nrow(setup_questions)
       )
     }
@@ -652,14 +729,14 @@ shinyServer(function(input, output, session) {
     # Check if model has been named correctly
     if (input$CustomisedModelName == "") {
       errorMsg <-"Please give your custom model a name."
-      shinyalert("Error:", errorMsg, type = "error")
+      shinyalert::shinyalert("Error:", errorMsg, type = "error")
       
       return()
     }
     
     if (input$CustomisedModelName %in% names(CustomModels$custom_networks)){
       errorMsg <-"You have already used this name for another custom model."
-      shinyalert("Error:", errorMsg, type = "error")
+      shinyalert::shinyalert("Error:", errorMsg, type = "error")
       
       return()
     }
@@ -713,8 +790,9 @@ shinyServer(function(input, output, session) {
     updateSelectInput(session, 'customModelSelection', choices=customModelChoices)
     updateSelectInput(session, "model_version", label="Select Model", choices=customModelChoices)
 
-    # set choices for the drop down list in the Report tab
+    # set choices for the drop down list in the Report ans sens tab
     updateSelectInput(session, 'reportTabModelSelection', choices=CustomModels$base_utility.df$name)
+    updateSelectInput(session, 'sensTabModelSelection', choices=CustomModels$base_utility.df$name)
   })
   
   # plot utility
@@ -723,9 +801,16 @@ shinyServer(function(input, output, session) {
     CustomModels$base_utility.df %>%
       mutate(utility=Intellectual_Control+Renderability) %>% 
       pivot_longer(c(Intellectual_Control, Renderability), names_to="node") %>%
-      ggplot(aes(x=reorder(name, -value), fill=node, y=value)) +
+      ggplot(aes(x=reorder(name, -value), fill=node, y=value*50)) +
       geom_bar(position="stack", stat="identity") + xlab("Policy") + ylab("Score") +
-      geom_text(aes(label=format(round(value,2),nsmall=2)), size=7, colour="white", 
+      geom_hline(yintercept=0.1013*50, linetype="dashed", color = "black") +
+      geom_hline(yintercept=1.4255*50, linetype="dashed", color = "black") +
+      #geom_rect(aes(xmin=0, xmax=Inf, ymin=0, ymax=0.3), alpha=0.1, fill="Red") +
+      #geom_rect(aes(xmin=0, xmax=Inf, ymin=1.3, ymax=Inf), alpha=0.1, fill="Green") +
+      #geom_text(aes(1,0.3,label = "Min", vjust = -1)) + geom_text(aes(1,1.3,label = "Max", vjust = -1)) +
+      stat_summary(fun.y = sum, aes(label = format(round(..y..,0),nsmall=0), group = name),
+                   geom = "text", size=7, fontface="bold", vjust=-0.25) +
+      geom_text(aes(label=format(round(value*50,0),nsmall=0)), size=5, colour="white", 
                 fontface = "bold", position = position_stack(vjust = 0.5)) + theme_light() + 
       theme(panel.border = element_blank(), text = element_text(size =20), legend.position="top", legend.title = element_blank())  +
       scale_fill_manual(values=c("#FF6E3A","#8400CD")) #colour blind scheme
@@ -744,7 +829,7 @@ shinyServer(function(input, output, session) {
     updateProgressBar(
       session=session,
       id="Question_Progress",
-      value=questionValues$question_number - 1,
+      value=questionValues$question_number,
       total=nrow(setup_questions)
     )
     
@@ -758,20 +843,20 @@ shinyServer(function(input, output, session) {
     
     if (is.null(input$customModel)){
       errorMsg <-"You have not uploaded a model."
-      shinyalert("Error:", errorMsg, type = "error")
+      shinyalert::shinyalert("Error:", errorMsg, type = "error")
       return()
     } else{
       # check if name is already being used
       if(input$uploadName %in% names(CustomModels$custom_networks)){
         errorMsg <-"You have already used this name for another custom model."
-        shinyalert("Error:", errorMsg, type = "error")
+        shinyalert::shinyalert("Error:", errorMsg, type = "error")
         return()
       }
       
       # check if name is empty
       if (input$uploadName == ""){
         errorMsg <-"Please provide uploaded model a name."
-        shinyalert("Error:", errorMsg, type = "error")
+        shinyalert::shinyalert("Error:", errorMsg, type = "error")
         return()
       }
       
@@ -796,8 +881,9 @@ shinyServer(function(input, output, session) {
       updateSelectInput(session, 'customModelSelection', choices=customModelChoices)
       updateSelectInput(session, "model_version", label="Select Model", choices=customModelChoices)
       
-      # set choices for the drop down list in the Report tab
+      # set choices for the drop down list in the Report and sens tab
       updateSelectInput(session, 'reportTabModelSelection', choices=CustomModels$base_utility.df$name)
+      updateSelectInput(session, 'sensTabModelSelection', choices=CustomModels$base_utility.df$name)
     }
   })
   
@@ -807,11 +893,16 @@ shinyServer(function(input, output, session) {
   output$policyTabUtilityScorePlot <- renderPlot(
     {
       CustomPolicies$archiveList[[input$customModelSelection]] %>%
-        mutate(utility=Intellectual_Control+Renderability) %>%
-        pivot_longer(c(Intellectual_Control, Renderability), names_to="policy") %>%
-        ggplot(aes(x=reorder(name, -value), fill=policy, y=value)) +
+        mutate(utility=Intellectual_Control+Renderability) %>% 
+        pivot_longer(c(Intellectual_Control, Renderability), names_to="node") %>%
+        ggplot(aes(x=reorder(name, -value), fill=node, y=value*50)) +
         geom_bar(position="stack", stat="identity") + xlab("Policy") + ylab("Score") +
-        geom_text(aes(label=format(round(value,2),nsmall=2)), size=7, colour="white", 
+        geom_hline(yintercept=0.1013*50, linetype="dashed", color = "black") +
+        geom_hline(yintercept=1.4255*50, linetype="dashed", color = "black") +
+        #geom_text(aes(1,0.3,label = "Min", vjust = -1)) + geom_text(aes(1,1.3,label = "Max", vjust = -1)) +
+        stat_summary(fun.y = sum, aes(label = format(round(..y..,0),nsmall=0), group = name),
+                     geom = "text", size=7, fontface="bold", vjust=-0.25) +
+        geom_text(aes(label=format(round(value*50,0),nsmall=0)), size=5, colour="white", 
                   fontface = "bold", position = position_stack(vjust = 0.5)) + theme_light() + 
         theme(panel.border = element_blank(), text = element_text(size =20), legend.position="top", legend.title = element_blank())  +
         scale_fill_manual(values=c("#FF6E3A","#8400CD")) #colour blind scheme
@@ -821,6 +912,8 @@ shinyServer(function(input, output, session) {
   # OAIS Entities list
   OAISentities <- node.definitions$OAIS_Entity
   OAISentities <- c('None', unique(OAISentities)) # adding None to provide option of listing all nodes
+  #remove NA (Renderability nad Intellectual Control are blanks)
+  OAISentities <- OAISentities[-which(is.na(OAISentities))]
   
   updateSelectInput(session, 
                     "customOaisEntitySelection",
@@ -834,6 +927,9 @@ shinyServer(function(input, output, session) {
     
     if(length(input$customOaisEntitySelection) == 1 & input$customOaisEntitySelection[1] == 'None'){
       uiNode$checklist <- node.definitions$node_name
+      #remove.outcomes <- node.definitions$node_name[-which(node.definitions$node_name %in% c("Intellectual_Control","Renderability"))]
+      #uiNode$checklist <- remove.outcomes
+      #uiNode$checklist <- list("Technical_Skills","Checksum","Digital_Object","System_Security","Info_Management","Storage_Medium","Op_Environment","Rep_and_Refresh")
       oaisSelected <- FALSE
     }
     else{
@@ -842,7 +938,7 @@ shinyServer(function(input, output, session) {
         
         # display error if 'None' is still selected alongwith other OAIS entities. 
         if(oaisEntity == 'None'){
-          shinyalert("Error:", "You can't select 'None' and other OAIS Entities together. If you wish to view features within an OAIS
+          shinyalert::shinyalert("Error:", "You can't select 'None' and other OAIS Entities together. If you wish to view features within an OAIS
                     entity, please click on 'None' and delete/backspace, followed by selection of the desired OAIS entities", type = "error")
           return()
         }
@@ -891,6 +987,29 @@ shinyServer(function(input, output, session) {
     # reset the progress for selected model
     nodeStateProgress$progress <- 0
     uiNodeSlider$node <- c()
+    
+    #reset the checklist
+    updateCheckboxGroupInput(session,
+                             "policyTabNodesChecklist",
+                             label=NULL,
+                             choices = uiNode$checklist, 
+                             selected = c())
+    
+    #reset OAIS
+    updateSelectInput(session, 
+                      "customOaisEntitySelection",
+                      choices = OAISentities, 
+                      selected = 'None')
+    
+    #set the remove policy options 
+    updateSelectInput(session, 
+                      "policyTabPolicyRemove",
+                      choices = CustomPolicies$archiveList[[input$customModelSelection]]$name[-1])
+    
+    updateSelectInput(session, 
+                      "reportTabPolicyRemove",
+                      choices = CustomPolicies$archiveList[[input$customModelSelection]]$name[-1])
+    
   })
   
   # observe the input for checklist to update uiNodeSlider$node with respective states
@@ -1001,7 +1120,7 @@ shinyServer(function(input, output, session) {
         nodeLabel <- paste(nodeLabel[[1]], collapse = ' ')
         
         errorMsg <- paste("Probabilities for '", nodeLabel, "' does not add up to to 100")
-        shinyalert("Error:", errorMsg, type = "error")
+        shinyalert::shinyalert("Error:", errorMsg, type = "error")
         
         return(FALSE)
       }
@@ -1039,13 +1158,13 @@ shinyServer(function(input, output, session) {
     }
     
     if(input$SimpleViewPolicyName == ""){
-      shinyalert("Error:", "Please provide a policy name", type = "error")
+      shinyalert::shinyalert("Error:", "Please provide a policy name", type = "error")
       return()
     }
     
     for(existingPolicyModel in names(CustomPolicies$models[[input$customModelSelection]])){
       if(input$SimpleViewPolicyName == existingPolicyModel){
-        shinyalert("Error:", "Policy name already exists", type = "error")
+        shinyalert::shinyalert("Error:", "Policy name already exists", type = "error")
         return()
       }
     }
@@ -1131,6 +1250,16 @@ shinyServer(function(input, output, session) {
               Renderability=currPolicyUtility$Renderability)
     
     CustomPolicies$models[[input$customModelSelection]][[input$SimpleViewPolicyName]] <- currModel$model
+    
+    # set the list of policies in drop down
+    updateSelectInput(session, 
+                      "policyTabPolicyRemove",
+                      choices = CustomPolicies$archiveList[[input$customModelSelection]]$name[-1])
+    
+    updateSelectInput(session, 
+                      "reportTabPolicyRemove",
+                      choices = CustomPolicies$archiveList[[input$customModelSelection]]$name[-1])
+    
   })
   #Add reset button
   observeEvent(input$SimplePolicyReset, {
@@ -1157,6 +1286,21 @@ shinyServer(function(input, output, session) {
                       "customOaisEntitySelection",
                       choices = OAISentities, 
                       selected = 'None')
+  })
+  
+  #remove policy
+  observeEvent(input$RemovePolicy, {
+    
+    CustomPolicies$archiveList[[input$customModelSelection]] <- CustomPolicies$archiveList[[input$customModelSelection]] %>% filter(name != input$policyTabPolicyRemove)
+    
+    updateSelectInput(session, 
+                      "policyTabPolicyRemove",
+                      choices = CustomPolicies$archiveList[[input$customModelSelection]]$name[-1])
+    
+    updateSelectInput(session, 
+                      "reportTabPolicyRemove",
+                      choices = CustomPolicies$archiveList[[input$customModelSelection]]$name[-1])
+    
   })
 
   
@@ -1263,7 +1407,7 @@ shinyServer(function(input, output, session) {
       for (sum in prob_sum){
         if (sum != 100){
           errorMsg <-"One or more conditional probabilities do not sum to 100%."
-          shinyalert("Error:", errorMsg, type = "error")
+          shinyalert::shinyalert("Error:", errorMsg, type = "error")
           return()
         }
       }
@@ -1299,7 +1443,7 @@ shinyServer(function(input, output, session) {
       sum <- data.df %>% summarise(total_prob=sum(probability))
       if (sum$total_prob != 100){
         errorMsg <-"The marginal probabilities do not sum to 100%."
-        shinyalert("Error:", errorMsg, type = "error")
+        shinyalert::shinyalert("Error:", errorMsg, type = "error")
         return()
       }
       
@@ -1346,7 +1490,7 @@ shinyServer(function(input, output, session) {
     # check if a name has been provided
     if (input$policyName == ""){
       errorMsg <-"No name was provided for the model."
-      shinyalert("Error:", errorMsg, type = "error")
+      shinyalert::shinyalert("Error:", errorMsg, type = "error")
       return()
     }
     
@@ -1354,7 +1498,7 @@ shinyServer(function(input, output, session) {
     current_policies <- CustomPolicies$archiveList[[input$model_version]]
     if (input$policyName %in% current_policies$name){
       errorMsg <-"You have already used this policy name."
-      shinyalert("Error:", errorMsg, type = "error")
+      shinyalert::shinyalert("Error:", errorMsg, type = "error")
       return()
     }
     
@@ -1374,14 +1518,14 @@ shinyServer(function(input, output, session) {
     # check if a name has been provided
     if (input$policyName == ""){
       errorMsg <-"No name was provided for the model."
-      shinyalert("Error:", errorMsg, type = "error")
+      shinyalert::shinyalert("Error:", errorMsg, type = "error")
       return()
     }
     
     # check if name is already being used for another custom model
     if (input$policyName %in% names(CustomModels$custom_networks)){
       errorMsg <-"You are already using this name for another custom model."
-      shinyalert("Error:", errorMsg, type = "error")
+      shinyalert::shinyalert("Error:", errorMsg, type = "error")
       return()
     }
     
@@ -1404,6 +1548,7 @@ shinyServer(function(input, output, session) {
     updateSelectInput(session, 'customModelSelection', choices=customModelChoices)
     updateSelectInput(session, "model_version", label="Select Model", choices=customModelChoices)
     updateSelectInput(session, 'reportTabModelSelection', choices=CustomModels$base_utility.df$name)
+    updateSelectInput(session, 'sensTabModelSelection', choices=CustomModels$base_utility.df$name)
   })
   
   # Reset network to original probabilities
@@ -1419,9 +1564,14 @@ shinyServer(function(input, output, session) {
     CustomPolicies$archiveList[[input$model_version]] %>%
       mutate(utility=Intellectual_Control+Renderability) %>% 
       pivot_longer(c(Intellectual_Control, Renderability), names_to="node") %>%
-      ggplot(aes(x=reorder(name, -value), fill=node, y=value)) +
+      ggplot(aes(x=reorder(name, -value), fill=node, y=value*50)) +
       geom_bar(position="stack", stat="identity") + xlab("Policy") + ylab("Score") +
-      geom_text(aes(label=format(round(value,2),nsmall=2)), size=7, colour="white", 
+      geom_hline(yintercept=0.1013*50, linetype="dashed", color = "black") +
+      geom_hline(yintercept=1.4255*50, linetype="dashed", color = "black") +
+      #geom_text(aes(1,0.3,label = "Min", vjust = -1)) + geom_text(aes(1,1.3,label = "Max", vjust = -1)) +
+      stat_summary(fun.y = sum, aes(label = format(round(..y..,0),nsmall=0), group = name),
+                   geom = "text", size=7, fontface="bold", vjust=-0.25) +
+      geom_text(aes(label=format(round(value*50,0),nsmall=0)), size=5, colour="white", 
                 fontface = "bold", position = position_stack(vjust = 0.5)) + theme_light() + 
       theme(panel.border = element_blank(), text = element_text(size =20), legend.position="top", legend.title = element_blank())  +
       scale_fill_manual(values=c("#FF6E3A","#8400CD")) #colour blind scheme
@@ -1432,9 +1582,16 @@ shinyServer(function(input, output, session) {
     CustomModels$base_utility.df %>%
       mutate(utility=Intellectual_Control+Renderability) %>% 
       pivot_longer(c(Intellectual_Control, Renderability), names_to="node") %>%
-      ggplot(aes(x=reorder(name, -value), fill=node, y=value)) +
-      geom_bar(position="stack", stat="identity") + xlab("Policy") + ylab("Score") +
-      geom_text(aes(label=format(round(value,2),nsmall=2)), size=7, colour="white", 
+      ggplot(aes(x=reorder(name, -value), fill=node, y=value*50)) +
+      geom_bar(position="stack", stat="identity") + xlab("Model") + ylab("Score") +
+      geom_hline(yintercept=0.1013*50, linetype="dashed", color = "black") +
+      geom_hline(yintercept=1.4255*50, linetype="dashed", color = "black") +
+      #geom_text(aes(1,0.3,label = "Min", vjust = -1)) + geom_text(aes(1,1.3,label = "Max", vjust = -1)) +
+      stat_summary(fun.y = sum, aes(label = format(round(..y..,0),nsmall=0), group = name),
+                   geom = "text", size=7, fontface="bold", vjust=-0.25) +
+    #geom_text(aes(label = stat(y), group = name), stat = 'summary', fun.y = sum, vjust = -1, size = 7) +
+      #geom_text(aes(label=format(round(sum(value)*50,0))),vjust=-0.3, color="black", size=3.5)+
+      geom_text(aes(label=format(round(value*50,0),nsmall=0)), size=5, colour="white", 
                 fontface = "bold", position = position_stack(vjust = 0.5)) + theme_light() + 
       theme(panel.border = element_blank(), text = element_text(size =20), legend.position="top", legend.title = element_blank())  +
       scale_fill_manual(values=c("#FF6E3A","#8400CD")) #colour blind scheme
@@ -1461,7 +1618,7 @@ shinyServer(function(input, output, session) {
     # getting list of policies
     for(policy in currModel$name){
       policyUtility <- currModel %>% filter(name==policy) %>% select(Renderability, Intellectual_Control)
-      currUtility <- b*policyUtility$Intellectual_Control + a*policyUtility$Renderability 
+      currUtility <- (b*policyUtility$Intellectual_Control + a*policyUtility$Renderability) /(a+b)*100
       
       summary <- paste(summary, policy, "\t", format(round(currUtility,4),nsmall=4), "<br/>", sep = "")
       
@@ -1494,7 +1651,7 @@ shinyServer(function(input, output, session) {
     }
     
     if(input$sidebarMenu == 'CustomiseNode' & initialSimpleCustomisationPopup$flag){
-      shinyalert("Please select the model for your archive"," 
+      shinyalert::shinyalert("Please select the model for your archive"," 
       If you skipped '1. Create your model', please return to this page and create or upload a customised model.", type = "info")
       
       initialSimpleCustomisationPopup$flag = FALSE
@@ -1552,14 +1709,20 @@ shinyServer(function(input, output, session) {
     
     CustomPolicies$archiveList[[input$reportTabModelSelection]] %>%
       pivot_longer(c(Intellectual_Control, Renderability), names_to="policy") %>%
-      mutate(value=ifelse(policy=="Renderability", value*a, value*b)) %>%
+      mutate(value=ifelse(policy=="Renderability", value*a/(a+b)*100, value*b/(a+b)*100)) %>%
       ggplot(aes(x=reorder(name, -value), fill=policy, y=value)) +
       geom_bar(position="stack", stat="identity") + xlab("Policy") + ylab("Score") +
-      geom_text(aes(label=format(round(value,2),nsmall=2)), size=7, colour="white", 
+      geom_hline(yintercept=0.1013*50, linetype="dashed", color = "black") +
+      geom_hline(yintercept=1.4255*50, linetype="dashed", color = "black") +
+      #geom_text(aes(1,0.3,label = "Min", vjust = -1)) + geom_text(aes(1,1.3,label = "Max", vjust = -1)) +
+      stat_summary(fun.y = sum, aes(label = format(round(..y..,0),nsmall=0), group = name),
+                   geom = "text", size=7, fontface="bold", vjust=-0.25) +
+      geom_text(aes(label=format(round(value,0),nsmall=0)), size=5, colour="white", 
                 fontface = "bold", position = position_stack(vjust = 0.5)) + theme_light() + 
       theme(panel.border = element_blank(), text = element_text(size =20), legend.position="top", legend.title = element_blank())  +
       scale_fill_manual(values=c("#FF6E3A","#8400CD")) #colour blind scheme
   })
+  
   
   # Plot the policy comparison stacked bar chart
   output$ReportTabUtilityComparisonPlot <- renderPlot(
@@ -1567,6 +1730,23 @@ shinyServer(function(input, output, session) {
       plotUtility()
     }
   )
+  
+  #remove policy
+  # observeEvent(input$RemovePolicyReport, {
+  #   
+  #   CustomPolicies$archiveList[[input$customModelSelection]] <- CustomPolicies$archiveList[[input$customModelSelection]] %>% filter(name != input$reportTabPolicyRemove)
+  #   
+  #   updateSelectInput(session, 
+  #                     "policyTabPolicyRemove",
+  #                     choices = CustomPolicies$archiveList[[input$customModelSelection]]$name[-1])
+  #   
+  # updateSelectInput(session, 
+  #                   "reportTabPolicyRemove",
+  #                   choices = CustomPolicies$archiveList[[input$customModelSelection]]$name[-1])
+  # 
+  #})
+  
+  #Download
   output$reportTabDownloadBtn <- downloadHandler(
     filename = function() {
       paste0(input$reportTabModelSelection, ".zip")
@@ -1617,6 +1797,43 @@ shinyServer(function(input, output, session) {
       }
     }
   )
-
+  output$SensitivityTable <- renderDataTable({
+    datatable(hard.test(CustomModels$custom_networks[[input$sensTabModelSelection]])[Type=="Input",])
+  })
+   # output$clickevent <- renderPrint({
+   #   clickData <- event_data("plotly_click")
+   #   if (is.null(clickData)) return(NULL)
+   #   
+   #   # Obtain the clicked x/y variables and fit linear model
+   #   #vars <- c(clickData[["x"]], clickData[["y"]])
+   #   tb <- hard.test(CustomModels$custom_networks[[input$sensTabModelSelection]])[!is.na(R_score), ]
+   #   tb2 <- tb[(R_diff==clickData[["x"]]) & (IC_diff==clickData[["y"]]),]
+   #   #d <- setNames(mtcars[vars], c("x", "y"))
+   #   #yhat <- fitted(lm(y ~ x, data = d))
+   #   summary0 <- paste0("The node selected is ", tb2$node_name,". ")
+   #   if(tb2$Type=="Input") {
+   #     summary1 <- paste0(summary0, "In most cases, you should be able to make changes to this node directly. Go to '2. Compare Policies' and give it a try.")
+   #   }
+   #   if(tb2$Type=="Cond") {
+   #     summary1 <- paste0(summary0, "In most cases, you would not be able to make changes to this node directly. ",
+   #     "Instead, you should consider changing the nodes that are parents or ancestors to ",tb2$node_name, 
+   #     #"The parents are ", CustomModels$custom_networks[[input$sensTabModelSelection]][[tb2$node_name]]$parents,
+   #     ". To find out what these are, go to the 'Definitions' page.")
+   #   }
+   #   return(summary1)
+   #   })
+  output$SensitivityPlot <- renderPlotly({
+    plot_ly(
+      hard.test(CustomModels$custom_networks[[input$sensTabModelSelection]])[!is.na(R_score)&Type=="Input", ],
+      x =  ~ R_diff,
+      y =  ~ IC_diff,
+      type = 'scatter',
+      mode = 'markers',
+      text =  ~ paste0(node_name, ":", node_state),
+      color = ~ Type,
+      marker = list(size = 10, symbol = 'circle')
+    )
+    #ggplot(hard.test(CustomModels$custom_networks[[input$sensTabModelSelection]]), aes(R_diff,IC_diff)) + geom_jitter() + theme_bw() + scale_shape(solid = FALSE)
+  })
 })
 
