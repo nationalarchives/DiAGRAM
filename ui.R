@@ -8,7 +8,7 @@
 # @email: stephen.james.krol@gmail.com
 
 library(shiny)
-#library(rintrojs)
+library(rintrojs)
 library(networkD3)
 library(shinydashboard)
 library(gRbase)
