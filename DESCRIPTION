@@ -31,7 +31,11 @@ Imports:
     shinyjs,
     shinysky,
     shinyWidgets,
-    V8
+    V8,
+    rlang,
+    dplyr,
+    readr,
+    tibble
 Remotes:
     AnalytixWare/ShinySky
 Encoding: UTF-8

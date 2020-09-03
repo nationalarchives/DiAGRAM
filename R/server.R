@@ -27,33 +27,45 @@ options(shiny.fullstacktrace = FALSE)
 
 # TODO: policy plotting should be one reactive variable
 
-shinyServer(function(input, output, session) {
+#' The application server-side
+#' 
+#' @param input,output,session Internal parameters for {shiny}. 
+#'     DO NOT REMOVE.
+#' 
+#' @importFrom bnlearn read.bif graphviz.plot mutilated
+#' @importFrom readr read_csv
+#' @importFrom dplyr arrange filter select rename add_row
+#' @importFrom shiny reactiveValues updateSelectInput plotOutput renderUI tagList strong renderTable
+#' @importFrom shinydashboard updateTabItems
+#' @importFrom shinyWidgets sliderTextInput updateProgressBar
+#' @importFrom tibble tibble
+#' @importFrom rlang .data
+app_server = function(input, output, session) {
   
   # -------------------- FUNCTIONS --------------------
   # function which caluclates utility
   calculate_utility <- function(model) {
-    
     # convert model to grain object
-    
     if(is.grain(model)==FALSE) {
-    model.grain <- as.grain(model)
+      model.grain <- as.grain(model)
     }
-    else {model.grain <- model}
-    
+    else {
+      model.grain <- model
+    }
     # find probability of Intellectual_Control and Renderability
     query.results <- querygrain(model.grain, nodes=c("Intellectual_Control", "Renderability"))
-    
     # Extract probabilities
     prob.Intellectual_Control <- as.numeric(query.results$Intellectual_Control["Yes"])
     prob.Renderability <- as.numeric(query.results$Renderability["Yes"])
-    
-    utility <- list("Intellectual_Control"=prob.Intellectual_Control,
-                    "Renderability"=prob.Renderability)
-    
+    utility <- list(
+      "Intellectual_Control"=prob.Intellectual_Control,
+      "Renderability"=prob.Renderability
+    )
     return(utility)    
   }
   
   # Function creates multiple sliders for the different states in a node
+  #' @importFrom shiny sliderInput
   create_sliders <- function(node, states) {
     # creates a list of sliders inputs for each state of the respective node
     j <- 1
@@ -61,53 +73,51 @@ shinyServer(function(input, output, session) {
     for(state in states){
       inputId <- paste(node, state, sep = "-")
       label <- paste(state, "(%)")
-      nodeStateSlider[[j]] <- sliderInput(inputId, label, min = 0, max = 100, step = 1, value = 0, post = "%")
-      
+      nodeStateSlider[[j]] <- shiny::sliderInput(inputId, label, min = 0, max = 100, step = 1, value = 0, post = "%")
       j <- j+1
     }
-    
     # list of nodes with corresponding state sliders
     return(nodeStateSlider)
   }
   
   # Function collects inputs from generated sliders and combines into dataframe
+  #' @importFrom dplyr filter mutate select
+  #' @importFrom tibble tibble
+  #' @importFrom rlang .data
   collect_slider_inputs <- function(name){
     # create input ids to access slider information
     input.ids <- state.definitions %>%
-      filter(node_name==name) %>%
-      mutate(id=paste(node_name, node_state, sep = "-")) %>%
-      select(id, node_state)
-    
+      dplyr::filter(.data$node_name==name) %>%
+      dplyr::mutate(id=paste(.data$node_name, .data$node_state, sep = "-")) %>%
+      dplyr::select(.data$id, .data$node_state)
     # create vectors for states and probabilities
     states <- c()
     probabilities <- c()
-    
     # iterate through all id's and collect values
     i <- 1
     for (id in input.ids$id) {
       # collect states and their probabilities
       state <- input.ids$node_state[i]
       probability <- input[[id]]
-      
       # add to vectors
       states <- c(states, state)
       probabilities <- c(probabilities, probability)
-      
       # iterate to next state
       i <- i + 1
     }
-    
     # combine states into one dataframe
-    return(tibble(state=states, probability=probabilities))
+    return(tibble::tibble(state=states, probability=probabilities))
   }
   
   # Function collects inputs from Boolean sliders and combines into dataframe
+  #' @importFrom dplyr filter select
+  #' @importFrom tibble tibble
+  #' @importFrom rlang .data
   collect_boolean_slider_inputs <- function(name){
-    
     # collect states of the node
     next_states <- state.definitions %>%
-      filter(node_name==name) %>%
-      select(node_state)
+      dplyr::filter(.data$node_name==name) %>%
+      dplyr::select(.data$node_state)
     
     # collect primary and secondary state
     primary_state <- next_states$node_state[1]
@@ -132,48 +142,48 @@ shinyServer(function(input, output, session) {
     }
     secondary_prob <- 100 - primary_prob
     # return tibble of probabilities
-    return(tibble(state=c(primary_state, secondary_state),
-                  probability=c(primary_prob, secondary_prob)))
+    return(
+      tibble::tibble(
+        state=c(primary_state, secondary_state),
+        probability=c(primary_prob, secondary_prob)
+      )
+    )
   }
   
   # Function updates probability tables of model with user inputs
+  #' @importFrom dplyr mutate
+  #' @importFrom stats xtabs
   update_probability <- function(node, model.probability.df, input.probability.df){
-    
     # collect node states and corresponding probabilities
     node_states <- input.probability.df$state
     state_probabilities <- input.probability.df$probability
-
     # iterate through states and update model probability table
     i <- 1
     for (state in node_states){
       current.probability <- state_probabilities[i]
       model.probability.df <- model.probability.df %>%
-        mutate(Freq=ifelse(model.probability.df[[node]]==state, current.probability, Freq))
-      
+        dplyr::mutate(Freq=ifelse(model.probability.df[[node]]==state, current.probability, .data$Freq))
       i <- i + 1
     }
-    
     # normalise probability range between 0 and 1
-    model.probability.df <- model.probability.df %>% mutate(Freq=Freq/100)
-
+    model.probability.df <- model.probability.df %>% dplyr::mutate(Freq=Freq/100)
     # convert from data.frame to table
-    model.probability.table <- xtabs(Freq~., model.probability.df)
+    model.probability.table <- stats::xtabs(Freq~., model.probability.df)
     return(model.probability.table)
   }
   
   
   #Function to sensitivity test based on hard evidence
+  #' @import data.table
   hard.test <- function(model) { #work with custom_model which is a bif
     hard.evidence <- as.data.table(state.definitions[,1:2])
     input.nodes <- as.list(setup_questions)$node_name
-    
     #remove renderability and intellectual control
-    hard.evidence <-
-      hard.evidence[node_name != "Renderability" &
-                      node_name != "Intellectual_Control", ]
-    
+    hard.evidence <- hard.evidence[
+      node_name != "Renderability" &
+        node_name != "Intellectual_Control",
+    ]
     hard.evidence[, Type := ifelse((node_name %in% input.nodes), "Input", "Cond")] #Inputs and conditionals
-    
     #Set up columns
     hard.evidence[, Score := as.numeric()]
     hard.evidence[, R_score := as.numeric()]
@@ -181,17 +191,13 @@ shinyServer(function(input, output, session) {
     hard.evidence[, Difference := as.numeric()]             
     hard.evidence[, R_diff := as.numeric()]
     hard.evidence[, IC_diff := as.numeric()]
-    
-    
+    # JR note: calculate utility is diagram defined
     R_orig <- as.numeric(calculate_utility(model)$Renderability)*50
     IC_orig <- as.numeric(calculate_utility(model)$Intellectual_Control)*50
-    
     for (i in 1:(dim(hard.evidence)[1])) {
       #reset node probability
       temp.model <- model
-      
       #if (hard.evidence$Type[i]=="Input") { #might be an unneccessary condition, but will speed things up
-        
       node <- hard.evidence$node_name[i]
       #   default.probability.df <- as.data.frame(stable.fit[[node]]$prob) #relies on default all being 'soft'
       #   model.probability.df <- as.data.frame(model[[node]]$prob)
@@ -199,9 +205,7 @@ shinyServer(function(input, output, session) {
       # temp.probability.table <- update_probability(node, model.probability.df, default.probability.df)
       # # update probability table for node
       temp.model[[node]] <- as.array(stable.fit[[node]]$prob)
-      
       #}
-      
       grain.model <- as.grain(temp.model)
       
       test <- setEvidence(
@@ -210,6 +214,7 @@ shinyServer(function(input, output, session) {
         as.character(hard.evidence$node_state[i]) #node state
       )
       
+      # JR note: calculate utility is diagram defined
       R_new <- as.numeric(calculate_utility(test)$Renderability)*50
       IC_new <- as.numeric(calculate_utility(test)$Intellectual_Control)*50
       
@@ -228,62 +233,51 @@ shinyServer(function(input, output, session) {
     }
     hard.evidence[order(-Score)]
   }
-  
-  
   # --------------------   FUNCTIONS   --------------------
   
-  
-  
-  
-  
-  
-  
-  
-  
-  
   # -------------------- STATIC VALUES --------------------
-  stable.fit <- read.bif("Model.bif")
+  stable.fit <- bnlearn::read.bif("Model.bif")
   
   # node definitions and state definitions
-  node.definitions <- read_csv("node_information.csv") %>% arrange(node_name)
-  state.definitions <- read_csv("node_states.csv")
+  node.definitions <- readr::read_csv("node_information.csv") %>% dplyr::arrange(node_name)
+  state.definitions <- readr::read_csv("node_states.csv")
   
   # csv containing nodes and questions used during setup
-  setup_questions <- read_csv("setup_questions.csv")
+  setup_questions <- readr::read_csv("setup_questions.csv")
   
   # Default risk
+  # JR note: calculate utility is diagram defined
   default_utility <- calculate_utility(stable.fit)
   
   # --------------------   STATIC VALUES    --------------------
   
-  
-  
-  
-  
-  
-  
-  
-  
-  
   # --------------------   REACTIVE VALUES  ---------------------
   
   # initialise stable plot (unchanging) and reactive plot
-  network <- reactiveValues(model.fit = read.bif("Model.bif"),
-                            advanced.fit = stable.fit)
+  network <- shiny::reactiveValues(
+    model.fit = bnlearn::read.bif("Model.bif"),
+    advanced.fit = stable.fit
+  )
   
   # Initialise Question Counter for model setup
   questionValues <- reactiveValues(question_number=1)
   
   # Create vector to store answers to questions
-  answers <- reactiveValues(radio_answers=list(),
-                            slider_answers=list(),
-                            boolean_slider_answers=list())
+  answers <- reactiveValues(
+    radio_answers=list(),
+    slider_answers=list(),
+    boolean_slider_answers=list()
+  )
   
   # Customised models
-  CustomModels <- reactiveValues(base_utility.df=tibble(name="Default",
-                                                        Intellectual_Control=default_utility$Intellectual_Control,
-                                                        Renderability=default_utility$Renderability),
-                                 custom_networks=list("Default"=stable.fit))
+  CustomModels <- reactiveValues(
+    base_utility.df=tibble::tibble(
+      name="Default",
+      Intellectual_Control=default_utility$Intellectual_Control,
+      Renderability=default_utility$Renderability
+    ),
+    custom_networks=list("Default"=stable.fit)
+  )
   
   ## TODO:sid - combine both into a single data structure
   # Customised Policies
@@ -292,102 +286,82 @@ shinyServer(function(input, output, session) {
   #                                                                 findability=default_utility$Findability,
   #                                                                 renderability=default_utility$Renderability)),
   #                                  models=list("Default"=list("Base"=stable.fit)))
-  CustomPolicies <- reactiveValues(archiveList=list(),
-                                   models=list())
+  CustomPolicies <- reactiveValues(
+    archiveList=list(),
+    models=list()
+  )
   
-  utility_weighting <- reactiveValues(Renderability=1,
-                                      Intellectual=1)
+  utility_weighting <- reactiveValues(
+    Renderability=1,
+    Intellectual=1
+  )
 
   # --------------------   REACTIVE VALUES  ---------------------
-  
-  
-  
-  
-  
-  
-  
-
   
   # -------------------- NODE DEFINITION TAB --------------------
   
   # Update node drop down list with node names
-  updateSelectInput(session,
-                    "NodeSelection",
-                    label=NULL,
-                    choices=node.definitions$node_name)
+  shiny::updateSelectInput(
+    session, "NodeSelection",
+    label=NULL,
+    choices=node.definitions$node_name
+  )
   
   # plot network used on the network tab
-  output$NetworkStructure <- renderPlot({
-    graphviz.plot(stable.fit, layout = "dot",
-                  highlight = list(nodes=c(input$NodeSelection), fill="lightgrey"),
-                  shape = "ellipse",
-                  render = TRUE)
+  output$NetworkStructure <- shiny::renderPlot({
+    bnlearn::graphviz.plot(
+      stable.fit, layout = "dot",
+      highlight = list(nodes=c(input$NodeSelection), fill="lightgrey"),
+      shape = "ellipse",
+      render = TRUE
+    )
   })
   
   # Output node definiton text
-  output$NodeDefinition <- renderUI({
-    
+  output$NodeDefinition <- shiny::renderUI({
     definition <- node.definitions %>% 
-      filter(node_name==input$NodeSelection) %>%
-      select(node_definition) %>%
+      dplyr::filter(.data$node_name==input$NodeSelection) %>%
+      dplyr::select(.data$node_definition) %>%
       as.character()
-    
-    tagList(strong("Definition: "), definition)
-    
+    shiny::tagList(shiny::strong("Definition: "), definition)
   })
   
   
   # Output hyperlink to data source
-   output$DataLink <- renderUI({
-     
+   output$DataLink <- shiny::renderUI({
      url <- node.definitions %>% 
-       filter(node_name==input$NodeSelection) %>%
-       select(data_source) %>%
+       dplyr::filter(.data$node_name==input$NodeSelection) %>%
+       dplyr::select(data_source) %>%
        as.character()
-     
   #   url <- a(input$NodeSelection, href=url) remove hyperlink
-     
-     tagList(strong("Data source: "), url)
-     
+     shiny::tagList(shiny::strong("Data source: "), url)
    })
-
   
   # Output Year of node
-  output$DataYear <- renderUI({
-    
+  output$DataYear <- shiny::renderUI({
     year <- node.definitions %>% 
-      filter(node_name==input$NodeSelection) %>%
-      select(node_year) %>%
+      dplyr::filter(.data$node_name==input$NodeSelection) %>%
+      dplyr::select(.data$node_year) %>%
       as.character()
-    
-    tagList(strong("Data collected: "), year)
-    
+    shiny::tagList(shiny::strong("Data collected: "), year)
   })
   
   # Output node state definition table
-  output$StateDefinition <- renderTable({
-    
+  output$StateDefinition <- shiny::renderTable({
     state.definitions %>%
-      filter(node_name==input$NodeSelection) %>%
-      select(-node_name) %>% 
-      rename(`Node State`=node_state,
-             `State Definition`=state_definition)
-    
+      dplyr::filter(.data$node_name==input$NodeSelection) %>%
+      dplyr::select(-.data$node_name) %>% 
+      dplyr::rename(
+        `Node State`=.data$node_state,
+        `State Definition`=.data$state_definition
+      )
   })
   
   # -------------------- NODE DEFINITION TAB --------------------
   
-  
-  
-  
-  
-  
-  
-  
-  
   # -------------------- MODEL CUSTOMISATION --------------------
-  observeEvent(input$createModel, {
-    updateTabItems(session, "sidebarMenu", "CustomiseModel")
+  shiny::observeEvent(input$createModel, {
+    shinydashboard::updateTabItems(session, "sidebarMenu", "CustomiseModel")
   })
   # Update state selection radio buttons
   # Collect the first node
@@ -395,106 +369,113 @@ shinyServer(function(input, output, session) {
   
   # retrieve states associated with the first node
   first_states <- state.definitions %>%
-    filter(node_name==first_node) %>%
-    select(node_state)
+    dplyr::filter(.data$node_name==first_node) %>%
+    dplyr::select(.data$node_state)
   
   # Create user input UI which is at the bottom of the box
-  output$CustomisationInput <- renderUI({
-    
+  output$CustomisationInput <- shiny::renderUI({
     # collect next node questions
     next_node_name <- setup_questions[questionValues$question_number,]$node_name
-    
     # collect type of input, radiobutton or slider
     next_node <- node.definitions %>% 
-                 filter(node_name==next_node_name)
+      dplyr::filter(node_name==next_node_name)
     number_of_questions <- nrow(setup_questions)
-    
     # If all questions have not been answered yet render next button
     # If input type is slider, render multiple sliders for the different input states
     if (questionValues$question_number < number_of_questions+1 && next_node$type=="slider") {
-      
       # collect next node name
       # next_node <- setup_questions[questionValues$question_number,]$node_name
-      
       # collect states of the next node
       next_states <- state.definitions %>%
-        filter(node_name==next_node$node_name) %>%
-        select(node_state)
+        dplyr::filter(.data$node_name==next_node$node_name) %>%
+        dplyr::select(.data$node_state)
       node_text <- ""
       if (next_node$node_name == "Storage_Medium"){
-        node_text <- HTML(paste( 
-            h5(tags$b("A"),"- Expected lifespan below 10 years or unknown, highly susceptible to physical 
-                        damage, requires specific environmental conditions and very sensitive to changes,
-                        does not support error-detection methods, supporting technology is novel, proprietary 
-                        and limited. Examples include USB flash drive, floppy disk, SD drive and CD-R discs."),
-            h5(tags$b("B"),"- A proven lifespan of at least 10 years, low susceptibility to physical damage, 
-                        tolerant of a wide range of environmental conditions without data loss, supports 
-                        robust error-detection methods, supporting technology is well established and widely 
-                        available. Examples include LTO tapes, blu ray discs and CD-ROM discs."),
-               h5(tags$b("C"),"- An external company is taking responsibility for our data storage. Examples 
-                        include Amazon Simple Storage Service, Microsoft Azure Archive Storage and Google 
-                        Cloud Storage.")))}
-      rendered_element <- div(
-                            fluidRow(
-                              column(
-                                width=5,
-                                create_sliders(next_node$node_name, next_states$node_state)
-                              ),
-                              column(
-                                width=5, offset=1,
-                                node_text
-                              )
-                            ),
-                            fluidRow(
-                              column(
-                                width=2,
-                                tags$style(HTML('#BackButton{background-color:grey}')),
-                                tags$style(HTML('#BackButton{color:white}')),
-                                tags$style(HTML('#BackButton{width:100%}')),
-                                actionButton("BackButton", "Back") #changed to uk order
-                              ),
-                              column(
-                                width=2,
-                                tags$style(HTML('#NextQuestion{background-color:green}')),
-                                tags$style(HTML('#NextQuestion{color:white}')),
-                                tags$style(HTML('#NextQuestion{width:100%')),
-                                actionButton("NextQuestion", "Next") #changed to uk order
-                              )
-                            )
-                          )
+        node_text <- shiny::HTML(paste( 
+          shiny::h5(
+            shiny::tags$b("A"),
+            "- Expected lifespan below 10 years or unknown, highly susceptible to physical 
+            damage, requires specific environmental conditions and very sensitive to changes,
+            does not support error-detection methods, supporting technology is novel, proprietary 
+            and limited. Examples include USB flash drive, floppy disk, SD drive and CD-R discs."
+          ),
+          shiny::h5(
+            shiny::tags$b("B"),
+            "- A proven lifespan of at least 10 years, low susceptibility to physical damage, 
+            tolerant of a wide range of environmental conditions without data loss, supports 
+            robust error-detection methods, supporting technology is well established and widely 
+            available. Examples include LTO tapes, blu ray discs and CD-ROM discs."
+          ),
+          shiny::h5(
+            shiny::tags$b("C"),
+            "- An external company is taking responsibility for our data storage. Examples 
+            include Amazon Simple Storage Service, Microsoft Azure Archive Storage and Google 
+            Cloud Storage."
+          )
+        ))
+      }
+      rendered_element <- shiny::div(
+        shiny::fluidRow(
+          shiny::column(
+            width=5,
+            # JR note create_slider is Diagram defined function
+            create_sliders(next_node$node_name, next_states$node_state)
+          ),
+          shiny::column(
+            width=5, offset=1,
+            node_text
+          )
+        ),
+        shiny::fluidRow(
+          shiny::column(
+            width=2,
+            shiny::tags$style(shiny::HTML('#BackButton{background-color:grey}')),
+            shiny::tags$style(shiny::HTML('#BackButton{color:white}')),
+            shiny::tags$style(shiny::HTML('#BackButton{width:100%}')),
+            shiny::actionButton("BackButton", "Back") #changed to uk order
+          ),
+          shiny::column(
+            width=2,
+            shiny::tags$style(shiny::HTML('#NextQuestion{background-color:green}')),
+            shiny::tags$style(shiny::HTML('#NextQuestion{color:white}')),
+            shiny::tags$style(shiny::HTML('#NextQuestion{width:100%')),
+            shiny::actionButton("NextQuestion", "Next") #changed to uk order
+          )
+        )
+      )
     } else if(questionValues$question_number < number_of_questions+1 && next_node$type=="radiobuttons") {
       
       # collect next node name
       # next_node <- setup_questions[questionValues$question_number,]$node_name
-        text_description <- column(width=5)
+      text_description <- shiny::column(width=5)
         
       # collect states of the next node
       next_states <- state.definitions %>%
-        filter(node_name==next_node$node_name) %>%
-        select(node_state)
+        dplyr::filter(.data$node_name==next_node$node_name) %>%
+        dplyr::select(.data$node_state)
       
-      rendered_element <- div(
-        fluidRow(
-          column(
+      rendered_element <- shiny::div(
+        shiny::fluidRow(
+          shiny::column(
             width=5,
-            radioButtons("StateSelection", label=NULL, choices=next_states$node_state)
+            shiny::radioButtons("StateSelection", label=NULL, choices=next_states$node_state)
           ),
           text_description
         ),
-        fluidRow(
-          column(
+        shiny::fluidRow(
+          shiny::column(
             width=2,
-            tags$style(HTML('#BackButton{background-color:grey}')),
-            tags$style(HTML('#BackButton{color:white}')),
-            tags$style(HTML('#BackButton{width:100%}')),
-            actionButton("BackButton", "Back") #changed to uk order
+            shiny::tags$style(shiny::HTML('#BackButton{background-color:grey}')),
+            shiny::tags$style(shiny::HTML('#BackButton{color:white}')),
+            shiny::tags$style(shiny::HTML('#BackButton{width:100%}')),
+            shiny::actionButton("BackButton", "Back") #changed to uk order
           ),
-          column(
+          shiny::column(
             width=2,
-            tags$style(HTML('#NextQuestion{background-color:green}')),
-            tags$style(HTML('#NextQuestion{color:white}')),
-            tags$style(HTML('#NextQuestion{width:100%')),
-            actionButton("NextQuestion", "Next") #changed to uk order
+            shiny::tags$style(shiny::HTML('#NextQuestion{background-color:green}')),
+            shiny::tags$style(shiny::HTML('#NextQuestion{color:white}')),
+            shiny::tags$style(shiny::HTML('#NextQuestion{width:100%')),
+            shiny::actionButton("NextQuestion", "Next") #changed to uk order
           )
         )
       )
@@ -502,8 +483,8 @@ shinyServer(function(input, output, session) {
 
       # collect states of the next node
       next_states <- state.definitions %>%
-        filter(node_name==next_node$node_name) %>%
-        select(node_state)
+        dplyr::filter(.data$node_name==next_node$node_name) %>%
+        dplyr::select(.data$node_state)
       
       # collect primary state
       primary_state <- next_states$node_state[1]
@@ -511,178 +492,183 @@ shinyServer(function(input, output, session) {
       label <- paste(primary_state, "%")
       node_text <- ""
       if (next_node$node_name == "Technical_Skills"){
-        node_text <- h5("The default is based on responses to the JISC digital skills 
-        survey and how many said that there was full capability within their organisation 
-        to do file format migration, software emulation or data recovery. (15%)")}
+        node_text <- shiny::h5(
+          "The default is based on responses to the JISC digital skills 
+          survey and how many said that there was full capability within their organisation 
+          to do file format migration, software emulation or data recovery. (15%)"
+        )
+      }
       if (next_node$node_name == "System_Security"){
-        node_text <- h5("The default is based on responses to the JISC digital skills 
-        survey and how many agreed that their IT provider supports the requirements of 
-        the archival activities of your organisation toa large or very great extent and 
-        that their digital collections are protected with access restrictions/
-        permissions. (17%)")}
+        node_text <- shiny::h5(
+          "The default is based on responses to the JISC digital skills 
+          survey and how many agreed that their IT provider supports the requirements of 
+          the archival activities of your organisation toa large or very great extent and 
+          that their digital collections are protected with access restrictions/
+          permissions. (17%)"
+        )
+      }
       if (next_node$node_name == "Info_Management"){
-        node_text <- h5("The default is based on responses to the JISC digital skills 
-                        survey. 70% of respondents agreed that their catalogue management 
-                        system meets the needs of the organisation and 40% that their 
-                        digital asset management system meets the needs of the organisation. 
-                        We have estimated that 55% would therefore have sufficient 
-                        information management systems, as you don’t need a bespoke 
-                        digital asset management system to have support for coherent 
-                        information management and documentation of preservation actions, 
-                        but you may need more than just a catalogue system.")}
-        
+        node_text <- shiny::h5(
+          "The default is based on responses to the JISC digital skills 
+          survey. 70% of respondents agreed that their catalogue management 
+          system meets the needs of the organisation and 40% that their 
+          digital asset management system meets the needs of the organisation. 
+          We have estimated that 55% would therefore have sufficient 
+          information management systems, as you don’t need a bespoke 
+          digital asset management system to have support for coherent 
+          information management and documentation of preservation actions, 
+          but you may need more than just a catalogue system."
+        )
+      }
       if (next_node$node_name == "Physical_Disaster"){
-        node_text <- a(href="https://flood-warning-information.service.gov.uk/long-term-flood-risk/postcode",
-                       'Click here to check your flood risk.',target="_blank")
-        rendered_element <- div(
-          fluidRow(
-            
-            column(
+        node_text <- shiny::a(
+          href="https://flood-warning-information.service.gov.uk/long-term-flood-risk/postcode",
+          'Click here to check your flood risk.',target="_blank"
+        )
+        rendered_element <- shiny::div(
+          shiny::fluidRow(
+            shiny::column(
               width=5,
               node_text,
-              br(),
-              br(),
-              sliderTextInput(inputId, "Risk rating from gov.uk", grid = TRUE, force_edges = TRUE,
-                              choices = c("Very Low", "Low", "Medium", "High"))
+              shiny::br(),
+              shiny::br(),
+              shinyWidgets::sliderTextInput(
+                inputId, "Risk rating from gov.uk", grid = TRUE, force_edges = TRUE,
+                choices = c("Very Low", "Low", "Medium", "High")
+              )
             )
           ),
-          fluidRow(
-            column(
+          shiny::fluidRow(
+            shiny::column(
               width=2,
-              tags$style(HTML('#BackButton{background-color:grey}')),
-              tags$style(HTML('#BackButton{color:white}')),
-              tags$style(HTML('#BackButton{width:100%}')),
-              actionButton("BackButton", "Back") #changed to uk order
+              shiny::tags$style(shiny::HTML('#BackButton{background-color:grey}')),
+              shiny::tags$style(shiny::HTML('#BackButton{color:white}')),
+              shiny::tags$style(shiny::HTML('#BackButton{width:100%}')),
+              shiny::actionButton("BackButton", "Back") #changed to uk order
             ),
-            column(
+            shiny::column(
               width=2,
-              tags$style(HTML('#NextQuestion{background-color:green}')),
-              tags$style(HTML('#NextQuestion{color:white}')),
-              tags$style(HTML('#NextQuestion{width:100%')),
-              actionButton("NextQuestion", "Next") #changed to uk order
+              shiny::tags$style(shiny::HTML('#NextQuestion{background-color:green}')),
+              shiny::tags$style(shiny::HTML('#NextQuestion{color:white}')),
+              shiny::tags$style(shiny::HTML('#NextQuestion{width:100%')),
+              shiny::actionButton("NextQuestion", "Next") #changed to uk order
             )
           )
         )
       }
-      else{
-      rendered_element <- div(
-        fluidRow(
-          column(
-            width=5,
-           sliderInput(inputId, label, min = 0, max = 100, step = 1, value = 0, post = "%")
+      else {
+        rendered_element <- shiny::div(
+          shiny::fluidRow(
+            shiny::column(
+              width=5,
+              shiny::sliderInput(inputId, label, min = 0, max = 100, step = 1, value = 0, post = "%")
+            ),
+            shiny::column(
+              width=5, offset=1,
+              node_text
+            )
           ),
-          column(
-            width=5, offset=1,
-            node_text
-          )
-        ),
-        fluidRow(
-          column(
-            width=2,
-            tags$style(HTML('#BackButton{background-color:grey}')),
-            tags$style(HTML('#BackButton{color:white}')),
-            tags$style(HTML('#BackButton{width:100%}')),
-            actionButton("BackButton", "Back") #changed to uk order
-          ),
-          column(
-            width=2,
-            tags$style(HTML('#NextQuestion{background-color:green}')),
-            tags$style(HTML('#NextQuestion{color:white}')),
-            tags$style(HTML('#NextQuestion{width:100%')),
-            actionButton("NextQuestion", "Next") #changed to uk order
+          shiny::fluidRow(
+            shiny::column(
+              width=2,
+              shiny::tags$style(shiny::HTML('#BackButton{background-color:grey}')),
+              shiny::tags$style(shiny::HTML('#BackButton{color:white}')),
+              shiny::tags$style(shiny::HTML('#BackButton{width:100%}')),
+              shiny::actionButton("BackButton", "Back") #changed to uk order
+            ),
+            shiny::column(
+              width=2,
+              shiny::tags$style(shiny::HTML('#NextQuestion{background-color:green}')),
+              shiny::tags$style(shiny::HTML('#NextQuestion{color:white}')),
+              shiny::tags$style(shiny::HTML('#NextQuestion{width:100%')),
+              shiny::actionButton("NextQuestion", "Next") #changed to uk order
+            )
           )
         )
-      )
-      
-    }} else {
-      rendered_element <- fluidRow(
-        column(
+        
+      }
+    } else {
+      rendered_element <- shiny::fluidRow(
+        shiny::column(
           width=3,
-          textInput(
+          shiny::textInput(
             inputId="CustomisedModelName",
             label=NULL
           ),
         ),  
-        column(
+        shiny::column(
           width=2,
-          tags$style(HTML('#SaveModel{background-color:green}')),
-          tags$style(HTML('#SaveModel{color:white}')),
-          actionButton("SaveModel",
-                       "Name Model")
+          shiny::tags$style(shiny::HTML('#SaveModel{background-color:green}')),
+          shiny::tags$style(shiny::HTML('#SaveModel{color:white}')),
+          shiny::actionButton("SaveModel", "Name Model")
         ),
-        column(
+        shiny::column(
           width=1,
           offset=5,
-          tags$style(HTML('#AddNew{background-color:grey}')),
-          tags$style(HTML('#AddNew{color:white}')),
-          actionButton("AddNew",
-                       "Create New Model")
+          shiny::tags$style(shiny::HTML('#AddNew{background-color:grey}')),
+          shiny::tags$style(shiny::HTML('#AddNew{color:white}')),
+          shiny::actionButton("AddNew", "Create New Model")
         )
       )
     }
     rendered_element
   })
   
-  
   # Add question to setup page.
-  output$Question <- renderUI({
+  output$Question <- shiny::renderUI({
     if (questionValues$question_number < nrow(setup_questions)+1 && questionValues$question_number>=1){
-    HTML(
-      paste(
-        h3(
-          strong(
-            paste0(questionValues$question_number, ". ", setup_questions[questionValues$question_number,]$node_name)
+      shiny::HTML(
+        paste(
+          shiny::h3(
+            shiny::strong(
+              paste0(questionValues$question_number, ". ", setup_questions[questionValues$question_number,]$node_name)
             )
           ),
-        h4("Please answer the following question:"),
-        h4(setup_questions[questionValues$question_number,]$node_question)))
+          shiny::h4("Please answer the following question:"),
+          shiny::h4(setup_questions[questionValues$question_number,]$node_question)
+        )
+      )
     } else {
-      h4(strong("All questions answered. Please give model a name:"))
+      shiny::h4(shiny::strong("All questions answered. Please give model a name:"))
     }
   })
   
   # Update question when next question button is pressed
-  observeEvent(input$NextQuestion, {
-    
+  shiny::observeEvent(input$NextQuestion, {
     # collect next node question
     next_node_name <- setup_questions[questionValues$question_number,]$node_name
-    
     # collect information on node
     next_node <- node.definitions %>%
-                 filter(node_name==next_node_name)
+      dplyr::filter(.rlang$node_name==next_node_name)
     
     # add state to answer vector
     # if radio button, add to radio button answers
     if (next_node$type == "radiobuttons") {
       answers$radio_answers[[next_node$node_name]] = input$StateSelection
-      
     } else if (next_node$type == "slider") {
       # collcet input probabilities and check the sum
+      # JR note : collect_slider_inputs is DIAGRAM defined function
       input.probabilities <- collect_slider_inputs(next_node$node_name)
-      prob.summary <- input.probabilities %>% summarise(prob_sum=sum(probability))
+      prob.summary <- input.probabilities %>% 
+        dplyr::summarise(prob_sum=sum(probability))
       
       # if sum of probability is not 100 alert user and break out of function
       if (prob.summary$prob_sum != 100){
         errorMsg <- paste("Probabilities for '", next_node$node_name, "' do not add up to to 100%")
         shinyalert::shinyalert("Error:", errorMsg, type = "error")
-        
         return()
-        
       } else {
         answers$slider_answers[[next_node$node_name]] = input.probabilities
       }
     } else if (next_node$type == "BooleanSlider"){
+      # JR note : collect_boolean_slider_inputs is DIAGRAM defined function
       input.probabilities<- collect_boolean_slider_inputs(next_node$node_name)
       answers$boolean_slider_answers[[next_node$node_name]] = input.probabilities
     }
-    
-    
-    
     # update question number
     questionValues$question_number <- questionValues$question_number + 1
-    
     # update progress bar
-    updateProgressBar(
+    shinyWidgets::updateProgressBar(
       session=session,
       id="Question_Progress",
       value=min(questionValues$question_number,nrow(setup_questions)),
@@ -691,15 +677,12 @@ shinyServer(function(input, output, session) {
   })
   
   # Update questions when back button is pressed
-  observeEvent(input$BackButton, {
-    
+  shiny::observeEvent(input$BackButton, {
     if (questionValues$question_number > 1) {
       # collect input type, whether radio button or slider
       input_type <- setup_questions[questionValues$question_number,]$type
-      
       # collect node name
       node_name <- setup_questions[questionValues$question_number,]$node_name
-      
       # remove last answer
       # if radio button input, remove from radio button list
       if (input_type == "radiobuttons"){
@@ -707,15 +690,12 @@ shinyServer(function(input, output, session) {
       } else if (input_type == "slider"){
         answers$slider_answers[[node_name]] = NULL
       }
-      
       # update question number
       questionValues$question_number <- questionValues$question_number - 1
     }
-    
     if (questionValues$question_number >= 1) {
-      
       # update progress bar
-      updateProgressBar(
+      shinyWidgets::updateProgressBar(
         session=session,
         id="Question_Progress",
         value=questionValues$question_number,
@@ -725,19 +705,16 @@ shinyServer(function(input, output, session) {
   })
   
   # Save model to memory
-  observeEvent(input$SaveModel, {
+  shiny::observeEvent(input$SaveModel, {
     # Check if model has been named correctly
     if (input$CustomisedModelName == "") {
       errorMsg <-"Please give your custom model a name."
       shinyalert::shinyalert("Error:", errorMsg, type = "error")
-      
       return()
     }
-    
     if (input$CustomisedModelName %in% names(CustomModels$custom_networks)){
       errorMsg <-"You have already used this name for another custom model."
       shinyalert::shinyalert("Error:", errorMsg, type = "error")
-      
       return()
     }
     # create custom model and save to memory
@@ -745,15 +722,16 @@ shinyServer(function(input, output, session) {
     if(is.null(dim(answers$radio_answers))) {
       custom_model <- stable.fit
     }
-    else {custom_model <- mutilated(stable.fit, evidence=answers$radio_answers)}
+    else {custom_model <- bnlearn::mutilated(stable.fit, evidence=answers$radio_answers)}
     
     # second, update states with inputs as sliders
     for (node in names(answers$slider_answers)) {
       input.probability.df <- answers$slider_answers[[node]]
       model.probability.df <- as.data.frame(custom_model[[node]]$prob)
       if ("Var1" %in% colnames(model.probability.df)){
-        model.probability.df <- rename(model.probability.df, !!node:=Var1)
+        model.probability.df <- dplyr::rename(model.probability.df, !!node:=Var1)
       }
+      # JR note : update_probability is a DIAGRAM defined function
       model.probability.table <- update_probability(node, model.probability.df, input.probability.df)
       # update probability table for node
       custom_model[[node]] = model.probability.table
@@ -761,38 +739,41 @@ shinyServer(function(input, output, session) {
     # third update states with boolean sliders as inputs
     for (node in names(answers$boolean_slider_answers)) {
       input.probability.df <- answers$boolean_slider_answers[[node]]
-      model.probability.df <- as.data.frame(custom_model[[node]]$prob) %>% rename(!!node:=Var1)
-
+      model.probability.df <- as.data.frame(custom_model[[node]]$prob) %>% dplyr::rename(!!node:=Var1)
       model.probability.table <- update_probability(node, model.probability.df, input.probability.df)
-      
       # update probability table for node
       custom_model[[node]] = model.probability.table
     }
-    
-    
 
     # Add custom network to memory 
     CustomModels$custom_networks[[input$CustomisedModelName]] = custom_model
     CustomPolicies$models[[input$CustomisedModelName]] = list('Base'=custom_model)
 
     # calculate utility and store
+    # JR note calculate_utility is a DIAGRAM defined function
     utility <- calculate_utility(custom_model)
-    CustomModels$base_utility.df <- CustomModels$base_utility.df %>% add_row(name=input$CustomisedModelName,
-                                                                             Intellectual_Control=utility$Intellectual_Control,
-                                                                             Renderability=utility$Renderability)
+    CustomModels$base_utility.df <- CustomModels$base_utility.df %>% 
+      dplyr::add_row(
+        name=input$CustomisedModelName,
+        Intellectual_Control=utility$Intellectual_Control,
+        Renderability=utility$Renderability
+      )
     # TODO: Why do we have two structures saving the same information?
-    CustomPolicies$archiveList[[input$CustomisedModelName]] <- tibble(name=input$CustomisedModelName,
-                                                                      Intellectual_Control=utility$Intellectual_Control,
-                                                                      Renderability=utility$Renderability)
+    CustomPolicies$archiveList[[input$CustomisedModelName]] <- 
+      tibble::tibble(
+        name=input$CustomisedModelName,
+        Intellectual_Control=utility$Intellectual_Control,
+        Renderability=utility$Renderability
+      )
     
     # setting choices for the drop down list in the Simple view Node customisation tab
-    customModelChoices <- CustomModels$base_utility.df %>% select(name)
-    updateSelectInput(session, 'customModelSelection', choices=customModelChoices)
-    updateSelectInput(session, "model_version", label="Select Model", choices=customModelChoices)
+    customModelChoices <- CustomModels$base_utility.df %>% dplyr::select(name)
+    shiny::updateSelectInput(session, 'customModelSelection', choices=customModelChoices)
+    shiny::updateSelectInput(session, "model_version", label="Select Model", choices=customModelChoices)
 
     # set choices for the drop down list in the Report ans sens tab
-    updateSelectInput(session, 'reportTabModelSelection', choices=CustomModels$base_utility.df$name)
-    updateSelectInput(session, 'sensTabModelSelection', choices=CustomModels$base_utility.df$name)
+    shiny::updateSelectInput(session, 'reportTabModelSelection', choices=CustomModels$base_utility.df$name)
+    shiny::updateSelectInput(session, 'sensTabModelSelection', choices=CustomModels$base_utility.df$name)
   })
   
   # plot utility
@@ -1835,5 +1816,5 @@ shinyServer(function(input, output, session) {
     )
     #ggplot(hard.test(CustomModels$custom_networks[[input$sensTabModelSelection]]), aes(R_diff,IC_diff)) + geom_jitter() + theme_bw() + scale_shape(solid = FALSE)
   })
-})
+}
 
