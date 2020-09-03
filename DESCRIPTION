@@ -1,0 +1,32 @@
+Package: diagram
+Title: Package For National Archives Diagram App
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Jamie",
+           family = "Owen",
+           role = c("aut", "cre"),
+           email = "jamie@jumpingrivers.com")
+Description: This package provides all the necessary pieces for running the shiny application diagram.
+    It was created as part of the effort to improve reproducability and maintainability of the tool.
+License: `use_mit_license()`, `use_gpl3_license()` or friends to
+    pick a license
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Imports: 
+    shiny,
+    rintrojs,
+    networkD3,
+    shinydashboard,
+    gRbase,
+    gRain,
+    shinysky,
+    shinyWidgets,
+    shinyjs,
+    shinyalert,
+    plotly,
+    DT,
+    V8
+Remotes:
+    AnalytixWare/ShinySky
