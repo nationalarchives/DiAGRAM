@@ -6,27 +6,35 @@ Authors@R:
            family = "Owen",
            role = c("aut", "cre"),
            email = "jamie@jumpingrivers.com")
-Description: This package provides all the necessary pieces for running the shiny application diagram.
-    It was created as part of the effort to improve reproducability and maintainability of the tool.
+Description: This package provides all the necessary pieces
+    for running the shiny application diagram.  It was created as part of
+    the effort to improve reproducability and maintainability of the
+    tool.
 License: `use_mit_license()`, `use_gpl3_license()` or friends to
     pick a license
+Imports: 
+    BiocManager,
+    bnlearn,
+    data.table,
+    DT,
+    gRain,
+    graph,
+    gRbase,
+    gridExtra,
+    networkD3,
+    plotly,
+    Rgraphviz,
+    rintrojs,
+    shiny,
+    shinyalert,
+    shinydashboard,
+    shinyjs,
+    shinysky,
+    shinyWidgets,
+    V8
+Remotes:
+    AnalytixWare/ShinySky
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
-Imports: 
-    shiny,
-    rintrojs,
-    networkD3,
-    shinydashboard,
-    gRbase,
-    gRain,
-    shinysky,
-    shinyWidgets,
-    shinyjs,
-    shinyalert,
-    plotly,
-    DT,
-    V8
-Remotes:
-    AnalytixWare/ShinySky
