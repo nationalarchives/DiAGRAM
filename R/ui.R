@@ -6,24 +6,24 @@
 
 # @author: Stephen James Krol, Monash University, Melbourne
 # @email: stephen.james.krol@gmail.com
-
-library(shiny)
-library(rintrojs)
-library(networkD3)
-library(shinydashboard)
-library(gRbase)
-library(gRain)
-library(shinysky)
-library(shinyWidgets)
-library(shinyjs)
-library(shinyalert)
-library(tidyverse)
-library(plotly)
-library(DT)
-library(V8)
-
-options(repos = BiocManager::repositories())
-nquestions <- read_csv("setup_questions.csv") %>% nrow()
+# 
+# library(shiny)
+# library(rintrojs)
+# library(networkD3)
+# library(shinydashboard)
+# library(gRbase)
+# library(gRain)
+# library(shinysky)
+# library(shinyWidgets)
+# library(shinyjs)
+# library(shinyalert)
+# library(tidyverse)
+# library(plotly)
+# library(DT)
+# library(V8)
+# 
+# options(repos = BiocManager::repositories())
+# nquestions <- read_csv("setup_questions.csv") %>% nrow()
 
 #' app_ui
 #' 

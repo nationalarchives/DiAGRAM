@@ -10,20 +10,20 @@
 # @author: Sidhant Bhatia, Monash University, Malaysia
 # @email: sidhant3b@gmail.com
 
-library(shiny)
-library(graph)
-library(bnlearn)
-library(networkD3)
-library(BiocManager)
-library(Rgraphviz)
-library(tidyverse)
-library(shinyjs)
-library(shinyalert)
-library(gridExtra)
-library(data.table)
+# library(shiny)
+# library(graph)
+# library(bnlearn)
+# library(networkD3)
+# library(BiocManager)
+# library(Rgraphviz)
+# library(tidyverse)
+# library(shinyjs)
+# library(shinyalert)
+# library(gridExtra)
+# library(data.table)
 
-options(repos = BiocManager::repositories())
-options(shiny.fullstacktrace = FALSE)
+# options(repos = BiocManager::repositories())
+# options(shiny.fullstacktrace = FALSE)
 
 # TODO: policy plotting should be one reactive variable
 
@@ -31,15 +31,24 @@ options(shiny.fullstacktrace = FALSE)
 #' 
 #' @param input,output,session Internal parameters for {shiny}. 
 #'     DO NOT REMOVE.
-#' 
-#' @importFrom bnlearn read.bif graphviz.plot mutilated
+#' @importFrom plotlt renderPlotly plot_ly
+#' @importFrom utils zip
+#' @importFrom grDevices png dev.off
+#' @importFrom bnlearn read.bif graphviz.plot mutilated as.grain bn.fit.barchart write.bif
+#' @importFrom gRain querygrain
 #' @importFrom readr read_csv
-#' @importFrom dplyr arrange filter select rename add_row
+#' @importFrom ggplot2 ggplot geom_bar aes xlab geom_hline stat_summary geom_text theme_light theme element_blank element_text scale_fill_manual position_stack
+#' @importFrom dplyr arrange filter select rename add_row pivot_longer summarise
 #' @importFrom shiny reactiveValues updateSelectInput plotOutput renderUI tagList strong renderTable
 #' @importFrom shinydashboard updateTabItems
 #' @importFrom shinyWidgets sliderTextInput updateProgressBar
-#' @importFrom tibble tibble
+#' @importFrom shinyalert shinyalert
+#' @importFrom tibble tibble rownames_to_column
 #' @importFrom rlang .data
+#' @importFrom shinyjs show hide enable
+#' @importFrom shinyksy renderHotable hot.to.df
+#' @importFrom stringr str_remove
+#' @importFrom DT datatable renderDataTable
 app_server = function(input, output, session) {
   
   # -------------------- FUNCTIONS --------------------
@@ -650,7 +659,7 @@ app_server = function(input, output, session) {
       # JR note : collect_slider_inputs is DIAGRAM defined function
       input.probabilities <- collect_slider_inputs(next_node$node_name)
       prob.summary <- input.probabilities %>% 
-        dplyr::summarise(prob_sum=sum(probability))
+        dplyr::summarise(prob_sum=sum(.data$probability))
       
       # if sum of probability is not 100 alert user and break out of function
       if (prob.summary$prob_sum != 100){
@@ -777,50 +786,50 @@ app_server = function(input, output, session) {
   })
   
   # plot utility
-  output$BasicUtilityComparison <- renderPlot({
+  output$BasicUtilityComparison <- shiny::renderPlot({
     
     CustomModels$base_utility.df %>%
-      mutate(utility=Intellectual_Control+Renderability) %>% 
-      pivot_longer(c(Intellectual_Control, Renderability), names_to="node") %>%
-      ggplot(aes(x=reorder(name, -value), fill=node, y=value*50)) +
-      geom_bar(position="stack", stat="identity") + xlab("Policy") + ylab("Score") +
-      geom_hline(yintercept=0.1013*50, linetype="dashed", color = "black") +
-      geom_hline(yintercept=1.4255*50, linetype="dashed", color = "black") +
+      dplyr::mutate(utility = .data$Intellectual_Control + .data$Renderability) %>% 
+      dplyr::pivot_longer(c( .data$Intellectual_Control, .data$Renderability), names_to="node") %>%
+      ggplot2::ggplot(
+        ggplot2::aes(x=reorder(name, -value), fill=node, y=value*50)
+      ) +
+      ggplot2::geom_bar(position="stack", stat="identity") + 
+      ggplot2::xlab("Policy") + ggplot2::ylab("Score") +
+      ggplot2::geom_hline(yintercept=0.1013*50, linetype="dashed", color = "black") +
+      ggplot2::geom_hline(yintercept=1.4255*50, linetype="dashed", color = "black") +
       #geom_rect(aes(xmin=0, xmax=Inf, ymin=0, ymax=0.3), alpha=0.1, fill="Red") +
       #geom_rect(aes(xmin=0, xmax=Inf, ymin=1.3, ymax=Inf), alpha=0.1, fill="Green") +
       #geom_text(aes(1,0.3,label = "Min", vjust = -1)) + geom_text(aes(1,1.3,label = "Max", vjust = -1)) +
-      stat_summary(fun.y = sum, aes(label = format(round(..y..,0),nsmall=0), group = name),
+      ggplot2::stat_summary(fun.y = sum, ggplot2::aes(label = format(round(..y..,0),nsmall=0), group = name),
                    geom = "text", size=7, fontface="bold", vjust=-0.25) +
-      geom_text(aes(label=format(round(value*50,0),nsmall=0)), size=5, colour="white", 
-                fontface = "bold", position = position_stack(vjust = 0.5)) + theme_light() + 
-      theme(panel.border = element_blank(), text = element_text(size =20), legend.position="top", legend.title = element_blank())  +
-      scale_fill_manual(values=c("#FF6E3A","#8400CD")) #colour blind scheme
+      ggplot2::geom_text(ggplot2::aes(label=format(round(value*50,0),nsmall=0)), size=5, colour="white", 
+                fontface = "bold", position = ggplot2::position_stack(vjust = 0.5)) + 
+      ggplot2::theme_light() + 
+      ggplot2::theme(panel.border = ggplot2::element_blank(), text = ggplot2::element_text(size =20), legend.position="top", legend.title = ggplot2::element_blank())  +
+      ggplot2::scale_fill_manual(values=c("#FF6E3A","#8400CD")) #colour blind scheme
   })
   
   # Reset so new custom model can be created
-  observeEvent(input$AddNew, {
-    
+  shiny::observeEvent(input$AddNew, {
     # reset question number to 1
     questionValues$question_number = 1
-    
     # update radio buttons
-    updateRadioButtons(session, "StateSelection", choices=first_states$node_state)
-    
+    shiny::updateRadioButtons(session, "StateSelection", choices=first_states$node_state)
     # update progress bar
-    updateProgressBar(
+    shinyWidgets::updateProgressBar(
       session=session,
       id="Question_Progress",
       value=questionValues$question_number,
       total=nrow(setup_questions)
     )
-    
   })
   
   # upload custom model
   
-  observeEvent(input$uploadCustomModel, {
+  shiny::observeEvent(input$uploadCustomModel, {
     
-    req(input$customModel)
+    shiny::req(input$customModel)
     
     if (is.null(input$customModel)){
       errorMsg <-"You have not uploaded a model."
@@ -842,53 +851,58 @@ app_server = function(input, output, session) {
       }
       
       # load model into memory and calculate base utility
-      custom_model <- read.bif(input$customModel$datapath)
+      custom_model <- bnlearn::read.bif(input$customModel$datapath)
       utility <- calculate_utility(custom_model)
       
       
-      CustomModels$base_utility.df <- CustomModels$base_utility.df %>% add_row(name=input$uploadName,
-                                                                         Intellectual_Control=utility$Intellectual_Control,
-                                                                         Renderability=utility$Renderability)
+      CustomModels$base_utility.df <- CustomModels$base_utility.df %>% 
+        dplyr::add_row(
+          name=input$uploadName,
+          Intellectual_Control=utility$Intellectual_Control,
+          Renderability=utility$Renderability
+        )
       
-      CustomPolicies$archiveList[[input$uploadName]] <- tibble(name=input$uploadName,
-                                                                        Intellectual_Control=utility$Intellectual_Control,
-                                                                        Renderability=utility$Renderability)
+      CustomPolicies$archiveList[[input$uploadName]] <- tibble::tibble(
+        name=input$uploadName,
+        Intellectual_Control=utility$Intellectual_Control,
+        Renderability=utility$Renderability
+      )
       
       CustomModels$custom_networks[[input$uploadName]] <- custom_model
       CustomPolicies$models[[input$uploadName]] = list('Base'=custom_model)
       
       # setting choices for the drop down list in the Simple view Node customisation tab
       customModelChoices <- CustomModels$base_utility.df %>% select(name)
-      updateSelectInput(session, 'customModelSelection', choices=customModelChoices)
-      updateSelectInput(session, "model_version", label="Select Model", choices=customModelChoices)
+      shiny::updateSelectInput(session, 'customModelSelection', choices=customModelChoices)
+      shiny::updateSelectInput(session, "model_version", label="Select Model", choices=customModelChoices)
       
       # set choices for the drop down list in the Report and sens tab
-      updateSelectInput(session, 'reportTabModelSelection', choices=CustomModels$base_utility.df$name)
-      updateSelectInput(session, 'sensTabModelSelection', choices=CustomModels$base_utility.df$name)
+      shiny::updateSelectInput(session, 'reportTabModelSelection', choices=CustomModels$base_utility.df$name)
+      shiny::updateSelectInput(session, 'sensTabModelSelection', choices=CustomModels$base_utility.df$name)
     }
   })
   
   # SIMPLE POLICY
   
   # Plot the policy comparison stacked bar chart
-  output$policyTabUtilityScorePlot <- renderPlot(
-    {
-      CustomPolicies$archiveList[[input$customModelSelection]] %>%
-        mutate(utility=Intellectual_Control+Renderability) %>% 
-        pivot_longer(c(Intellectual_Control, Renderability), names_to="node") %>%
-        ggplot(aes(x=reorder(name, -value), fill=node, y=value*50)) +
-        geom_bar(position="stack", stat="identity") + xlab("Policy") + ylab("Score") +
-        geom_hline(yintercept=0.1013*50, linetype="dashed", color = "black") +
-        geom_hline(yintercept=1.4255*50, linetype="dashed", color = "black") +
+  output$policyTabUtilityScorePlot <- shiny::renderPlot({
+    CustomPolicies$archiveList[[input$customModelSelection]] %>%
+      dplyr::mutate(utility=Intellectual_Control+Renderability) %>% 
+      dplyr::pivot_longer(c(Intellectual_Control, Renderability), names_to="node") %>%
+      ggplot2::ggplot(ggplot2::aes(x=reorder(name, -value), fill=node, y=value*50)) +
+      ggplot2::geom_bar(position="stack", stat="identity") +
+      ggplot2::xlab("Policy") + ggplot2::ylab("Score") +
+      ggplot2::geom_hline(yintercept=0.1013*50, linetype="dashed", color = "black") +
+      ggplot2::geom_hline(yintercept=1.4255*50, linetype="dashed", color = "black") +
         #geom_text(aes(1,0.3,label = "Min", vjust = -1)) + geom_text(aes(1,1.3,label = "Max", vjust = -1)) +
-        stat_summary(fun.y = sum, aes(label = format(round(..y..,0),nsmall=0), group = name),
+      ggplot2::stat_summary(fun.y = sum, ggplot2::aes(label = format(round(..y..,0),nsmall=0), group = name),
                      geom = "text", size=7, fontface="bold", vjust=-0.25) +
-        geom_text(aes(label=format(round(value*50,0),nsmall=0)), size=5, colour="white", 
-                  fontface = "bold", position = position_stack(vjust = 0.5)) + theme_light() + 
-        theme(panel.border = element_blank(), text = element_text(size =20), legend.position="top", legend.title = element_blank())  +
-        scale_fill_manual(values=c("#FF6E3A","#8400CD")) #colour blind scheme
-    }
-  )
+      ggplot2::geom_text(aes(label=format(round(value*50,0),nsmall=0)), size=5, colour="white", 
+                  fontface = "bold", position = ggplot2::position_stack(vjust = 0.5)) +
+      ggplot2::theme_light() + 
+      ggplot2::theme(panel.border = ggplot2::element_blank(), text = ggplot2::element_text(size =20), legend.position="top", legend.title = ggplot2::element_blank())  +
+      ggplot2::position_stackscale_fill_manual(values=c("#FF6E3A","#8400CD")) #colour blind scheme
+  })
   
   # OAIS Entities list
   OAISentities <- node.definitions$OAIS_Entity
@@ -896,16 +910,17 @@ app_server = function(input, output, session) {
   #remove NA (Renderability nad Intellectual Control are blanks)
   OAISentities <- OAISentities[-which(is.na(OAISentities))]
   
-  updateSelectInput(session, 
-                    "customOaisEntitySelection",
-                    choices = OAISentities, 
-                    selected = 'None')
+  updateSelectInput(
+    session, 
+    "customOaisEntitySelection",
+    choices = OAISentities, 
+    selected = 'None'
+  )
   
   uiNode <- reactiveValues(checklist=c())
   
-  observeEvent(input$customOaisEntitySelection, {
+  shiny::observeEvent(input$customOaisEntitySelection, {
     oaisSelected <- TRUE
-    
     if(length(input$customOaisEntitySelection) == 1 & input$customOaisEntitySelection[1] == 'None'){
       uiNode$checklist <- node.definitions$node_name
       #remove.outcomes <- node.definitions$node_name[-which(node.definitions$node_name %in% c("Intellectual_Control","Renderability"))]
@@ -916,17 +931,20 @@ app_server = function(input, output, session) {
     else{
       uiNode$checklist <- c()
       for(oaisEntity in input$customOaisEntitySelection){
-        
         # display error if 'None' is still selected alongwith other OAIS entities. 
         if(oaisEntity == 'None'){
-          shinyalert::shinyalert("Error:", "You can't select 'None' and other OAIS Entities together. If you wish to view features within an OAIS
-                    entity, please click on 'None' and delete/backspace, followed by selection of the desired OAIS entities", type = "error")
+          shinyalert::shinyalert(
+            "Error:", 
+            "You can't select 'None' and other OAIS Entities together. If you wish to view features within an OAIS
+            entity, please click on 'None' and delete/backspace, followed by selection of the desired OAIS entities",
+            type = "error"
+          )
           return()
         }
         
         tmp <- node.definitions %>%
-          filter(OAIS_Entity==oaisEntity) %>%
-          select(node_name)
+          dplyr::filter(.data$OAIS_Entity==oaisEntity) %>%
+          dplyr::select(.data$node_name)
         
         uiNode$checklist <- c(tmp$node_name, uiNode$checklist)
       }
@@ -935,27 +953,30 @@ app_server = function(input, output, session) {
     # auto-select all the nodes in checklist if any 'non-None' OAIS entity is selected
     if(oaisSelected == TRUE){
       # update the checklist options with nodes list
-      updateCheckboxGroupInput(session,
-                               "policyTabNodesChecklist",
-                               label=NULL,
-                               choices = uiNode$checklist, 
-                               selected = uiNode$checklist)
+      shiny::updateCheckboxGroupInput(
+        session,
+        "policyTabNodesChecklist",
+        label=NULL,
+        choices = uiNode$checklist, 
+        selected = uiNode$checklist
+      )
     }
     else{
-      updateCheckboxGroupInput(session,
-                               "policyTabNodesChecklist",
-                               label=NULL,
-                               choices = uiNode$checklist)
+      shiny::updateCheckboxGroupInput(
+        session,
+        "policyTabNodesChecklist",
+        label=NULL,
+        choices = uiNode$checklist
+      )
     }
-    
   })
   
-  currModel <- reactiveValues(model=stable.fit)
-  uiNodeSlider <- reactiveValues(node=c())
-  nodeStateProgress <- reactiveValues(progress=0)
+  currModel <- shiny::reactiveValues(model=stable.fit)
+  uiNodeSlider <- shiny::reactiveValues(node=c())
+  nodeStateProgress <- shiny::reactiveValues(progress=0)
   
   # make the necessary changes when the model is changed from dropdown menu
-  observeEvent(input$customModelSelection,{
+  shiny::observeEvent(input$customModelSelection,{
     # list the nodes checklist dynamically based on model instead of hardcoding
     
     if(input$customModelSelection == 'Default'){
@@ -970,31 +991,38 @@ app_server = function(input, output, session) {
     uiNodeSlider$node <- c()
     
     #reset the checklist
-    updateCheckboxGroupInput(session,
-                             "policyTabNodesChecklist",
-                             label=NULL,
-                             choices = uiNode$checklist, 
-                             selected = c())
+    shiny::updateCheckboxGroupInput(
+      session,
+      "policyTabNodesChecklist",
+      label=NULL,
+      choices = uiNode$checklist, 
+      selected = c()
+    )
     
     #reset OAIS
-    updateSelectInput(session, 
-                      "customOaisEntitySelection",
-                      choices = OAISentities, 
-                      selected = 'None')
+    shiny::updateSelectInput(
+      session, 
+      "customOaisEntitySelection",
+      choices = OAISentities, 
+      selected = 'None'
+    )
     
     #set the remove policy options 
-    updateSelectInput(session, 
-                      "policyTabPolicyRemove",
-                      choices = CustomPolicies$archiveList[[input$customModelSelection]]$name[-1])
+    shiny::updateSelectInput(
+      session, 
+      "policyTabPolicyRemove",
+      choices = CustomPolicies$archiveList[[input$customModelSelection]]$name[-1]
+    )
     
-    updateSelectInput(session, 
-                      "reportTabPolicyRemove",
-                      choices = CustomPolicies$archiveList[[input$customModelSelection]]$name[-1])
-    
+    shiny::updateSelectInput(
+      session, 
+      "reportTabPolicyRemove",
+      choices = CustomPolicies$archiveList[[input$customModelSelection]]$name[-1]
+    )
   })
   
   # observe the input for checklist to update uiNodeSlider$node with respective states
-  observeEvent(input$policyTabNodesChecklist, {
+  shiny::observeEvent(input$policyTabNodesChecklist, {
     i <- 1
     uiNodeSlider$node <- c()
     nodeStateProgress$progress <- 1
@@ -1003,20 +1031,22 @@ app_server = function(input, output, session) {
       
       ## TODO: change this to list of list (of nodes with node state) to avoid having to create a new list for every node
       nodeStates <- state.definitions %>%
-        filter(node_name==node) %>%
-        select(-node_name) 
+        dplyr::filter(.data$node_name==node) %>%
+        dplyr::select(-.data$node_name) 
       
-      nodeStateType <- node.definitions %>% filter(node_name==node) %>% select(type)
+      nodeStateType <- node.definitions %>% 
+        dplyr::filter(.data$node_name==node) %>%
+        dplyr::select(.data$type)
       primary_state <- nodeStates$node_state[1]
       label <- paste(primary_state, "%")
       if(nodeStateType == 'BooleanSlider'){
-        nodeStateSlider <- sliderInput(node, label, min = 0, max = 100, step = 1, value = 0, post = "%")
+        nodeStateSlider <- shiny::sliderInput(node, label, min = 0, max = 100, step = 1, value = 0, post = "%")
       }
       else if(nodeStateType == "slider"){
         nodeStateSlider <- create_sliders(node, nodeStates$node_state)
       }
       else{ ## radio buttons
-        nodeStateSlider <- radioButtons(node, label="", choices=nodeStates$node_state)
+        nodeStateSlider <- shiny::radioButtons(node, label="", choices=nodeStates$node_state)
       }
       
       # remove the _ from the node to ease readability
@@ -1024,7 +1054,7 @@ app_server = function(input, output, session) {
       nodeLabel <- paste(nodeLabel[[1]], collapse = ' ')
       
       # list of nodes with corresponding state sliders
-      uiNodeSlider$node[[i]] <- div(h4(nodeLabel), nodeStateSlider )
+      uiNodeSlider$node[[i]] <- shiny::div(shiny::h4(nodeLabel), nodeStateSlider )
       i <- i+1
     }
   })
@@ -1035,7 +1065,7 @@ app_server = function(input, output, session) {
   # For this reason, checks (for length !=0) have been added to update content when no node is selected.
   
   # display the slider inputs for each selected node (as a progress bar walkthrough)
-  output$policyTabNodesSlider <- renderUI({
+  output$policyTabNodesSlider <- shiny::renderUI({
     # Enabling/disabling buttons based on progress
     
     # if nothing is selected everything is hidden and disabled
@@ -1078,12 +1108,16 @@ app_server = function(input, output, session) {
   })
   
   # method to check for the correctness of the input -- specifically for slider input of all states == 100
+  #' @importFrom dplyr filter select
+  #' @importFrom rlang .data
   checkForInputCorrectness <- function(node) {
     nodeStates <- state.definitions %>%
-      filter(node_name==node) %>%
-      select(-node_name)
+      dplyr::filter(.data$node_name==node) %>%
+      dplyr::select(-.data$node_name)
     
-    nodeStateType <- node.definitions %>% filter(node_name==node) %>% select(type)
+    nodeStateType <- node.definitions %>%
+      dplyr::filter(.data$node_name==node) %>%
+      dplyr::select(.data$type)
     
     # sum to 100 is important when the input type is slider. For boolean slider and radio buttons, it is always equal to 100
     if(nodeStateType == 'slider'){
@@ -1104,19 +1138,16 @@ app_server = function(input, output, session) {
         shinyalert::shinyalert("Error:", errorMsg, type = "error")
         
         return(FALSE)
-      }
-      else{
+      } else{
         return(TRUE)
       }
-    }
-    else {
+    } else {
       return(TRUE)
     }
-    
   }
   
   
-  observeEvent(input$SimpleViewPolicyNext, {
+  shiny::observeEvent(input$SimpleViewPolicyNext, {
     node <- input$policyTabNodesChecklist[[nodeStateProgress$progress]]
     
     if(checkForInputCorrectness(node) == TRUE){
@@ -1125,15 +1156,16 @@ app_server = function(input, output, session) {
     
   })
   
-  observeEvent(input$SimpleViewPolicyPrevious, {
+  shiny::observeEvent(input$SimpleViewPolicyPrevious, {
     nodeStateProgress$progress <- nodeStateProgress$progress - 1
   })
   
   # Add policy action
-  observeEvent(input$SimpleViewAddPolicy, {
+  shiny::observeEvent(input$SimpleViewAddPolicy, {
     
     # check for input correctness of the last selected node
     lastNode <- input$policyTabNodesChecklist[[nodeStateProgress$progress]]
+    # JR note checkForInputCorrectness is a DIAGRAM defined function
     if(checkForInputCorrectness(lastNode) == FALSE){
       return()
     }
@@ -1150,12 +1182,11 @@ app_server = function(input, output, session) {
       }
     }
     
-    
     for(node in input$policyTabNodesChecklist){
       # conditional probability table (cpt) of each node
       cpt <- as.data.frame(currModel$model[[node]]$prob)
       if ("Var1" %in% colnames(cpt)){
-        cpt<- rename(cpt, !!node:=Var1)
+        cpt<- dplyr::rename(cpt, !!node:=Var1)
       }
       
       ## For debugging
@@ -1164,10 +1195,12 @@ app_server = function(input, output, session) {
       # print("----------------------\n")
 
       nodeStates <- state.definitions %>%
-        filter(node_name==node) %>%
-        select(-node_name)
+        dplyr::filter(.data$node_name==node) %>%
+        dplyr::select(-.data$node_name)
       
-      nodeStateType <- node.definitions %>% filter(node_name==node) %>% select(type)
+      nodeStateType <- node.definitions %>% 
+        dplyr::filter(node_name==node) %>%
+        dplyr::select(type)
       primary_state <- nodeStates$node_state[1]
       # extract and set the values in CPT based on the input type -- BooleanSlider, slider, radiobutton
       if(nodeStateType == 'BooleanSlider'){
@@ -1226,24 +1259,30 @@ app_server = function(input, output, session) {
     
     # update reactive policy list
     CustomPolicies$archiveList[[input$customModelSelection]] <- CustomPolicies$archiveList[[input$customModelSelection]] %>%
-      add_row(name=input$SimpleViewPolicyName,
-              Intellectual_Control=currPolicyUtility$Intellectual_Control,
-              Renderability=currPolicyUtility$Renderability)
+      dplyr::add_row(
+        name=input$SimpleViewPolicyName,
+        Intellectual_Control=currPolicyUtility$Intellectual_Control,
+        Renderability=currPolicyUtility$Renderability
+      )
     
     CustomPolicies$models[[input$customModelSelection]][[input$SimpleViewPolicyName]] <- currModel$model
     
     # set the list of policies in drop down
-    updateSelectInput(session, 
-                      "policyTabPolicyRemove",
-                      choices = CustomPolicies$archiveList[[input$customModelSelection]]$name[-1])
+    shiny::updateSelectInput(
+      session, 
+      "policyTabPolicyRemove",
+      choices = CustomPolicies$archiveList[[input$customModelSelection]]$name[-1]
+    )
     
-    updateSelectInput(session, 
-                      "reportTabPolicyRemove",
-                      choices = CustomPolicies$archiveList[[input$customModelSelection]]$name[-1])
+    shiny::updateSelectInput(
+      session, 
+      "reportTabPolicyRemove",
+      choices = CustomPolicies$archiveList[[input$customModelSelection]]$name[-1]
+    )
     
   })
   #Add reset button
-  observeEvent(input$SimplePolicyReset, {
+  shiny::observeEvent(input$SimplePolicyReset, {
     if(input$customModelSelection == 'Default'){
       currModel$model <- stable.fit
     }
@@ -1256,80 +1295,89 @@ app_server = function(input, output, session) {
     uiNodeSlider$node <- c()
     
     #reset check boxes
-    updateCheckboxGroupInput(session,
-                             "policyTabNodesChecklist",
-                             label=NULL,
-                             choices = uiNode$checklist, 
-                             selected = c())
+    shiny::updateCheckboxGroupInput(
+      session,
+      "policyTabNodesChecklist",
+      label=NULL,
+      choices = uiNode$checklist, 
+      selected = c()
+    )
     
     #reset OAIS
-    updateSelectInput(session, 
-                      "customOaisEntitySelection",
-                      choices = OAISentities, 
-                      selected = 'None')
+    shiny::updateSelectInput(
+      session, 
+      "customOaisEntitySelection",
+      choices = OAISentities, 
+      selected = 'None'
+    )
   })
   
   #remove policy
-  observeEvent(input$RemovePolicy, {
+  shiny::observeEvent(input$RemovePolicy, {
     
     CustomPolicies$archiveList[[input$customModelSelection]] <- CustomPolicies$archiveList[[input$customModelSelection]] %>% filter(name != input$policyTabPolicyRemove)
     
-    updateSelectInput(session, 
-                      "policyTabPolicyRemove",
-                      choices = CustomPolicies$archiveList[[input$customModelSelection]]$name[-1])
+    shiny::updateSelectInput(
+      session, 
+      "policyTabPolicyRemove",
+      choices = CustomPolicies$archiveList[[input$customModelSelection]]$name[-1]
+    )
     
-    updateSelectInput(session, 
-                      "reportTabPolicyRemove",
-                      choices = CustomPolicies$archiveList[[input$customModelSelection]]$name[-1])
-    
+    shiny::updateSelectInput(
+      session, 
+      "reportTabPolicyRemove",
+      choices = CustomPolicies$archiveList[[input$customModelSelection]]$name[-1]
+    )
   })
 
   
   # ADVANCED POLICIES
   # save changes user has made
-  advanced <- reactiveValues(updated_nodes = list(),
-                             node_counter = 1)
+  advanced <- shiny::reactiveValues(
+    updated_nodes = list(),
+    node_counter = 1
+  )
   
   # add nodes to drop down list
-  updateSelectInput(session, inputId="nodeProbTable", label="Select Node", choices=node.definitions$node_name)
+  shiny::updateSelectInput(session, inputId="nodeProbTable", label="Select Node", choices=node.definitions$node_name)
   
   # Plot network which changes for policy inputs
-  output$netPlot <- renderPlot({
-    
+  output$netPlot <- shiny::renderPlot({
     #model.label <- paste(input$model_version, "model", sep=" ")
-    
-    graphviz.plot(network$advanced.fit, layout = "dot",
-                  highlight = list(nodes=c(input$nodeProbTable), fill="lightgrey"),
-                  shape = "ellipse",
-                  render = TRUE ) #,
-                  #main=model.label)
-    
+    bnlearn::graphviz.plot(
+      network$advanced.fit, layout = "dot",
+      highlight = list(nodes=c(input$nodeProbTable), fill="lightgrey"),
+      shape = "ellipse",
+      render = TRUE
+    ) #,
+    #main=model.label)
   })
   
   # update model if different model version is selected
-  observe({
+  shiny::observe({
     network$advanced.fit <- CustomModels$custom_networks[[input$model_version]]
   })
   
   # output probability table
-  output$probabilityTable <- renderHotable({
+  output$probabilityTable <- shinyksy::renderHotable({
     
     if (input$probtabltype == "Conditional Probability Table") {
       conditional.table <- as.data.frame(network$advanced.fit[[input$nodeProbTable]]$prob)
       
       # If a column is named Var1, rename to be variable name
       if ("Var1" %in% colnames(conditional.table)){
-        conditional.table <- rename(conditional.table, !!input$nodeProbTable:=Var1)
+        conditional.table <- dplyr::rename(conditional.table, !!input$nodeProbTable:=Var1)
       }
       
       # Spread dataframe so that it is easier to see which probabilities should add to 1.0
       conditional.table <- conditional.table %>%
-                           mutate(Freq=Freq*100) %>%
-                           pivot_wider(names_from=!!input$nodeProbTable, values_from=Freq)
+        dplyr::mutate(Freq=Freq*100) %>%
+        dplyr::pivot_wider(names_from=!!input$nodeProbTable, values_from=Freq)
       
       # Change column names to make them easier to understand
       # collect states
-      node.states <- state.definitions %>% filter(node_name==input$nodeProbTable)
+      node.states <- state.definitions %>% 
+        dplyr::filter(node_name==input$nodeProbTable)
       # create read only vector
       read_table_temp <- rep(TRUE, ncol(conditional.table))
       
@@ -1337,49 +1385,48 @@ app_server = function(input, output, session) {
       i <- 0
       for (state in node.states$node_state){
         label <- paste(input$nodeProbTable, state, sep="=")
-        conditional.table <- rename(conditional.table, !!label:=!!state)
+        conditional.table <- dplyr::rename(conditional.table, !!label:=!!state)
         read_table_temp[length(read_table_temp) - i] <- FALSE
         i <- i + 1
       }
 
-      
       data <- conditional.table
         
     } else {
       # convert model to grain object
-      model.grain <- as.grain(network$advanced.fit)
+      model.grain <- bnlearn::as.grain(network$advanced.fit)
       
       # find probability of findability and renderability
-      query.results <- querygrain(model.grain, nodes=c(input$nodeProbTable))
+      query.results <- gRain::querygrain(model.grain, nodes=c(input$nodeProbTable))
       # control which columns can be read
       read_table_temp <- c(TRUE, FALSE)
       # return independent probability table
       data <- data.frame(query.results) %>%
-      rownames_to_column() %>%
-      rename(probability:=!!input$nodeProbTable,
+      tibble::rownames_to_column() %>%
+      dplyr::rename(probability:=!!input$nodeProbTable,
              !!input$nodeProbTable:=rowname) %>%
-      mutate(probability=100*probability)
+      dplyr::mutate(probability=100*.data$probability)
     }
-
     data
-    
   }, readOnly=FALSE)
 
   # plot node conditional probabilities
   output$nodeProbability <- renderPlot({
-    bn.fit.barchart(network$advanced.fit[[input$nodeProbTable]])
+    bnlearn::bn.fit.barchart(network$advanced.fit[[input$nodeProbTable]])
   })
   
   # update node probability when changed
-  observeEvent(input$updateProb, {
+  shiny::observeEvent(input$updateProb, {
   
-    data.df <- as.data.frame(hot.to.df(input$probabilityTable))
+    data.df <- as.data.frame(shinysky::hot.to.df(input$probabilityTable))
     custom_model <- network$advanced.fit
     
     # update model if table is conditional
     if (input$probtabltype == "Conditional Probability Table") {
       # collect column names related to probability
-      probability_columns <- data.df %>% select(starts_with(input$nodeProbTable)) %>% colnames()
+      probability_columns <- data.df %>% 
+        dplyr::select(dplyr::starts_with(input$nodeProbTable)) %>%
+        colnames()
       remove_pattern <- paste(input$nodeProbTable, "=", sep="")
       new_columns <- c()
       
@@ -1397,31 +1444,36 @@ app_server = function(input, output, session) {
       for (probability_column in probability_columns){
         
         # create new column name and rename old one, add to new columns vector
-        new_column_name <- str_remove(probability_column, remove_pattern)
-        data.df <- rename(data.df, !!new_column_name:=!!probability_column)
+        new_column_name <- stringr::str_remove(probability_column, remove_pattern)
+        data.df <- dplyr::rename(data.df, !!new_column_name:=!!probability_column)
         new_columns <- c(new_column_name, new_columns)
       }
       
       # convert df to long form and divide probabilities by 100
       data.df <- data.df %>%
-                 pivot_longer(new_columns,
-                              names_to=input$nodeProbTable,
-                              values_to="Freq") %>%
-                 mutate(Freq=Freq/100)
+        dplyr::pivot_longer(
+          new_columns,
+          names_to=input$nodeProbTable,
+          values_to="Freq"
+        ) %>%
+        dplyr::mutate(Freq=.data$Freq/100)
       
       # columns need to be reordered so it can be correctly converted to a table
       # get column names except for node column to rearrange column order
-      data.columns <- data.df %>% select(-!!input$nodeProbTable) %>% colnames
+      data.columns <- data.df %>%
+        dplyr::select(-!!input$nodeProbTable) %>%
+        colnames
       data.columns <- c(input$nodeProbTable, data.columns)
       data.df <- data.df[data.columns]
       
       # convert df to table
-      model.probability.table <- xtabs(Freq~., data.df)
+      model.probability.table <- stats::xtabs(Freq~., data.df)
 
     # update model if table is marginal
     } else{
       # check if the marginal probabilities sum to 100%
-      sum <- data.df %>% summarise(total_prob=sum(probability))
+      sum <- data.df %>%
+        dplyr::summarise(total_prob=sum(.data$probability))
       if (sum$total_prob != 100){
         errorMsg <-"The marginal probabilities do not sum to 100%."
         shinyalert::shinyalert("Error:", errorMsg, type = "error")
@@ -1429,19 +1481,21 @@ app_server = function(input, output, session) {
       }
       
       # prepare table for update probability function
-      data.df <- rename(data.df, state:=!!input$nodeProbTable)
+      data.df <- dplyr::rename(data.df, state:=!!input$nodeProbTable)
       
       # collect model probability
       model.probability <- as.data.frame(custom_model[[input$nodeProbTable]]$prob)
       
       # if var1 is a column name, rename to be variable name
       if ("Var1" %in% colnames(model.probability)){
-        model.probability <- rename(model.probability, !!input$nodeProbTable:=Var1)
+        model.probability <- dplyr::rename(model.probability, !!input$nodeProbTable:=Var1)
       }
       
-      model.probability.table <- update_probability(input$nodeProbTable,
-                                                    model.probability, 
-                                                    data.df)
+      model.probability.table <- update_probability(
+        input$nodeProbTable,
+        model.probability, 
+        data.df
+      )
     }
     # update model with new table
     custom_model[[input$nodeProbTable]] <- model.probability.table
@@ -1456,18 +1510,18 @@ app_server = function(input, output, session) {
       }
     }
     
-    advanced$updated_nodes[[advanced$node_counter]] <- tags$li(input$nodeProbTable)
+    advanced$updated_nodes[[advanced$node_counter]] <- shiny::tags$li(input$nodeProbTable)
     advanced$node_counter <- advanced$node_counter + 1
     
   })
   
   # update list of changed nodes
-  output$ChangeNodes <- renderUI({
+  output$ChangeNodes <- shiny::renderUI({
     advanced$updated_nodes
   })
   
   # add policy
-  observeEvent(input$addPolicy, {
+  shiny::observeEvent(input$addPolicy, {
     # check if a name has been provided
     if (input$policyName == ""){
       errorMsg <-"No name was provided for the model."
@@ -1486,16 +1540,17 @@ app_server = function(input, output, session) {
     utility <- calculate_utility(network$advanced.fit)
     
     CustomPolicies$archiveList[[input$model_version]] <- current_policies %>% 
-                                                         add_row(name=input$policyName,
-                                                                 Intellectual_Control=utility$Intellectual_Control,
-                                                                 Renderability=utility$Renderability)
+      dplyr::add_row(
+        name=input$policyName,
+        Intellectual_Control=utility$Intellectual_Control,
+        Renderability=utility$Renderability
+      )
     
     CustomPolicies$models[[input$model_version]][[input$policyName]] = network$advanced.fit
-  
   })
   
   # add custom model
-  observeEvent(input$addModelAdvanced, {
+  shiny::observeEvent(input$addModelAdvanced, {
     # check if a name has been provided
     if (input$policyName == ""){
       errorMsg <-"No name was provided for the model."
@@ -1516,66 +1571,80 @@ app_server = function(input, output, session) {
     
     # calculate utility and store
     utility <- calculate_utility(network$advanced.fit)
-    CustomModels$base_utility.df <- CustomModels$base_utility.df %>% add_row(name=input$policyName,
-                                                                             Intellectual_Control=utility$Intellectual_Control,
-                                                                             Renderability=utility$Renderability)
+    CustomModels$base_utility.df <- CustomModels$base_utility.df %>% 
+      dplyr::add_row(
+        name=input$policyName,
+        Intellectual_Control=utility$Intellectual_Control,
+        Renderability=utility$Renderability
+      )
     # TODO: Why do we have two structures saving the same information?
-    CustomPolicies$archiveList[[input$policyName]] <- tibble(name=input$policyName,
-                                                             Intellectual_Control=utility$Intellectual_Control,
-                                                             Renderability=utility$Renderability)
+    CustomPolicies$archiveList[[input$policyName]] <- tibble::tibble(
+      name=input$policyName,
+      Intellectual_Control=utility$Intellectual_Control,
+      Renderability=utility$Renderability
+    )
     
     # setting choices for the drop down list in the Simple view Node customisation tab
-    customModelChoices <- CustomModels$base_utility.df %>% select(name)
-    updateSelectInput(session, 'customModelSelection', choices=customModelChoices)
-    updateSelectInput(session, "model_version", label="Select Model", choices=customModelChoices)
-    updateSelectInput(session, 'reportTabModelSelection', choices=CustomModels$base_utility.df$name)
-    updateSelectInput(session, 'sensTabModelSelection', choices=CustomModels$base_utility.df$name)
+    customModelChoices <- CustomModels$base_utility.df %>% dplyr::select(name)
+    shiny::updateSelectInput(session, 'customModelSelection', choices=customModelChoices)
+    shiny::updateSelectInput(session, "model_version", label="Select Model", choices=customModelChoices)
+    shiny::updateSelectInput(session, 'reportTabModelSelection', choices=CustomModels$base_utility.df$name)
+    shiny::updateSelectInput(session, 'sensTabModelSelection', choices=CustomModels$base_utility.df$name)
   })
   
   # Reset network to original probabilities
-  observeEvent(input$networkReset, {
-    
+  shiny::observeEvent(input$networkReset, {
     network$advanced.fit <- CustomModels$custom_networks[[input$model_version]]
     advanced$updated_nodes <- list()
     advanced$node_counter <- 1
   })
 
   # plot policy comparison
-  output$PolicyComparison <- renderPlot({
+  output$PolicyComparison <- shiny::renderPlot({
     CustomPolicies$archiveList[[input$model_version]] %>%
-      mutate(utility=Intellectual_Control+Renderability) %>% 
-      pivot_longer(c(Intellectual_Control, Renderability), names_to="node") %>%
-      ggplot(aes(x=reorder(name, -value), fill=node, y=value*50)) +
-      geom_bar(position="stack", stat="identity") + xlab("Policy") + ylab("Score") +
-      geom_hline(yintercept=0.1013*50, linetype="dashed", color = "black") +
-      geom_hline(yintercept=1.4255*50, linetype="dashed", color = "black") +
+      dplyr::mutate(utility=Intellectual_Control+Renderability) %>% 
+      dplyr::pivot_longer(c(Intellectual_Control, Renderability), names_to="node") %>%
+      ggplot2::ggplot(ggplot2::aes(x=reorder(name, -value), fill=node, y=value*50)) +
+      ggplot2::geom_bar(position="stack", stat="identity") + 
+      ggplot2::xlab("Policy") + ggplot2::ylab("Score") +
+      ggplot2::geom_hline(yintercept=0.1013*50, linetype="dashed", color = "black") +
+      ggplot2::geom_hline(yintercept=1.4255*50, linetype="dashed", color = "black") +
       #geom_text(aes(1,0.3,label = "Min", vjust = -1)) + geom_text(aes(1,1.3,label = "Max", vjust = -1)) +
-      stat_summary(fun.y = sum, aes(label = format(round(..y..,0),nsmall=0), group = name),
-                   geom = "text", size=7, fontface="bold", vjust=-0.25) +
-      geom_text(aes(label=format(round(value*50,0),nsmall=0)), size=5, colour="white", 
-                fontface = "bold", position = position_stack(vjust = 0.5)) + theme_light() + 
-      theme(panel.border = element_blank(), text = element_text(size =20), legend.position="top", legend.title = element_blank())  +
-      scale_fill_manual(values=c("#FF6E3A","#8400CD")) #colour blind scheme
+      ggplot2::stat_summary(
+        fun.y = sum, ggplot2::aes(label = format(round(..y..,0),nsmall=0), group = name),
+        geom = "text", size=7, fontface="bold", vjust=-0.25
+      ) +
+      ggplot2::geom_text(
+        ggplot2::aes(label=format(round(value*50,0),nsmall=0)), size=5, colour="white", 
+        fontface = "bold", position = ggplot2::position_stack(vjust = 0.5)) +
+      ggplot2::theme_light() + 
+      ggplot2::theme(panel.border = ggplot2::element_blank(), text = ggplot2::element_text(size =20), legend.position="top", legend.title = ggplot2::element_blank())  +
+      ggplot2::scale_fill_manual(values=c("#FF6E3A","#8400CD")) #colour blind scheme
   })
   
   # plot custom model comparison
-  output$BaseUtilityComparison <- renderPlot({
+  output$BaseUtilityComparison <- shiny::renderPlot({
     CustomModels$base_utility.df %>%
-      mutate(utility=Intellectual_Control+Renderability) %>% 
-      pivot_longer(c(Intellectual_Control, Renderability), names_to="node") %>%
-      ggplot(aes(x=reorder(name, -value), fill=node, y=value*50)) +
-      geom_bar(position="stack", stat="identity") + xlab("Model") + ylab("Score") +
-      geom_hline(yintercept=0.1013*50, linetype="dashed", color = "black") +
-      geom_hline(yintercept=1.4255*50, linetype="dashed", color = "black") +
+      dplyr::mutate(utility=Intellectual_Control+Renderability) %>% 
+      dplyr::pivot_longer(c(Intellectual_Control, Renderability), names_to="node") %>%
+      ggplot2::ggplot(ggplot2::aes(x=reorder(name, -value), fill=node, y=value*50)) +
+      ggplot2::geom_bar(position="stack", stat="identity") +
+      ggplot2::xlab("Model") + ggplot2::ylab("Score") +
+      ggplot2::geom_hline(yintercept=0.1013*50, linetype="dashed", color = "black") +
+      ggplot2::geom_hline(yintercept=1.4255*50, linetype="dashed", color = "black") +
       #geom_text(aes(1,0.3,label = "Min", vjust = -1)) + geom_text(aes(1,1.3,label = "Max", vjust = -1)) +
-      stat_summary(fun.y = sum, aes(label = format(round(..y..,0),nsmall=0), group = name),
-                   geom = "text", size=7, fontface="bold", vjust=-0.25) +
+      ggplot2::stat_summary(
+        fun.y = sum, aes(label = format(round(..y..,0),nsmall=0), group = name),
+        geom = "text", size=7, fontface="bold", vjust=-0.25
+      ) +
     #geom_text(aes(label = stat(y), group = name), stat = 'summary', fun.y = sum, vjust = -1, size = 7) +
       #geom_text(aes(label=format(round(sum(value)*50,0))),vjust=-0.3, color="black", size=3.5)+
-      geom_text(aes(label=format(round(value*50,0),nsmall=0)), size=5, colour="white", 
-                fontface = "bold", position = position_stack(vjust = 0.5)) + theme_light() + 
-      theme(panel.border = element_blank(), text = element_text(size =20), legend.position="top", legend.title = element_blank())  +
-      scale_fill_manual(values=c("#FF6E3A","#8400CD")) #colour blind scheme
+      ggplot2::geom_text(
+        ggplot2::aes(label=format(round(value*50,0),nsmall=0)), size=5, colour="white", 
+        fontface = "bold", position = ggplot2::position_stack(vjust = 0.5)) +
+      ggplot2::theme_light() + 
+      ggplot2::theme(panel.border = ggplot2::element_blank(), text = ggplot2::element_text(size =20), legend.position="top", legend.title = ggplot2::element_blank())  +
+      ggplot2::scale_fill_manual(values=c("#FF6E3A","#8400CD")) #colour blind scheme
   })
   
   # REPORT TAB
@@ -1587,8 +1656,10 @@ app_server = function(input, output, session) {
     b <- input$IntellectualWeighting
     
     # constructing text for the summary section
-    summary <- paste("The", currModelName, "model has", length(currModel$name), "policy(ies) ,
-                     including the original. The overall risk scores for each are:<br/><br/>")
+    summary <- paste(
+      "The", currModelName, "model has", length(currModel$name),
+      "policy(ies), including the original. The overall risk scores for each are:<br/><br/>"
+    )
     
     # to keep track of best policy
     maxUtility <- -99999
@@ -1598,7 +1669,9 @@ app_server = function(input, output, session) {
     
     # getting list of policies
     for(policy in currModel$name){
-      policyUtility <- currModel %>% filter(name==policy) %>% select(Renderability, Intellectual_Control)
+      policyUtility <- currModel %>% 
+        dplyr::filter(.data$name==policy) %>% 
+        dplyr::select(.data$Renderability, .data$Intellectual_Control)
       currUtility <- (b*policyUtility$Intellectual_Control + a*policyUtility$Renderability) /(a+b)*100
       
       summary <- paste(summary, policy, "\t", format(round(currUtility,4),nsmall=4), "<br/>", sep = "")
@@ -1615,16 +1688,18 @@ app_server = function(input, output, session) {
     return(summary)
   }
   
-  initialModelSetup <- reactiveValues(flag=TRUE)
-  initialSimpleCustomisationPopup <- reactiveValues(flag=TRUE)
+  initialModelSetup <- shiny::reactiveValues(flag=TRUE)
+  initialSimpleCustomisationPopup <- shiny::reactiveValues(flag=TRUE)
   
-  observeEvent(input$sidebarMenu, {
+  shiny::observeEvent(input$sidebarMenu, {
     
     ## Initial Model and Pop setup flags
     if(initialModelSetup$flag){
-      CustomPolicies$archiveList[['Default']] <- tibble(name="Base", 
-                                                    Intellectual_Control=default_utility$Intellectual_Control,
-                                                    Renderability=default_utility$Renderability)
+      CustomPolicies$archiveList[['Default']] <- tibble::tibble(
+        name="Base", 
+        Intellectual_Control=default_utility$Intellectual_Control,
+        Renderability=default_utility$Renderability
+      )
       
       CustomPolicies$models[['Default']][['Base']] <- stable.fit
       
@@ -1640,12 +1715,13 @@ app_server = function(input, output, session) {
     
     # FOR REPORT TAB
     
-    summary <- reactive({
+    summary <- shiny::reactive({
       input$RenderabilityWeighting
       input$IntellectualWeighting
       
-      setReportTabSummary(currModel, 
-                          CustomPolicies$archiveList[[currModel]])
+      setReportTabSummary(
+        currModel, CustomPolicies$archiveList[[currModel]]
+      )
     })
     
     if(input$sidebarMenu == "Report"){
@@ -1653,60 +1729,70 @@ app_server = function(input, output, session) {
       # summary <- setReportTabSummary(currModel, 
       #                                CustomPolicies$archiveList[[currModel]])
       
-      output$ReportTabSummaryText <- renderText(summary())
+      output$ReportTabSummaryText <- shiny::renderText(summary()) 
       
       # set the list of policies in drop down
-      updateSelectInput(session, 
-                        "ReportTabPolicySelection",
-                        choices = CustomPolicies$archiveList[[currModel]]$name[-1])
+      shiny::updateSelectInput(
+        session, 
+        "ReportTabPolicySelection",
+        choices = CustomPolicies$archiveList[[currModel]]$name[-1]
+      )
     }
   })
   
-  observeEvent(input$reportTabModelSelection, {
+  shiny::observeEvent(input$reportTabModelSelection, {
     currModel <- input$reportTabModelSelection
     
     # set the summary
-    summary <- setReportTabSummary(currModel, 
-                                   CustomPolicies$archiveList[[currModel]])
+    summary <- setReportTabSummary(
+      currModel, 
+      CustomPolicies$archiveList[[currModel]]
+    )
     
-    output$ReportTabSummaryText <- renderText(summary)
+    output$ReportTabSummaryText <- shiny::renderText(summary) 
     
     # set the list of policies in drop down
-    updateSelectInput(session, 
-                      "ReportTabPolicySelection",
-                      choices = CustomPolicies$archiveList[[currModel]]$name[-1])
+    shiny::updateSelectInput(
+      session, 
+      "ReportTabPolicySelection",
+      choices = CustomPolicies$archiveList[[currModel]]$name[-1]
+    )
     
   })
   
   # Check if utiltiy weighting changes
-  observe({
+  shiny::observe({
     utility_weighting$Renderability <- input$RenderabilityWeighting
     utility_weighting$Intellectual <- input$IntellectualWeighting
   })
   
-  plotUtility <- reactive({
+  plotUtility <- shiny::reactive({
     a <- utility_weighting$Renderability
     b <- utility_weighting$Intellectual
     
     CustomPolicies$archiveList[[input$reportTabModelSelection]] %>%
-      pivot_longer(c(Intellectual_Control, Renderability), names_to="policy") %>%
-      mutate(value=ifelse(policy=="Renderability", value*a/(a+b)*100, value*b/(a+b)*100)) %>%
-      ggplot(aes(x=reorder(name, -value), fill=policy, y=value)) +
-      geom_bar(position="stack", stat="identity") + xlab("Policy") + ylab("Score") +
-      geom_hline(yintercept=0.1013*50, linetype="dashed", color = "black") +
-      geom_hline(yintercept=1.4255*50, linetype="dashed", color = "black") +
+      dplyr::pivot_longer(c(Intellectual_Control, Renderability), names_to="policy") %>%
+      dplyr::mutate(value=ifelse(policy=="Renderability", value*a/(a+b)*100, value*b/(a+b)*100)) %>%
+      ggplot2::ggplot(ggplot2::aes(x=reorder(name, -value), fill=policy, y=value)) +
+      ggplot2::geom_bar(position="stack", stat="identity") + xlab("Policy") + ylab("Score") +
+      ggplot2::geom_hline(yintercept=0.1013*50, linetype="dashed", color = "black") +
+      ggplot2::geom_hline(yintercept=1.4255*50, linetype="dashed", color = "black") +
       #geom_text(aes(1,0.3,label = "Min", vjust = -1)) + geom_text(aes(1,1.3,label = "Max", vjust = -1)) +
-      stat_summary(fun.y = sum, aes(label = format(round(..y..,0),nsmall=0), group = name),
-                   geom = "text", size=7, fontface="bold", vjust=-0.25) +
-      geom_text(aes(label=format(round(value,0),nsmall=0)), size=5, colour="white", 
-                fontface = "bold", position = position_stack(vjust = 0.5)) + theme_light() + 
-      theme(panel.border = element_blank(), text = element_text(size =20), legend.position="top", legend.title = element_blank())  +
-      scale_fill_manual(values=c("#FF6E3A","#8400CD")) #colour blind scheme
+      ggplot2::stat_summary(
+        fun.y = sum, ggplot2::aes(label = format(round(..y..,0),nsmall=0), group = name),
+        geom = "text", size=7, fontface="bold", vjust=-0.25
+      ) +
+      ggplot2::geom_text(
+        ggplot2::aes(label=format(round(value,0),nsmall=0)), size=5, colour="white", 
+        fontface = "bold", position = ggplot2::position_stack(vjust = 0.5)) +
+      ggplot2::theme_light() + 
+      ggplot2::theme(panel.border = ggplot2::element_blank(), text = ggplot2::element_text(size =20), legend.position="top", legend.title = ggplot2::element_blank())  +
+      ggplot2::scale_fill_manual(values=c("#FF6E3A","#8400CD")) #colour blind scheme
   })
   
   
   # Plot the policy comparison stacked bar chart
-  output$ReportTabUtilityComparisonPlot <- renderPlot(
+  output$ReportTabUtilityComparisonPlot <- shiny::renderPlot(
     {
       plotUtility()
     }
@@ -1728,7 +1814,7 @@ app_server = function(input, output, session) {
   #})
   
   #Download
-  output$reportTabDownloadBtn <- downloadHandler(
+  output$reportTabDownloadBtn <- shiny::downloadHandler(
     filename = function() {
       paste0(input$reportTabModelSelection, ".zip")
     },
@@ -1737,19 +1823,23 @@ app_server = function(input, output, session) {
       #edit to make three options 09/06
       # write policy
       if ("A policy" %in% input$downloadOptions) {
-        write.bif(paste0(input$ReportTabPolicySelection, ".bif"),
-                  CustomPolicies$models[[input$reportTabModelSelection]][[input$ReportTabPolicySelection]])
+        bnlearn::write.bif(
+          paste0(input$ReportTabPolicySelection, ".bif"),
+          CustomPolicies$models[[input$reportTabModelSelection]][[input$ReportTabPolicySelection]]
+        )
       }
       # write model
       if ("The model" %in% input$downloadOptions) {
-        write.bif(paste0(input$reportTabModelSelection, ".bif"),
-                  CustomPolicies$models[[input$reportTabModelSelection]][[1]])
+        bnlearn::write.bif(
+          paste0(input$reportTabModelSelection, ".bif"),
+          CustomPolicies$models[[input$reportTabModelSelection]][[1]]
+        )
       }
       # write utility plot
       if ("The plot" %in% input$downloadOptions) {
-        png(filename=paste0(input$reportTabModelSelection, "_plot.png"))
+        grDevices::png(filename=paste0(input$reportTabModelSelection, "_plot.png"))
         print(plotUtility())
-        dev.off()
+        grDevices::dev.off()
       }
       
       # if ("Documented Report" %in% input$downloadOptions){
@@ -1764,13 +1854,14 @@ app_server = function(input, output, session) {
       # }
       
       # create zip file to return
-      filenames <- c(paste0(input$ReportTabPolicySelection, ".bif"),
-                     paste0(input$reportTabModelSelection, ".bif"),
-                     paste0(input$reportTabModelSelection, "_plot.png")
-                     #,paste0(input$reportTabModelSelection, ".pdf")
-                     )
+      filenames <- c(
+        paste0(input$ReportTabPolicySelection, ".bif"),
+        paste0(input$reportTabModelSelection, ".bif"),
+        paste0(input$reportTabModelSelection, "_plot.png")
+        #,paste0(input$reportTabModelSelection, ".pdf")
+      )
       
-      zip(file, filenames)
+      utils::zip(file, filenames)
       
       # delete all files on server
       for (filename in filenames){
@@ -1778,8 +1869,9 @@ app_server = function(input, output, session) {
       }
     }
   )
-  output$SensitivityTable <- renderDataTable({
-    datatable(hard.test(CustomModels$custom_networks[[input$sensTabModelSelection]])[Type=="Input",])
+  output$SensitivityTable <- DT::renderDataTable({
+    # JR notes: hard.test is a DIAGRAM defined function
+    DT::datatable(hard.test(CustomModels$custom_networks[[input$sensTabModelSelection]])[Type=="Input",])
   })
    # output$clickevent <- renderPrint({
    #   clickData <- event_data("plotly_click")
@@ -1803,8 +1895,8 @@ app_server = function(input, output, session) {
    #   }
    #   return(summary1)
    #   })
-  output$SensitivityPlot <- renderPlotly({
-    plot_ly(
+  output$SensitivityPlot <- plotly::renderPlotly({
+    plotly::plot_ly(
       hard.test(CustomModels$custom_networks[[input$sensTabModelSelection]])[!is.na(R_score)&Type=="Input", ],
       x =  ~ R_diff,
       y =  ~ IC_diff,

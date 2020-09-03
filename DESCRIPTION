@@ -35,7 +35,8 @@ Imports:
     rlang,
     dplyr,
     readr,
-    tibble
+    tibble,
+    ggplot2
 Remotes:
     AnalytixWare/ShinySky
 Encoding: UTF-8
