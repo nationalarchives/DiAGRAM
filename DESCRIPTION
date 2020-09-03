@@ -16,27 +16,28 @@ Imports:
     BiocManager,
     bnlearn,
     data.table,
+    dplyr,
     DT,
+    ggplot2,
     gRain,
     graph,
     gRbase,
     gridExtra,
     networkD3,
     plotly,
+    readr,
     Rgraphviz,
     rintrojs,
+    rlang,
     shiny,
     shinyalert,
     shinydashboard,
     shinyjs,
     shinysky,
     shinyWidgets,
-    V8,
-    rlang,
-    dplyr,
-    readr,
     tibble,
-    ggplot2
+    tidyr,
+    V8
 Remotes:
     AnalytixWare/ShinySky
 Encoding: UTF-8

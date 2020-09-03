@@ -32,7 +32,7 @@
 #' @param req Internal parameter for `{shiny}`. 
 #'     DO NOT REMOVE.
 #' @param nquestions integer defining the number of questions for the model creation step, 
-#'     typically generated from a call to \code{read_csv("setup_questions.csv") %>% nrow()}
+#'     typically generated from a call to `read_csv("setup_questions.csv") %>% nrow()`
 #' @importFrom shinydashboard dashboardPage
 #' @importFrom shinydashboard dashboardHeader
 #' @importFrom shinydashboard dashboardSidebar

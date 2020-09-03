@@ -31,14 +31,15 @@
 #' 
 #' @param input,output,session Internal parameters for {shiny}. 
 #'     DO NOT REMOVE.
-#' @importFrom plotlt renderPlotly plot_ly
+#' @importFrom plotly renderPlotly plot_ly
 #' @importFrom utils zip
 #' @importFrom grDevices png dev.off
 #' @importFrom bnlearn read.bif graphviz.plot mutilated as.grain bn.fit.barchart write.bif
 #' @importFrom gRain querygrain
 #' @importFrom readr read_csv
 #' @importFrom ggplot2 ggplot geom_bar aes xlab geom_hline stat_summary geom_text theme_light theme element_blank element_text scale_fill_manual position_stack
-#' @importFrom dplyr arrange filter select rename add_row pivot_longer summarise
+#' @importFrom dplyr arrange filter select rename add_row summarise
+#' @importFrom tidyr pivot_longer
 #' @importFrom shiny reactiveValues updateSelectInput plotOutput renderUI tagList strong renderTable
 #' @importFrom shinydashboard updateTabItems
 #' @importFrom shinyWidgets sliderTextInput updateProgressBar
@@ -46,7 +47,7 @@
 #' @importFrom tibble tibble rownames_to_column
 #' @importFrom rlang .data
 #' @importFrom shinyjs show hide enable
-#' @importFrom shinyksy renderHotable hot.to.df
+#' @importFrom shinysky renderHotable hot.to.df
 #' @importFrom stringr str_remove
 #' @importFrom DT datatable renderDataTable
 app_server = function(input, output, session) {
@@ -790,7 +791,7 @@ app_server = function(input, output, session) {
     
     CustomModels$base_utility.df %>%
       dplyr::mutate(utility = .data$Intellectual_Control + .data$Renderability) %>% 
-      dplyr::pivot_longer(c( .data$Intellectual_Control, .data$Renderability), names_to="node") %>%
+      tidyr::pivot_longer(c( .data$Intellectual_Control, .data$Renderability), names_to="node") %>%
       ggplot2::ggplot(
         ggplot2::aes(x=reorder(name, -value), fill=node, y=value*50)
       ) +
@@ -888,7 +889,7 @@ app_server = function(input, output, session) {
   output$policyTabUtilityScorePlot <- shiny::renderPlot({
     CustomPolicies$archiveList[[input$customModelSelection]] %>%
       dplyr::mutate(utility=Intellectual_Control+Renderability) %>% 
-      dplyr::pivot_longer(c(Intellectual_Control, Renderability), names_to="node") %>%
+      tidyr::pivot_longer(c(Intellectual_Control, Renderability), names_to="node") %>%
       ggplot2::ggplot(ggplot2::aes(x=reorder(name, -value), fill=node, y=value*50)) +
       ggplot2::geom_bar(position="stack", stat="identity") +
       ggplot2::xlab("Policy") + ggplot2::ylab("Score") +
@@ -1359,7 +1360,7 @@ app_server = function(input, output, session) {
   })
   
   # output probability table
-  output$probabilityTable <- shinyksy::renderHotable({
+  output$probabilityTable <- shinysky::renderHotable({
     
     if (input$probtabltype == "Conditional Probability Table") {
       conditional.table <- as.data.frame(network$advanced.fit[[input$nodeProbTable]]$prob)
@@ -1451,7 +1452,7 @@ app_server = function(input, output, session) {
       
       # convert df to long form and divide probabilities by 100
       data.df <- data.df %>%
-        dplyr::pivot_longer(
+        tidyr::pivot_longer(
           new_columns,
           names_to=input$nodeProbTable,
           values_to="Freq"
@@ -1603,7 +1604,7 @@ app_server = function(input, output, session) {
   output$PolicyComparison <- shiny::renderPlot({
     CustomPolicies$archiveList[[input$model_version]] %>%
       dplyr::mutate(utility=Intellectual_Control+Renderability) %>% 
-      dplyr::pivot_longer(c(Intellectual_Control, Renderability), names_to="node") %>%
+      tidyr::pivot_longer(c(Intellectual_Control, Renderability), names_to="node") %>%
       ggplot2::ggplot(ggplot2::aes(x=reorder(name, -value), fill=node, y=value*50)) +
       ggplot2::geom_bar(position="stack", stat="identity") + 
       ggplot2::xlab("Policy") + ggplot2::ylab("Score") +
@@ -1626,7 +1627,7 @@ app_server = function(input, output, session) {
   output$BaseUtilityComparison <- shiny::renderPlot({
     CustomModels$base_utility.df %>%
       dplyr::mutate(utility=Intellectual_Control+Renderability) %>% 
-      dplyr::pivot_longer(c(Intellectual_Control, Renderability), names_to="node") %>%
+      tidyr::pivot_longer(c(Intellectual_Control, Renderability), names_to="node") %>%
       ggplot2::ggplot(ggplot2::aes(x=reorder(name, -value), fill=node, y=value*50)) +
       ggplot2::geom_bar(position="stack", stat="identity") +
       ggplot2::xlab("Model") + ggplot2::ylab("Score") +
@@ -1771,7 +1772,7 @@ app_server = function(input, output, session) {
     b <- utility_weighting$Intellectual
     
     CustomPolicies$archiveList[[input$reportTabModelSelection]] %>%
-      dplyr::pivot_longer(c(Intellectual_Control, Renderability), names_to="policy") %>%
+      tidyr::pivot_longer(c(Intellectual_Control, Renderability), names_to="policy") %>%
       dplyr::mutate(value=ifelse(policy=="Renderability", value*a/(a+b)*100, value*b/(a+b)*100)) %>%
       ggplot2::ggplot(ggplot2::aes(x=reorder(name, -value), fill=policy, y=value)) +
       ggplot2::geom_bar(position="stack", stat="identity") + xlab("Policy") + ylab("Score") +
