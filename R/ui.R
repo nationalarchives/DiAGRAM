@@ -31,6 +31,8 @@ nquestions <- read_csv("setup_questions.csv") %>% nrow()
 #' 
 #' @param req Internal parameter for `{shiny}`. 
 #'     DO NOT REMOVE.
+#' @param nquestions integer defining the number of questions for the model creation step, 
+#'     typically generated from a call to \code{read_csv("setup_questions.csv") %>% nrow()}
 #' @importFrom shinydashboard dashboardPage
 #' @importFrom shinydashboard dashboardHeader
 #' @importFrom shinydashboard dashboardSidebar
@@ -47,7 +49,8 @@ nquestions <- read_csv("setup_questions.csv") %>% nrow()
 #' @importFrom shinyjs useShinyjs extendShinyjs
 #' @importFrom shinysky hotable
 #' @importFrom DT dataTableOutput
-app_ui = function(req){
+#' @importFrom plotly plotlyOutput
+app_ui = function(req, nquestions){
   # create main dashboard page
   shinydashboard::dashboardPage(
     skin="purple",
@@ -127,7 +130,7 @@ app_ui = function(req){
                 "There will be further user interface changes and additional functionality added as the 
                 project progresses. Any feedback to inform the future development would be welcome 
                 - please send your comments to a member of the project team.")
-              ),
+            ),
             shinydashboard::box(
               title = NULL,
               width = 12,
@@ -154,7 +157,7 @@ app_ui = function(req){
                 shiny::a(href="https://epsrc.ukri.org/", "Engineering and Physical Sciences Research Council."),
                 "For more information about the project please see our ",
                 shiny::a(href="https://www.nationalarchives.gov.uk/information-management/manage-information/preserving-digital-records/research-collaboration/safeguarding-the-nations-digital-memory/",
-                  "project page.")),
+                         "project page.")),
               shiny::p(
                 "Before using the tool for the first time, we would advise you to read the ",
                 shiny::a(
@@ -166,9 +169,9 @@ app_ui = function(req){
                 " you can work though."
               ),
               shiny::br(),
-              shiny::tags$style(HTML('#createModel{background-color:green}')),
-              shiny::tags$style(HTML('#createModel{color:white}')),
-              shiny::tags$style(HTML('#createModel{width:30%')),
+              shiny::tags$style(shiny::HTML('#createModel{background-color:green}')),
+              shiny::tags$style(shiny::HTML('#createModel{color:white}')),
+              shiny::tags$style(shiny::HTML('#createModel{width:30%')),
               shiny::div(
                 shiny::actionButton("createModel", "Create your model"),
                 style="text-align:center"
@@ -407,7 +410,7 @@ app_ui = function(req){
         ),
         
         # TODO:sid - change policyTab identifier to the most appropriate (once decided)
-        shiny::dashboard::tabItem(
+        shinydashboard::tabItem(
           tabName="CustomiseNode",
           shinyalert::useShinyalert(),
           shinydashboard::box(
@@ -503,7 +506,7 @@ app_ui = function(req){
         shinydashboard::tabItem(
           tabName="AdvancedCustomiseNode",
           shinyalert::useShinyalert(),
-          shinydashbaord::box(
+          shinydashboard::box(
             title = NULL,
             width = 12,
             background="orange",
@@ -771,7 +774,7 @@ app_ui = function(req){
                 ),
                 shiny::h5("Note: All input nodes are considered changable here but some may not be in your control."),
                 shiny::br(),
-                shiny::plotlyOutput("SensitivityPlot")
+                plotly::plotlyOutput("SensitivityPlot")
               ),
               # box(
               #   title="Selected Node",
