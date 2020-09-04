@@ -35,11 +35,11 @@
 #' @importFrom utils zip
 #' @importFrom grDevices png dev.off
 #' @importFrom bnlearn read.bif graphviz.plot mutilated as.grain bn.fit.barchart write.bif
-#' @importFrom gRain querygrain
+#' @importFrom gRain querygrain is.grain
 #' @importFrom readr read_csv
 #' @importFrom ggplot2 ggplot geom_bar aes xlab geom_hline stat_summary geom_text theme_light theme element_blank element_text scale_fill_manual position_stack
 #' @importFrom dplyr arrange filter select rename add_row summarise
-#' @importFrom tidyr pivot_longer
+#' @importFrom tidyr pivot_longer pivot_wider
 #' @importFrom shiny reactiveValues updateSelectInput plotOutput renderUI tagList strong renderTable
 #' @importFrom shinydashboard updateTabItems
 #' @importFrom shinyWidgets sliderTextInput updateProgressBar
@@ -54,16 +54,18 @@ app_server = function(input, output, session) {
   
   # -------------------- FUNCTIONS --------------------
   # function which caluclates utility
+  #' @importFrom bnlearn as.grain
+  #' @importFrom gRain querygrain
   calculate_utility <- function(model) {
     # convert model to grain object
-    if(is.grain(model)==FALSE) {
-      model.grain <- as.grain(model)
+    if(gRain::is.grain(model)==FALSE) {
+      model.grain <- bnlearn::as.grain(model)
     }
     else {
       model.grain <- model
     }
     # find probability of Intellectual_Control and Renderability
-    query.results <- querygrain(model.grain, nodes=c("Intellectual_Control", "Renderability"))
+    query.results <- gRain::querygrain(model.grain, nodes=c("Intellectual_Control", "Renderability"))
     # Extract probabilities
     prob.Intellectual_Control <- as.numeric(query.results$Intellectual_Control["Yes"])
     prob.Renderability <- as.numeric(query.results$Renderability["Yes"])
@@ -176,7 +178,7 @@ app_server = function(input, output, session) {
       i <- i + 1
     }
     # normalise probability range between 0 and 1
-    model.probability.df <- model.probability.df %>% dplyr::mutate(Freq=Freq/100)
+    model.probability.df <- model.probability.df %>% dplyr::mutate(Freq=.data$Freq/100)
     # convert from data.frame to table
     model.probability.table <- stats::xtabs(Freq~., model.probability.df)
     return(model.probability.table)
@@ -185,10 +187,17 @@ app_server = function(input, output, session) {
   
   #Function to sensitivity test based on hard evidence
   #' @import data.table
+  #' @importFrom gRain setEvidence
   hard.test <- function(model) { #work with custom_model which is a bif
     hard.evidence <- as.data.table(state.definitions[,1:2])
     input.nodes <- as.list(setup_questions)$node_name
     #remove renderability and intellectual control
+    
+    #####
+    # suggested work around by data.table authors for no visible binding package check warning
+    Type = Score = R_score = IC_score = Difference = R_diff = IC_diff = NULL
+    #####
+    
     hard.evidence <- hard.evidence[
       node_name != "Renderability" &
         node_name != "Intellectual_Control",
@@ -216,9 +225,9 @@ app_server = function(input, output, session) {
       # # update probability table for node
       temp.model[[node]] <- as.array(stable.fit[[node]]$prob)
       #}
-      grain.model <- as.grain(temp.model)
+      grain.model <- bnlearn::as.grain(temp.model)
       
-      test <- setEvidence(
+      test <- gRain::setEvidence(
         grain.model,
         as.character(hard.evidence$node_name[i]), #node name
         as.character(hard.evidence$node_state[i]) #node state
@@ -341,7 +350,7 @@ app_server = function(input, output, session) {
    output$DataLink <- shiny::renderUI({
      url <- node.definitions %>% 
        dplyr::filter(.data$node_name==input$NodeSelection) %>%
-       dplyr::select(data_source) %>%
+       dplyr::select(.data$data_source) %>%
        as.character()
   #   url <- a(input$NodeSelection, href=url) remove hyperlink
      shiny::tagList(shiny::strong("Data source: "), url)
@@ -649,7 +658,7 @@ app_server = function(input, output, session) {
     next_node_name <- setup_questions[questionValues$question_number,]$node_name
     # collect information on node
     next_node <- node.definitions %>%
-      dplyr::filter(.rlang$node_name==next_node_name)
+      dplyr::filter(.data$node_name==next_node_name)
     
     # add state to answer vector
     # if radio button, add to radio button answers
@@ -777,7 +786,8 @@ app_server = function(input, output, session) {
       )
     
     # setting choices for the drop down list in the Simple view Node customisation tab
-    customModelChoices <- CustomModels$base_utility.df %>% dplyr::select(name)
+    customModelChoices <- CustomModels$base_utility.df %>% 
+      dplyr::select(.data$name)
     shiny::updateSelectInput(session, 'customModelSelection', choices=customModelChoices)
     shiny::updateSelectInput(session, "model_version", label="Select Model", choices=customModelChoices)
 
@@ -788,12 +798,13 @@ app_server = function(input, output, session) {
   
   # plot utility
   output$BasicUtilityComparison <- shiny::renderPlot({
-    
+    # hack for build check warning on non exported global variables
+    ..y.. = NULL
     CustomModels$base_utility.df %>%
       dplyr::mutate(utility = .data$Intellectual_Control + .data$Renderability) %>% 
       tidyr::pivot_longer(c( .data$Intellectual_Control, .data$Renderability), names_to="node") %>%
       ggplot2::ggplot(
-        ggplot2::aes(x=reorder(name, -value), fill=node, y=value*50)
+        ggplot2::aes(x=reorder(.data$name, -.data$value), fill=.data$node, y=.data$value*50)
       ) +
       ggplot2::geom_bar(position="stack", stat="identity") + 
       ggplot2::xlab("Policy") + ggplot2::ylab("Score") +
@@ -802,9 +813,9 @@ app_server = function(input, output, session) {
       #geom_rect(aes(xmin=0, xmax=Inf, ymin=0, ymax=0.3), alpha=0.1, fill="Red") +
       #geom_rect(aes(xmin=0, xmax=Inf, ymin=1.3, ymax=Inf), alpha=0.1, fill="Green") +
       #geom_text(aes(1,0.3,label = "Min", vjust = -1)) + geom_text(aes(1,1.3,label = "Max", vjust = -1)) +
-      ggplot2::stat_summary(fun.y = sum, ggplot2::aes(label = format(round(..y..,0),nsmall=0), group = name),
+      ggplot2::stat_summary(fun.y = sum, ggplot2::aes(label = format(round(..y..,0),nsmall=0), group = .data$name),
                    geom = "text", size=7, fontface="bold", vjust=-0.25) +
-      ggplot2::geom_text(ggplot2::aes(label=format(round(value*50,0),nsmall=0)), size=5, colour="white", 
+      ggplot2::geom_text(ggplot2::aes(label=format(round(.data$value*50,0),nsmall=0)), size=5, colour="white", 
                 fontface = "bold", position = ggplot2::position_stack(vjust = 0.5)) + 
       ggplot2::theme_light() + 
       ggplot2::theme(panel.border = ggplot2::element_blank(), text = ggplot2::element_text(size =20), legend.position="top", legend.title = ggplot2::element_blank())  +
@@ -887,22 +898,24 @@ app_server = function(input, output, session) {
   
   # Plot the policy comparison stacked bar chart
   output$policyTabUtilityScorePlot <- shiny::renderPlot({
+    # hack for build check warning on non exported global variables
+    ..y.. = NULL
     CustomPolicies$archiveList[[input$customModelSelection]] %>%
-      dplyr::mutate(utility=Intellectual_Control+Renderability) %>% 
-      tidyr::pivot_longer(c(Intellectual_Control, Renderability), names_to="node") %>%
-      ggplot2::ggplot(ggplot2::aes(x=reorder(name, -value), fill=node, y=value*50)) +
+      dplyr::mutate(utility=.data$Intellectual_Control+.data$Renderability) %>% 
+      tidyr::pivot_longer(c(.data$Intellectual_Control, .data$Renderability), names_to="node") %>%
+      ggplot2::ggplot(ggplot2::aes(x=reorder(.data$name, -.data$value), fill=.data$node, y=.data$value*50)) +
       ggplot2::geom_bar(position="stack", stat="identity") +
       ggplot2::xlab("Policy") + ggplot2::ylab("Score") +
       ggplot2::geom_hline(yintercept=0.1013*50, linetype="dashed", color = "black") +
       ggplot2::geom_hline(yintercept=1.4255*50, linetype="dashed", color = "black") +
         #geom_text(aes(1,0.3,label = "Min", vjust = -1)) + geom_text(aes(1,1.3,label = "Max", vjust = -1)) +
-      ggplot2::stat_summary(fun.y = sum, ggplot2::aes(label = format(round(..y..,0),nsmall=0), group = name),
+      ggplot2::stat_summary(fun.y = sum, ggplot2::aes(label = format(round(..y..,0),nsmall=0), group = .data$name),
                      geom = "text", size=7, fontface="bold", vjust=-0.25) +
-      ggplot2::geom_text(aes(label=format(round(value*50,0),nsmall=0)), size=5, colour="white", 
+      ggplot2::geom_text(aes(label=format(round(.data$value*50,0),nsmall=0)), size=5, colour="white", 
                   fontface = "bold", position = ggplot2::position_stack(vjust = 0.5)) +
       ggplot2::theme_light() + 
       ggplot2::theme(panel.border = ggplot2::element_blank(), text = ggplot2::element_text(size =20), legend.position="top", legend.title = ggplot2::element_blank())  +
-      ggplot2::position_stackscale_fill_manual(values=c("#FF6E3A","#8400CD")) #colour blind scheme
+      ggplot2::scale_fill_manual(values=c("#FF6E3A","#8400CD")) #colour blind scheme
   })
   
   # OAIS Entities list
@@ -1373,7 +1386,7 @@ app_server = function(input, output, session) {
       # Spread dataframe so that it is easier to see which probabilities should add to 1.0
       conditional.table <- conditional.table %>%
         dplyr::mutate(Freq=Freq*100) %>%
-        dplyr::pivot_wider(names_from=!!input$nodeProbTable, values_from=Freq)
+        tidyr::pivot_wider(names_from=!!input$nodeProbTable, values_from=Freq)
       
       # Change column names to make them easier to understand
       # collect states
@@ -1602,21 +1615,23 @@ app_server = function(input, output, session) {
 
   # plot policy comparison
   output$PolicyComparison <- shiny::renderPlot({
+    # hack for build check warning on non exported global variables
+    ..y.. = NULL
     CustomPolicies$archiveList[[input$model_version]] %>%
-      dplyr::mutate(utility=Intellectual_Control+Renderability) %>% 
-      tidyr::pivot_longer(c(Intellectual_Control, Renderability), names_to="node") %>%
-      ggplot2::ggplot(ggplot2::aes(x=reorder(name, -value), fill=node, y=value*50)) +
+      dplyr::mutate(utility=.data$Intellectual_Control+.data$Renderability) %>% 
+      tidyr::pivot_longer(c(.data$Intellectual_Control, .data$Renderability), names_to="node") %>%
+      ggplot2::ggplot(ggplot2::aes(x=reorder(.data$name, -.data$value), fill=.data$node, y=.data$value*50)) +
       ggplot2::geom_bar(position="stack", stat="identity") + 
       ggplot2::xlab("Policy") + ggplot2::ylab("Score") +
       ggplot2::geom_hline(yintercept=0.1013*50, linetype="dashed", color = "black") +
       ggplot2::geom_hline(yintercept=1.4255*50, linetype="dashed", color = "black") +
       #geom_text(aes(1,0.3,label = "Min", vjust = -1)) + geom_text(aes(1,1.3,label = "Max", vjust = -1)) +
       ggplot2::stat_summary(
-        fun.y = sum, ggplot2::aes(label = format(round(..y..,0),nsmall=0), group = name),
+        fun.y = sum, ggplot2::aes(label = format(round(..y..,0),nsmall=0), group = .data$name),
         geom = "text", size=7, fontface="bold", vjust=-0.25
       ) +
       ggplot2::geom_text(
-        ggplot2::aes(label=format(round(value*50,0),nsmall=0)), size=5, colour="white", 
+        ggplot2::aes(label=format(round(.data$value*50,0),nsmall=0)), size=5, colour="white", 
         fontface = "bold", position = ggplot2::position_stack(vjust = 0.5)) +
       ggplot2::theme_light() + 
       ggplot2::theme(panel.border = ggplot2::element_blank(), text = ggplot2::element_text(size =20), legend.position="top", legend.title = ggplot2::element_blank())  +
@@ -1625,23 +1640,25 @@ app_server = function(input, output, session) {
   
   # plot custom model comparison
   output$BaseUtilityComparison <- shiny::renderPlot({
+    # hack for build check warning on non exported global variables
+    ..y.. = NULL
     CustomModels$base_utility.df %>%
-      dplyr::mutate(utility=Intellectual_Control+Renderability) %>% 
-      tidyr::pivot_longer(c(Intellectual_Control, Renderability), names_to="node") %>%
-      ggplot2::ggplot(ggplot2::aes(x=reorder(name, -value), fill=node, y=value*50)) +
+      dplyr::mutate(utility=.data$Intellectual_Control+.data$Renderability) %>% 
+      tidyr::pivot_longer(c(.data$Intellectual_Control, .data$Renderability), names_to="node") %>%
+      ggplot2::ggplot(ggplot2::aes(x=reorder(.data$name, -.data$value), fill=.data$node, y=.data$value*50)) +
       ggplot2::geom_bar(position="stack", stat="identity") +
       ggplot2::xlab("Model") + ggplot2::ylab("Score") +
       ggplot2::geom_hline(yintercept=0.1013*50, linetype="dashed", color = "black") +
       ggplot2::geom_hline(yintercept=1.4255*50, linetype="dashed", color = "black") +
       #geom_text(aes(1,0.3,label = "Min", vjust = -1)) + geom_text(aes(1,1.3,label = "Max", vjust = -1)) +
       ggplot2::stat_summary(
-        fun.y = sum, aes(label = format(round(..y..,0),nsmall=0), group = name),
+        fun.y = sum, aes(label = format(round(..y..,0),nsmall=0), group = .data$name),
         geom = "text", size=7, fontface="bold", vjust=-0.25
       ) +
     #geom_text(aes(label = stat(y), group = name), stat = 'summary', fun.y = sum, vjust = -1, size = 7) +
       #geom_text(aes(label=format(round(sum(value)*50,0))),vjust=-0.3, color="black", size=3.5)+
       ggplot2::geom_text(
-        ggplot2::aes(label=format(round(value*50,0),nsmall=0)), size=5, colour="white", 
+        ggplot2::aes(label=format(round(.data$value*50,0),nsmall=0)), size=5, colour="white", 
         fontface = "bold", position = ggplot2::position_stack(vjust = 0.5)) +
       ggplot2::theme_light() + 
       ggplot2::theme(panel.border = ggplot2::element_blank(), text = ggplot2::element_text(size =20), legend.position="top", legend.title = ggplot2::element_blank())  +
@@ -1770,21 +1787,22 @@ app_server = function(input, output, session) {
   plotUtility <- shiny::reactive({
     a <- utility_weighting$Renderability
     b <- utility_weighting$Intellectual
-    
+    # hack for build check warning on non exported global variables
+    ..y.. = NULL
     CustomPolicies$archiveList[[input$reportTabModelSelection]] %>%
-      tidyr::pivot_longer(c(Intellectual_Control, Renderability), names_to="policy") %>%
-      dplyr::mutate(value=ifelse(policy=="Renderability", value*a/(a+b)*100, value*b/(a+b)*100)) %>%
-      ggplot2::ggplot(ggplot2::aes(x=reorder(name, -value), fill=policy, y=value)) +
+      tidyr::pivot_longer(c(.data$Intellectual_Control, .data$Renderability), names_to="policy") %>%
+      dplyr::mutate(value=ifelse(policy=="Renderability", .data$value*a/(a+b)*100, .data$value*b/(a+b)*100)) %>%
+      ggplot2::ggplot(ggplot2::aes(x=reorder(name, -value), fill=.data$policy, y=.data$value)) +
       ggplot2::geom_bar(position="stack", stat="identity") + xlab("Policy") + ylab("Score") +
       ggplot2::geom_hline(yintercept=0.1013*50, linetype="dashed", color = "black") +
       ggplot2::geom_hline(yintercept=1.4255*50, linetype="dashed", color = "black") +
       #geom_text(aes(1,0.3,label = "Min", vjust = -1)) + geom_text(aes(1,1.3,label = "Max", vjust = -1)) +
       ggplot2::stat_summary(
-        fun.y = sum, ggplot2::aes(label = format(round(..y..,0),nsmall=0), group = name),
+        fun.y = sum, ggplot2::aes(label = format(round(..y..,0),nsmall=0), group = .data$name),
         geom = "text", size=7, fontface="bold", vjust=-0.25
       ) +
       ggplot2::geom_text(
-        ggplot2::aes(label=format(round(value,0),nsmall=0)), size=5, colour="white", 
+        ggplot2::aes(label=format(round(.data$value,0),nsmall=0)), size=5, colour="white", 
         fontface = "bold", position = ggplot2::position_stack(vjust = 0.5)) +
       ggplot2::theme_light() + 
       ggplot2::theme(panel.border = ggplot2::element_blank(), text = ggplot2::element_text(size =20), legend.position="top", legend.title = ggplot2::element_blank())  +
