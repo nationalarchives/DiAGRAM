@@ -37,7 +37,7 @@
 #' @importFrom bnlearn read.bif graphviz.plot mutilated as.grain bn.fit.barchart write.bif
 #' @importFrom gRain querygrain is.grain
 #' @importFrom readr read_csv
-#' @importFrom ggplot2 ggplot geom_bar aes xlab geom_hline stat_summary geom_text theme_light theme element_blank element_text scale_fill_manual position_stack
+#' @importFrom ggplot2 ggplot geom_bar aes xlab geom_hline stat_summary geom_text theme_light theme element_blank element_text scale_fill_manual position_stack ylab
 #' @importFrom dplyr arrange filter select rename add_row summarise
 #' @importFrom tidyr pivot_longer pivot_wider
 #' @importFrom shiny reactiveValues updateSelectInput plotOutput renderUI tagList strong renderTable
@@ -50,6 +50,8 @@
 #' @importFrom shinysky renderHotable hot.to.df
 #' @importFrom stringr str_remove
 #' @importFrom DT datatable renderDataTable
+#' @importFrom stats reorder
+#' @export
 app_server = function(input, output, session) {
   
   # -------------------- FUNCTIONS --------------------
@@ -195,7 +197,7 @@ app_server = function(input, output, session) {
     
     #####
     # suggested work around by data.table authors for no visible binding package check warning
-    Type = Score = R_score = IC_score = Difference = R_diff = IC_diff = NULL
+    Type = Score = R_score = IC_score = Difference = R_diff = IC_diff = node_name = NULL
     #####
     
     hard.evidence <- hard.evidence[
@@ -255,14 +257,15 @@ app_server = function(input, output, session) {
   # --------------------   FUNCTIONS   --------------------
   
   # -------------------- STATIC VALUES --------------------
-  stable.fit <- bnlearn::read.bif("Model.bif")
+  stable.fit <- bnlearn::read.bif(system.file("default_model","Model.bif", package = "diagram"))
   
   # node definitions and state definitions
-  node.definitions <- readr::read_csv("node_information.csv") %>% dplyr::arrange(node_name)
-  state.definitions <- readr::read_csv("node_states.csv")
+  node.definitions <- readr::read_csv(system.file("text_content", "node_information.csv", package = "diagram")) %>% 
+    dplyr::arrange(.data$node_name)
+  state.definitions <- readr::read_csv(system.file("text_content", "node_states.csv", package = "diagram"))
   
   # csv containing nodes and questions used during setup
-  setup_questions <- readr::read_csv("setup_questions.csv")
+  setup_questions <- readr::read_csv(system.file("text_content", "setup_questions.csv", package = "diagram"))
   
   # Default risk
   # JR note: calculate utility is diagram defined
@@ -274,7 +277,7 @@ app_server = function(input, output, session) {
   
   # initialise stable plot (unchanging) and reactive plot
   network <- shiny::reactiveValues(
-    model.fit = bnlearn::read.bif("Model.bif"),
+    model.fit = bnlearn::read.bif(system.file("default_model", "Model.bif", package= "diagram")),
     advanced.fit = stable.fit
   )
   
@@ -533,7 +536,7 @@ app_server = function(input, output, session) {
           system meets the needs of the organisation and 40% that their 
           digital asset management system meets the needs of the organisation. 
           We have estimated that 55% would therefore have sufficient 
-          information management systems, as you don’t need a bespoke 
+          information management systems, as you don't need a bespoke 
           digital asset management system to have support for coherent 
           information management and documentation of preservation actions, 
           but you may need more than just a catalogue system."
@@ -804,7 +807,7 @@ app_server = function(input, output, session) {
       dplyr::mutate(utility = .data$Intellectual_Control + .data$Renderability) %>% 
       tidyr::pivot_longer(c( .data$Intellectual_Control, .data$Renderability), names_to="node") %>%
       ggplot2::ggplot(
-        ggplot2::aes(x=reorder(.data$name, -.data$value), fill=.data$node, y=.data$value*50)
+        ggplot2::aes(x=stats::reorder(.data$name, -.data$value), fill=.data$node, y=.data$value*50)
       ) +
       ggplot2::geom_bar(position="stack", stat="identity") + 
       ggplot2::xlab("Policy") + ggplot2::ylab("Score") +
@@ -903,7 +906,7 @@ app_server = function(input, output, session) {
     CustomPolicies$archiveList[[input$customModelSelection]] %>%
       dplyr::mutate(utility=.data$Intellectual_Control+.data$Renderability) %>% 
       tidyr::pivot_longer(c(.data$Intellectual_Control, .data$Renderability), names_to="node") %>%
-      ggplot2::ggplot(ggplot2::aes(x=reorder(.data$name, -.data$value), fill=.data$node, y=.data$value*50)) +
+      ggplot2::ggplot(ggplot2::aes(x=stats::reorder(.data$name, -.data$value), fill=.data$node, y=.data$value*50)) +
       ggplot2::geom_bar(position="stack", stat="identity") +
       ggplot2::xlab("Policy") + ggplot2::ylab("Score") +
       ggplot2::geom_hline(yintercept=0.1013*50, linetype="dashed", color = "black") +
@@ -1425,7 +1428,7 @@ app_server = function(input, output, session) {
   }, readOnly=FALSE)
 
   # plot node conditional probabilities
-  output$nodeProbability <- renderPlot({
+  output$nodeProbability <- shiny::renderPlot({
     bnlearn::bn.fit.barchart(network$advanced.fit[[input$nodeProbTable]])
   })
   
@@ -1620,7 +1623,7 @@ app_server = function(input, output, session) {
     CustomPolicies$archiveList[[input$model_version]] %>%
       dplyr::mutate(utility=.data$Intellectual_Control+.data$Renderability) %>% 
       tidyr::pivot_longer(c(.data$Intellectual_Control, .data$Renderability), names_to="node") %>%
-      ggplot2::ggplot(ggplot2::aes(x=reorder(.data$name, -.data$value), fill=.data$node, y=.data$value*50)) +
+      ggplot2::ggplot(ggplot2::aes(x=stats::reorder(.data$name, -.data$value), fill=.data$node, y=.data$value*50)) +
       ggplot2::geom_bar(position="stack", stat="identity") + 
       ggplot2::xlab("Policy") + ggplot2::ylab("Score") +
       ggplot2::geom_hline(yintercept=0.1013*50, linetype="dashed", color = "black") +
@@ -1645,7 +1648,7 @@ app_server = function(input, output, session) {
     CustomModels$base_utility.df %>%
       dplyr::mutate(utility=.data$Intellectual_Control+.data$Renderability) %>% 
       tidyr::pivot_longer(c(.data$Intellectual_Control, .data$Renderability), names_to="node") %>%
-      ggplot2::ggplot(ggplot2::aes(x=reorder(.data$name, -.data$value), fill=.data$node, y=.data$value*50)) +
+      ggplot2::ggplot(ggplot2::aes(x=stats::reorder(.data$name, -.data$value), fill=.data$node, y=.data$value*50)) +
       ggplot2::geom_bar(position="stack", stat="identity") +
       ggplot2::xlab("Model") + ggplot2::ylab("Score") +
       ggplot2::geom_hline(yintercept=0.1013*50, linetype="dashed", color = "black") +
@@ -1792,8 +1795,9 @@ app_server = function(input, output, session) {
     CustomPolicies$archiveList[[input$reportTabModelSelection]] %>%
       tidyr::pivot_longer(c(.data$Intellectual_Control, .data$Renderability), names_to="policy") %>%
       dplyr::mutate(value=ifelse(policy=="Renderability", .data$value*a/(a+b)*100, .data$value*b/(a+b)*100)) %>%
-      ggplot2::ggplot(ggplot2::aes(x=reorder(name, -value), fill=.data$policy, y=.data$value)) +
-      ggplot2::geom_bar(position="stack", stat="identity") + xlab("Policy") + ylab("Score") +
+      ggplot2::ggplot(ggplot2::aes(x=stats::reorder(name, -value), fill=.data$policy, y=.data$value)) +
+      ggplot2::geom_bar(position="stack", stat="identity") +
+      ggplot2::xlab("Policy") + ggplot2::ylab("Score") +
       ggplot2::geom_hline(yintercept=0.1013*50, linetype="dashed", color = "black") +
       ggplot2::geom_hline(yintercept=1.4255*50, linetype="dashed", color = "black") +
       #geom_text(aes(1,0.3,label = "Min", vjust = -1)) + geom_text(aes(1,1.3,label = "Max", vjust = -1)) +

@@ -50,6 +50,7 @@
 #' @importFrom shinysky hotable
 #' @importFrom DT dataTableOutput
 #' @importFrom plotly plotlyOutput
+#' @export
 app_ui = function(req, nquestions){
   # create main dashboard page
   shinydashboard::dashboardPage(
