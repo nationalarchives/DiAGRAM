@@ -6,7 +6,7 @@
 
 # @author: Stephen James Krol, Monash University, Melbourne
 # @email: stephen.james.krol@gmail.com
-# 
+#
 # library(shiny)
 # library(rintrojs)
 # library(networkD3)
@@ -21,17 +21,17 @@
 # library(plotly)
 # library(DT)
 # library(V8)
-# 
+#
 # options(repos = BiocManager::repositories())
 # nquestions <- read_csv("setup_questions.csv") %>% nrow()
 
 #' app_ui
-#' 
+#'
 #' Defines the user interface for the DIAGRAM application
-#' 
-#' @param req Internal parameter for `{shiny}`. 
+#'
+#' @param req Internal parameter for `{shiny}`.
 #'     DO NOT REMOVE.
-#' @param nquestions integer defining the number of questions for the model creation step, 
+#' @param nquestions integer defining the number of questions for the model creation step,
 #'     typically generated from a call to `read_csv("setup_questions.csv") %>% nrow()`
 #' @importFrom shinydashboard dashboardPage
 #' @importFrom shinydashboard dashboardHeader
@@ -51,7 +51,7 @@
 #' @importFrom DT dataTableOutput
 #' @importFrom plotly plotlyOutput
 #' @export
-app_ui = function(req, nquestions){
+app_ui = function(req, nquestions = 9){
   # create main dashboard page
   shinydashboard::dashboardPage(
     skin="purple",
@@ -84,7 +84,7 @@ app_ui = function(req, nquestions){
         ),
         # Sensitivity Page
         shinydashboard::menuItem(
-          "Recommendations", 
+          "Recommendations",
           tabName = "Sensitivity",
           icon=shiny::icon("clipboard")
         ),
@@ -102,7 +102,7 @@ app_ui = function(req, nquestions){
         ),
         # Advanced Page
         shinydashboard::menuItem(
-          "Advanced customisation", 
+          "Advanced customisation",
           tabName = "AdvancedCustomiseNode",
           icon=shiny::icon("project-diagram")
         )
@@ -128,8 +128,8 @@ app_ui = function(req, nquestions){
                 shiny::strong("Important note: This model is still in development")
               ),
               shiny::p(
-                "There will be further user interface changes and additional functionality added as the 
-                project progresses. Any feedback to inform the future development would be welcome 
+                "There will be further user interface changes and additional functionality added as the
+                project progresses. Any feedback to inform the future development would be welcome
                 - please send your comments to a member of the project team.")
             ),
             shinydashboard::box(
@@ -145,13 +145,13 @@ app_ui = function(req, nquestions){
                 shiny::tags$b("M",.noWS="outside"), "odel",
                 align="center"
               ),
-              shiny::h3("Version 0.9.7 (Prototype)", align="center"), #update in June   
+              shiny::h3("Version 0.9.7 (Prototype)", align="center"), #update in June
               shiny::br(),
               shiny::p(
                 "This is the Digital Archiving Graphical Risk Assessment Model (DiAGRAM) built by the ",
                 shiny::a(href="https://warwick.ac.uk", "University of Warwick"),
                 " and ",
-                shiny::a(href="https://www.nationalarchives.gov.uk"," The National Archives"), 
+                shiny::a(href="https://www.nationalarchives.gov.uk"," The National Archives"),
                 "with support from the ",
                 shiny::a(href="https://www.heritagefund.org.uk/", "National Lottery Heritage Fund"),
                 " and the ",
@@ -182,32 +182,32 @@ app_ui = function(req, nquestions){
               shiny::p(
                 "This decision support tool enables users to score their archive's
                 digital preservation risk and then explore how this would change under
-                different policies and risk scenarios. The risk score is based on the proportion of 
+                different policies and risk scenarios. The risk score is based on the proportion of
                 files in the archive that are renderable and where the archivist has full
                 intellectual control."
               ),
               shiny::p(
                 "The underlying methodology used to create this model is based on a Bayesian network
-                - a probabilistic graphical model that captures the conditional dependencies of risk 
-                events. When historical data were unavailable, data from an expert elicitation 
+                - a probabilistic graphical model that captures the conditional dependencies of risk
+                events. When historical data were unavailable, data from an expert elicitation
                 session conducted in April 2020 were used to inform the probabilities needed for
                 this model."
               ),
               shiny::p("This interface enables users to:"),
               shiny::tags$ul(
                 shiny::tags$li(
-                  "Understand the risk definitions used in the model and 
+                  "Understand the risk definitions used in the model and
                   how the risk events are linked together"
                 ),
                 shiny::tags$li(
-                  "Create a model that reflects the policies and practices for their 
+                  "Create a model that reflects the policies and practices for their
                   Digital Archive"
                 ),
                 shiny::tags$li("Test alternative policies to see how this impacts the risk score"),
                 shiny::tags$li("Download the model and a summary of the results"),
                 shiny::tags$li("Upload a pre-built model and continue exploring scenarios from there"),
                 shiny::tags$li(
-                  "Update the probability tables for the model based on the user's own data or 
+                  "Update the probability tables for the model based on the user's own data or
                   experience"
                 ),
                 shiny::tags$li(
@@ -259,12 +259,12 @@ app_ui = function(req, nquestions){
               shiny::p(
                 shiny::tags$b("3. Advanced customisation"),
                 ": This tab allows users to edit the marginal and conditional probabilities
-                in the model directly. This allows for users to input their own data for any nodes within the model 
+                in the model directly. This allows for users to input their own data for any nodes within the model
                 or create scenarios by altering conditional probabilities."
               ),
               shiny::p(
                 shiny::tags$b("4. Report"),
-                ": This contains a summary and comparison of the policies for each model, and allows 
+                ": This contains a summary and comparison of the policies for each model, and allows
                 the model and plots to be downloaded."
               )
               #br(),
@@ -272,7 +272,7 @@ app_ui = function(req, nquestions){
             )
           )
         ),
-        
+
         # Network Tab
         shinydashboard::tabItem(
           tabName="Node_definitions",
@@ -283,8 +283,8 @@ app_ui = function(req, nquestions){
             background="orange",
             shiny::h3(shiny::strong("Important note: This model is still in development")),
             shiny::p(
-              "There will be further user interface changes and additional functionality added as the 
-              project progresses. Any feedback to inform the future development would be welcome 
+              "There will be further user interface changes and additional functionality added as the
+              project progresses. Any feedback to inform the future development would be welcome
               - please send your comments to a member of the project team."
             )
           ),
@@ -302,7 +302,7 @@ app_ui = function(req, nquestions){
                 shiny::br(),
                 shiny::tags$style(
                   type='text/css',
-                  ".selectize-input { font-size: 15px; line-height: 15px;} 
+                  ".selectize-input { font-size: 15px; line-height: 15px;}
                   .selectize-dropdown { font-size: 15px; line-height: 15px; }"
                 ),
                 shiny::selectInput(
@@ -355,8 +355,8 @@ app_ui = function(req, nquestions){
             background="orange",
             shiny::h3(shiny::strong("Important note: This model is still in development")),
             shiny::p(
-              "There will be further user interface changes and additional functionality added as the 
-                project progresses. Any feedback to inform the future development would be welcome 
+              "There will be further user interface changes and additional functionality added as the
+                project progresses. Any feedback to inform the future development would be welcome
                 - please send your comments to a member of the project team."
             )
           ),
@@ -409,7 +409,7 @@ app_ui = function(req, nquestions){
             )
           )
         ),
-        
+
         # TODO:sid - change policyTab identifier to the most appropriate (once decided)
         shinydashboard::tabItem(
           tabName="CustomiseNode",
@@ -420,8 +420,8 @@ app_ui = function(req, nquestions){
             background="orange",
             shiny::h3(shiny::strong("Important note: This model is still in development")),
             shiny::p(
-              "There will be further user interface changes and additional functionality added as the 
-              project progresses. Any feedback to inform the future development would be welcome 
+              "There will be further user interface changes and additional functionality added as the
+              project progresses. Any feedback to inform the future development would be welcome
               - please send your comments to a member of the project team."
             )
           ),
@@ -440,14 +440,14 @@ app_ui = function(req, nquestions){
               shiny::selectInput(
                 "customOaisEntitySelection",
                 shiny::h5("Select OAIS Function Entity"),
-                choices="None", 
+                choices="None",
                 multiple = TRUE
               ),
               shinydashboard::box(
                 title="Nodes checklist",
                 width=NULL,
                 shiny::checkboxGroupInput(
-                  "policyTabNodesChecklist", 
+                  "policyTabNodesChecklist",
                   label=NULL,
                   choices=character(0)
                 )
@@ -499,10 +499,10 @@ app_ui = function(req, nquestions){
                 shiny::tags$style(shiny::HTML('#RemovePolicy{background-color:red}')),
                 shiny::tags$style(shiny::HTML('#RemovePolicy{color:white}')),
                 shiny::div(shiny::actionButton('RemovePolicy', 'Remove'), style="float:right")
-              )       
+              )
             )
           )),
-        
+
         # Policy Tab
         shinydashboard::tabItem(
           tabName="AdvancedCustomiseNode",
@@ -513,8 +513,8 @@ app_ui = function(req, nquestions){
             background="orange",
             shiny::h3(shiny::strong("Important note: This model is still in development")),
             shiny::p(
-              "There will be further user interface changes and additional functionality added as the 
-              project progresses. Any feedback to inform the future development would be welcome 
+              "There will be further user interface changes and additional functionality added as the
+              project progresses. Any feedback to inform the future development would be welcome
               - please send your comments to a member of the project team."
             )
           ),
@@ -577,7 +577,7 @@ app_ui = function(req, nquestions){
                     width=8,
                     shinysky::hotable("probabilityTable")
                   )
-                  
+
                 )
               )
             ),
@@ -647,8 +647,8 @@ app_ui = function(req, nquestions){
             background="orange",
             shiny::h3(shiny::strong("Important note: This model is still in development")),
             shiny::p(
-              "There will be further user interface changes and additional functionality added as the 
-              project progresses. Any feedback to inform the future development would be welcome 
+              "There will be further user interface changes and additional functionality added as the
+              project progresses. Any feedback to inform the future development would be welcome
               - please send your comments to a member of the project team."
             )
           ),
@@ -712,7 +712,7 @@ app_ui = function(req, nquestions){
                 shiny::tags$style(shiny::HTML('#Download{background-color:green}')),
                 shiny::tags$style(shiny::HTML('#Download{color:white}')),
                 shiny::downloadButton("reportTabDownloadBtn", "Download")
-                
+
               ),
             ),
             shiny::column(
@@ -743,8 +743,8 @@ app_ui = function(req, nquestions){
             background="orange",
             shiny::h3(shiny::strong("Important note: This model is still in development")),
             shiny::p(
-              "There will be further user interface changes and additional functionality added as the 
-              project progresses. Any feedback to inform the future development would be welcome 
+              "There will be further user interface changes and additional functionality added as the
+              project progresses. Any feedback to inform the future development would be welcome
               - please send your comments to a member of the project team."
             )
           ),
@@ -769,8 +769,8 @@ app_ui = function(req, nquestions){
                 width=NULL,
                 shiny::h5(
                   "This plot shows how changing your answers to the input questions will impact the score for renderability
-                  (on the x axis) and intellectual control (on the y axis). Changes that improve the score will appear as 
-                  points above and to the right of the origin (where the axes meet) and changes that decrease the score 
+                  (on the x axis) and intellectual control (on the y axis). Changes that improve the score will appear as
+                  points above and to the right of the origin (where the axes meet) and changes that decrease the score
                   will be to the bottom and left."
                 ),
                 shiny::h5("Note: All input nodes are considered changable here but some may not be in your control."),

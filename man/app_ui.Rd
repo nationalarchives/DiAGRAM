@@ -4,7 +4,7 @@
 \alias{app_ui}
 \title{app_ui}
 \usage{
-app_ui(req, nquestions)
+app_ui(req, nquestions = 9)
 }
 \arguments{
 \item{req}{Internal parameter for \code{{shiny}}.
