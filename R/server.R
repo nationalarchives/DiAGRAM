@@ -55,28 +55,6 @@
 app_server = function(input, output, session) {
   
   # -------------------- FUNCTIONS --------------------
-  # function which caluclates utility
-  #' @importFrom bnlearn as.grain
-  #' @importFrom gRain querygrain
-  calculate_utility <- function(model) {
-    # convert model to grain object
-    if(!is_grain(model)) {
-      model.grain <- bnlearn::as.grain(model)
-    }
-    else {
-      model.grain <- model
-    }
-    # find probability of Intellectual_Control and Renderability
-    query.results <- gRain::querygrain(model.grain, nodes=c("Intellectual_Control", "Renderability"))
-    # Extract probabilities
-    prob.Intellectual_Control <- as.numeric(query.results$Intellectual_Control["Yes"])
-    prob.Renderability <- as.numeric(query.results$Renderability["Yes"])
-    utility <- list(
-      "Intellectual_Control"=prob.Intellectual_Control,
-      "Renderability"=prob.Renderability
-    )
-    return(utility)    
-  }
   
   # Function creates multiple sliders for the different states in a node
   #' @importFrom shiny sliderInput

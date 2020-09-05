@@ -1,33 +1,8 @@
-
-# Following script defines components displayed on the webpage.
-
-# This script was built for DiAGRAM by the University of Warwick and The National
-# Archive.
-
-# @author: Stephen James Krol, Monash University, Melbourne
-# @email: stephen.james.krol@gmail.com
-#
-# library(shiny)
-# library(rintrojs)
-# library(networkD3)
-# library(shinydashboard)
-# library(gRbase)
-# library(gRain)
-# library(shinysky)
-# library(shinyWidgets)
-# library(shinyjs)
-# library(shinyalert)
-# library(tidyverse)
-# library(plotly)
-# library(DT)
-# library(V8)
-#
-# options(repos = BiocManager::repositories())
-# nquestions <- read_csv("setup_questions.csv") %>% nrow()
-
 #' app_ui
 #'
-#' Defines the user interface for the DIAGRAM application
+#' Defines the user interface for the DIAGRAM application. This content is a heavily revised 
+#' version of a script built for DiAGRAM by the University of Warwick and The National
+#' Archive. Stephen James Krol, Monash University, Melbourne, stephen.james.krol@gmail.com
 #'
 #' @param req Internal parameter for `{shiny}`.
 #'     DO NOT REMOVE.

@@ -14,5 +14,7 @@ DO NOT REMOVE.}
 typically generated from a call to \code{read_csv("setup_questions.csv") \%>\% nrow()}}
 }
 \description{
-Defines the user interface for the DIAGRAM application
+Defines the user interface for the DIAGRAM application. This content is a heavily revised
+version of a script built for DiAGRAM by the University of Warwick and The National
+Archive. Stephen James Krol, Monash University, Melbourne, stephen.james.krol@gmail.com
 }

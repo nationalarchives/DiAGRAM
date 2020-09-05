@@ -6,6 +6,9 @@
 \usage{
 is_grain(obj)
 }
+\arguments{
+\item{obj}{Object to test for class "grain"}
+}
 \description{
 Function to check if model is of class "grain",
 to replace the now removed gRain::is.grain
