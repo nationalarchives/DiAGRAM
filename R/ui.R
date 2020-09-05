@@ -114,24 +114,12 @@ app_ui = function(req, nquestions = 9){
       # include introjs UI
       rintrojs::introjsUI(),
       # create content for tabs
+      dev_banner_module_ui("dev-banner"),
       shinydashboard::tabItems(
         # Home Tab
         shinydashboard::tabItem(
           tabName="Home",
           shiny::fluidRow(
-            # Welcome box
-            shinydashboard::box(
-              title = NULL,
-              width = 12,
-              background="orange",
-              shiny::h3(
-                shiny::strong("Important note: This model is still in development")
-              ),
-              shiny::p(
-                "There will be further user interface changes and additional functionality added as the
-                project progresses. Any feedback to inform the future development would be welcome
-                - please send your comments to a member of the project team.")
-            ),
             shinydashboard::box(
               title = NULL,
               width = 12,
@@ -277,17 +265,6 @@ app_ui = function(req, nquestions = 9){
         shinydashboard::tabItem(
           tabName="Node_definitions",
           shinyalert::useShinyalert(),
-          shinydashboard::box(
-            title = NULL,
-            width = 12,
-            background="orange",
-            shiny::h3(shiny::strong("Important note: This model is still in development")),
-            shiny::p(
-              "There will be further user interface changes and additional functionality added as the
-              project progresses. Any feedback to inform the future development would be welcome
-              - please send your comments to a member of the project team."
-            )
-          ),
           shiny::h1("Definitions"),
           shiny::br(),
           shiny::fluidRow(
@@ -349,17 +326,6 @@ app_ui = function(req, nquestions = 9){
         shinydashboard::tabItem(
           tabName="CustomiseModel",
           shinyalert::useShinyalert(),
-          shinydashboard::box(
-            title = NULL,
-            width = 12,
-            background="orange",
-            shiny::h3(shiny::strong("Important note: This model is still in development")),
-            shiny::p(
-              "There will be further user interface changes and additional functionality added as the
-                project progresses. Any feedback to inform the future development would be welcome
-                - please send your comments to a member of the project team."
-            )
-          ),
           shiny::h1("Create your model"),
           shiny::br(),
           shiny::fluidRow(
@@ -414,17 +380,6 @@ app_ui = function(req, nquestions = 9){
         shinydashboard::tabItem(
           tabName="CustomiseNode",
           shinyalert::useShinyalert(),
-          shinydashboard::box(
-            title = NULL,
-            width = 12,
-            background="orange",
-            shiny::h3(shiny::strong("Important note: This model is still in development")),
-            shiny::p(
-              "There will be further user interface changes and additional functionality added as the
-              project progresses. Any feedback to inform the future development would be welcome
-              - please send your comments to a member of the project team."
-            )
-          ),
           shiny::h1("Create and compare different policies"),
           shiny::br(),
           shiny::div(
@@ -507,17 +462,6 @@ app_ui = function(req, nquestions = 9){
         shinydashboard::tabItem(
           tabName="AdvancedCustomiseNode",
           shinyalert::useShinyalert(),
-          shinydashboard::box(
-            title = NULL,
-            width = 12,
-            background="orange",
-            shiny::h3(shiny::strong("Important note: This model is still in development")),
-            shiny::p(
-              "There will be further user interface changes and additional functionality added as the
-              project progresses. Any feedback to inform the future development would be welcome
-              - please send your comments to a member of the project team."
-            )
-          ),
           shiny::h1("Advanced model customisation"),
           shiny::br(),
           shiny::fluidRow(
@@ -641,17 +585,6 @@ app_ui = function(req, nquestions = 9){
         ),
         shinydashboard::tabItem(
           tabName="Report",
-          shinydashboard::box(
-            title = NULL,
-            width = 12,
-            background="orange",
-            shiny::h3(shiny::strong("Important note: This model is still in development")),
-            shiny::p(
-              "There will be further user interface changes and additional functionality added as the
-              project progresses. Any feedback to inform the future development would be welcome
-              - please send your comments to a member of the project team."
-            )
-          ),
           shiny::h1("Report"),
           shiny::br(),
           shiny::div(
@@ -737,17 +670,6 @@ app_ui = function(req, nquestions = 9){
         ),
         shinydashboard::tabItem(
           tabName="Sensitivity",
-          shinydashboard::box(
-            title = NULL,
-            width = 12,
-            background="orange",
-            shiny::h3(shiny::strong("Important note: This model is still in development")),
-            shiny::p(
-              "There will be further user interface changes and additional functionality added as the
-              project progresses. Any feedback to inform the future development would be welcome
-              - please send your comments to a member of the project team."
-            )
-          ),
           shiny::h1("Recommendations"),
           shiny::br(),
           shiny::div(
