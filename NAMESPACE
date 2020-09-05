@@ -3,6 +3,7 @@
 export("%>%")
 export(app_server)
 export(app_ui)
+export(column_chart)
 export(dev_banner_module_ui)
 export(run_app)
 import(data.table)

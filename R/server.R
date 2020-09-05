@@ -801,28 +801,8 @@ app_server = function(input, output, session) {
   
   # plot utility
   output$BasicUtilityComparison <- shiny::renderPlot({
-    # hack for build check warning on non exported global variables
-    ..y.. = NULL
     CustomModels$base_utility.df %>%
-      dplyr::mutate(utility = .data$Intellectual_Control + .data$Renderability) %>% 
-      tidyr::pivot_longer(c( .data$Intellectual_Control, .data$Renderability), names_to="node") %>%
-      ggplot2::ggplot(
-        ggplot2::aes(x=stats::reorder(.data$name, -.data$value), fill=.data$node, y=.data$value*50)
-      ) +
-      ggplot2::geom_bar(position="stack", stat="identity") + 
-      ggplot2::xlab("Policy") + ggplot2::ylab("Score") +
-      ggplot2::geom_hline(yintercept=0.1013*50, linetype="dashed", color = "black") +
-      ggplot2::geom_hline(yintercept=1.4255*50, linetype="dashed", color = "black") +
-      #geom_rect(aes(xmin=0, xmax=Inf, ymin=0, ymax=0.3), alpha=0.1, fill="Red") +
-      #geom_rect(aes(xmin=0, xmax=Inf, ymin=1.3, ymax=Inf), alpha=0.1, fill="Green") +
-      #geom_text(aes(1,0.3,label = "Min", vjust = -1)) + geom_text(aes(1,1.3,label = "Max", vjust = -1)) +
-      ggplot2::stat_summary(fun.y = sum, ggplot2::aes(label = format(round(..y..,0),nsmall=0), group = .data$name),
-                   geom = "text", size=7, fontface="bold", vjust=-0.25) +
-      ggplot2::geom_text(ggplot2::aes(label=format(round(.data$value*50,0),nsmall=0)), size=5, colour="white", 
-                fontface = "bold", position = ggplot2::position_stack(vjust = 0.5)) + 
-      ggplot2::theme_light() + 
-      ggplot2::theme(panel.border = ggplot2::element_blank(), text = ggplot2::element_text(size =20), legend.position="top", legend.title = ggplot2::element_blank())  +
-      ggplot2::scale_fill_manual(values=c("#FF6E3A","#8400CD")) #colour blind scheme
+      column_chart("Policy")
   })
   
   # Reset so new custom model can be created
@@ -901,24 +881,8 @@ app_server = function(input, output, session) {
   
   # Plot the policy comparison stacked bar chart
   output$policyTabUtilityScorePlot <- shiny::renderPlot({
-    # hack for build check warning on non exported global variables
-    ..y.. = NULL
     CustomPolicies$archiveList[[input$customModelSelection]] %>%
-      dplyr::mutate(utility=.data$Intellectual_Control+.data$Renderability) %>% 
-      tidyr::pivot_longer(c(.data$Intellectual_Control, .data$Renderability), names_to="node") %>%
-      ggplot2::ggplot(ggplot2::aes(x=stats::reorder(.data$name, -.data$value), fill=.data$node, y=.data$value*50)) +
-      ggplot2::geom_bar(position="stack", stat="identity") +
-      ggplot2::xlab("Policy") + ggplot2::ylab("Score") +
-      ggplot2::geom_hline(yintercept=0.1013*50, linetype="dashed", color = "black") +
-      ggplot2::geom_hline(yintercept=1.4255*50, linetype="dashed", color = "black") +
-        #geom_text(aes(1,0.3,label = "Min", vjust = -1)) + geom_text(aes(1,1.3,label = "Max", vjust = -1)) +
-      ggplot2::stat_summary(fun.y = sum, ggplot2::aes(label = format(round(..y..,0),nsmall=0), group = .data$name),
-                     geom = "text", size=7, fontface="bold", vjust=-0.25) +
-      ggplot2::geom_text(aes(label=format(round(.data$value*50,0),nsmall=0)), size=5, colour="white", 
-                  fontface = "bold", position = ggplot2::position_stack(vjust = 0.5)) +
-      ggplot2::theme_light() + 
-      ggplot2::theme(panel.border = ggplot2::element_blank(), text = ggplot2::element_text(size =20), legend.position="top", legend.title = ggplot2::element_blank())  +
-      ggplot2::scale_fill_manual(values=c("#FF6E3A","#8400CD")) #colour blind scheme
+      column_chart("Policy")
   })
   
   # OAIS Entities list
@@ -1618,54 +1582,14 @@ app_server = function(input, output, session) {
 
   # plot policy comparison
   output$PolicyComparison <- shiny::renderPlot({
-    # hack for build check warning on non exported global variables
-    ..y.. = NULL
     CustomPolicies$archiveList[[input$model_version]] %>%
-      dplyr::mutate(utility=.data$Intellectual_Control+.data$Renderability) %>% 
-      tidyr::pivot_longer(c(.data$Intellectual_Control, .data$Renderability), names_to="node") %>%
-      ggplot2::ggplot(ggplot2::aes(x=stats::reorder(.data$name, -.data$value), fill=.data$node, y=.data$value*50)) +
-      ggplot2::geom_bar(position="stack", stat="identity") + 
-      ggplot2::xlab("Policy") + ggplot2::ylab("Score") +
-      ggplot2::geom_hline(yintercept=0.1013*50, linetype="dashed", color = "black") +
-      ggplot2::geom_hline(yintercept=1.4255*50, linetype="dashed", color = "black") +
-      #geom_text(aes(1,0.3,label = "Min", vjust = -1)) + geom_text(aes(1,1.3,label = "Max", vjust = -1)) +
-      ggplot2::stat_summary(
-        fun.y = sum, ggplot2::aes(label = format(round(..y..,0),nsmall=0), group = .data$name),
-        geom = "text", size=7, fontface="bold", vjust=-0.25
-      ) +
-      ggplot2::geom_text(
-        ggplot2::aes(label=format(round(.data$value*50,0),nsmall=0)), size=5, colour="white", 
-        fontface = "bold", position = ggplot2::position_stack(vjust = 0.5)) +
-      ggplot2::theme_light() + 
-      ggplot2::theme(panel.border = ggplot2::element_blank(), text = ggplot2::element_text(size =20), legend.position="top", legend.title = ggplot2::element_blank())  +
-      ggplot2::scale_fill_manual(values=c("#FF6E3A","#8400CD")) #colour blind scheme
+      column_chart("Policy")
   })
   
   # plot custom model comparison
   output$BaseUtilityComparison <- shiny::renderPlot({
-    # hack for build check warning on non exported global variables
-    ..y.. = NULL
     CustomModels$base_utility.df %>%
-      dplyr::mutate(utility=.data$Intellectual_Control+.data$Renderability) %>% 
-      tidyr::pivot_longer(c(.data$Intellectual_Control, .data$Renderability), names_to="node") %>%
-      ggplot2::ggplot(ggplot2::aes(x=stats::reorder(.data$name, -.data$value), fill=.data$node, y=.data$value*50)) +
-      ggplot2::geom_bar(position="stack", stat="identity") +
-      ggplot2::xlab("Model") + ggplot2::ylab("Score") +
-      ggplot2::geom_hline(yintercept=0.1013*50, linetype="dashed", color = "black") +
-      ggplot2::geom_hline(yintercept=1.4255*50, linetype="dashed", color = "black") +
-      #geom_text(aes(1,0.3,label = "Min", vjust = -1)) + geom_text(aes(1,1.3,label = "Max", vjust = -1)) +
-      ggplot2::stat_summary(
-        fun.y = sum, aes(label = format(round(..y..,0),nsmall=0), group = .data$name),
-        geom = "text", size=7, fontface="bold", vjust=-0.25
-      ) +
-    #geom_text(aes(label = stat(y), group = name), stat = 'summary', fun.y = sum, vjust = -1, size = 7) +
-      #geom_text(aes(label=format(round(sum(value)*50,0))),vjust=-0.3, color="black", size=3.5)+
-      ggplot2::geom_text(
-        ggplot2::aes(label=format(round(.data$value*50,0),nsmall=0)), size=5, colour="white", 
-        fontface = "bold", position = ggplot2::position_stack(vjust = 0.5)) +
-      ggplot2::theme_light() + 
-      ggplot2::theme(panel.border = ggplot2::element_blank(), text = ggplot2::element_text(size =20), legend.position="top", legend.title = ggplot2::element_blank())  +
-      ggplot2::scale_fill_manual(values=c("#FF6E3A","#8400CD")) #colour blind scheme
+      column_chart("Model")
   })
   
   # REPORT TAB
