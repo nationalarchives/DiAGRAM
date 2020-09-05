@@ -39,7 +39,8 @@ Imports:
     stringr,
     tibble,
     tidyr,
-    V8
+    V8,
+    purrr
 Remotes:
     AnalytixWare/ShinySky
 Encoding: UTF-8

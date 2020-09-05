@@ -35,7 +35,7 @@
 #' @importFrom utils zip
 #' @importFrom grDevices png dev.off
 #' @importFrom bnlearn read.bif graphviz.plot mutilated as.grain bn.fit.barchart write.bif
-#' @importFrom gRain querygrain is.grain
+#' @importFrom gRain querygrain
 #' @importFrom readr read_csv
 #' @importFrom ggplot2 ggplot geom_bar aes xlab geom_hline stat_summary geom_text theme_light theme element_blank element_text scale_fill_manual position_stack ylab
 #' @importFrom dplyr arrange filter select rename add_row summarise
@@ -60,7 +60,7 @@ app_server = function(input, output, session) {
   #' @importFrom gRain querygrain
   calculate_utility <- function(model) {
     # convert model to grain object
-    if(gRain::is.grain(model)==FALSE) {
+    if(!is_grain(model)) {
       model.grain <- bnlearn::as.grain(model)
     }
     else {
