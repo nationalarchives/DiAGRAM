@@ -1,6 +1,6 @@
 context("Testing the app runs")
 
-app = shinytest::ShinyDriver$new("../../R/")
+app = shinytest::ShinyDriver$new(system.file("example", package = "diagram"))
 
 test_that("The app runs", {
 

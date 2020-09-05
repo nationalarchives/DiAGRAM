@@ -1,0 +1,1 @@
+diagram::run_app()
