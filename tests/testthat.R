@@ -1,2 +1,2 @@
 library(testthat)
-test_check("diagram")
+test_check("diagramNAT")

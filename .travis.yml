@@ -16,6 +16,9 @@ jobs:
       repos:
         CRAN: https://packagemanager.rstudio.com/all/__linux__/xenial/latest
     - r: release
+      repos:
+        CRAN: https://packagemanager.rstudio.com/all/__linux__/xenial/latest
+
     - r: devel
       repos:
         CRAN: https://packagemanager.rstudio.com/all/__linux__/xenial/latest
@@ -31,21 +34,22 @@ before_install:
     - echo "options(HTTPUserAgent = paste0('R/', getRversion(), ' R (',
        paste(getRversion(), R.version['platform'], R.version['arch'], R.version['os']),
        ')'))" >> ~/.Rprofile.site
+    - Rscript -e 'install.packages("Rcpp", repos = "https://cloud.r-project.org")'
     - Rscript -e 'install.packages("BiocManager")'
-    - Rscript -e 'BiocManager::install(c("graph", "gRBase", "RBGL", "Rgraphviz"))'
+    - Rscript -e 'BiocManager::install(c("graph", "RBGL", "Rgraphviz"))'
 
-# gRain is installed then we need to install on top
-before_script:
-    - Rscript -e 'install.packages("functional")' # for gRain 1.3-0
-    - Rscript -e 'install.packages("https://cran.r-project.org/src/contrib/Archive/gRain/gRain_1.3-0.tar.gz", repos=NULL, type="source")'
-
-r_github_packages: AnalytixWare/ShinySky
+r_github_packages:
+  - AnalytixWare/ShinySky
+  - rstudio/packrat
 
 # Delete this when R package passes with no warnings
+# gRain is installed then we need to install on top
 script:
+  - Rscript -e 'install.packages("functional")' # for gRain 1.3-0
+  - Rscript -e 'install.packages("https://cran.r-project.org/src/contrib/Archive/gRain/gRain_1.3-0.tar.gz", repos=NULL, type="source")'
   - R CMD build .
 
-#after_success:
-#  - Rscript -e "if (Sys.getenv('TRAVIS_R_VERSION_STRING') == 'release') source('deploy_to_shinyapps.R')"
+after_success:
+  - Rscript -e "if (Sys.getenv('TRAVIS_R_VERSION_STRING') == 'release') source('deploy_to_shinyapps.R')"
 
 
