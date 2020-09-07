@@ -16,6 +16,9 @@ jobs:
       repos:
         CRAN: https://packagemanager.rstudio.com/all/__linux__/xenial/latest
     - r: release
+      repos:
+        CRAN: https://packagemanager.rstudio.com/all/__linux__/xenial/latest
+
     - r: devel
       repos:
         CRAN: https://packagemanager.rstudio.com/all/__linux__/xenial/latest
@@ -31,6 +34,7 @@ before_install:
     - echo "options(HTTPUserAgent = paste0('R/', getRversion(), ' R (',
        paste(getRversion(), R.version['platform'], R.version['arch'], R.version['os']),
        ')'))" >> ~/.Rprofile.site
+    - Rscript -e 'install.packages("Rcpp", repos = "https://cloud.r-project.org")'
     - Rscript -e 'install.packages("BiocManager")'
     - Rscript -e 'BiocManager::install(c("graph", "RBGL", "Rgraphviz"))'
 
