@@ -1,1 +1,1 @@
-diagram::run_app()
+diagramNAT::run_app()
