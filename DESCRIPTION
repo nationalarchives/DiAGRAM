@@ -42,6 +42,7 @@ Imports:
 Suggests:
     shinytest,
     testthat
+biocViews:
 Remotes:
     AnalytixWare/ShinySky
 Encoding: UTF-8
