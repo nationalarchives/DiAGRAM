@@ -2,11 +2,12 @@ if (!requireNamespace("rsconnect")) install.packages("rsconnect")
 if (!requireNamespace("stringr")) install.packages("stringr")
 if (!requireNamespace("cli")) install.packages("cli")
 
+# Required for packrat to get a repo
 install_pkg = function() {
   cli::cli_h1("Install pkg")
   path = paste(Sys.getenv('TRAVIS_REPO_SLUG'), Sys.getenv("TRAVIS_BRANCH"), sep = "@")
   cli::cli_alert_info("Installing {path}")
-  remotes::install_github(path)
+  remotes::install_github(path, upgrade = "never")
   cli::cli_alert_success("{path} installed!")
 }
 
