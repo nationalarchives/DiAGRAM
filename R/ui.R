@@ -113,7 +113,7 @@ app_ui = function(req, nquestions = 9){
                   shiny::tags$b("G", .noWS="outside"), "raphical",
                   shiny::tags$b("R", .noWS="outside"), "isk ",
                   shiny::tags$b("A", .noWS="outside"), "ssessment ",
-                  shiny::tags$b("M",.noWS="outside"), "odel",
+                  shiny::tags$b("M", .noWS="outside"), "odel",
                   align="center"
                 ),
                 shiny::h3("Version 0.9.7 (Prototype)", align="center"), #update in June
