@@ -1,6 +1,6 @@
 #' app_ui
 #'
-#' Defines the user interface for the DIAGRAM application. This content is a heavily revised 
+#' Defines the user interface for the DIAGRAM application. This content is a heavily revised
 #' version of a script built for DiAGRAM by the University of Warwick and The National
 #' Archive. Stephen James Krol, Monash University, Melbourne, stephen.james.krol@gmail.com
 #'
@@ -29,7 +29,7 @@
 app_ui = function(req, nquestions = 9){
   # create main dashboard page
   shiny::addResourcePath(
-    "www", system.file("assets/www", package = "diagram")
+    "www", system.file("assets/www", package = "diagramNAT")
   )
   shiny::tagList(
     shiny::tags$head(shiny::tags$link(
@@ -240,7 +240,7 @@ app_ui = function(req, nquestions = 9){
               )
             )
           ),
-          
+
           # Network Tab
           shinydashboard::tabItem(
             tabName="Node_definitions",
@@ -348,7 +348,7 @@ app_ui = function(req, nquestions = 9){
               )
             )
           ),
-          
+
           # TODO:sid - change policyTab identifier to the most appropriate (once decided)
           shinydashboard::tabItem(
             tabName="CustomiseNode",
@@ -426,7 +426,7 @@ app_ui = function(req, nquestions = 9){
                 )
               )
             )),
-          
+
           # Policy Tab
           shinydashboard::tabItem(
             tabName="AdvancedCustomiseNode",
@@ -486,7 +486,7 @@ app_ui = function(req, nquestions = 9){
                       width=8,
                       shinysky::hotable("probabilityTable")
                     )
-                    
+
                   )
                 )
               ),
@@ -604,7 +604,7 @@ app_ui = function(req, nquestions = 9){
                   ),
                   shiny::br(),
                   shiny::downloadButton("reportTabDownloadBtn", "Download")
-                  
+
                 ),
               ),
               shiny::column(
