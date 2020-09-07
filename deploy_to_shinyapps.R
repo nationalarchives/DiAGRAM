@@ -20,9 +20,10 @@ deploy = function(account = "jumpingrivers", server = "shinyapps.io") {
                             secret = Sys.getenv("shinyapps_io_secret"))
   slug = stringr::str_match(Sys.getenv('TRAVIS_REPO_SLUG'), "/(.*)")[1, 2]
   appName = paste(slug, Sys.getenv("TRAVIS_BRANCH"), sep = "-")
-  rsconnect::deployApp(account = account, server = server, appName = appName)
+  rsconnect::deployApp(
+    account = account, server = server,
+    appDir = system.file("example", package = "diagramNAT"), appName = appName)
   cli::cli_alert_success("{appName} successfully deployed")
-
 }
 
 terminate = function(account = "jumpingrivers", server = "shinyapps.io") {
