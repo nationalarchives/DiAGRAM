@@ -20,7 +20,6 @@ Imports:
     ggplot2,
     gRain (== 1.3.0),
     graph,
-    gRbase,
     gridExtra,
     magrittr,
     networkD3,
