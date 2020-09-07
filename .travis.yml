@@ -47,7 +47,7 @@ r_github_packages:
 script:
   - R CMD build .
 
-#after_success:
-#  - Rscript -e "if (Sys.getenv('TRAVIS_R_VERSION_STRING') == 'release') source('deploy_to_shinyapps.R')"
+after_success:
+  - Rscript -e "if (Sys.getenv('TRAVIS_R_VERSION_STRING') == 'release') source('deploy_to_shinyapps.R')"
 
 
