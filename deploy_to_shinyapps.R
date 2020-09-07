@@ -1,6 +1,8 @@
 if (!requireNamespace("rsconnect")) install.packages("rsconnect")
 if (!requireNamespace("stringr")) install.packages("stringr")
 if (!requireNamespace("cli")) install.packages("cli")
+# Add Biconductor repos
+options(repos = BiocManager::repositories())
 
 # Required for packrat to get a repo
 install_pkg = function() {
