@@ -10,8 +10,7 @@ Description: This package provides all the necessary pieces
     for running the shiny application diagram.  It was created as part of
     the effort to improve reproducability and maintainability of the
     tool.
-License: `use_mit_license()`, `use_gpl3_license()` or friends to
-    pick a license
+License: file LICENSE
 Imports: 
     BiocManager,
     bnlearn,
@@ -26,6 +25,7 @@ Imports:
     magrittr,
     networkD3,
     plotly,
+    purrr,
     readr,
     Rgraphviz,
     rintrojs,
@@ -39,8 +39,10 @@ Imports:
     stringr,
     tibble,
     tidyr,
-    V8,
-    purrr
+    V8
+Suggests:
+    shinytest,
+    testthat
 Remotes:
     AnalytixWare/ShinySky
 Encoding: UTF-8
