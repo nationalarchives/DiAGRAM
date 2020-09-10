@@ -38,7 +38,8 @@ Imports:
     stringr,
     tibble,
     tidyr,
-    V8
+    V8,
+    jsonlite
 Suggests:
     shinytest,
     testthat
