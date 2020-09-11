@@ -31,17 +31,17 @@
 # m2p1 = m2
 # m2p1[[6]] = 1:3*100/6
 #
-# model2 = bind_rows(
+# model2 = dplyr::bind_rows(
 #   m2 %>% model_policy_row("random model", notes = "Just set a model with random values"),
 #   m2p1 %>% model_policy_row("random model", "random policy", "same random model, with some values randomly tweaked")
 # )
 #
-# temp = bind_rows(
+# temp = dplyr::bind_rows(
 #   model1,
 #   model2
 # )
 #
-# temp = bind_cols(temp, purrr::map_dfr(df$response, ~{
+# temp = dplyr::bind_cols(temp, purrr::map_dfr(temp$response, ~{
 #   score_model(model, format_responses(.x)) %>% unlist
 # }))
 #

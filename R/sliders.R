@@ -84,11 +84,18 @@ sliders_group_module_server = function(input, output, session, state = c(20, 20,
   #   print("server NA state")
   #   state = c(20,20,40)
   # }
+  observeEvent(state(),{
+    print('initialise group state')
+    my_state = state()
+    reactive_state$s1 = my_state[1]
+    reactive_state$s2 = my_state[2]
+    reactive_state$s3 = my_state[3]
+  })
 
   reactive_state = shiny::reactiveValues(
-    s1 = state[1],
-    s2 = state[2],
-    s3 = state[3]
+    s1 = NULL,# state[1],
+    s2 = NULL,# state[2],
+    s3 = NULL# state[3]
   )
 
   return_val = reactive({
