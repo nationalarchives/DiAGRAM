@@ -99,6 +99,7 @@ questions_module_ui = function(id, question_data, default_response) {
         div(
           "Your responses have been stored!",
           shiny::actionButton(ns("restart"), "Create Another"),
+          shiny::actionButton(ns("policy"), "Add a scenario"),
           shiny::actionButton(ns("visualise"), "Visualise Results")
         )
       )
@@ -190,7 +191,7 @@ questions_module_server = function(input, output, session, question_data, defaul
     }, {
     ix = current_state()
     # only show next when current state is bigger than 1
-    shinyjs::toggleElement('question-next-container', condition = ix > 1  & ix < length(state_ids) & input$name != '')
+    shinyjs::toggleElement('question-next-container', condition = ix > 1  & ix < length(state_ids) -1 & input$name != '')
     shinyjs::toggleElement('question-back-container', condition = ix > 2 & ix < length(state_ids))
     shinyjs::toggleElement('question-header-container', condition = ix > 2 & ix < length(state_ids), anim = TRUE, animType = "fade")
     shinyjs::toggleElement('question-finish-container', condition = ix == (length(state_ids) - 1))
@@ -213,10 +214,6 @@ questions_module_server = function(input, output, session, question_data, defaul
       orig_state_rv[[nam]] = orig_state_rv[[nam]] + 1
       orig_state_rv[[nam]] = orig_state_rv[[nam]] - 1
     }
-    # outputs <<- purrr::map(question_block, function(question) {
-    #   module_args = c(list(module = question$server_func, id = question$id), question$server_args)
-    #   do.call(callModule, module_args)
-    # }) %>% setNames(purrr::map(question_data, 'node'))
     current_state(1)
   }, ignoreInit = TRUE)
 
@@ -259,7 +256,8 @@ questions_module_server = function(input, output, session, question_data, defaul
     print(return_val())
   })
 
-  return(list(state = return_val, name = reactive(input$name), comments = reactive(input$comment), finish = reactive(input$finish)))
+  return(list(state = return_val, name = reactive(input$name), comments = reactive(input$comment), finish = reactive(input$finish),
+              scenario = reactive(input$policy), visualise = reactive(input$visualise)))
 }
 
 # q_block = create_question_block(question_data[-1], default_response)
