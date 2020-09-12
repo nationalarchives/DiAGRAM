@@ -1,5 +1,6 @@
 # # model
-# model = bnlearn::read.bif(system.file("default_model/Model.bif",package = "diagramNAT"))
+# model = bnlearn::read.bif(system.file("default_model/Model.bif",
+#                                       package = "diagramNAT"))
 #
 # # original response
 # default = load_responses("inst/default_model/default_response.json")
@@ -25,6 +26,7 @@
 # )
 #
 # # new model
+# library("diagramNAT")
 # m2 = generate_example_reponse()
 #
 # # model 2 policy 1
@@ -46,20 +48,71 @@
 # }))
 #
 #
-#
 # # mutate(response = purrr::map_chr(response, ~{.x %>% jsonlite::toJSON(auto_unbox = TRUE) %>% as.character()})) %>%
+# library("htmltools")
+#
+# bar_chart = function(label,
+#                      width = "100%",
+#                      height = "16px",
+#                      fill = "#00bfc4",
+#                      background = NULL) {
+#   bar = div(style = list(
+#     background = fill,
+#     width = width,
+#     height = height
+#   ))
+#   chart = div(style = list(
+#     flexGrow = 1,
+#     marginLeft = "8px",
+#     background = background
+#   ),
+#   bar)
+#   div(style = list(display = "flex", alignItems = "center"), label, chart)
+# }
 #
 # temp %>%
-#   select(model, policy, "Intellectual Control" = Intellectual_Control, Renderability, notes) %>%
-#   mutate_if(is.numeric, ~round(.x,2)) %>%
+#   dplyr::select(model, policy, "Intellectual Control" = Intellectual_Control, Renderability, notes) %>%
+#   dplyr::rename_with(stringr::str_to_title) %>%
+#   dplyr::mutate_if(is.numeric, ~ round(.x, 2)) %>%
 #   reactable::reactable(
-#     groupBy = "model",
+#     groupBy = "Model",
+#     columns = list(
+#       `Intellectual Control` = reactable::colDef(
+#         align = "left",
+#         cell = function(value) {
+#           width = paste0(value / 1 * 100, "%")
+#           bar_chart(value, width = width, fill = "#358694")
+#         }
+#       ),
+#       Renderability = reactable::colDef(
+#         align = "left",
+#         cell = function(value) {
+#           width = paste0(value / 1 * 100, "%")
+#           bar_chart(value, width = width, fill = "#354694")
+#         }
+#       )
+#     ),
 #     details = function(index) {
 #       print(index)
-#       res = temp[index,]$response[[1]]
+#       res = temp[index, ]$response[[1]]
 #       tbl = reactable::reactable(format_responses(res))
 #       htmltools::div(style = list(margin = "12px 45px"), tbl)
 #     },
 #     # onClick = "expand",
-#     rowStyle = list(cursor = "pointer")
+#     #   rowStyle = list(cursor = "pointer"),
+#     borderless = TRUE,
+#     onClick = "select",
+#     selection = "multiple",
+#     highlight = TRUE,
+#     rowStyle = htmlwidgets::JS(
+#       "function(rowInfo) {
+#     if (rowInfo && rowInfo.selected) {
+#       return { backgroundColor: '#eee', boxShadow: 'inset 2px 0 0 0 #358694' }
+#     }
+#   }"
+#     ),
+#     style = list(fontFamily = "lato"),
 #   )
+#
+# plot = sparkline::sparkline(values = c(1, 0.8), type = "bullet", chartRangeMin = 0, chartRangeMax = 1)
+# plot$jsHooks
