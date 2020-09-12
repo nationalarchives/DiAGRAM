@@ -38,7 +38,7 @@ create_question_block = function(questions, default_response = NA, ns) {
   purrr::map(questions, formulate_question, default_response = default_response, ns = ns)
 }
 
-questions_module_ui = function(id, question_data, default_response) {
+questions_module_ui = function(id, question_data, default_response, is_policy = FALSE) {
   ns = shiny::NS(id)
   question_block = create_question_block(question_data, default_response, ns)
   questions_el = purrr::map(seq_along(question_block), function(i) {
@@ -80,7 +80,7 @@ questions_module_ui = function(id, question_data, default_response) {
   naming_el = shinyjs::hidden(div(
     id = ns('question-naming-container'),
     class = "question-name",
-    shiny::textInput(ns("name"), label = "Give it a name", placeholder = "Baseline")
+    shiny::textInput(ns("name"), label = "Give it a name", placeholder = if(is_policy) "Scenario" else "Baseline")
   ))
 
   # model finishing starts hidden
@@ -140,7 +140,7 @@ questions_module_ui = function(id, question_data, default_response) {
       class = "question-container",
       shinyjs::useShinyjs(),
       header_el,
-      launch_el,
+      if(is_policy) NULL else launch_el,
       naming_el,
       questions_el,
       back_el,
@@ -151,7 +151,7 @@ questions_module_ui = function(id, question_data, default_response) {
   )
 }
 
-questions_module_server = function(input, output, session, question_data, default_response) {
+questions_module_server = function(input, output, session, question_data, default_response, is_policy = FALSE) {
   ## set up the question block ready to cycle through questions
   ns = session$ns
   question_block = create_question_block(question_data, default_response, ns)
@@ -182,7 +182,7 @@ questions_module_server = function(input, output, session, question_data, defaul
   ), "-container")
 
   n_q = length(question_block)
-  current_state = shiny::reactiveVal(1)
+  current_state = shiny::reactiveVal(if(is_policy) 2 else 1)
   # previous_state = shiny_reactiveVal(0)
   observeEvent({
     current_state()
@@ -257,7 +257,12 @@ questions_module_server = function(input, output, session, question_data, defaul
   })
 
   return(list(state = return_val, name = reactive(input$name), comments = reactive(input$comment), finish = reactive(input$finish),
-              scenario = reactive(input$policy), visualise = reactive(input$visualise)))
+              scenario = reactive(input$policy), visualise = reactive(input$visualise),
+              go = reactive(input$go)))
+}
+
+model_policy_row = function(responses, model_name, policy_name = NA, notes = NA) {
+  tibble::tibble(model = model_name, policy = policy_name, notes = notes ,response = list(responses))
 }
 
 # q_block = create_question_block(question_data[-1], default_response)
@@ -265,143 +270,170 @@ questions_module_server = function(input, output, session, question_data, defaul
 # q_block = q_block[2:3]
 
 ## example
+#
+# questions = question_data = read_config("temp.yaml")
+# default_response = load_responses("inst/default_model/default_response.json")
+# model = bnlearn::read.bif(system.file("default_model/Model.bif", package = "diagramNAT"))
+# # q_id = purrr::map_chr(questions, 'node')
+# question_data = question_data[-1]
+# # q = question = question_data[[1]]
+# library(reactable)
+# my_ui = function(question_data, default_response) {
+#
+#   # create main dashboard page
+#   shiny::addResourcePath(
+#     "www", system.file("assets/www", package = "diagramNAT")
+#   )
+#   shiny::tagList(
+#     shiny::tags$head(shiny::tags$link(
+#       rel = "stylesheet", type = "text/css",
+#       href = "www/ui.css"
+#     )),
+#     shinydashboard::dashboardPage(
+#       skin="purple",
+#       # Add header and title to Dashboard
+#       shinydashboard::dashboardHeader(
+#         title="DiAGRAM"
+#       ),
+#       # Add dashboard sidebar
+#       shinydashboard::dashboardSidebar(
+#         shinydashboard::sidebarMenu(
+#           id = "sidebarMenu",
+#           shinydashboard::menuItem(
+#             "Home", tabName = "Home", icon = shiny::icon("home")
+#           ),
+#           shinydashboard::menuItem(
+#             "Model", tabName = "model", icon = shiny::icon("user-edit")
+#           ),
+#           shinydashboard::menuItem(
+#             "Scenario", tabName = "scenario"
+#           ),
+#           shinydashboard::menuItem(
+#             "Visualise", tabName = "visualise"
+#           )
+#         )
+#       ),
+#       shinydashboard::dashboardBody(
+#         id = "dashboardBody",
+#         dev_banner_module_ui('dev-banner'),
+#         shinydashboard::tabItems(
+#           # id = "menu-select",
+#           shinydashboard::tabItem(
+#             tabName = "Home",
+#             home_tab()
+#           ),
+#           shinydashboard::tabItem(
+#             tabName = "model",
+#             shiny::column(
+#               width = 12,
+#               shinydashboard::box(
+#                 title = NULL, width = 12,
+#                 questions_module_ui('model-questions', question_data, default_response)
+#               )
+#             )
+#           ),
+#           shinydashboard::tabItem(
+#             tabName = "scenario",
+#
+#           ),
+#           shinydashboard::tabItem(
+#             tabName = "visualise"
+#           )
+#         )
+#       )
+#
+#     )
+#   )
+# }
+#
+#   #,
+#   # reactable::reactableOutput('table')
+#   # tableOutput("rand")
+# # )
+#
 
-questions = question_data = read_config("temp.yaml")
-default_response = load_responses("inst/default_model/default_response.json")
-model = bnlearn::read.bif(system.file("default_model/Model.bif", package = "diagramNAT"))
-# q_id = purrr::map_chr(questions, 'node')
-question_data = question_data[-1]
-# q = question = question_data[[1]]
-library(reactable)
-my_ui = function(question_data, default_response) {
-
-  # create main dashboard page
-  shiny::addResourcePath(
-    "www", system.file("assets/www", package = "diagramNAT")
-  )
-  shiny::tagList(
-    shiny::tags$head(shiny::tags$link(
-      rel = "stylesheet", type = "text/css",
-      href = "www/ui.css"
-    )),
-    shinydashboard::dashboardPage(
-      skin="purple",
-      # Add header and title to Dashboard
-      shinydashboard::dashboardHeader(
-        title="DiAGRAM"
-      ),
-      # Add dashboard sidebar
-      shinydashboard::dashboardSidebar(
-        shinydashboard::sidebarMenu(
-          id = "sidebarMenu",
-          shinydashboard::menuItem(
-            "Home", tabName = "Home", icon = shiny::icon("home")
-          ),
-          shinydashboard::menuItem(
-            "Model", tabName = "model", icon = shiny::icon("user-edit")
-          )
-        )
-      ),
-      shinydashboard::dashboardBody(
-        id = "dashboardBody",
-        dev_banner_module_ui('dev-banner'),
-        shinydashboard::tabItems(
-          shinydashboard::tabItem(
-            tabName = "Home",
-            home_tab()
-          ),
-          shinydashboard::tabItem(
-            tabName = "model",
-            shiny::column(
-              width = 12,
-              shinydashboard::box(
-                title = NULL, width = 12,
-                questions_module_ui('model-questions', question_data, default_response)
-              )
-            )
-          )
-        )
-      )
-
-    )
-  )
-}
-
-  #,
-  # reactable::reactableOutput('table')
-  # tableOutput("rand")
-# )
-
-model_policy_row = function(responses, model_name, policy_name = NA, notes = NA) {
-  tibble::tibble(model = model_name, policy = policy_name, notes = notes ,response = list(responses))
-}
-
-server = function(input, output, session) {
-  shiny::addResourcePath("sbs", system.file("www", package = "shinyBS"))
-  q_output = callModule(questions_module_server, 'model-questions', question_data = question_data, default_response = default_response)
-
-  model_obj = reactiveValues(
-    data = tibble(model = character(), policy = character(), notes = character(), response = list())
-  )
-
-  table_data = reactive({
-    df = model_obj$data
-    print(nrow(df) > 0)
-    # req(nrow(df) > 0)
-    if(nrow(df) > 0) {
-      mods = dplyr::bind_cols(df, purrr::map_dfr(df$response, ~{
-        score_model(model, format_responses(.x)) %>% unlist
-      }))
-      print("table")
-      mods %>%
-        dplyr::select(
-          model, policy, "Intellectual Control" = Intellectual_Control,
-          Renderability, notes, response
-        ) %>%
-        dplyr::mutate_if(is.numeric, ~round(.x,2))
-    }
-    else {
-      NA
-    }
-
-  })
-
-  observe({
-    print(model_obj$data)
-  })
-
-  observe(print(str(table_data())))
-
-
-  # output$rand = renderTable({
-  #   table_data()
-  # })
-
-  output$table = reactable::renderReactable({
-    print("draw table")
-    if(!is.na(table_data())){
-      mods = table_data()
-      reactable::reactable(
-        mods %>% select(-response),
-        groupBy = "model",
-        details = function(index) {
-          print(index)
-          res = mods[index,]$response[[1]]
-          tbl = reactable::reactable(format_responses(res))
-          htmltools::div(style = list(margin = "12px 45px"), tbl)
-        },
-        onClick = "expand",
-        rowStyle = list(cursor = "pointer")
-      )
-    }
-
-  })
-
-  observeEvent(q_output$finish(), {
-    print("finished")
-    new_row = model_policy_row(q_output$state(), model_name = q_output$name(), notes = q_output$comments())
-    model_obj$data = dplyr::bind_rows(model_obj$data, new_row)
-  })
-}
-
-shiny::shinyApp(ui = my_ui(question_data, default_response), server)
+#
+# server = function(input, output, session, question_data, default_response) {
+#   shiny::addResourcePath("sbs", system.file("www", package = "shinyBS"))
+#   # output from the model builder tab
+#   q_output = callModule(questions_module_server, 'model-questions', question_data = question_data, default_response = default_response)
+#
+#   observeEvent(q_output$scenario(),{
+#     shinydashboard::updateTabItems(session = shiny::getDefaultReactiveDomain(), inputId = "sidebarMenu", selected = 'scenario')
+#   })
+#
+#   observeEvent(q_output$visualise(),{
+#     shinydashboard::updateTabItems(session = shiny::getDefaultReactiveDomain(), inputId = "sidebarMenu", selected = 'visualise')
+#   })
+#
+#   model_obj = reactiveValues(
+#     data = tibble(model = character(), policy = character(), notes = character(), response = list())
+#   )
+#
+#
+#
+#
+#
+#
+#
+#   # table_data = reactive({
+#   #   df = model_obj$data
+#   #   print(nrow(df) > 0)
+#   #   # req(nrow(df) > 0)
+#   #   if(nrow(df) > 0) {
+#   #     mods = dplyr::bind_cols(df, purrr::map_dfr(df$response, ~{
+#   #       score_model(model, format_responses(.x)) %>% unlist
+#   #     }))
+#   #     print("table")
+#   #     mods %>%
+#   #       dplyr::select(
+#   #         model, policy, "Intellectual Control" = Intellectual_Control,
+#   #         Renderability, notes, response
+#   #       ) %>%
+#   #       dplyr::mutate_if(is.numeric, ~round(.x,2))
+#   #   }
+#   #   else {
+#   #     NA
+#   #   }
+#   #
+#   # })
+#
+#   # observe({
+#   #   print(model_obj$data)
+#   # })
+#
+#   # observe(print(str(table_data())))
+#
+#
+#   # output$rand = renderTable({
+#   #   table_data()
+#   # })
+#
+#   # output$table = reactable::renderReactable({
+#   #   print("draw table")
+#   #   if(!is.na(table_data())){
+#   #     mods = table_data()
+#   #     reactable::reactable(
+#   #       mods %>% select(-response),
+#   #       groupBy = "model",
+#   #       details = function(index) {
+#   #         print(index)
+#   #         res = mods[index,]$response[[1]]
+#   #         tbl = reactable::reactable(format_responses(res))
+#   #         htmltools::div(style = list(margin = "12px 45px"), tbl)
+#   #       },
+#   #       onClick = "expand",
+#   #       rowStyle = list(cursor = "pointer")
+#   #     )
+#   #   }
+#   #
+#   # })
+#
+#   observeEvent(q_output$finish(), {
+#     print("finished")
+#     new_row = model_policy_row(q_output$state(), model_name = q_output$name(), notes = q_output$comments())
+#     model_obj$data = dplyr::bind_rows(model_obj$data, new_row)
+#   })
+# }
+#
+# shiny::shinyApp(ui = my_ui(question_data, default_response), purrr::partial(server, question_data = question_data, default_response = default_response))
