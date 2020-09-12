@@ -1,0 +1,171 @@
+question1:
+  node: Technical_Skills
+  type: slider
+  definition: Bespoke digital preservation skills such as awareness of technological
+    trends, detailed knowledge of storage media, hardware and software, skills to
+    perform file format migration, skills to find emulating software etc?
+  text: How would you rate the digital preservation technical skills within your archive?
+    Questions to consider when answering include... Does capability exist within your
+    organisation to carry out file format migration, software emulation, and data
+    recovery from damaged/obsolete media? Do staff have the skills to investigate
+    and manipulate data, including the ability to make pivot tables in Excel and/or
+    basic coding?
+  options:
+  - Good
+  - Poor
+  detail:
+  - We have the capability to perform actions such as file format migration, software
+    emulation and data recovery, as well as the ability to investigate and manipulate
+    data, including intermediate Excel skills (e.g. ability to make pivot tables)
+    and basic coding skills.
+  - We do not have the capability to perform actions such as file format migration,
+    software emulation and data recovery, nor the ability to investigate and manipulate
+    data.
+question2:
+  node: System_Security
+  type: slider
+  definition: A secure system can protect data from deletion or modification from
+    any unauthorized party, and it ensures that when an authorized person makes a
+    change that should not have been made the damage can be reversed. Definition from
+    forcepoint, https://www.forcepoint.com/cyber-edu/cia-triad.
+  text: How would you rate the system security within your archive? Questions to consider
+    when answering include... Do you have regular security audits? Do you have appropriate
+    IT support? Do you check for viruses on acquisition? Do server communications
+    go through a restrictive firewall? Is physical access to equipment appropriately
+    restricted? Is server access restricted to specific personnel? Is there permissions
+    management to archival systems? Do you ensure that no member of staff has access
+    to all copies?
+  options:
+  - Good
+  - Poor
+  detail:
+  - We have a good security system, that is we actively manage access restrictions
+    both virtually and physically, we have antivirus software, we performing regular
+    audits, etc.
+  - We have a poor security system, that is we do not actively manage access restrictions,
+    we do not have up to date antivirus software, we do not perform audits, etc.
+question3:
+  node: Checksum
+  type: grouper slider
+  definition: 'A unique numerical signature dreived from a file that can be used to
+    compare copies (definition from the DPC handbook: https://www.dpconline.org/handbook/glossary).
+    A checksum is needed to ensure integrity of the digital object.'
+  text: For what proportion of files do you have a checksum from the depositor? If
+    none, for how many have you generated a checksum instantly upon receipt?
+  options:
+  - 'Yes'
+  - Self_Generated
+  - 'No'
+  detail:
+  - We have a checksum from the depositor.
+  - We do not have a checksum from the depositor but generated one ourselves instantly
+    upon reciept.
+  - We do not have a checksum or have only generated one post-ingestion.
+question4:
+  node: Info_Management
+  type: slider
+  definition: Internal systems and support for coherent information management and
+    documentation of preservation actions. This is needed to ensure integrity and
+    provenance of the digital object.
+  text: For all your files today, what proportion do you have sufficient internal
+    information management systems in place to track the preservation actions since
+    acquisition?
+  options:
+  - Sufficient
+  - Insufficient
+  detail:
+  - We have sufficient internal information management systems to track the preservation
+    actions since acquisition.
+  - We have insufficient internal information management systems to track the preservation
+    actions since acquisition.
+question5:
+  node: Digital_Object
+  type: grouper slider
+  definition: Whether it is a born-digital record, digitised record or surrogate.
+  text: What proportion of your digital archive are the following?
+  options:
+  - Born_digital
+  - Digitised
+  - Surrogate
+  detail:
+  - Materials have originated from a digital source.
+  - Materials have been created as a result of converting analogue originals, but
+    we do not hold the analogue original.
+  - Materials have been created as a result of converting analogue originals, where
+    we also hold the analogue original.
+question6:
+  node: Storage_Medium
+  type: grouped slider
+  definition: The type of media on which the digital material is stored.
+  text: What proportion of your records are stored on the following media types? A)
+    less stable, B) more stable, C) outsourced data storage.
+  options:
+  - A
+  - B
+  - C
+  detail:
+  - Expected lifespan below 10 years or unknown, highly susceptible to physical damage,
+    requires specific environmental conditions and very sensitive to changes, does
+    not support error-detection methods, supporting technology is novel, proprietary
+    and limited. Examples include USB flash drive, floppy disk, SD drive and CD-R
+    discs.
+  - A proven lifespan of at least 10 years, low susceptibility to physical damage,
+    tolerant of a wide range of environmental conditions without data loss, supports
+    robust error-detection methods, supporting technology is well established and
+    widely available. Examples include LTO tapes, blu ray discs and CD-ROM discs.
+  - An external company is taking responsibility for our data storage. Examples include
+    Amazon Simple Storage Service, Microsoft Azure Archive Storage and Google Cloud
+    Storage.
+question7:
+  node: Rep_and_Refresh
+  type: slider
+  definition: Short for replication and rereshment. The archive's policies on making
+    and maintaining copies of digital materials.
+  text: For what proportion of your files do you have at least one additional copy
+    of the bitstream? And do you have a refreshment policy to ensure you always have
+    at least one additional copy of the bitstream in the event of another copy becoming
+    damaged or lost? Answer the proportion of files for which you answer yes to both.
+  options:
+  - Good
+  - Poor
+  detail:
+  - We always have at least two copies of the bitstream at any one time.
+  - We do not have copies of the bitstream or we have copies but we do not have a
+    refreshment policy to ensure that there will always be at least one additional
+    copy in the event of another becoming damaged or lost.
+question8:
+  node: Op_Environment
+  type: slider
+  definition: Short for operating environment. The conditions under which the storage
+    media are kept, in terms of their resilience to damage from a flood.
+  text: Do you have a copy of the material stored in a different geographical location?
+    If not, do you have adequate mitigation strategies in place in case of a flood?
+    Factors to consider include building design, location of storage media within
+    the building, having flash flood doors and sandbags etc. Answer 0% only if all
+    your copies are in the same location and you do not have adequate mitigations
+    in case of a flood.
+  options:
+  - 'Yes'
+  - 'No'
+  detail:
+  - We have a copy stored in a different geographical location, or if not we have
+    adequate mitigtation strategies in place at our storage location in case of a
+    flood.
+  - We store all our material in the same geographical location and do not have adequate
+    mitigation strategies in place in case of a flood.
+question9:
+  node: Physical_Disaster
+  type: non-numeric slider
+  definition: For this first version, we will only consider the risk of a flood at
+    your primary storage location.
+  text: Based on the the Government's long term flood risk assesssment, how likely
+    is it that your safest digital storage location will experience a flood? Where
+    the risk level varies for different risk types (i.e. flood risks from rivers or
+    the sea, flood risks from surface water, flood risks from reservoirs), please
+    answer based on the highest result.
+  options:
+  - 'Yes'
+  - 'No'
+  detail:
+  - There is a flood at the primary storage location.
+  - There is no flood at the primary storage location.
