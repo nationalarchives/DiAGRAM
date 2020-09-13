@@ -72,6 +72,9 @@ calculate_utility = function(model) {
 score_model = function(model, responses) {
   # model_clone = model
   # take names from model (may be able to remove at some point)
+  if(!response_valid(responses)){
+    return()
+  }
   prob_names = model[responses$node] %>% purrr::map(~names(.x$prob))
   # rescale to probabilities
   probs = purrr::map2(responses$response, prob_names, function(resp, name) {
@@ -82,6 +85,7 @@ score_model = function(model, responses) {
     }
     as.table(stats::setNames(intermediate/100, name))
   }) %>% stats::setNames(responses$node)
+  # print(probs)
   # update model
   for(node in responses$node) {
     model[[node]] = probs[[node]]
@@ -90,6 +94,16 @@ score_model = function(model, responses) {
   calculate_utility(model)
 }
 
+response_valid = function(responses) {
+  res = purrr::map_lgl(responses, function(x) {
+    valid = TRUE
+    if(length(x) == 3) {
+      valid = sum(x) == 100
+    }
+    valid
+  })
+  all(res, na.rm = TRUE)
+}
 
 # Function updates probability tables of model with user inputs
 #' @importFrom dplyr mutate

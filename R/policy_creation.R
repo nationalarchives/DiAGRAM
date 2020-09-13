@@ -23,7 +23,16 @@ policy_creation_module_ui = function(id) {
       shinyjs::hidden(
         shiny::div(
           id = ns('policy-questions-container'),
-          uiOutput(ns('policy-questions-ui'))
+          shiny::fluidRow(
+            shiny::column(
+              width = 10,
+              uiOutput(ns('policy-questions-ui'))
+            ),
+            shiny::column(
+              width = 2,
+              flash_table_module_ui(ns('flash-table-ui'), list("Intellectual_Control" = 0, "Renderability" = 0))
+            )
+          )
         )
       ),
       shinyjs::hidden(
@@ -48,7 +57,7 @@ policy_creation_module_ui = function(id) {
   )
 }
 
-policy_creation_module_server = function(input, output, session, input_data, question_data) {
+policy_creation_module_server = function(input, output, session, input_data, question_data, model) {
   ns = session$ns
   # output from table in policy creation
   model_obj = reactiveValues(data = NULL)
@@ -61,7 +70,8 @@ policy_creation_module_server = function(input, output, session, input_data, que
     response = NULL,
     question_ui = NULL,
     server_response = NULL,
-    observers = list()
+    observers = list(),
+    vis_clicked = 0
   )
 
   state_ids = paste0(c(
@@ -71,7 +81,7 @@ policy_creation_module_server = function(input, output, session, input_data, que
     # "policy-questions"
   ), "-container")
 
-  policy_picker = callModule(model_table_module_server, 'policy-starter', data = reactive(model_obj$data), select_multiple = FALSE)
+  policy_picker = callModule(model_table_module_server, 'policy-starter', data = reactive(model_obj$data), model = model, select_multiple = FALSE)
 
   current_state = reactiveVal(1)
   hide_back = reactiveVal(FALSE)
@@ -96,14 +106,23 @@ policy_creation_module_server = function(input, output, session, input_data, que
     req(!is.null(policy_picker()))
     model_obj$data$response[[policy_picker()]]
   })
+
+  original_score = reactive({
+    req(!is.null(policy_picker()))
+    score_model(model, format_responses(original_response()))
+  })
+
+  observe({
+    print("original score")
+    print(original_score())
+  })
+
+  new_score = reactiveVal(list("Intellectual_Control" = 0, "Renderability" = 0))
+
+  callModule(flash_table_module_server, 'flash-table-ui', original_score = original_score, new_score = new_score)
+
   observeEvent(original_response(), {
-    # req(!is.null(policy_picker()))
-    # current_state(1)
-    # req(!is.null(original_response()))
-    # print("ok")
     shinyjs::show("next-container")
-    # shinyjs::hide('policy-start-container')
-    # shinyjs::show('policy-response-picker-container')
   })
 
   observeEvent(input$go, {
@@ -137,13 +156,33 @@ policy_creation_module_server = function(input, output, session, input_data, que
     subset_picked$server_response = q_response
     current_state(current_state() + 1)
     # shinyjs::hide('back-container')
-    if(!is.null(subset_picked$observers$namer)) {
-      # print('destroy')
-      subset_picked$observers$namer$destroy()
+    if(!is.null(subset_picked$observers$state)) {
+      subset_picked$observers$state$destroy()
     }
-    subset_picked$observers$namer = observeEvent(subset_picked$server_response$name(), {
-      print("naming time")
+    subset_picked$observers$state = observeEvent(subset_picked$server_response$state(), {
+      req(subset_picked$server_response$state())
+
+      state_to_replace = subset_picked$server_response$state()
+      missing = purrr::map_lgl(state_to_replace, ~(is.null(.x) || is.na(.x)))
+      if(any(missing)) {
+        return()
+      }
+
+
+      full_state = original_response()
+      full_state[names(state_to_replace)] = state_to_replace
+      new_score(
+        score_model(model, format_responses(full_state))
+      )
     })
+
+    # if(!is.null(subset_picked$observers$namer)) {
+    #   # print('destroy')
+    #   subset_picked$observers$namer$destroy()
+    # }
+    # subset_picked$observers$namer = observeEvent(subset_picked$server_response$name(), {
+    #   print("naming time")
+    # })
 
     if(!is.null(subset_picked$observers$go)) {
       subset_picked$observers$go$destroy
@@ -152,6 +191,33 @@ policy_creation_module_server = function(input, output, session, input_data, que
       # remove the policy back button, show the questions one
       hide_back(TRUE)
       # current_state(current_state() + 1)
+    })
+    if(!is.null(subset_picked$observers$restart)) {
+      subset_picked$observers$restart$destroy
+    }
+    subset_picked$observers$restart = observeEvent(subset_picked$server_response$restart(), {
+      current_state(1)
+      hide_back(FALSE)
+    })
+    if(!is.null(subset_picked$observers$finish)) {
+      subset_picked$observers$restart$destroy
+    }
+    subset_picked$observers$finish = observeEvent(subset_picked$server_response$finish(), {
+      full_state = original_response()
+      new_state = subset_picked$server_response$state()
+      full_state[intersect(names(full_state), names(new_state))] = new_state
+      new_row = model_policy_row(full_state, model_name = model_obj$data$model[[policy_picker()]], policy_name = subset_picked$server_response$name(), notes = subset_picked$server_response$comments())
+      # print(new_row)
+      return_val(new_row)
+      # model_obj$data = dplyr::bind_rows(
+      #   model_obj$data, new_row
+      # )
+    })
+    if(!is.null(subset_picked$observer$visualise)) {
+      subset_picked$observer$visualise$destroy
+    }
+    subset_picked$observer$visualise = observeEvent(subset_picked$server_response$visualise(), {
+      subset_picked$observer$vis_clicked = subset_picked$server_response$visualise()
     })
 
     # observeEvent(subset_picked$server_response$go()), {}
@@ -163,11 +229,11 @@ policy_creation_module_server = function(input, output, session, input_data, que
     subset_picked$question_ui
   })
 
-  observeEvent(subset_picked$server_response, {
-    req(subset_picked)
-    print('server response')
-    print(subset_picked$server_response)
-  })
+  # observeEvent(subset_picked$server_response, {
+  #   req(subset_picked)
+  #   # print('server response')
+  #   # print(subset_picked$server_response)
+  # })
 
   output$policy_response_picker = reactable::renderReactable({
     responses = format_responses(original_response())
@@ -188,25 +254,31 @@ policy_creation_module_server = function(input, output, session, input_data, que
     names(original_response())[reactable::getReactableState('policy_response_picker', 'selected')]
   })
 
-  observe({
-    print(selected_questions())
-  })
+  # observe({
+  #   print(selected_questions())
+  # })
+  return_val = reactiveVal(NULL)
+  # finish_click = reactiveVal(0)
+
+  return(list(state = return_val, visualise = reactive(subset_picked$observer$vis_clicked)))
 }
 
-temp = readRDS("temp.rds")
-questions = question_data = read_config("temp.yaml")
-default_response = load_responses("inst/default_model/default_response.json")
-model = bnlearn::read.bif(system.file("default_model/Model.bif", package = "diagramNAT"))
-# q_id = purrr::map_chr(questions, 'node')
-question_data = question_data[-1]
 
-ui = bootstrapPage(
-  shinyjs::useShinyjs(),
-  policy_creation_module_ui('test')
-)
-
-server = function(input, output, session, data, question_data) {
-  callModule(policy_creation_module_server, 'test', input_data = reactive(data), question_data = question_data)
-}
-
-shiny::shinyApp(ui, purrr::partial(server, data = temp, question_data = question_data))
+## example
+# temp = readRDS("temp.rds")
+# questions = question_data = read_config("temp.yaml")
+# default_response = load_responses("inst/default_model/default_response.json")
+# model = bnlearn::read.bif(system.file("default_model/Model.bif", package = "diagramNAT"))
+# # q_id = purrr::map_chr(questions, 'node')
+# question_data = question_data[-1]
+#
+# ui = bootstrapPage(
+#   shinyjs::useShinyjs(),
+#   policy_creation_module_ui('test')
+# )
+#
+# server = function(input, output, session, data, question_data) {
+#   callModule(policy_creation_module_server, 'test', input_data = reactive(data), question_data = question_data, model = model)
+# }
+#
+# shiny::shinyApp(ui, purrr::partial(server, data = temp, question_data = question_data))

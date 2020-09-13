@@ -99,7 +99,7 @@ questions_module_ui = function(id, question_data, default_response, is_policy = 
         div(
           "Your responses have been stored!",
           shiny::actionButton(ns("restart"), "Create Another"),
-          shiny::actionButton(ns("policy"), "Add a scenario"),
+          if(is_policy) NULL else shiny::actionButton(ns("policy"), "Add a scenario"),
           shiny::actionButton(ns("visualise"), "Visualise Results")
         )
       )
@@ -164,12 +164,12 @@ questions_module_server = function(input, output, session, question_data, defaul
     x
   })
 
-  print(question_block[[1]]$server_args)
+  # print(question_block[[1]]$server_args)
 
-  observe({
-    print("orig state rv")
-    print(reactiveValuesToList(orig_state_rv))
-  })
+  # observe({
+  #   print("orig state rv")
+  #   print(reactiveValuesToList(orig_state_rv))
+  # })
   #
   # for(i in seq_along(question_block)){
   #   question_block[[i]]$server_args$state = reactive(orig_state_rv[[question_block[[i]]$id]])
@@ -208,13 +208,16 @@ questions_module_server = function(input, output, session, question_data, defaul
   })
 
   observeEvent(input$restart, {
-    updateTextInput(session, 'name', value = '')
-    updateTextAreaInput(session, 'comment', value = '')
-    for(nam in names(orig_state_rv)) {
-      orig_state_rv[[nam]] = orig_state_rv[[nam]] + 1
-      orig_state_rv[[nam]] = orig_state_rv[[nam]] - 1
+    if(!is_policy) {
+      updateTextInput(session, 'name', value = '')
+      updateTextAreaInput(session, 'comment', value = '')
+      for(nam in names(orig_state_rv)) {
+        orig_state_rv[[nam]] = orig_state_rv[[nam]] + 1
+        orig_state_rv[[nam]] = orig_state_rv[[nam]] - 1
+      }
+      current_state(1)
     }
-    current_state(1)
+
   }, ignoreInit = TRUE)
 
   output$header_name = renderUI({
@@ -222,7 +225,7 @@ questions_module_server = function(input, output, session, question_data, defaul
   })
 
   observeEvent(input$start, {
-    print("start")
+    # print("start")
     current_state(current_state() + 1)
   })
 
@@ -252,13 +255,13 @@ questions_module_server = function(input, output, session, question_data, defaul
   return_val = reactive({
     reactiveValuesToList(rv)
   })
-  observe({
-    print(return_val())
-  })
+  # observe({
+  #   print(return_val())
+  # })
 
   return(list(state = return_val, name = reactive(input$name), comments = reactive(input$comment), finish = reactive(input$finish),
               scenario = reactive(input$policy), visualise = reactive(input$visualise),
-              go = reactive(input$go)))
+              go = reactive(input$go), restart = reactive(input$restart)))
 }
 
 model_policy_row = function(responses, model_name, policy_name = NA, notes = NA) {
@@ -268,172 +271,3 @@ model_policy_row = function(responses, model_name, policy_name = NA, notes = NA)
 # q_block = create_question_block(question_data[-1], default_response)
 
 # q_block = q_block[2:3]
-
-## example
-#
-# questions = question_data = read_config("temp.yaml")
-# default_response = load_responses("inst/default_model/default_response.json")
-# model = bnlearn::read.bif(system.file("default_model/Model.bif", package = "diagramNAT"))
-# # q_id = purrr::map_chr(questions, 'node')
-# question_data = question_data[-1]
-# # q = question = question_data[[1]]
-# library(reactable)
-# my_ui = function(question_data, default_response) {
-#
-#   # create main dashboard page
-#   shiny::addResourcePath(
-#     "www", system.file("assets/www", package = "diagramNAT")
-#   )
-#   shiny::tagList(
-#     shiny::tags$head(shiny::tags$link(
-#       rel = "stylesheet", type = "text/css",
-#       href = "www/ui.css"
-#     )),
-#     shinydashboard::dashboardPage(
-#       skin="purple",
-#       # Add header and title to Dashboard
-#       shinydashboard::dashboardHeader(
-#         title="DiAGRAM"
-#       ),
-#       # Add dashboard sidebar
-#       shinydashboard::dashboardSidebar(
-#         shinydashboard::sidebarMenu(
-#           id = "sidebarMenu",
-#           shinydashboard::menuItem(
-#             "Home", tabName = "Home", icon = shiny::icon("home")
-#           ),
-#           shinydashboard::menuItem(
-#             "Model", tabName = "model", icon = shiny::icon("user-edit")
-#           ),
-#           shinydashboard::menuItem(
-#             "Scenario", tabName = "scenario"
-#           ),
-#           shinydashboard::menuItem(
-#             "Visualise", tabName = "visualise"
-#           )
-#         )
-#       ),
-#       shinydashboard::dashboardBody(
-#         id = "dashboardBody",
-#         dev_banner_module_ui('dev-banner'),
-#         shinydashboard::tabItems(
-#           # id = "menu-select",
-#           shinydashboard::tabItem(
-#             tabName = "Home",
-#             home_tab()
-#           ),
-#           shinydashboard::tabItem(
-#             tabName = "model",
-#             shiny::column(
-#               width = 12,
-#               shinydashboard::box(
-#                 title = NULL, width = 12,
-#                 questions_module_ui('model-questions', question_data, default_response)
-#               )
-#             )
-#           ),
-#           shinydashboard::tabItem(
-#             tabName = "scenario",
-#
-#           ),
-#           shinydashboard::tabItem(
-#             tabName = "visualise"
-#           )
-#         )
-#       )
-#
-#     )
-#   )
-# }
-#
-#   #,
-#   # reactable::reactableOutput('table')
-#   # tableOutput("rand")
-# # )
-#
-
-#
-# server = function(input, output, session, question_data, default_response) {
-#   shiny::addResourcePath("sbs", system.file("www", package = "shinyBS"))
-#   # output from the model builder tab
-#   q_output = callModule(questions_module_server, 'model-questions', question_data = question_data, default_response = default_response)
-#
-#   observeEvent(q_output$scenario(),{
-#     shinydashboard::updateTabItems(session = shiny::getDefaultReactiveDomain(), inputId = "sidebarMenu", selected = 'scenario')
-#   })
-#
-#   observeEvent(q_output$visualise(),{
-#     shinydashboard::updateTabItems(session = shiny::getDefaultReactiveDomain(), inputId = "sidebarMenu", selected = 'visualise')
-#   })
-#
-#   model_obj = reactiveValues(
-#     data = tibble(model = character(), policy = character(), notes = character(), response = list())
-#   )
-#
-#
-#
-#
-#
-#
-#
-#   # table_data = reactive({
-#   #   df = model_obj$data
-#   #   print(nrow(df) > 0)
-#   #   # req(nrow(df) > 0)
-#   #   if(nrow(df) > 0) {
-#   #     mods = dplyr::bind_cols(df, purrr::map_dfr(df$response, ~{
-#   #       score_model(model, format_responses(.x)) %>% unlist
-#   #     }))
-#   #     print("table")
-#   #     mods %>%
-#   #       dplyr::select(
-#   #         model, policy, "Intellectual Control" = Intellectual_Control,
-#   #         Renderability, notes, response
-#   #       ) %>%
-#   #       dplyr::mutate_if(is.numeric, ~round(.x,2))
-#   #   }
-#   #   else {
-#   #     NA
-#   #   }
-#   #
-#   # })
-#
-#   # observe({
-#   #   print(model_obj$data)
-#   # })
-#
-#   # observe(print(str(table_data())))
-#
-#
-#   # output$rand = renderTable({
-#   #   table_data()
-#   # })
-#
-#   # output$table = reactable::renderReactable({
-#   #   print("draw table")
-#   #   if(!is.na(table_data())){
-#   #     mods = table_data()
-#   #     reactable::reactable(
-#   #       mods %>% select(-response),
-#   #       groupBy = "model",
-#   #       details = function(index) {
-#   #         print(index)
-#   #         res = mods[index,]$response[[1]]
-#   #         tbl = reactable::reactable(format_responses(res))
-#   #         htmltools::div(style = list(margin = "12px 45px"), tbl)
-#   #       },
-#   #       onClick = "expand",
-#   #       rowStyle = list(cursor = "pointer")
-#   #     )
-#   #   }
-#   #
-#   # })
-#
-#   observeEvent(q_output$finish(), {
-#     print("finished")
-#     new_row = model_policy_row(q_output$state(), model_name = q_output$name(), notes = q_output$comments())
-#     model_obj$data = dplyr::bind_rows(model_obj$data, new_row)
-#   })
-# }
-#
-# shiny::shinyApp(ui = my_ui(question_data, default_response), purrr::partial(server, question_data = question_data, default_response = default_response))

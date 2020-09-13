@@ -6,7 +6,7 @@ model_table_module_ui = function(id) {
 
 #' @importFrom rlang .data
 #' @export
-model_table_module_server = function(input, output, session, data, select_multiple = TRUE) {
+model_table_module_server = function(input, output, session, data, model, select_multiple = TRUE) {
   observe({
     print(data())
   })

@@ -21,14 +21,8 @@ text_slider_pair_module_ui = function(id, state, label, content) {
 
 text_slider_pair_module_server = function(input, output, session, state, reactive_input = TRUE) {
   ns = session$ns
-
-
-
   if(reactive_input){
-    # if(is.na(state())) state = reactive(0)
-    # state = reactive(state)
     shiny::observeEvent(state(), {
-      # print(state())
       shiny::updateSliderInput(session, "slider", value = state())
       shiny::updateNumericInput(session, "text", value = state())
     })
@@ -37,7 +31,6 @@ text_slider_pair_module_server = function(input, output, session, state, reactiv
       state = 0
     }
   }
-
 
   shiny::observeEvent(input$slider,{
     print("slider moved")
@@ -53,14 +46,6 @@ text_slider_pair_module_server = function(input, output, session, state, reactiv
 sliders_group_module_ui = function(id = 'test', state = c(20,20,40), label = paste("Slider", 1:3), content = rep('', length(label))) {
   ns = shiny::NS(id)
   labels = label
-
-  # if(is.na(state)) {
-  #   print("NA state")
-  #   state = c(20,20,40)
-  # }
-
-  # ns = identity
-  # content = replicate(3, shinipsum::random_text(nwords = rpois(1,50)))
   text_content = purrr::map2(labels, content, function(x, y) {
     shiny::tagList(
       shiny::tags$strong(x), #shiny::tags$span(" - "),
@@ -72,18 +57,11 @@ sliders_group_module_ui = function(id = 'test', state = c(20,20,40), label = pas
     shinyjs::useShinyjs(),
     text_slider_pair_module_ui(ns('slider1'), state[1], labels[1], text_content[[1]]),
     text_slider_pair_module_ui(ns('slider2'), state[2], labels[2], text_content[[2]]),
-    # shinyjs::disabled(
-      text_slider_pair_module_ui(ns('slider3'), state[3], label[3], text_content[[3]])
-      # )
+    text_slider_pair_module_ui(ns('slider3'), state[3], label[3], text_content[[3]])
   )
 }
 
 sliders_group_module_server = function(input, output, session, state = c(20, 20, 40)) {
-
-  # if(is.na(state)){
-  #   print("server NA state")
-  #   state = c(20,20,40)
-  # }
   observeEvent(state(),{
     print('initialise group state')
     my_state = state()
@@ -132,11 +110,8 @@ sliders_group_module_server = function(input, output, session, state = c(20, 20,
 
   shiny::observeEvent(slider1(),{
     isolate({multipliers = ratio_2_3()
-    # print(multipliers)
     available = 100 - slider1()
-    # print(available)
     vals = multipliers*available
-    # print(vals)
     reactive_state$s1 = slider1()
     reactive_state$s2 = vals[1]
     reactive_state$s3 = vals[2]})
@@ -151,21 +126,15 @@ sliders_group_module_server = function(input, output, session, state = c(20, 20,
   }, ignoreInit = TRUE)
 
   shiny::observeEvent(slider3(), {
-    isolate({max = 100 - slider1()
-    if(slider3() > max) {
-      reactive_state$s3 = max
-      reactive_state$s2 = 0
-    }else{
-      reactive_state$s2 = 100  - slider1() - slider3()
-    }})
-
-    # else if(input$slider3 < max) {
-    #   available = 100 - input$slider1 - input$slider2
-    #   multipliers = ratio_1_2()
-    #   vals = round(multipliers*available)
-    #   updateSliderInput(session, "slider1", value = vals[1])
-    #   updateSliderInput(session, "slider2", value = vals[2])
-    # }
+    shiny::isolate({
+      max = 100 - slider1()
+      if(slider3() > max) {
+        reactive_state$s3 = max
+        reactive_state$s2 = 0
+      }else{
+        reactive_state$s2 = 100  - slider1() - slider3()
+      }
+    })
   }, ignoreInit = TRUE)
 
   return(return_val)
