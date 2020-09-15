@@ -23,8 +23,8 @@ text_slider_pair_module_server = function(input, output, session, state, reactiv
   ns = session$ns
   if(reactive_input){
     shiny::observeEvent(state(), {
-      shiny::updateSliderInput(session, "slider", value = state())
-      shiny::updateNumericInput(session, "text", value = state())
+      shiny::updateSliderInput(session, "slider", value = max(0, round(state())))
+      shiny::updateNumericInput(session, "text", value = max(0, round(state())))
     })
   }else {
     if(is.na(state)) {
@@ -79,6 +79,10 @@ sliders_group_module_server = function(input, output, session, state = c(20, 20,
   return_val = reactive({
     c(reactive_state$s1, reactive_state$s2, reactive_state$s3)
   })
+  observe({
+    print(c(reactive_state$s1, reactive_state$s2, reactive_state$s3))
+  })
+
   slider1 = shiny::callModule(text_slider_pair_module_server, "slider1", state = shiny::reactive(reactive_state$s1))
   slider2 = shiny::callModule(text_slider_pair_module_server, "slider2", state = shiny::reactive(reactive_state$s2))
   slider3 = shiny::callModule(text_slider_pair_module_server, "slider3", state = shiny::reactive(reactive_state$s3))
@@ -112,6 +116,18 @@ sliders_group_module_server = function(input, output, session, state = c(20, 20,
     isolate({multipliers = ratio_2_3()
     available = 100 - slider1()
     vals = multipliers*available
+
+    # detect if both same value and both x.5
+    # print(vals)
+    # print(vals[1] == vals[2])
+    # print((vals[1]*2) %% 2)
+    # print((vals[2]*2) %% 2)
+
+    if(vals[1] == vals[2] & (vals[1]*2) %% 2 & (vals[2]*2) %% 2) {
+      vals[1] = floor(vals[1])
+      vals[2] = ceiling(vals[2])
+    }
+
     reactive_state$s1 = slider1()
     reactive_state$s2 = vals[1]
     reactive_state$s3 = vals[2]})
@@ -120,7 +136,8 @@ sliders_group_module_server = function(input, output, session, state = c(20, 20,
   shiny::observeEvent(slider2(), {
     isolate({max = 100 - slider1()
     if(slider2() > max) {
-      reactive_state$s2 = max
+      reactive_state$s2 = max + rnorm(1,0,0.001)
+      # reactive_state$s2 = max-0.1
     }
     reactive_state$s3 = 100 - slider1() - slider2()})
   }, ignoreInit = TRUE)
@@ -128,8 +145,11 @@ sliders_group_module_server = function(input, output, session, state = c(20, 20,
   shiny::observeEvent(slider3(), {
     shiny::isolate({
       max = 100 - slider1()
+      print(max)
       if(slider3() > max) {
-        reactive_state$s3 = max
+        print("slider 3 true")
+        reactive_state$s3 = max + rnorm(1,0,0.001)
+        # reactive_state$s3 = max + 0.1
         reactive_state$s2 = 0
       }else{
         reactive_state$s2 = 100  - slider1() - slider3()
