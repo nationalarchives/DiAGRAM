@@ -15,38 +15,47 @@ Imports:
     BiocManager,
     bnlearn,
     data.table,
+    diagramNAT,
     dplyr,
     DT,
     ggplot2,
+    glue,
     gRain (== 1.3.0),
     graph,
     gridExtra,
+    htmltools,
+    htmlwidgets,
+    jsonlite,
     magrittr,
     networkD3,
     plotly,
     purrr,
+    reactable,
     readr,
     Rgraphviz,
     rintrojs,
     rlang,
     shiny,
     shinyalert,
+    shinyBS,
     shinydashboard,
     shinyjs,
     shinysky,
     shinyWidgets,
+    stats,
     stringr,
     tibble,
     tidyr,
+    tools,
+    uuid,
     V8,
-    jsonlite,
     yaml
 Suggests:
     shinytest,
     testthat
-biocViews:
 Remotes:
     AnalytixWare/ShinySky
+biocViews:
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
