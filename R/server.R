@@ -130,69 +130,6 @@ app_server = function(input, output, session, question_data, default_response, m
   observeEvent(p_output$visualise(), {
     shinydashboard::updateTabItems(session = shiny::getDefaultReactiveDomain(), inputId = "sidebarMenu", selected = 'visualise')
   })
-
-
-
-
-
-
-
-
-
-  # table_data = reactive({
-  #   df = model_obj$data
-  #   print(nrow(df) > 0)
-  #   # req(nrow(df) > 0)
-  #   if(nrow(df) > 0) {
-  #     mods = dplyr::bind_cols(df, purrr::map_dfr(df$response, ~{
-  #       score_model(model, format_responses(.x)) %>% unlist
-  #     }))
-  #     print("table")
-  #     mods %>%
-  #       dplyr::select(
-  #         model, policy, "Intellectual Control" = Intellectual_Control,
-  #         Renderability, notes, response
-  #       ) %>%
-  #       dplyr::mutate_if(is.numeric, ~round(.x,2))
-  #   }
-  #   else {
-  #     NA
-  #   }
-  #
-  # })
-
-  # observe({
-  #   print(model_obj$data)
-  # })
-
-  # observe(print(str(table_data())))
-
-
-  # output$rand = renderTable({
-  #   table_data()
-  # })
-
-  # output$table = reactable::renderReactable({
-  #   print("draw table")
-  #   if(!is.na(table_data())){
-  #     mods = table_data()
-  #     reactable::reactable(
-  #       mods %>% select(-response),
-  #       groupBy = "model",
-  #       details = function(index) {
-  #         print(index)
-  #         res = mods[index,]$response[[1]]
-  #         tbl = reactable::reactable(format_responses(res))
-  #         htmltools::div(style = list(margin = "12px 45px"), tbl)
-  #       },
-  #       onClick = "expand",
-  #       rowStyle = list(cursor = "pointer")
-  #     )
-  #   }
-  #
-  # })
-
-
 }
 
 
