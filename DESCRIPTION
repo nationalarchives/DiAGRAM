@@ -15,7 +15,6 @@ Imports:
     BiocManager,
     bnlearn,
     data.table,
-    diagramNAT,
     dplyr,
     DT,
     ggplot2,
