@@ -39,7 +39,8 @@ Imports:
     tibble,
     tidyr,
     V8,
-    jsonlite
+    jsonlite,
+    yaml
 Suggests:
     shinytest,
     testthat
