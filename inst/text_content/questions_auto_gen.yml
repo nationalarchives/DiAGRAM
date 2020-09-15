@@ -21,6 +21,10 @@ question1:
   - We do not have the capability to perform actions such as file format migration,
     software emulation and data recovery, nor the ability to investigate and manipulate
     data.
+  extra: |-
+    The default is based on responses to the JISC digital skills
+                survey and how many said that there was full capability within their organisation
+                to do file format migration, software emulation or data recovery. (15%)
 question2:
   node: System_Security
   type: slider
@@ -44,9 +48,15 @@ question2:
     audits, etc.
   - We have a poor security system, that is we do not actively manage access restrictions,
     we do not have up to date antivirus software, we do not perform audits, etc.
+  extra: |-
+    The default is based on responses to the JISC digital skills
+                survey and how many agreed that their IT provider supports the requirements of
+                the archival activities of your organisation toa large or very great extent and
+                that their digital collections are protected with access restrictions/
+                permissions. (17%)
 question3:
   node: Checksum
-  type: grouper slider
+  type: grouped slider
   definition: 'A unique numerical signature dreived from a file that can be used to
     compare copies (definition from the DPC handbook: https://www.dpconline.org/handbook/glossary).
     A checksum is needed to ensure integrity of the digital object.'
@@ -61,6 +71,7 @@ question3:
   - We do not have a checksum from the depositor but generated one ourselves instantly
     upon reciept.
   - We do not have a checksum or have only generated one post-ingestion.
+  extra: .na.character
 question4:
   node: Info_Management
   type: slider
@@ -78,9 +89,19 @@ question4:
     actions since acquisition.
   - We have insufficient internal information management systems to track the preservation
     actions since acquisition.
+  extra: |-
+    The default is based on responses to the JISC digital skills
+                survey. 70% of respondents agreed that their catalogue management
+                system meets the needs of the organisation and 40% that their
+                digital asset management system meets the needs of the organisation.
+                We have estimated that 55% would therefore have sufficient
+                information management systems, as you don't need a bespoke
+                digital asset management system to have support for coherent
+                information management and documentation of preservation actions,
+                but you may need more than just a catalogue system.
 question5:
   node: Digital_Object
-  type: grouper slider
+  type: grouped slider
   definition: Whether it is a born-digital record, digitised record or surrogate.
   text: What proportion of your digital archive are the following?
   options:
@@ -93,6 +114,7 @@ question5:
     we do not hold the analogue original.
   - Materials have been created as a result of converting analogue originals, where
     we also hold the analogue original.
+  extra: .na.character
 question6:
   node: Storage_Medium
   type: grouped slider
@@ -116,6 +138,7 @@ question6:
   - An external company is taking responsibility for our data storage. Examples include
     Amazon Simple Storage Service, Microsoft Azure Archive Storage and Google Cloud
     Storage.
+  extra: .na.character
 question7:
   node: Rep_and_Refresh
   type: slider
@@ -133,6 +156,7 @@ question7:
   - We do not have copies of the bitstream or we have copies but we do not have a
     refreshment policy to ensure that there will always be at least one additional
     copy in the event of another becoming damaged or lost.
+  extra: .na.character
 question8:
   node: Op_Environment
   type: slider
@@ -153,6 +177,7 @@ question8:
     flood.
   - We store all our material in the same geographical location and do not have adequate
     mitigation strategies in place in case of a flood.
+  extra: .na.character
 question9:
   node: Physical_Disaster
   type: non-numeric slider
@@ -169,3 +194,4 @@ question9:
   detail:
   - There is a flood at the primary storage location.
   - There is no flood at the primary storage location.
+  extra: .na.character

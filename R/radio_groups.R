@@ -51,7 +51,7 @@ radio_group_module_ui = function(id = 'test', state, label = LETTERS[1:4], conte
   )
 }
 
-radio_group_module_server = function(input, output, session) {
+radio_group_module_server = function(input, output, session, state) {
   return_val = reactiveVal(NULL)
   observe({
     return_val(purrr::map_chr(paste0("test-",1:input$x), ~input[[.x]]))

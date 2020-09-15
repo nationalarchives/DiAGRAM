@@ -31,8 +31,27 @@ save_responses = function(responses, path) {
 }
 
 #' @importFrom jsonlite read_json
-#' @importFrom purrr map
+#' @importFrom purrr map_dfr
 load_responses = function(path) {
+  res = jsonlite::read_json(path)
+  purrr::map_dfr(res, function(x) {
+    responses = purrr::map(x$response, unlist)
+    tibble::tibble(
+      model = x$model, policy = if(!is.null(x$policy)) x$policy else NA,
+      response = list(responses), notes = x$notes
+    )
+  })
+  # purrr::map(res, unlist)
+}
+
+#' Load single response
+#'
+#' Load a single set of model question responses from disk
+#' @importFrom jsonlite read_json
+#' @importFrom purrr map
+#' @export
+#' @return A named list of the form (<node_name> = <response>)
+load_single_response = function(path) {
   res = jsonlite::read_json(path)
   purrr::map(res, unlist)
 }

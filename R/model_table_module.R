@@ -6,23 +6,37 @@ model_table_module_ui = function(id) {
 
 #' @importFrom rlang .data
 #' @export
-model_table_module_server = function(input, output, session, data, model, select_multiple = TRUE) {
+model_table_module_server = function(input, output, session, data, model, selection = "multiple", show_policy = TRUE) {
   observe({
     print(data())
   })
   formatted_data = shiny::reactive({
+    # req(nrow(data()) > 0)
+    if(nrow(data()) == 0){
+      print("Early return")
+      return(NULL)
+    }
     intermediate = data()
     intermediate = dplyr::bind_cols(intermediate, purrr::map_dfr(intermediate$response, ~{
       score_model(model, format_responses(.x)) %>% unlist
     }))
-    intermediate %>%
-      dplyr::select(.data$model, .data$policy, "Intellectual Control" = .data$Intellectual_Control, .data$Renderability, .data$notes, .data$response) %>%
+    if(show_policy) {
+      res = intermediate %>%
+        dplyr::select(.data$model, .data$policy, "Intellectual Control" = .data$Intellectual_Control, .data$Renderability, .data$notes, .data$response)
+
+    }else{
+      res = intermediate %>%
+        dplyr::filter(is.na(.data$policy)) %>%
+        dplyr::select(.data$model, "Intellectual Control" = .data$Intellectual_Control, .data$Renderability, .data$notes, .data$response)
+    }
+    res %>%
       dplyr::rename_with(stringr::str_to_title) %>%
       dplyr::mutate_if(is.numeric, ~ round(.x, 2))
   })
 
   output$table = reactable::renderReactable({
     df = formatted_data()
+    if(is.null(df)) return(NULL)
     reactable::reactable(
       df %>% dplyr::select(-.data$Response),
       groupBy = "Model",
@@ -51,8 +65,8 @@ model_table_module_server = function(input, output, session, data, model, select
       # onClick = "expand",
       #   rowStyle = list(cursor = "pointer"),
       borderless = TRUE,
-      onClick = "select",
-      selection = if(select_multiple) "multiple" else "single",
+      onClick = if(selection %in% c("single", "multiple")) "select" else NULL,
+      selection = if(selection %in% c("single", "multiple")) selection else NULL,
       highlight = TRUE,
       rowStyle = htmlwidgets::JS("
         function(rowInfo) {

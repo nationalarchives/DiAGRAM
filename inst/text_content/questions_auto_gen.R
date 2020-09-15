@@ -20,13 +20,38 @@ nodes = nodes %>%
 nodes = nodes %>%
   mutate(type = case_when(node == "Technical_Skills" ~ "slider",
                           node == "System_Security" ~ "slider",
-                          node == "Checksum" ~ "grouper slider",
+                          node == "Checksum" ~ "grouped slider",
                           node == "Info_Management" ~ "slider",
-                          node == "Digital_Object" ~ "grouper slider",
+                          node == "Digital_Object" ~ "grouped slider",
                           node == "Storage_Medium" ~ "grouped slider",
                           node == "Rep_and_Refresh" ~ "slider",
                           node == "Op_Environment" ~ "slider",
-                          node == "Physical_Disaster" ~ "non-numeric slider"))
+                          node == "Physical_Disaster" ~ "non-numeric slider"),
+         extra = case_when(
+           node == "Technical_Skills" ~ "The default is based on responses to the JISC digital skills
+            survey and how many said that there was full capability within their organisation
+            to do file format migration, software emulation or data recovery. (15%)",
+           node == "System_Security" ~ "The default is based on responses to the JISC digital skills
+            survey and how many agreed that their IT provider supports the requirements of
+            the archival activities of your organisation toa large or very great extent and
+            that their digital collections are protected with access restrictions/
+            permissions. (17%)",
+           node == "Checksum" ~ NA_character_,
+           node == "Info_Management" ~ "The default is based on responses to the JISC digital skills
+            survey. 70% of respondents agreed that their catalogue management
+            system meets the needs of the organisation and 40% that their
+            digital asset management system meets the needs of the organisation.
+            We have estimated that 55% would therefore have sufficient
+            information management systems, as you don't need a bespoke
+            digital asset management system to have support for coherent
+            information management and documentation of preservation actions,
+            but you may need more than just a catalogue system.",
+           node == "Digital_Object" ~ NA_character_,
+           node == "Storage_Medium" ~ NA_character_,
+           node == "Rep_and_Refresh" ~ NA_character_,
+           node == "Op_Environment" ~ NA_character_,
+           node == "Physical_Disaster" ~ NA_character_
+         ))
 
 nodes = nodes %>%
   nest(cols = -node) %>%

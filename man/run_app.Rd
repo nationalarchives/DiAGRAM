@@ -4,7 +4,7 @@
 \alias{run_app}
 \title{Run the diagram app}
 \usage{
-run_app(n = 9)
+run_app(question_data, default_response, model)
 }
 \arguments{
 \item{n}{Number of questions, defaults to 9}

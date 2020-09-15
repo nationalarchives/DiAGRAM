@@ -14,14 +14,14 @@ formulate_question = function(question, default_response, ns) {
     id = ns(uniqueid),
     # grab from the model loaded?
     state = default_response[[question$node]],
-    content = question$detail,
-    label = question$options#,
+    content = if(question$type == "slider") question$extra else question$detail,
+    label = if(question$type == "slider") NULL else question$options#,
     # options =
   )
 
   server_args = switch(
     question$type,
-    "multiple choice" = NULL,
+    "multiple choice" = list(state = default_response[[question$node]]),
     "grouped slider" = list(state = default_response[[question$node]]) ,
     "slider" = list(state = default_response[[question$node]]),
     stop(glue::glue("No module server functions found for type {question$type}."))

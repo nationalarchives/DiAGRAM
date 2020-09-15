@@ -6,10 +6,10 @@
 #' @importFrom purrr partial
 #' @importFrom shiny shinyApp
 #' @export
-run_app = function(n = 9){
-  app_ui_partial = purrr::partial(diagramNAT::app_ui, nquestions = n)
+run_app = function(question_data, default_response, model){
+  app_ui_partial = purrr::partial(diagramNAT::app_ui, question_data = question_data, default_response = default_response)
+  app_server_partial = purrr::partial(diagramNAT::app_server, question_data = question_data, default_response = default_response, model = model)
 
 
-
-  shiny::shinyApp(ui = app_ui_partial, server = diagramNAT::app_server)
+  shiny::shinyApp(ui = app_ui_partial, server = app_server_partial)
 }

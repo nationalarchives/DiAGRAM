@@ -65,13 +65,18 @@ calculate_utility = function(model) {
 #' @param responses a \code{tibble(node, response)} where node is the
 #' name of the node in the network and response is the user value(s) from the
 #' associated question
+#' @param scoring_funcs a named list of scoring functions for non numeric response types, the name should correspond to
+#' the element for which a conversion needs to take place
 #' @importFrom purrr map2 map
 #' @importFrom stats setNames
 #' @return a named list of two scores
 #' @export
-score_model = function(model, responses) {
+score_model = function(model, responses, scoring_funcs) {
   # model_clone = model
   # take names from model (may be able to remove at some point)
+
+  # translate non numeric scores
+
   if(!response_valid(responses)){
     return()
   }
@@ -92,6 +97,37 @@ score_model = function(model, responses) {
   }
   # return score
   calculate_utility(model)
+}
+
+make_scoring_functions = function(question_data) {
+  # count how many parts there are to a question
+  q_clone = question_data
+  nodes = purrr::map_chr(q_clone, 'node')
+  node_counts = table(nodes) %>% as.list()
+
+  # for the multi part questions
+  # TODO need to think a bit more about how to combine these funcs
+  # is_multipart = node_counts > 1
+  # funcs = list()
+  # for(i in seq_along(is_multipart)) {
+  #   if(is_multipart[i]) {
+  #     # which ones
+  #     ix = which(nodes == names(is_multipart[i]))
+  #     purrr::map(q_clone[]
+  #   }
+  # }
+
+  purrr::map(question_data, function(question) {
+    if(question$type == "multiple choice") {
+      option_val = setNames(question$weights, question$options)
+      function(response) {
+        sum(option_val[response])
+      }
+    }else{
+      identity
+    }
+
+  }) %>% setNames()
 }
 
 response_valid = function(responses) {

@@ -4,7 +4,7 @@
 \alias{score_model}
 \title{Score model}
 \usage{
-score_model(model, responses)
+score_model(model, responses, scoring_funcs)
 }
 \arguments{
 \item{model}{a model of class bn.fit}
@@ -12,6 +12,9 @@ score_model(model, responses)
 \item{responses}{a \code{tibble(node, response)} where node is the
 name of the node in the network and response is the user value(s) from the
 associated question}
+
+\item{scoring_funcs}{a named list of scoring functions for non numeric response types, the name should correspond to
+the element for which a conversion needs to take place}
 }
 \value{
 a named list of two scores

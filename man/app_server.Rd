@@ -4,11 +4,17 @@
 \alias{app_server}
 \title{The application server-side}
 \usage{
-app_server(input, output, session)
+app_server(input, output, session, question_data, default_response, model)
 }
 \arguments{
 \item{input, output, session}{Internal parameters for {shiny}.
 DO NOT REMOVE.}
+
+\item{question_data}{The question data, named list, likely loaded from the YAML file internal to this package}
+
+\item{default_response}{The default responses used to initialise the model}
+
+\item{model}{The stored model, loaded from a .bif file}
 }
 \description{
 The application server-side

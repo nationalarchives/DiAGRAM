@@ -4,14 +4,16 @@
 \alias{app_ui}
 \title{app_ui}
 \usage{
-app_ui(req, nquestions = 9)
+app_ui(req, question_data, default_response)
 }
 \arguments{
 \item{req}{Internal parameter for \code{{shiny}}.
 DO NOT REMOVE.}
 
-\item{nquestions}{integer defining the number of questions for the model creation step,
-typically generated from a call to \code{read_csv("setup_questions.csv") \%>\% nrow()}}
+\item{question_data}{The question data, a list, likely parsed from a YAML file that specifies the questions to be
+displayed in the application}
+
+\item{default_response}{The default values, used to initialise the model}
 }
 \description{
 Defines the user interface for the DIAGRAM application. This content is a heavily revised
