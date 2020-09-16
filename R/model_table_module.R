@@ -1,12 +1,36 @@
 #' @export
 model_table_module_ui = function(id) {
   ns = shiny::NS(id)
-  reactable::reactableOutput(ns('table'))
+  shiny::tagList(
+    # diagramNAT_dependencies(),
+    tags$head(
+      shiny::includeScript(system.file("assets", "js", "reactable_supplement.js", package = "diagramNAT")),
+      tags$style(
+        "
+input.table-input {
+    width: 60%;
+    display: inline;
+}
+
+input.table-input:disabled {
+    background-color: transparent !important;
+    border: transparent;
+    cursor: default !important;
+}
+        "
+      )
+    ),
+    shinyjs::useShinyjs(),
+    shiny::actionButton(ns("edit"), "", icon = shiny::icon("cog")),
+    reactable::reactableOutput(ns('table'))
+  )
 }
 
 #' @importFrom rlang .data
 #' @export
 model_table_module_server = function(input, output, session, data, model, selection = "multiple", show_policy = TRUE) {
+
+  ns = session$ns
   observe({
     print(data())
   })
@@ -41,6 +65,18 @@ model_table_module_server = function(input, output, session, data, model, select
       df %>% dplyr::select(-.data$Response),
       groupBy = "Model",
       columns = list(
+        Model = reactable::colDef(
+          html = TRUE,
+          cell = htmlwidgets::JS(
+            glue::glue(
+              "function(cellInfo) {{
+                console.log(cellInfo);
+                var ix = typeof cellInfo.index === 'undefined' ? cellInfo.subRows[0]._index : cellInfo.index;
+                return table_input(`{ns('name')}_${{ix}`, cellInfo.value, 'Name');
+              }"
+            )
+          )
+        ),
         `Intellectual Control` = reactable::colDef(
           align = "left",
           cell = function(value) {
@@ -77,6 +113,20 @@ model_table_module_server = function(input, output, session, data, model, select
       "),
       style = list(fontFamily = "lato"),
     )
+  })
+
+  # we need to kick off a listener for the table edits as we cant' attach the event until it is ready
+  start_input_listener(ns('table'), ns('reactableEdit'))
+
+  observeEvent(input$reactableEdit, {
+    print(input$reactableEdit)
+  })
+
+  observeEvent(input$edit, {
+    purrr::walk(seq_len(nrow(formatted_data()))-1, ~ {
+      print(glue::glue("Enable {ns('name')}_{.x}"))
+      shinyjs::toggleState(glue::glue("{ns('name')}_{.x}"))
+    })
   })
 
   selected = shiny::reactive(reactable::getReactableState("table", "selected"))

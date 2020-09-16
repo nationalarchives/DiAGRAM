@@ -8,7 +8,7 @@ read_config = function(file) {
   yaml::yaml.load_file(
     file,
     handlers = list(
-      'bool#yes' = function(x) if(tolower(x) %in% c('yes','y')) x else TRUE
+      'bool#yes' = function(x) if(tolower(x) %in% c('yes','y')) x else TRUE,
       'bool#no' = function(x) if(tolower(x) %in% c('no','n')) x else FALSE
     )
   )
