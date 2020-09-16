@@ -5,17 +5,34 @@ formulate_question = function(question, default_response, ns) {
     "multiple choice" = list(ui = radio_group_module_ui, server = radio_group_module_server),
     "grouped slider" = list(ui = sliders_group_module_ui, server = sliders_group_module_server),
     "slider" = list(ui = text_slider_pair_module_ui, server = text_slider_pair_module_server),
+    "non-numeric slider" = list(ui = text_slider_module_ui, server = text_slider_module_server),
     stop(glue::glue("No UI layout functions found for type {question$type}."))
   )
   # formulate inputs to ui func
   # uniqueid = uuid::UUIDgenerate()
+  content = switch(
+    question$type,
+    "slider" = question$extra,
+    "grouped slider" = question$detail,
+    "multiple choice" = question$detail,
+    "non-numeric slider" = NULL,
+  )
+
+  label = switch (
+    question$type,
+    "slider" = NULL,
+    "grouped slider" = question$options,
+    "multiple choice" = question$options,
+    "non-numeric slider" = question$options
+  )
+
   uniqueid = question$node
   f_input = list(
     id = ns(uniqueid),
     # grab from the model loaded?
     state = default_response[[question$node]],
-    content = if(question$type == "slider") question$extra else question$detail,
-    label = if(question$type == "slider") NULL else question$options#,
+    content = content,
+    label = label
     # options =
   )
 
@@ -24,6 +41,7 @@ formulate_question = function(question, default_response, ns) {
     "multiple choice" = list(state = default_response[[question$node]]),
     "grouped slider" = list(state = default_response[[question$node]]) ,
     "slider" = list(state = default_response[[question$node]]),
+    "non-numeric slider" = list(state = default_response[[question$node]]),
     stop(glue::glue("No module server functions found for type {question$type}."))
   )
 
@@ -47,7 +65,7 @@ questions_module_ui = function(id, question_data, default_response, is_policy = 
           shinyjs::hidden(div(
             id = ns(paste0(question_block[[i]]$id, "-container")),
             # title element
-            shiny::div(.node_map[question_data[[i]]$node], class = "question-title"),
+            shiny::div(.node_map[question_data[[i]]$node], ": ", question_data[[i]]$part, class = "question-title"),
             div(
               class = "title-hint",
               shinyBS::bsButton(

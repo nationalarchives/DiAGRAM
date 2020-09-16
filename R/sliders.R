@@ -12,7 +12,7 @@ text_slider_module_ui = function(id, state, label, content) {
         label = NULL,
         choices = label,
         # assuming content is a vector?
-        value = state
+        selected = state
       )
     ),
     shiny::div(style = "display: inline-block; vertical-align: middle; padding-top: 2%; max-width: 62%",
@@ -25,7 +25,7 @@ text_slider_module_server = function(input, output, session, state, reactive_inp
 
   if(reactive_input){
     shiny::observeEvent(state(), {
-      shinyWidgets::updateSliderTextInput(session, "slider_text", value = state())
+      shinyWidgets::updateSliderTextInput(session, "slider_text", selected = state())
     })
   }
 

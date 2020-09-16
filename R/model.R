@@ -25,6 +25,14 @@
   c("Operating Environment", "Integrity", "System Security", "Information Management", "Storage Medium", "Replication and Refreshment", "Digital Object", "Content Metadata", "Technical Metadata", "File format", "Checksum", "Obsolescence", "Tools to Render", "Intellectual Control", "Conditions of Use", "Renderability", "Bit Preservation", "Identity", "Physical Disaster", "Storage Life", "Technical Skills")
 )
 
+
+.custom_scoring_functions = list(
+  # "Physical_Disaster" = function(response) {
+  #   c(`Very Low` = 0.05, Low = 0.5, Medium = 2, High = 5)[response]
+  # }
+)
+
+
 #' Calculate utility
 #'
 #' Calculate the utility metrics Intellectual Control and
@@ -81,6 +89,10 @@ score_model = function(model, responses, scoring_funcs) {
     return()
   }
   prob_names = model[responses$node] %>% purrr::map(~names(.x$prob))
+
+  # build out the non standard scoring
+
+
   # rescale to probabilities
   probs = purrr::map2(responses$response, prob_names, function(resp, name) {
     if(length(resp) == 1) {
@@ -123,11 +135,16 @@ make_scoring_functions = function(question_data) {
       function(response) {
         sum(option_val[response])
       }
-    }else{
+    } else if(question$type == "non-numeric slider") {
+      option_val = setNames(unlist(question$weights), question$options)
+      function(response) {
+        option_val[response]
+      }
+    } else{
       identity
     }
 
-  }) %>% setNames()
+  }) %>% setNames(nodes)
 }
 
 response_valid = function(responses) {
