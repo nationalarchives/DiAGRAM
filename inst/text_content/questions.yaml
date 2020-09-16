@@ -1,0 +1,46 @@
+question1:
+  node: (don't know yet)
+  type: multiple choice
+  text: For the following question please rate your skill as A, B, C or D
+  detail:
+    - Lorem ipsum dolor sit amet consectetur adipiscing elit Quisque tellus urna placerat
+    - Lorem ipsum dolor sit amet consectetur adipiscing elit Quisque tellus urna placerat in tortor ac imperdiet sollicitudin mi
+    - Lorem ipsum dolor sit amet consectetur adipiscing elit Quisque tellus urna placerat in tortor ac
+    - Lorem ipsum dolor sit amet consectetur adipiscing elit Quisque tellus urna placerat in tortor ac imperdiet sollicitudin mi Integer vel
+    - Lorem ipsum dolor sit amet consectetur adipiscing elit Quisque tellus urna placerat in tortor ac imperdiet sollicitudin mi Integer vel dolor
+    - Lorem ipsum dolor sit amet consectetur adipiscing elit Quisque tellus urna placerat in tortor ac imperdiet sollicitudin mi
+    - Lorem ipsum dolor sit amet consectetur adipiscing elit Quisque tellus urna placerat in tortor ac
+    - Lorem ipsum dolor sit amet consectetur adipiscing elit Quisque tellus urna placerat in tortor ac imperdiet sollicitudin
+    - Lorem ipsum dolor sit amet consectetur adipiscing elit Quisque tellus urna
+    - Lorem ipsum dolor sit amet consectetur adipiscing elit Quisque tellus urna placerat in tortor ac imperdiet sollicitudin mi
+  options:
+    - A
+    - B
+    - C
+    - D
+  weights:
+    - 0
+    - 3
+    - 6
+    - 10
+
+question2:
+  node: Checksum
+  type: grouped slider
+  definition: "A unique numerical signature dreived from a file that can be used to compare copies (definition from the DPC [handbook](https://www.dpconline.org/handbook/glossary)). A checksum is needed to ensure integrity of the digital object."
+  text: For what proportion of files do you have a checksum from the depositor? If none, for how many have you generated a checksum instantly upon receipt?
+  options:
+  - Yes
+  - Self Generated
+  - No
+  detail:
+    - We have a checksum from the depositor.
+    - We do not have a checksum from the depositor but generated one ourselves instantly upon receipt.
+    - We do not have a checksum or have only generated one post-ingestion.
+
+question3:
+  node: System_Security
+  type: slider
+  definition: A secure system can protect data from deletion or modification from any unauthorized party, and it ensures that when an authorized person makes a change that should not have been made the damage can be reversed. Definition from forcepoint, https://www.forcepoint.com/cyber-edu/cia-triad.
+  text: How would you rate the system security within your archive? Questions to consider when answering include... Do you have regular security audits? Do you have appropriate IT support? Do you check for viruses on acquisition? Do server communications go through a restrictive firewall? Is physical access to equipment appropriately restricted? Is server access restricted to specific personnel? Is there permissions management to archival systems? Do you ensure that no member of staff has access to all copies?
+  detail: The default is based on responses to the JISC digital skills survey and how many agreed that their IT provider supports the requirements of the archival activities of your organisation toa large or very great extent and that their digital collections are protected with access restrictions/ permissions. (17%)

@@ -1,0 +1,61 @@
+Package: diagramNAT
+Title: Package For National Archives Diagram App
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Jamie",
+           family = "Owen",
+           role = c("aut", "cre"),
+           email = "jamie@jumpingrivers.com")
+Description: This package provides all the necessary pieces
+    for running the shiny application diagram.  It was created as part of
+    the effort to improve reproducability and maintainability of the
+    tool.
+License: file LICENSE
+Imports: 
+    BiocManager,
+    bnlearn,
+    data.table,
+    dplyr,
+    DT,
+    ggplot2,
+    glue,
+    gRain (== 1.3.0),
+    graph,
+    gridExtra,
+    htmltools,
+    htmlwidgets,
+    jsonlite,
+    magrittr,
+    networkD3,
+    plotly,
+    purrr,
+    reactable,
+    readr,
+    Rgraphviz,
+    rintrojs,
+    rlang,
+    shiny,
+    shinyalert,
+    shinyBS,
+    shinydashboard,
+    shinyjs,
+    shinysky,
+    shinyWidgets,
+    stats,
+    stringr,
+    tibble,
+    tidyr,
+    tools,
+    uuid,
+    V8,
+    yaml
+Suggests:
+    shinytest,
+    testthat
+Remotes:
+    AnalytixWare/ShinySky
+biocViews:
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
