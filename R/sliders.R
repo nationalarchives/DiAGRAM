@@ -1,3 +1,39 @@
+text_slider_module_ui = function(id, state, label, content) {
+  ns = shiny::NS(id)
+
+  if (is.na(state))
+    state = label[1]
+
+  shiny::div(
+    shiny::div(
+      style = "display: inline-block; vertical-align: middle; max-width: 25%; min-width: 20%; padding-right: 1.5rem;",
+      shinyWidgets::sliderTextInput(
+        ns("text_slider"),
+        label = NULL,
+        choices = label,
+        # assuming content is a vector?
+        value = state
+      )
+    ),
+    shiny::div(style = "display: inline-block; vertical-align: middle; padding-top: 2%; max-width: 62%",
+               content)
+  )
+}
+
+text_slider_module_server = function(input, output, session, state, reactive_input = TRUE){
+  ns = session$ns
+
+  if(reactive_input){
+    shiny::observeEvent(state(), {
+      shinyWidgets::updateSliderTextInput(session, "slider_text", value = state())
+    })
+  }
+
+  return(shiny::reactive(input$text_slider))
+}
+
+
+
 text_slider_pair_module_ui = function(id, state, label, content) {
   ns = shiny::NS(id)
 
