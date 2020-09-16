@@ -110,11 +110,11 @@ app_ui = function(req, question_data, default_response) {
             tabName = "visualise",
             shiny::column(
               width = 12,
-              shinydashboard::box(
-                width = 12,
-                title = "Check back soon",
-                "Coming soon"
-              )
+              # shinydashboard::box(
+              #   width = 12,
+                policy_visualisation_module_ui('bar'),
+              # ),
+              # model_table_module_ui('bar-select')
             )
           ),
           shinydashboard::tabItem(

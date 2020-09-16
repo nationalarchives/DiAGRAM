@@ -4,7 +4,7 @@
 \alias{policy_visualisation_module_server}
 \title{policy_visualisation module server}
 \usage{
-policy_visualisation_module_server(input, output, session, model_data)
+policy_visualisation_module_server(input, output, session, model_data, model)
 }
 \arguments{
 \item{input}{necessary input arg for shiny server function}
