@@ -29,6 +29,7 @@ text_slider_module_server = function(input, output, session, state, reactive_inp
     })
   }
 
+  observe(print(input$text_slider))
   return(shiny::reactive(input$text_slider))
 }
 

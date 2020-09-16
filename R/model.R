@@ -27,9 +27,24 @@
 
 
 .custom_scoring_functions = list(
-  # "Physical_Disaster" = function(response) {
-  #   c(`Very Low` = 0.05, Low = 0.5, Medium = 2, High = 5)[response]
-  # }
+  Op_Environment = function(questions) {
+    f_list = purrr::map(questions, make_one_score_func)
+    function(group_response) {
+      answers = purrr::map2_dbl(f_list, group_response, ~.x(.y))
+      if(answers[1] == 100 || answers[2] == 1) {
+        return(100)
+      }else{
+        return(answers[1])
+      }
+    }
+  },
+  Rep_and_Refresh = function(questions) {
+    f_list = purrr::map(questions, make_one_score_func)
+    function(group_response) {
+      answers = purrr::map2_dbl(f_list, group_response, ~.x(.y))
+      return(answers[1]*answers[2]/100)
+    }
+  }
 )
 
 
@@ -90,11 +105,14 @@ score_model = function(model, responses, scoring_funcs) {
   }
   prob_names = model[responses$node] %>% purrr::map(~names(.x$prob))
 
-  # build out the non standard scoring
+  # translate the given responses to numeric
+  numeric_scores = purrr::map2(scoring_funcs, responses$response, function(f, x) {
+    f(x)
+  })
 
 
   # rescale to probabilities
-  probs = purrr::map2(responses$response, prob_names, function(resp, name) {
+  probs = purrr::map2(numeric_scores, prob_names, function(resp, name) {
     if(length(resp) == 1) {
       intermediate = c(resp, 100-resp)
     }else{
@@ -111,46 +129,54 @@ score_model = function(model, responses, scoring_funcs) {
   calculate_utility(model)
 }
 
-make_scoring_functions = function(question_data) {
-  # count how many parts there are to a question
-  q_clone = question_data
-  nodes = purrr::map_chr(q_clone, 'node')
-  node_counts = table(nodes) %>% as.list()
-
-  # for the multi part questions
-  # TODO need to think a bit more about how to combine these funcs
-  # is_multipart = node_counts > 1
-  # funcs = list()
-  # for(i in seq_along(is_multipart)) {
-  #   if(is_multipart[i]) {
-  #     # which ones
-  #     ix = which(nodes == names(is_multipart[i]))
-  #     purrr::map(q_clone[]
-  #   }
-  # }
-
-  funcs = list()
-
-  purrr::map(question_data, function(question) {
-    if(is.null(question$part)) {
-
+make_one_score_func = function(question) {
+  print(question$node)
+  print(question$part)
+  if(question$type == "multiple choice") {
+    option_val = setNames(question$weights, question$options)
+    function(response) {
+      sum(option_val[response])
     }
-    if(question$type == "multiple choice") {
-      option_val = setNames(question$weights, question$options)
-      function(response) {
-        sum(option_val[response])
-      }
-    } else if(question$type == "non-numeric slider") {
-      option_val = setNames(unlist(question$weights), question$options)
-      function(response) {
-        option_val[response]
-      }
-    } else{
-      identity
+  } else if(question$type == "non-numeric slider") {
+    option_val = setNames(unlist(question$weights), question$options)
+    function(response) {
+      option_val[response]
     }
-
-  }) %>% setNames(nodes)
+  } else{
+    identity
+  }
 }
+
+make_scoring_functions = function(grouped_question_data) {
+  purrr::imap(grouped_question_data, function(question, node) {
+    if(length(question[[1]]) == 1) {
+      make_one_score_func(question)
+    } else if(node %in% names(.custom_scoring_functions)){
+      return(.custom_scoring_functions[[node]](question))
+    } else { # a multipart questions
+      f_list = purrr::map(question, make_one_score_func)
+      f = function(group_response) {
+        sum(purrr::map2_dbl(f_list, group_response, ~.x(.y)))
+      }
+      f
+    }
+  }) #%>% setNames(nodes)
+  # replace the special nodes with the custom funcs
+}
+
+group_questions = function(question_data) {
+  grouped_questions = list()
+  for(node in .user_nodes[.user_nodes %in% purrr::map_chr(questions,'node')]) {
+    node_questions = Filter(function(x) x$node == node, question_data)
+    if(length(node_questions) == 1) {
+      grouped_questions[[node]] = node_questions[[1]]
+    }else {
+      grouped_questions[[node]] = setNames(node_questions, seq_along(node_questions))
+    }
+  }
+  grouped_questions
+}
+
 
 response_valid = function(responses) {
   res = purrr::map_lgl(responses, function(x) {

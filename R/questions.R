@@ -1,5 +1,6 @@
 formulate_question = function(question, default_response, ns) {
   # find the appropriate module funcs for this question type
+
   func_pair = switch(
     question$type,
     "multiple choice" = list(ui = radio_group_module_ui, server = radio_group_module_server),
@@ -53,7 +54,23 @@ formulate_question = function(question, default_response, ns) {
 }
 
 create_question_block = function(questions, default_response = NA, ns) {
-  purrr::map(questions, formulate_question, default_response = default_response, ns = ns)
+  # purrr::map(questions, formulate_question, default_response = default_response, ns = ns)
+  block = list()
+  counter = 1
+  for(q in questions) {
+    node = q$node
+    part = q$part
+    print(node)
+    print(part)
+    if(is.null(part)) {
+      block[[counter]] = formulate_question(q, default_response[node], ns)
+    }else { # multi part question
+      intermediate_response = default_response[[node]][part] %>% setNames(node)
+      block[[counter]] = formulate_question(q, intermediate_response, ns)
+    }
+    counter = counter + 1
+  }
+  return(block)
 }
 
 questions_module_ui = function(id, question_data, default_response, is_policy = FALSE) {
@@ -174,7 +191,7 @@ questions_module_server = function(input, output, session, question_data, defaul
   ns = session$ns
   question_block = create_question_block(question_data, default_response, ns)
   orig_state = purrr::map(question_block, ~.x$server_args$state) %>%
-      setNames(purrr::map(question_data, 'node'))
+    setNames(purrr::map(question_data, ~paste(.x$node,.x$part,sep = "_")))
   orig_state_rv = do.call(reactiveValues, orig_state)
 
   question_block = purrr::map(question_block, function(x) {
@@ -261,7 +278,7 @@ questions_module_server = function(input, output, session, question_data, defaul
   outputs = purrr::map(question_block, function(question) {
     module_args = c(list(module = question$server_func, id = question$id), question$server_args)
     do.call(callModule, module_args)
-  }) %>% setNames(purrr::map(question_data, 'node'))
+  }) %>% setNames(purrr::map(question_data, ~paste(.x$node,.x$part,sep = "_")))
   rv = reactiveValues()
 
   observe({
@@ -271,7 +288,21 @@ questions_module_server = function(input, output, session, question_data, defaul
   })
 
   return_val = reactive({
-    reactiveValuesToList(rv)
+    orig_state = reactiveValuesToList(rv)
+    node = stringr::str_replace(names(orig_state), "_[0-9]$", "") %>% stringr::str_replace("_$","")
+    res = list()
+    # seen = c()
+    for(name in unique(node)){
+      print(name)
+      if(sum(name == node) > 1) {
+        print("multi")
+        # appears as multipart
+        res[[name]] = orig_state[name == node] %>% setNames(1:sum(name == node))
+      }else{
+        print("single")
+        res[[name]] = orig_state[[paste0(name, "_")]]
+      }
+    }
   })
   # observe({
   #   print(return_val())

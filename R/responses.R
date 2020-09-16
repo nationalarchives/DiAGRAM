@@ -53,5 +53,18 @@ load_responses = function(path) {
 #' @return A named list of the form (<node_name> = <response>)
 load_single_response = function(path) {
   res = jsonlite::read_json(path)
-  purrr::map(res, unlist)
+  # purrr::map(res, unlist)
+  unpack_json(res)
 }
+
+unpack_json = function(res) {
+  purrr::map(res, function(x) {
+    if(is.null(names(x))) {
+      unlist(x)
+    }else{
+      unpack_json(x)
+    }
+  })
+}
+
+
