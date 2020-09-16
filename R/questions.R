@@ -26,7 +26,7 @@ formulate_question = function(question, default_response, ns) {
     "non-numeric slider" = question$options
   )
 
-  uniqueid = question$node
+  uniqueid = if(is.null(question$part)) question$node else paste(question$node, question$part, sep = "-")
   f_input = list(
     id = ns(uniqueid),
     # grab from the model loaded?

@@ -129,7 +129,12 @@ make_scoring_functions = function(question_data) {
   #   }
   # }
 
+  funcs = list()
+
   purrr::map(question_data, function(question) {
+    if(is.null(question$part)) {
+
+    }
     if(question$type == "multiple choice") {
       option_val = setNames(question$weights, question$options)
       function(response) {

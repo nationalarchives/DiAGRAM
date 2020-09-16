@@ -194,3 +194,24 @@ question9:
   - 0.5
   - 2
   - 5
+question10:
+  part: 2
+  node: Physical_Disaster
+  type: non-numeric slider
+  definition: For this first version, we will only consider the risk of a flood at
+    your primary storage location.
+  text: Based on the the Government's long term flood risk assesssment, how likely
+    is it that your safest digital storage location will experience a flood? Where
+    the risk level varies for different risk types (i.e. flood risks from rivers or
+    the sea, flood risks from surface water, flood risks from reservoirs), please
+    answer based on the highest result.
+  options:
+  - Very Low
+  - Low
+  - Medium
+  - High
+  weights:
+  - 0.05
+  - 0.5
+  - 2
+  - 5
