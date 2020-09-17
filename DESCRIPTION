@@ -48,7 +48,8 @@ Imports:
     tools,
     uuid,
     V8,
-    yaml
+    yaml,
+    forcats
 Suggests:
     shinytest,
     testthat
