@@ -73,6 +73,7 @@ app_ui = function(req, question_data, default_response) {
       ),
       shinydashboard::dashboardBody(
         shinyjs::useShinyjs(),
+        shinyalert::useShinyalert(),
         id = "dashboardBody",
         dev_banner_module_ui('dev-banner'),
         shinydashboard::tabItems(
@@ -80,6 +81,10 @@ app_ui = function(req, question_data, default_response) {
           shinydashboard::tabItem(
             tabName = "Home",
             home_tab()
+          ),
+          shinydashboard::tabItem(
+            tabName = "how-to",
+            guidance_tab()
           ),
           shinydashboard::tabItem(
             tabName = "model",
