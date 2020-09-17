@@ -65,9 +65,7 @@ app_server = function(input, output, session, question_data, default_response, m
   mod_only_table = callModule(model_table_module_server, "model_table", data = reactive(model_obj$data), model = model, selection = "none", show_policy = FALSE, scoring_funcs = scoring_funcs)
   save_table = callModule(model_table_module_server, "save_table", data = reactive(model_obj$data), model = model, selection = "multiple", show_policy = TRUE, scoring_funcs = scoring_funcs)
 
-
-  # vis page: a model_table view
-  # plot module view
+  policy_vis = callModule(policy_visualisation_module_server, 'bar', model_data = reactive(model_obj$data), model = model, scoring_funcs = scoring_funcs)
 
   output$download = shiny::downloadHandler(
     filename = function() {
