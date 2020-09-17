@@ -87,6 +87,10 @@ app_ui = function(req, question_data, default_response) {
             guidance_tab()
           ),
           shinydashboard::tabItem(
+            tabName = "definitions",
+            definitions_tab()
+          ),
+          shinydashboard::tabItem(
             tabName = "model",
             shiny::column(
               width = 12,

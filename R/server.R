@@ -148,6 +148,79 @@ app_server = function(input, output, session, question_data, default_response, m
   observeEvent(p_output$visualise(), {
     shinydashboard::updateTabItems(session = shiny::getDefaultReactiveDomain(), inputId = "sidebarMenu", selected = 'visualise')
   })
+
+
+  ############################
+  ## Old content for user test: to remove again later
+  ############################
+  stable.fit <- model
+
+  # node definitions and state definitions
+  node.definitions <- readr::read_csv(system.file("text_content", "node_information.csv", package = "diagramNAT")) %>%
+    dplyr::arrange(.data$node_name)
+  state.definitions <- readr::read_csv(system.file("text_content", "node_states.csv", package = "diagramNAT"))
+
+  # Update node drop down list with node names
+  shiny::updateSelectInput(
+    session = shiny::getDefaultReactiveDomain(), "NodeSelection",
+    label=NULL,
+    choices=node.definitions$node_name
+  )
+
+  # plot network used on the network tab
+  output$NetworkStructure <- shiny::renderPlot({
+    bnlearn::graphviz.plot(
+      model, layout = "dot",
+      highlight = list(nodes=c(input$NodeSelection), fill="lightgrey"),
+      shape = "ellipse",
+      render = TRUE
+    )
+  })
+
+  # Output node definiton text
+  output$NodeDefinition <- shiny::renderUI({
+    definition <- node.definitions %>%
+      dplyr::filter(.data$node_name==input$NodeSelection) %>%
+      dplyr::select(.data$node_definition) %>%
+      as.character()
+    shiny::tagList(shiny::strong("Definition: "), definition)
+  })
+
+
+  # Output hyperlink to data source
+  output$DataLink <- shiny::renderUI({
+    url <- node.definitions %>%
+      dplyr::filter(.data$node_name==input$NodeSelection) %>%
+      dplyr::select(.data$data_source) %>%
+      as.character()
+    #   url <- a(input$NodeSelection, href=url) remove hyperlink
+    shiny::tagList(shiny::strong("Data source: "), url)
+  })
+
+  # Output Year of node
+  output$DataYear <- shiny::renderUI({
+    year <- node.definitions %>%
+      dplyr::filter(.data$node_name==input$NodeSelection) %>%
+      dplyr::select(.data$node_year) %>%
+      as.character()
+    shiny::tagList(shiny::strong("Data collected: "), year)
+  })
+
+  # Output node state definition table
+  output$StateDefinition <- shiny::renderTable({
+    state.definitions %>%
+      dplyr::filter(.data$node_name==input$NodeSelection) %>%
+      dplyr::select(-.data$node_name) %>%
+      dplyr::rename(
+        `Node State`=.data$node_state,
+        `State Definition`=.data$state_definition
+      )
+  })
+
+  ####################################
+  ## End of block to remove
+  ####################################
+
 }
 
 
