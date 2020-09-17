@@ -67,6 +67,10 @@ app_server = function(input, output, session, question_data, default_response, m
 
   policy_vis = callModule(policy_visualisation_module_server, 'bar', model_data = reactive(model_obj$data), model = model, scoring_funcs = scoring_funcs)
 
+
+  observeEvent(input$createModel, {
+    shinydashboard::updateTabItems(session = shiny::getDefaultReactiveDomain(), inputId = "sidebarMenu", selected = 'model')
+  })
   output$download = shiny::downloadHandler(
     filename = function() {
       paste0("Diagram-data-", Sys.Date(), ".json")
