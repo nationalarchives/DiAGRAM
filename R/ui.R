@@ -49,13 +49,19 @@ app_ui = function(req, question_data, default_response) {
         shinydashboard::sidebarMenu(
           id = "sidebarMenu",
           shinydashboard::menuItem(
-            "Home", tabName = "Home", icon = shiny::icon("home")
+            "Home page", tabName = "Home", icon = shiny::icon("home")
           ),
           shinydashboard::menuItem(
-            "Model", tabName = "model", icon = shiny::icon("user-edit")
+            "How to use the tool", tabName = "how-to"
           ),
           shinydashboard::menuItem(
-            "Scenario", tabName = "scenario"
+            "Definitions", tabName = "definitions"
+          ),
+          shinydashboard::menuItem(
+            "Create your baseline model", tabName = "model", icon = shiny::icon("user-edit")
+          ),
+          shinydashboard::menuItem(
+            "Create a Scenario", tabName = "scenario"
           ),
           shinydashboard::menuItem(
             "Visualise", tabName = "visualise"
@@ -67,6 +73,7 @@ app_ui = function(req, question_data, default_response) {
       ),
       shinydashboard::dashboardBody(
         shinyjs::useShinyjs(),
+        shinyalert::useShinyalert(),
         id = "dashboardBody",
         dev_banner_module_ui('dev-banner'),
         shinydashboard::tabItems(
@@ -74,6 +81,10 @@ app_ui = function(req, question_data, default_response) {
           shinydashboard::tabItem(
             tabName = "Home",
             home_tab()
+          ),
+          shinydashboard::tabItem(
+            tabName = "how-to",
+            guidance_tab()
           ),
           shinydashboard::tabItem(
             tabName = "model",

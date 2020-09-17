@@ -17,6 +17,7 @@ radio_group_module_ui = function(id = 'test', state, label = LETTERS[1:4], conte
   n_q = length(questions)
   buttons = purrr::map2(seq_along(questions), options, function(i, opt) {
     div(
+      style = "clear: right;",
       div(
         style = if(length(questions) > 1) "max-width: 40%; display: inline-block; vertical-align: middle;",
         shiny::p(questions[i])

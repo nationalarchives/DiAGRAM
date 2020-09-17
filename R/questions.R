@@ -86,7 +86,7 @@ questions_module_ui = function(id, question_data, default_response, is_policy = 
             div(
               class = "title-hint",
               shinyBS::bsButton(
-                inputId = ns(paste0('title-hint-',question_data[[i]]$node)),label = "", icon = icon("question"),
+                inputId = ns(paste0('title-hint-',question_data[[i]]$node,question_data[[i]]$part)),label = "", icon = icon("question"),
                 style = "info", size = "extra-small"
               )
             ),
@@ -95,8 +95,9 @@ questions_module_ui = function(id, question_data, default_response, is_policy = 
             question_block[[i]]$ui_el
           )),
           shinyBS::bsPopover(
-            id = ns(paste0('title-hint-',question_data[[i]]$node)), title = .node_map[question_data[[i]]$node],
+            id = ns(paste0('title-hint-',question_data[[i]]$node,question_data[[i]]$part)), title = .node_map[question_data[[i]]$node],
             content = question_data[[i]]$definition,
+              # glue::glue("`{shiny::HTML(knitr::knit2html(text = question_data[[i]]$definition,fragment = TRUE))}`"),
             placement = "right",
             trigger = "click"#,
             # options = list(container = "body")
