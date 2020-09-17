@@ -10,20 +10,25 @@ radio_group_module_ui = function(id = 'test', state, label = LETTERS[1:4], conte
   if(!is.list(options)) {
     options = rep(list(options), length(questions))
   }
-  if(is.na(state)){
-    state = purrr::map(options, 1) %>% unlist
-  }
+  # if(is.na(state)){
+  #   state = purrr::map(options, 1) %>% unlist
+  # }
 
   n_q = length(questions)
   buttons = purrr::map2(seq_along(questions), options, function(i, opt) {
     div(
       div(
-        style = "max-width: 25%; display: inline-block; vertical-align: middle;",
+        style = if(length(questions) > 1) "max-width: 40%; display: inline-block; vertical-align: middle;",
+        shiny::p(questions[i])
+      ),
+      div(
+        style = if(length(questions) > 1) "max-width: 55%; display: inline-block; vertical-align: middle; float: right;" else NULL,
         shinyWidgets::radioGroupButtons(
           # class = "jamie",
           inputId = ns(paste0('test-',i)),
           label = NULL,
           choices = opt,
+          selected = state[i],
           justified = TRUE,
           # individual = TRUE,
           status = "primary",
@@ -33,11 +38,8 @@ radio_group_module_ui = function(id = 'test', state, label = LETTERS[1:4], conte
             no = shiny::icon("remove",
                              lib = "glyphicon"))
         )
-      ),
-      div(
-        style = "max-width: 62%; display: inline-block; vertical-align: middle;",
-        shiny::p(questions[i])
       )
+
     )
 
 
@@ -53,8 +55,18 @@ radio_group_module_ui = function(id = 'test', state, label = LETTERS[1:4], conte
 
 radio_group_module_server = function(input, output, session, state) {
   return_val = reactiveVal(NULL)
+
+  observeEvent(state(), {
+    print("Update Radio Group")
+    for(i in seq_along(state())) {
+      shinyWidgets::updateRadioGroupButtons(session, paste0("test-",i), selected = state()[i])
+    }
+  })
+
   observe({
-    return_val(purrr::map_chr(paste0("test-",1:input$x), ~input[[.x]]))
+    vals = purrr::map_chr(paste0("test-",1:input$x), ~input[[.x]])
+    print(vals)
+    return_val(vals)
   })
   return(return_val)
 }

@@ -79,16 +79,16 @@ policy_visualisation_module_ui = function(id){
 #' @param session necessary session arg for shiny server function
 #' @import shiny
 #' @importFrom plotly renderPlotly
-policy_visualisation_module_server = function(input, output, session, model_data, model){
+policy_visualisation_module_server = function(input, output, session, model_data, model, scoring_funcs){
   ns = session$ns # no lint (excluded from lint for jrshinyapp template)
   # model_data() is reactive
 
-  selection = callModule(model_table_module_server, 'bar-select', data = model_data, model = model, selection = "multiple", show_policy = TRUE)
+  selection = callModule(model_table_module_server, 'bar-select', data = model_data, model = model, selection = "multiple", show_policy = TRUE, scoring_funcs = scoring_funcs)
   vis_data = shiny::reactive({
     req(nrow(model_data()) > 0)
     intermediate = model_data()
     intermediate = dplyr::bind_cols(intermediate, purrr::map_dfr(intermediate$response, ~{
-      score_model(model, format_responses(.x)) %>% unlist
+      score_model(model, format_responses(.x), scoring_funcs) %>% unlist
     }))
     df = intermediate %>%
       dplyr::select(.data$model, .data$policy, "Intellectual Control" = .data$Intellectual_Control, .data$Renderability, .data$notes, .data$response) %>%

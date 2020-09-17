@@ -56,16 +56,16 @@
 #' @importFrom stats reorder
 #' @export
 
-app_server = function(input, output, session, question_data, default_response, model) {
+app_server = function(input, output, session, question_data, default_response, model, scoring_funcs) {
   shiny::addResourcePath("sbs", system.file("www", package = "shinyBS"))
   # output from the model builder tab
   q_output = callModule(questions_module_server, 'model-questions', question_data = question_data, default_response = default_response)
-  p_output = callModule(policy_creation_module_server, 'policy-questions', reactive(model_obj$data), question_data = question_data, model = model)
+  p_output = callModule(policy_creation_module_server, 'policy-questions', reactive(model_obj$data), question_data = question_data, model = model, scoring_funcs = scoring_funcs)
 
-  mod_only_table = callModule(model_table_module_server, "model_table", data = reactive(model_obj$data), model = model, selection = "none", show_policy = FALSE)
-  save_table = callModule(model_table_module_server, "save_table", data = reactive(model_obj$data), model = model, selection = "multiple", show_policy = TRUE)
+  mod_only_table = callModule(model_table_module_server, "model_table", data = reactive(model_obj$data), model = model, selection = "none", show_policy = FALSE, scoring_funcs = scoring_funcs)
+  save_table = callModule(model_table_module_server, "save_table", data = reactive(model_obj$data), model = model, selection = "multiple", show_policy = TRUE, scoring_funcs = scoring_funcs)
 
-  policy_vis = callModule(policy_visualisation_module_server, 'bar', model_data = reactive(model_obj$data), model = model)
+  policy_vis = callModule(policy_visualisation_module_server, 'bar', model_data = reactive(model_obj$data), model = model, scoring_funcs = scoring_funcs)
 
   output$download = shiny::downloadHandler(
     filename = function() {

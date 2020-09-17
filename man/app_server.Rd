@@ -4,7 +4,15 @@
 \alias{app_server}
 \title{The application server-side}
 \usage{
-app_server(input, output, session, question_data, default_response, model)
+app_server(
+  input,
+  output,
+  session,
+  question_data,
+  default_response,
+  model,
+  scoring_funcs
+)
 }
 \arguments{
 \item{input, output, session}{Internal parameters for {shiny}.
