@@ -85,13 +85,21 @@ questions_module_ui = function(id, question_data, default_response, is_policy = 
     #                                      fragment.only = TRUE)
       return(
         div(
+          tags$head(
+            # shiny::tags$link(
+            #   rel = "stylesheet", type = "text/css",
+            #   href = "www/shinyBS.css"
+            # ),
+            shiny::includeScript(system.file("assets", "js", "shinyBS.js",
+                                             package = "diagramNAT"))),
+          shinyjs::useShinyjs(),
           shinyjs::hidden(div(
             id = ns(paste0(question_block[[i]]$id, "-container")),
             # title element
             shiny::div(.node_map[question_data[[i]]$node], ": ", question_data[[i]]$part, class = "question-title"),
             div(
               class = "title-hint",
-              shinyBS::bsButton(
+              bsButton(
                 inputId = ns(paste0('title-hint-',question_data[[i]]$node,question_data[[i]]$part)),label = "", icon = icon("question"),
                 style = "info", size = "extra-small"
               )
