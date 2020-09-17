@@ -1,24 +1,51 @@
 #' @export
 model_table_module_ui = function(id) {
   ns = shiny::NS(id)
-  reactable::reactableOutput(ns('table'))
+  shiny::tagList(
+    # diagramNAT_dependencies(),
+    tags$head(
+      shiny::includeScript(system.file("assets", "js", "reactable_supplement.js", package = "diagramNAT")),
+      tags$style(
+        "
+input.table-input {
+    width: 60%;
+    display: inline;
+}
+
+input.table-input:disabled {
+    background-color: transparent !important;
+    border: transparent;
+    cursor: default !important;
+}
+        "
+      )
+    ),
+    shinyjs::useShinyjs(),
+    shiny::actionButton(ns("edit"), "", icon = shiny::icon("cog")),
+    reactable::reactableOutput(ns('table'))
+  )
 }
 
 #' @importFrom rlang .data
 #' @export
-model_table_module_server = function(input, output, session, data, model, selection = "multiple", show_policy = TRUE) {
+model_table_module_server = function(input, output, session, data, model, scoring_funcs, selection = "multiple", show_policy = TRUE) {
+
+  ns = session$ns
   observe({
+    print(class(data()))
+    print(class(data))
+    print(str(data()))
     print(data())
   })
   formatted_data = shiny::reactive({
     # req(nrow(data()) > 0)
     if(nrow(data()) == 0){
-      print("Early return")
+      # print("Early return")
       return(NULL)
     }
     intermediate = data()
     intermediate = dplyr::bind_cols(intermediate, purrr::map_dfr(intermediate$response, ~{
-      score_model(model, format_responses(.x)) %>% unlist
+      score_model(model, format_responses(.x), scoring_funcs) %>% unlist
     }))
     if(show_policy) {
       res = intermediate %>%
@@ -41,6 +68,18 @@ model_table_module_server = function(input, output, session, data, model, select
       df %>% dplyr::select(-.data$Response),
       groupBy = "Model",
       columns = list(
+        Model = reactable::colDef(
+          html = TRUE,
+          cell = htmlwidgets::JS(
+            glue::glue(
+              "function(cellInfo) {{
+                console.log(cellInfo);
+                var ix = typeof cellInfo.index === 'undefined' ? cellInfo.subRows[0]._index : cellInfo.index;
+                return table_input(`{ns('name')}_${{ix}`, cellInfo.value, 'Name');
+              }"
+            )
+          )
+        ),
         `Intellectual Control` = reactable::colDef(
           align = "left",
           cell = function(value) {
@@ -56,12 +95,12 @@ model_table_module_server = function(input, output, session, data, model, select
           }
         )
       ),
-      details = function(index) {
-        # print(index)
-        res = df[index, ]$Response[[1]]
-        tbl = reactable::reactable(format_responses(res))
-        htmltools::div(style = list(margin = "12px 45px"), tbl)
-      },
+      # details = function(index) {
+      #   # print(index)
+      #   res = df[index, ]$Response[[1]]
+      #   tbl = reactable::reactable(format_responses(res))
+      #   htmltools::div(style = list(margin = "12px 45px"), tbl)
+      # },
       # onClick = "expand",
       #   rowStyle = list(cursor = "pointer"),
       borderless = TRUE,
@@ -78,6 +117,20 @@ model_table_module_server = function(input, output, session, data, model, select
       style = list(fontFamily = "lato"),
     )
   })
+
+  # we need to kick off a listener for the table edits as we cant' attach the event until it is ready
+  # start_input_listener(ns('table'), ns('reactableEdit'))
+  #
+  # observeEvent(input$reactableEdit, {
+  #   print(input$reactableEdit)
+  # })
+
+  # observeEvent(input$edit, {
+  #   purrr::walk(seq_len(nrow(formatted_data()))-1, ~ {
+  #     print(glue::glue("Enable {ns('name')}_{.x}"))
+  #     shinyjs::toggleState(glue::glue("{ns('name')}_{.x}"))
+  #   })
+  # })
 
   selected = shiny::reactive(reactable::getReactableState("table", "selected"))
 

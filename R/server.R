@@ -56,14 +56,16 @@
 #' @importFrom stats reorder
 #' @export
 
-app_server = function(input, output, session, question_data, default_response, model) {
+app_server = function(input, output, session, question_data, default_response, model, scoring_funcs) {
   shiny::addResourcePath("sbs", system.file("www", package = "shinyBS"))
   # output from the model builder tab
   q_output = callModule(questions_module_server, 'model-questions', question_data = question_data, default_response = default_response)
-  p_output = callModule(policy_creation_module_server, 'policy-questions', reactive(model_obj$data), question_data = question_data, model = model)
+  p_output = callModule(policy_creation_module_server, 'policy-questions', reactive(model_obj$data), question_data = question_data, model = model, scoring_funcs = scoring_funcs)
 
-  mod_only_table = callModule(model_table_module_server, "model_table", data = reactive(model_obj$data), model = model, selection = "none", show_policy = FALSE)
-  save_table = callModule(model_table_module_server, "save_table", data = reactive(model_obj$data), model = model, selection = "multiple", show_policy = TRUE)
+  mod_only_table = callModule(model_table_module_server, "model_table", data = reactive(model_obj$data), model = model, selection = "none", show_policy = FALSE, scoring_funcs = scoring_funcs)
+  save_table = callModule(model_table_module_server, "save_table", data = reactive(model_obj$data), model = model, selection = "multiple", show_policy = TRUE, scoring_funcs = scoring_funcs)
+
+  policy_vis = callModule(policy_visualisation_module_server, 'bar', model_data = reactive(model_obj$data), model = model, scoring_funcs = scoring_funcs)
 
   output$download = shiny::downloadHandler(
     filename = function() {
@@ -130,69 +132,6 @@ app_server = function(input, output, session, question_data, default_response, m
   observeEvent(p_output$visualise(), {
     shinydashboard::updateTabItems(session = shiny::getDefaultReactiveDomain(), inputId = "sidebarMenu", selected = 'visualise')
   })
-
-
-
-
-
-
-
-
-
-  # table_data = reactive({
-  #   df = model_obj$data
-  #   print(nrow(df) > 0)
-  #   # req(nrow(df) > 0)
-  #   if(nrow(df) > 0) {
-  #     mods = dplyr::bind_cols(df, purrr::map_dfr(df$response, ~{
-  #       score_model(model, format_responses(.x)) %>% unlist
-  #     }))
-  #     print("table")
-  #     mods %>%
-  #       dplyr::select(
-  #         model, policy, "Intellectual Control" = Intellectual_Control,
-  #         Renderability, notes, response
-  #       ) %>%
-  #       dplyr::mutate_if(is.numeric, ~round(.x,2))
-  #   }
-  #   else {
-  #     NA
-  #   }
-  #
-  # })
-
-  # observe({
-  #   print(model_obj$data)
-  # })
-
-  # observe(print(str(table_data())))
-
-
-  # output$rand = renderTable({
-  #   table_data()
-  # })
-
-  # output$table = reactable::renderReactable({
-  #   print("draw table")
-  #   if(!is.na(table_data())){
-  #     mods = table_data()
-  #     reactable::reactable(
-  #       mods %>% select(-response),
-  #       groupBy = "model",
-  #       details = function(index) {
-  #         print(index)
-  #         res = mods[index,]$response[[1]]
-  #         tbl = reactable::reactable(format_responses(res))
-  #         htmltools::div(style = list(margin = "12px 45px"), tbl)
-  #       },
-  #       onClick = "expand",
-  #       rowStyle = list(cursor = "pointer")
-  #     )
-  #   }
-  #
-  # })
-
-
 }
 
 

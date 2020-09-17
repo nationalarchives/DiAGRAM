@@ -1,0 +1,26 @@
+{
+  "Technical_Skills" : ["None", "Intermediate", "Basic", "Basic", "Advanced", "Basic","Basic", "Basic", "Intermediate", "Basic"],
+  "System_Security" : {
+    "1": ["Cyber Essentials Plus"],
+    "2": ["No test"],
+    "3": ["Level 2"],
+    "4": ["Yes"]
+  },
+  "Checksum": [0, 0, 100],
+  "Info_Management": {
+    "1": ["Level 3"],
+    "2": ["Level 3"],
+    "3": ["Basic", "Basic"]
+  },
+  "Digital_Object": [34, 10, 56],
+  "Storage_Medium": [0, 0, 100],
+  "Rep_and_Refresh": {
+    "1": [100],
+    "2": [100]
+  },
+  "Op_Environment": {
+    "1": [100],
+    "2": ["Not Applicable - we do not make copies"]
+  },
+  "Physical_Disaster": "Very Low"
+}
