@@ -78,8 +78,11 @@ questions_module_ui = function(id, question_data, default_response, is_policy = 
   ns = shiny::NS(id)
   question_block = create_question_block(question_data, default_response, ns)
   questions_el = purrr::map(seq_along(question_block), function(i) {
-    html_text = markdown::markdownToHTML(text = question_data[[i]]$text,
-                                         fragment.only = TRUE)
+   #html_text = "hi"
+   html_text = markdown::renderMarkdown(text = as.character(question_data[[i]]$text)) %>%
+     htmltools::HTML()
+    # html_text = markdown::markdownToHTML(text = question_data[[i]]$text,
+    #                                      fragment.only = TRUE)
       return(
         div(
           shinyjs::hidden(div(
@@ -94,7 +97,7 @@ questions_module_ui = function(id, question_data, default_response, is_policy = 
               )
             ),
             div(class = "question-prefix", "Please answer the following question:"),
-            div(class = "question-content", html_text),
+            div(class = "question-content", html_text), #question_data[[i]]$text),
             question_block[[i]]$ui_el
           )),
           shinyBS::bsPopover(
