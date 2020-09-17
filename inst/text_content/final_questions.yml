@@ -1,0 +1,292 @@
+question9:
+  node: Technical_Skills
+  type: multiple choice
+  definition: Bespoke digital preservation skills such as awareness of technological
+    trends, detailed knowledge of storage media, hardware and software, skills to
+    perform file format migration, skills to find emulating software etc?
+  text: >
+    "Please consider the following statements about digital preservation skills taken
+    from the DigCurV curriculum [framework for digital curation](https://www.digcurv.gla.ac.uk/skills.html). For each skill,
+    rate the level of skill in your organisation on the scale indicated: None,
+    Basic/is aware of, Intermediate/understands, or Advanced/is able to:"
+  detail:
+    - Apply appropriate technological solutions
+    - Digital preservation standards
+    - Information technology definitions and skills
+    - Select and apply digital curation and preservation techniques
+    - Continuously monitor and evaluate digital curation technologies
+    - Data structures and types
+    - File types, applications and systems
+    - Database types and structures
+    - Execute analysis of and forensic procedures in digital curation
+    - Translate current digital curation knowledge into new services and tools
+  options:
+    - None
+    - Basic
+    - Intermediate
+    - Advanced
+  weights:
+    - 0
+    - 3
+    - 6
+    - 10
+
+question7_1:
+  node: System_Security
+  type: multiple choice
+  part: 1
+  definition:
+  text:
+  detail:
+    - Does your organisation hold a recognised security accreditation (or has it carried out equivalent assessments)?
+  options:
+    - No
+    - Cyber Essentials
+    - Cyber Essentials Plus
+    - ISO 27001
+  weights:
+    - 0
+    - 10
+    - 40
+    - 70
+
+question7_2:
+  node: System_Security
+  type: multiple choice
+  part: 2
+  definition:
+  text:
+  detail:
+    - Has a penetration test specifically targeting your archival systems been conducted? If so, are any issues identified outstanding?
+  options:
+    - No test
+    - Critical issues outstanding
+    - Severe issues outstanding
+    - None, or only minor issues outstanding
+  weights:
+    - 0
+    - 5
+    - 10
+    - 15
+
+question7_3:
+  node: System_Security
+  type: multiple choice
+  part: 3
+  definition:
+  text:
+  detail:
+    - At what level is your archive for the Control functional area of the NDSA Levels of Preservation?
+  options:
+    - Not acheived
+    - Level 1
+    - Level 2
+    - Level 3
+    - Level 4
+  weights:
+    - 0
+    - 2
+    - 4
+    - 7
+    - 10
+
+question7_4:
+  node: System_Security
+  type: multiple choice
+  part: 4
+  definition:
+  text:
+  detail:
+    - Is a virus check performed for all material stored in the archive, and the result recorded?
+  options:
+    - No
+    - Yes
+  weights:
+    - 0
+    - 5
+
+question6:
+  node: Checksum
+  type: grouped slider
+  definition: "A unique numerical signature dreived from a file that can be used to compare copies (definition from the DPC [handbook](https://www.dpconline.org/handbook/glossary)). A checksum is needed to ensure integrity of the digital object."
+  text: For what proportion of files do you have a checksum from the depositor? If none, for how many have you generated a checksum instantly upon receipt?
+  detail:
+    - We have a checksum from the depositor.
+    - We do not have a checksum from the depositor but generated one ourselves instantly upon receipt.
+    - We do not have a checksum or have only generated one post-ingestion.
+  options:
+    - Yes
+    - Self Generated
+    - No
+
+question8_1:
+  node: Info_Management
+  type: multiple choice
+  part: 1
+  definition:
+  text:
+  detail:
+    - Assess your archive against the Metadata functional area of the NDSA Levels of Preservation
+  options:
+    - Not achieved
+    - Level 1
+    - Level 2
+    - Level 3
+    - Level 4
+  weights:
+    - 0
+    - 7
+    - 14
+    - 21
+    - 28
+
+question8_2:
+  node: Info_Management
+  type: multiple choice
+  part: 2
+  definition:
+  text:
+  detail:
+    - Assess your archive against the Content functional area of the NDSA Levels of Preservation
+  options:
+    - Not achieved
+    - Level 1
+    - Level 2
+    - Level 3
+    - Level 4
+  weights:
+    - 0
+    - 8
+    - 16
+    - 16
+    - 16
+
+question8_3:
+  node: Info_Management
+  type: multiple choice
+  part: 3
+  definition:
+  text:
+  detail:
+    - Assess your archive against the Service capability, I - Content preservation, of DPC RAM
+    - Assess your archive against the Service capability, J - Metadata management, of DPC RAM
+  options:
+    - Minimal awareness
+    - Awareness
+    - Basic
+    - Managed
+    - Optimized
+  weights:
+    - 0
+    - 7
+    - 14
+    - 21
+    - 28
+
+question1:
+  node: Digital_Object
+  type: grouped slider
+  definition: Whether it is a born-digital record, digitised record or surrogate.
+  text: What proportion of your digital archive are the following?
+  detail:
+    - Materials have originated from a digital source.
+    - Materials have been created as a result of converting analogue originals, but
+      we do not hold the analogue original.
+    - Materials have been created as a result of converting analogue originals, where
+      we also hold the analogue original.
+  options:
+    - Born_digital
+    - Digitised
+    - Surrogate
+
+question2:
+  node: Storage_Medium
+  type: grouped slider
+  definition: The type of media on which the digital material is stored.
+  text: What proportion of your records are stored on the following media types? A)
+    less stable, B) more stable, C) outsourced data storage.
+  detail:
+  - Expected lifespan below 10 years or unknown, highly susceptible to physical damage,
+    requires specific environmental conditions and very sensitive to changes, does not
+    support error-detection methods, supporting technology is novel, proprietary and limited.
+    Examples include USB flash drives, floppy disks, SD drives, external hard drives and CD-R discs.
+  - A proven lifespan of at least 10 years, low susceptibility to physical damage,
+    tolerant of a wide range of environmental conditions without data loss,
+    supports robust error-detection methods, supporting technology is well
+    established and widely available. Examples include LTO tapes, blu ray discs,
+    enterprise/corporate managed hard drives and CD-ROM discs.
+  - An external company is taking responsibility for our data storage.
+    Examples include Amazon Simple Storage Service,
+    Microsoft Azure Archive Storage and Google Cloud Storage.
+  options:
+  - A
+  - B
+  - C
+
+question3_1:
+  node: Rep_and_Refresh
+  part: 1
+  type: slider
+  definition: Short for replication and rereshment. The archive's policies on making
+    and maintaining copies of digital materials.
+  text: What proportion of files do you have at least 1 additional copy of the bit-stream for?
+  detail: "?"
+
+question3_2:
+  node: Rep_and_Refresh
+  part: 2
+  type: slider
+  definition: Short for replication and rereshment. The archive's policies on making
+    and maintaining copies of digital materials.
+  text: For these files, what proportion do you have refreshment policies to ensure there are
+    always at least 2 independent copies of the bit-stream?
+  detail: "?"
+
+question5_1:
+  node: Op_Environment
+  type: slider
+  part: 1
+  definition: Short for operating environment. The conditions under which the storage
+    media are kept, in terms of their resilience to damage from a flood.
+  text: What proportions of files do you keep a copy of the bitstream offsite?
+  detail: "?"
+
+question5_2:
+  node: Op_Environment
+  type: multiple choice
+  part: 2
+  definition: Short for operating environment. The conditions under which the storage
+    media are kept, in terms of their resilience to damage from a flood.
+  text: For the files where all the copies are at the same location, do you have
+    adequate mitigation in place to protect your storage media against damage from a flood?
+  detail:
+  - "?"
+  options:
+  - 'Yes'
+  - 'No'
+  - 'Not Applicable - we do not make copies'
+  weights:
+  - 1
+  - 2
+  - 3
+
+question4:
+  node: Physical_Disaster
+  type: non-numeric slider
+  definition: For this first version, we will only consider the risk of a flood at
+    your primary storage location.
+  text: Based on the the Government's long term flood risk assesssment, how likely
+    is it that your safest digital storage location will experience a flood? Where
+    the risk level varies for different risk types (i.e. flood risks from rivers or
+    the sea, flood risks from surface water, flood risks from reservoirs), please
+    answer based on the highest result.
+  options:
+    - Very Low
+    - Low
+    - Medium
+    - High
+  weights:
+    - 0.05
+    - 0.5
+    - 2
+    - 5

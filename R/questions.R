@@ -1,21 +1,39 @@
 formulate_question = function(question, default_response, ns) {
   # find the appropriate module funcs for this question type
+
   func_pair = switch(
     question$type,
     "multiple choice" = list(ui = radio_group_module_ui, server = radio_group_module_server),
     "grouped slider" = list(ui = sliders_group_module_ui, server = sliders_group_module_server),
     "slider" = list(ui = text_slider_pair_module_ui, server = text_slider_pair_module_server),
+    "non-numeric slider" = list(ui = text_slider_module_ui, server = text_slider_module_server),
     stop(glue::glue("No UI layout functions found for type {question$type}."))
   )
   # formulate inputs to ui func
   # uniqueid = uuid::UUIDgenerate()
-  uniqueid = question$node
+  content = switch(
+    question$type,
+    "slider" = question$extra,
+    "grouped slider" = question$detail,
+    "multiple choice" = question$detail,
+    "non-numeric slider" = NULL,
+  )
+
+  label = switch (
+    question$type,
+    "slider" = NULL,
+    "grouped slider" = question$options,
+    "multiple choice" = question$options,
+    "non-numeric slider" = question$options
+  )
+
+  uniqueid = if(is.null(question$part)) question$node else paste(question$node, question$part, sep = "-")
   f_input = list(
     id = ns(uniqueid),
     # grab from the model loaded?
     state = default_response[[question$node]],
-    content = if(question$type == "slider") question$extra else question$detail,
-    label = if(question$type == "slider") NULL else question$options#,
+    content = content,
+    label = label
     # options =
   )
 
@@ -24,6 +42,7 @@ formulate_question = function(question, default_response, ns) {
     "multiple choice" = list(state = default_response[[question$node]]),
     "grouped slider" = list(state = default_response[[question$node]]) ,
     "slider" = list(state = default_response[[question$node]]),
+    "non-numeric slider" = list(state = default_response[[question$node]]),
     stop(glue::glue("No module server functions found for type {question$type}."))
   )
 
@@ -35,7 +54,23 @@ formulate_question = function(question, default_response, ns) {
 }
 
 create_question_block = function(questions, default_response = NA, ns) {
-  purrr::map(questions, formulate_question, default_response = default_response, ns = ns)
+  # purrr::map(questions, formulate_question, default_response = default_response, ns = ns)
+  block = list()
+  counter = 1
+  for(q in questions) {
+    node = q$node
+    part = q$part
+    print(node)
+    print(part)
+    if(is.null(part)) {
+      block[[counter]] = formulate_question(q, default_response[node], ns)
+    }else { # multi part question
+      intermediate_response = default_response[[node]][part] %>% setNames(node)
+      block[[counter]] = formulate_question(q, intermediate_response, ns)
+    }
+    counter = counter + 1
+  }
+  return(block)
 }
 
 questions_module_ui = function(id, question_data, default_response, is_policy = FALSE) {
@@ -47,7 +82,7 @@ questions_module_ui = function(id, question_data, default_response, is_policy = 
           shinyjs::hidden(div(
             id = ns(paste0(question_block[[i]]$id, "-container")),
             # title element
-            shiny::div(.node_map[question_data[[i]]$node], class = "question-title"),
+            shiny::div(.node_map[question_data[[i]]$node], ": ", question_data[[i]]$part, class = "question-title"),
             div(
               class = "title-hint",
               shinyBS::bsButton(
@@ -156,7 +191,7 @@ questions_module_server = function(input, output, session, question_data, defaul
   ns = session$ns
   question_block = create_question_block(question_data, default_response, ns)
   orig_state = purrr::map(question_block, ~.x$server_args$state) %>%
-      setNames(purrr::map(question_data, 'node'))
+    setNames(purrr::map(question_data, ~paste(.x$node,.x$part,sep = "_")))
   orig_state_rv = do.call(reactiveValues, orig_state)
 
   question_block = purrr::map(question_block, function(x) {
@@ -243,7 +278,7 @@ questions_module_server = function(input, output, session, question_data, defaul
   outputs = purrr::map(question_block, function(question) {
     module_args = c(list(module = question$server_func, id = question$id), question$server_args)
     do.call(callModule, module_args)
-  }) %>% setNames(purrr::map(question_data, 'node'))
+  }) %>% setNames(purrr::map(question_data, ~paste(.x$node,.x$part,sep = "_")))
   rv = reactiveValues()
 
   observe({
@@ -253,7 +288,21 @@ questions_module_server = function(input, output, session, question_data, defaul
   })
 
   return_val = reactive({
-    reactiveValuesToList(rv)
+    orig_state = reactiveValuesToList(rv)
+    node = stringr::str_replace(names(orig_state), "_[0-9]$", "") %>% stringr::str_replace("_$","")
+    res = list()
+    # seen = c()
+    for(name in unique(node)){
+      print(name)
+      if(sum(name == node) > 1) {
+        print("multi")
+        # appears as multipart
+        res[[name]] = orig_state[name == node] %>% setNames(1:sum(name == node))
+      }else{
+        print("single")
+        res[[name]] = orig_state[[paste0(name, "_")]]
+      }
+    }
   })
   # observe({
   #   print(return_val())
