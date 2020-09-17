@@ -166,7 +166,7 @@ make_scoring_functions = function(grouped_question_data) {
 
 group_questions = function(question_data) {
   grouped_questions = list()
-  for(node in .user_nodes[.user_nodes %in% purrr::map_chr(questions,'node')]) {
+  for(node in .user_nodes[.user_nodes %in% purrr::map_chr(question_data,'node')]) {
     node_questions = Filter(function(x) x$node == node, question_data)
     if(length(node_questions) == 1) {
       grouped_questions[[node]] = node_questions[[1]]
