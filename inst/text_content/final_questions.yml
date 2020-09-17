@@ -298,16 +298,16 @@ question9:
     rate the level of skill in your organisation on the scale indicated: None,
     Basic/is aware of, Intermediate/understands, or Advanced/is able to:"
   detail:
-    - Apply appropriate technological solutions
-    - Digital preservation standards
-    - Information technology definitions and skills
-    - Select and apply digital curation and preservation techniques
-    - Continuously monitor and evaluate digital curation technologies
-    - Data structures and types
-    - File types, applications and systems
-    - Database types and structures
-    - Execute analysis of and forensic procedures in digital curation
-    - Translate current digital curation knowledge into new services and tools
+    - KIA 1.9 Apply appropriate technological solutions
+    - KIA 1.12 Digital preservation standards
+    - KIA 1.15 Information technology definitions and skills
+    - KIA 1.16 Select and apply digital curation and preservation techniques
+    - KIA 3.4 Continuously monitor and evaluate digital curation technologies
+    - KIA 5.1 Data structures and types
+    - KIA 5.2 File types, applications and systems
+    - KIA 5.3 Database types and structures
+    - KIA 5.4 Execute analysis of and forensic procedures in digital curation
+    - PQ 3.9 Translate current digital curation knowledge into new services and tools
   options:
     - None
     - Basic
