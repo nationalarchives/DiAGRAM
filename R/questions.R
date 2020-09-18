@@ -81,6 +81,9 @@ questions_module_ui = function(id, question_data, default_response, is_policy = 
    #html_text = "hi"
    html_text = markdown::renderMarkdown(text = as.character(question_data[[i]]$text)) %>%
      htmltools::HTML()
+   popover_html = markdown::renderMarkdown(text = as.character(question_data[[i]]$definition)) %>%
+     # shiny::div() #%>%
+   htmltools::HTML()
     # html_text = markdown::markdownToHTML(text = question_data[[i]]$text,
     #                                      fragment.only = TRUE)
       return(
@@ -108,9 +111,9 @@ questions_module_ui = function(id, question_data, default_response, is_policy = 
             div(class = "question-content", html_text), #question_data[[i]]$text),
             question_block[[i]]$ui_el
           )),
-          shinyBS::bsPopover(
+          bsPopover(
             id = ns(paste0('title-hint-',question_data[[i]]$node,question_data[[i]]$part)), title = .node_map[question_data[[i]]$node],
-            content = question_data[[i]]$definition,
+            content = popover_html,
               # glue::glue("`{shiny::HTML(knitr::knit2html(text = question_data[[i]]$definition,fragment = TRUE))}`"),
             placement = "right",
             trigger = "click"#,
@@ -186,6 +189,7 @@ questions_module_ui = function(id, question_data, default_response, is_policy = 
 
 
   shiny::tagList(
+    shiny::h2("Create your baseline model"),
     div(
       class = "question-container",
       shinyjs::useShinyjs(),

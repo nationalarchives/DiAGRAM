@@ -58,4 +58,55 @@ bsButton = function (inputId,
   if (disabled) {
     btn = addAttribs(btn, disabled = "disabled")
   }
+  btn
+}
+
+bsPopover = function (id, title, content, placement = "bottom", trigger = "hover",
+          options = NULL) {
+  options = buildTooltipOrPopoverOptionsList(title, placement,
+                                             trigger, options, content)
+  createTooltipOrPopoverOnUI(id, "popover", options)
+}
+
+buildTooltipOrPopoverOptionsList = function (title, placement, trigger, options, content)
+{
+  if (is.null(options)) {
+    options = list()
+  }
+  if (!missing(content)) {
+    if (is.null(options$content)) {
+      options$content = shiny::div(content)
+    }
+  }
+  if (is.null(options$placement)) {
+    options$placement = placement
+  }
+  if (is.null(options$trigger)) {
+    if (length(trigger) > 1)
+      trigger = paste(trigger, collapse = " ")
+    options$trigger = trigger
+  }
+  if (is.null(options$title)) {
+    options$title = title
+  }
+  return(options)
+}
+
+createTooltipOrPopoverOnUI = function(id, type = "popover", options) {
+  content_opt = options$content
+  other_opt = options[setdiff(names(options),"content")]
+  other_opt = paste0("'", paste(names(other_opt), other_opt, sep = "': '",
+                                 collapse = "', '"), "'")
+  options_json = glue::glue(
+    "{{'content': `{options$content}`,
+    {other_opt}}
+    "
+  )
+
+
+  bsTag <- shiny::tags$script(
+    shiny::HTML(
+      paste0("$(document).ready(function() {setTimeout(function() {shinyBS.addTooltip('",
+             id, "', '", type, "', ", options_json, ")}, 500)});"))
+    )
 }

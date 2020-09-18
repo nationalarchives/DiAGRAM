@@ -50,7 +50,7 @@ load_responses = function(path) {
 #' @importFrom jsonlite read_json
 #' @importFrom purrr map
 #' @export
-#' @return A named list of the form (<node_name> = <response>)
+#' @return A named list of the form \code{(<node_name> = <response>)}
 load_single_response = function(path) {
   res = jsonlite::read_json(path)
   # purrr::map(res, unlist)

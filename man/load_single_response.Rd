@@ -7,7 +7,7 @@
 load_single_response(path)
 }
 \value{
-A named list of the form (<node_name> = <response>)
+A named list of the form \code{(<node_name> = <response>)}
 }
 \description{
 Load a single set of model question responses from disk
