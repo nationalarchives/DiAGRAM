@@ -128,10 +128,10 @@ app_ui = function(req, question_data, default_response) {
           shinydashboard::tabItem(
             tabName = "visualise",
             shiny::column(
-              width = 12, NULL
+              width = 12, #NULL
               # shinydashboard::box(
               #   width = 12,
-                # policy_visualisation_module_ui('bar'),
+                policy_visualisation_module_ui('bar'),
               # ),
               # model_table_module_ui('bar-select')
             )
