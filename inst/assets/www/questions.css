@@ -1,3 +1,11 @@
+.question-back {
+    float:left;
+}
+
+.question-next {
+    float: right;
+}
+
 .question-title {
     display: inline-block;
     margin-bottom: 2rem;
@@ -5,6 +13,11 @@
     margin-top: .75rem;
     font-weight: 900;
     font-size: 3rem;
+
+}
+
+.question-button-row {
+    height: 50px;
 }
 
 .title-hint {
@@ -23,16 +36,23 @@
 }
 
 .question-container {
-    padding-left: 10rem;
-    padding-top: 10rem;
 }
 
 .question-back {
-
+    margin-left: 10%;
 }
 
 .question-next {
+    margin-right: 10%;
+}
 
+.question-finish {
+    margin-right: 10%;
+    float: right;
+}
+
+.question-finish > .btn {
+    background-color: #a8dea8;
 }
 
 .question-header-name {
@@ -48,7 +68,6 @@
   background-color: white;
   box-shadow: 5px 5px 5px #aaaaaa;
   margin-bottom: 1rem;
-  width: 90%;
 }
 
 .question-comments {

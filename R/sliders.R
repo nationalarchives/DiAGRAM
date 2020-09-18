@@ -168,7 +168,7 @@ sliders_group_module_server = function(input, output, session, state = c(20, 20,
     reactive_state$s1 = slider1()
     reactive_state$s2 = vals[1]
     reactive_state$s3 = vals[2]})
-  }, ignoreInit = TRUE)
+  })
 
   shiny::observeEvent(slider2(), {
     isolate({max = 100 - slider1()
@@ -177,7 +177,7 @@ sliders_group_module_server = function(input, output, session, state = c(20, 20,
       # reactive_state$s2 = max-0.1
     }
     reactive_state$s3 = 100 - slider1() - slider2()})
-  }, ignoreInit = TRUE)
+  })
 
   shiny::observeEvent(slider3(), {
     shiny::isolate({
@@ -192,7 +192,7 @@ sliders_group_module_server = function(input, output, session, state = c(20, 20,
         reactive_state$s2 = 100  - slider1() - slider3()
       }
     })
-  }, ignoreInit = TRUE)
+  })
 
   return(return_val)
 }

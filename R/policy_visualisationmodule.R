@@ -103,6 +103,13 @@ policy_visualisation_module_server = function(input, output, session, model_data
   })
 
   output$policy_bar_chart = plotly::renderPlotly({
-    policy_bar_chart(vis_data())
+
+    validate(
+      need(nrow(vis_data()) > 0,
+           "No policies currently selected.")
+    )
+
+      policy_bar_chart(vis_data())
+
   })
 }

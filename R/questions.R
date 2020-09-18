@@ -73,30 +73,48 @@ create_question_block = function(questions, default_response = NA, ns) {
   return(block)
 }
 
+#' @importFrom markdown markdownToHTML
 questions_module_ui = function(id, question_data, default_response, is_policy = FALSE) {
   ns = shiny::NS(id)
   question_block = create_question_block(question_data, default_response, ns)
   questions_el = purrr::map(seq_along(question_block), function(i) {
+   #html_text = "hi"
+   html_text = markdown::renderMarkdown(text = as.character(question_data[[i]]$text)) %>%
+     htmltools::HTML()
+   popover_html = markdown::renderMarkdown(text = as.character(question_data[[i]]$definition)) %>%
+     # shiny::div() #%>%
+   htmltools::HTML()
+    # html_text = markdown::markdownToHTML(text = question_data[[i]]$text,
+    #                                      fragment.only = TRUE)
       return(
         div(
+          tags$head(
+            # shiny::tags$link(
+            #   rel = "stylesheet", type = "text/css",
+            #   href = "www/shinyBS.css"
+            # ),
+            shiny::includeScript(system.file("assets", "js", "shinyBS.js",
+                                             package = "diagramNAT"))),
+          shinyjs::useShinyjs(),
           shinyjs::hidden(div(
             id = ns(paste0(question_block[[i]]$id, "-container")),
+            style = "width: 100%",
             # title element
             shiny::div(.node_map[question_data[[i]]$node], ": ", question_data[[i]]$part, class = "question-title"),
             div(
               class = "title-hint",
-              shinyBS::bsButton(
+              bsButton(
                 inputId = ns(paste0('title-hint-',question_data[[i]]$node,question_data[[i]]$part)),label = "", icon = icon("question"),
                 style = "info", size = "extra-small"
               )
             ),
             div(class = "question-prefix", "Please answer the following question:"),
-            div(class = "question-content", question_data[[i]]$text),
+            div(class = "question-content", html_text), #question_data[[i]]$text),
             question_block[[i]]$ui_el
           )),
-          shinyBS::bsPopover(
+          bsPopover(
             id = ns(paste0('title-hint-',question_data[[i]]$node,question_data[[i]]$part)), title = .node_map[question_data[[i]]$node],
-            content = question_data[[i]]$definition,
+            content = popover_html,
               # glue::glue("`{shiny::HTML(knitr::knit2html(text = question_data[[i]]$definition,fragment = TRUE))}`"),
             placement = "right",
             trigger = "click"#,
@@ -172,16 +190,20 @@ questions_module_ui = function(id, question_data, default_response, is_policy = 
 
 
   shiny::tagList(
+    shiny::h2("Create your baseline model"),
     div(
       class = "question-container",
       shinyjs::useShinyjs(),
       header_el,
       if(is_policy) NULL else launch_el,
       naming_el,
+      div(
+        class = "question-button-row",
+        back_el,
+        forward_el,
+        finish_el
+      ),
       questions_el,
-      back_el,
-      forward_el,
-      finish_el,
       what_next_el
     )
   )
@@ -248,8 +270,10 @@ questions_module_server = function(input, output, session, question_data, defaul
       updateTextInput(session, 'name', value = '')
       updateTextAreaInput(session, 'comment', value = '')
       for(nam in names(orig_state_rv)) {
-        orig_state_rv[[nam]] = orig_state_rv[[nam]] + 1
-        orig_state_rv[[nam]] = orig_state_rv[[nam]] - 1
+        init = orig_state_rv[[nam]]
+        repit = rep(NA, length(init))
+        orig_state_rv[[nam]] = repit #orig_state_rv[[nam]] + 1
+        orig_state_rv[[nam]] = init #orig_state_rv[[nam]] - 1
       }
       current_state(1)
     }
@@ -290,6 +314,10 @@ questions_module_server = function(input, output, session, question_data, defaul
 
   return_val = reactive({
     orig_state = reactiveValuesToList(rv)
+
+    print("original state questions")
+    print(orig_state)
+
     node = stringr::str_replace(names(orig_state), "_[0-9]$", "") %>% stringr::str_replace("_$","")
     res = list()
     # seen = c()
@@ -298,12 +326,17 @@ questions_module_server = function(input, output, session, question_data, defaul
       if(sum(name == node) > 1) {
         print("multi")
         # appears as multipart
-        res[[name]] = orig_state[name == node] %>% setNames(1:sum(name == node))
+        temp = orig_state[name == node]
+        res[[name]] = temp[sort(names(temp))] %>% setNames(1:sum(name == node))
       }else{
         print("single")
         res[[name]] = orig_state[[paste0(name, "_")]]
       }
     }
+
+    print("returned result")
+    print(res)
+    res
   })
   # observe({
   #   print(return_val())

@@ -37,6 +37,10 @@ app_ui = function(req, question_data, default_response) {
     shiny::tags$head(shiny::tags$link(
       rel = "stylesheet", type = "text/css",
       href = "www/ui.css"
+    ),
+    shiny::tags$link(
+      rel = "stylesheet", type = "text/css",
+      href = "www/questions.css"
     )),
     shinydashboard::dashboardPage(
       skin="purple",
@@ -124,10 +128,10 @@ app_ui = function(req, question_data, default_response) {
           shinydashboard::tabItem(
             tabName = "visualise",
             shiny::column(
-              width = 12,
+              width = 12, NULL
               # shinydashboard::box(
               #   width = 12,
-                policy_visualisation_module_ui('bar'),
+                # policy_visualisation_module_ui('bar'),
               # ),
               # model_table_module_ui('bar-select')
             )

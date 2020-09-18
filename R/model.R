@@ -106,20 +106,25 @@ score_model = function(model, responses, scoring_funcs) {
   prob_names = model[responses$node] %>% purrr::map(~names(.x$prob))
 
   # translate the given responses to numeric
-  numeric_scores = purrr::map2(scoring_funcs, responses$response, function(f, x) {
+  numeric_scores = purrr::map2(scoring_funcs, responses$response[names(scoring_funcs)], function(f, x) {
+    # print("score start")
+    # print(f)
+    # print(x)
+    # print(f(x))
+    # print("score end")
     f(x)
   })
 
 
   # rescale to probabilities
-  probs = purrr::map2(numeric_scores, prob_names, function(resp, name) {
+  probs = purrr::map2(numeric_scores, prob_names[names(numeric_scores)], function(resp, name) {
     if(length(resp) == 1) {
       intermediate = c(resp, 100-resp)
     }else{
       intermediate = resp
     }
     as.table(stats::setNames(intermediate/100, name))
-  }) %>% stats::setNames(responses$node)
+  }) #%>% stats::setNames(responses$node)
   # print(probs)
   # update model
   for(node in responses$node) {

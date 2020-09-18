@@ -27,11 +27,12 @@ policy_creation_module_ui = function(id) {
             shiny::column(
               width = 10,
               uiOutput(ns('policy-questions-ui'))
-            ),
-            shiny::column(
-              width = 2,
-              flash_table_module_ui(ns('flash-table-ui'), list("Intellectual_Control" = 0, "Renderability" = 0))
             )
+            # ,
+            # shiny::column(
+            #   width = 2,
+            #   flash_table_module_ui(ns('flash-table-ui'), list("Intellectual_Control" = 0, "Renderability" = 0))
+            # )
           )
         )
       ),
@@ -107,19 +108,24 @@ policy_creation_module_server = function(input, output, session, input_data, que
     model_obj$data$response[[policy_picker()]]
   })
 
-  original_score = reactive({
-    req(!is.null(policy_picker()))
-    score_model(model, format_responses(original_response()))
-  })
-
   observe({
-    print("original score")
-    print(original_score())
+    req(!is.null(policy_picker()))
+    print(model_obj$data$response[[policy_picker()]])
   })
 
-  new_score = reactiveVal(list("Intellectual_Control" = 0, "Renderability" = 0))
+  # original_score = reactive({
+  #   req(!is.null(policy_picker()))
+  #   score_model(model, format_responses(original_response()))
+  # })
 
-  callModule(flash_table_module_server, 'flash-table-ui', original_score = original_score, new_score = new_score)
+  # observe({
+  #   print("original score")
+  #   print(original_score())
+  # })
+
+  # new_score = reactiveVal(list("Intellectual_Control" = 0, "Renderability" = 0))
+
+  # callModule(flash_table_module_server, 'flash-table-ui', original_score = original_score, new_score = new_score)
 
   observeEvent(original_response(), {
     shinyjs::show("next-container")
@@ -171,9 +177,9 @@ policy_creation_module_server = function(input, output, session, input_data, que
 
       full_state = original_response()
       full_state[names(state_to_replace)] = state_to_replace
-      new_score(
-        score_model(model, format_responses(full_state))
-      )
+      # new_score(
+      #   score_model(model, format_responses(full_state))
+      # )
     })
 
     # if(!is.null(subset_picked$observers$namer)) {
@@ -237,9 +243,13 @@ policy_creation_module_server = function(input, output, session, input_data, que
 
   output$policy_response_picker = reactable::renderReactable({
     responses = format_responses(original_response())
-    q_text = purrr::map_dfr(question_data, function(x){
-      tibble(Text = x$text, node = x$node)
-    })
+    # q_text = purrr::map_dfr(question_data, function(x){
+    #   # tibble(Text = x$text, node = x$node)
+    #   if(is.null(x$part)) {
+    #
+    #   }
+    # })
+    q_text = tibble::tibble(node = unique(purrr::map_chr(question_data,'node')))
     responses %>%
       dplyr::left_join(q_text) %>%
       dplyr::rename(
