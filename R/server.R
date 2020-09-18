@@ -65,7 +65,7 @@ app_server = function(input, output, session, question_data, default_response, m
   mod_only_table = callModule(model_table_module_server, "model_table", data = reactive(model_obj$data), model = model, selection = "none", show_policy = FALSE, scoring_funcs = scoring_funcs)
   save_table = callModule(model_table_module_server, "save_table", data = reactive(model_obj$data), model = model, selection = "multiple", show_policy = TRUE, scoring_funcs = scoring_funcs)
 
-  policy_vis = callModule(policy_visualisation_module_server, 'bar', model_data = reactive(model_obj$data), model = model, scoring_funcs = scoring_funcs)
+  # policy_vis = callModule(policy_visualisation_module_server, 'bar', model_data = reactive(model_obj$data), model = model, scoring_funcs = scoring_funcs)
 
   seen_warning = reactiveVal(FALSE)
   observeEvent(input$sidebarMenu,{
@@ -133,8 +133,11 @@ app_server = function(input, output, session, question_data, default_response, m
 
   observeEvent(q_output$finish(), {
     print("finished")
+    print(q_output$state())
     new_row = model_policy_row(q_output$state(), model_name = q_output$name(), notes = q_output$comments())
     model_obj$data = dplyr::bind_rows(model_obj$data, new_row)
+    print("row added")
+    # saveRDS(model_obj$data, file = paste0("/filestore/ubuntu/jumpingrivers/git/projects/TNA/development/",Sys.Date(),".rds"))
   })
 
   all_policy = reactiveValues(data = NULL)

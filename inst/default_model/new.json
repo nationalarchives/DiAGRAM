@@ -1,16 +1,16 @@
 {
-  "Technical_Skills" : ["None", "Intermediate", "Basic", "Basic", "Advanced", "Basic","Basic", "Basic", "Intermediate", "Basic"],
+  "Technical_Skills" : ["None","None","None","None","None","None","None","None","None","None"],
   "System_Security" : {
-    "1": ["Cyber Essentials Plus"],
-    "2": ["No test"],
-    "3": ["Level 2"],
+    "1": ["ISO 27001"],
+    "2": ["None, or only minor issues outstanding"],
+    "3": ["Level 4"],
     "4": ["Yes"]
   },
   "Checksum": [0, 0, 100],
   "Info_Management": {
-    "1": ["Level 3"],
-    "2": ["Level 3"],
-    "3": ["Basic", "Basic"]
+    "1": ["Not achieved"],
+    "2": ["Not achieved"],
+    "3": ["Minimal awareness", "Minimal awareness"]
   },
   "Digital_Object": [34, 10, 56],
   "Storage_Medium": [0, 0, 100],

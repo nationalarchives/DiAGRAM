@@ -31,12 +31,12 @@ input.table-input:disabled {
 model_table_module_server = function(input, output, session, data, model, scoring_funcs, selection = "multiple", show_policy = TRUE) {
 
   ns = session$ns
-  observe({
-    print(class(data()))
-    print(class(data))
-    print(str(data()))
-    print(data())
-  })
+  # observe({
+  #   print(class(data()))
+  #   print(class(data))
+  #   print(str(data()))
+  #   print(data())
+  # })
   formatted_data = shiny::reactive({
     # req(nrow(data()) > 0)
     if(nrow(data()) == 0){
