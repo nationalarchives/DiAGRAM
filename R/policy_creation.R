@@ -39,13 +39,13 @@ policy_creation_module_ui = function(id) {
       shinyjs::hidden(
         shiny::div(
           id = ns("back-container"),
-          shiny::actionButton(ns('back'), "Back")
+          shiny::actionButton(ns('back'), "Back", class = "btn-orange")
         )
       ),
       shinyjs::hidden(
         shiny::div(
           id = ns("next-container"),
-          shiny::actionButton(ns("go"), "Next")
+          shiny::actionButton(ns("go"), "Next", class = "btn-green")
         )
       ),
       shinyjs::hidden(

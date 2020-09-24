@@ -9,11 +9,12 @@ home_tab = function() {
         "DiAGRAM - The ",
         shiny::tags$b("Di", .noWS="outside"), "gital ",
         shiny::tags$b("A", .noWS="outside"), "rchiving ",
-        shiny::tags$b("G", .noWS="outside"), "raphical",
+        shiny::tags$b("G", .noWS="outside"), "raphical ",
         shiny::tags$b("R", .noWS="outside"), "isk ",
         shiny::tags$b("A", .noWS="outside"), "ssessment ",
         shiny::tags$b("M", .noWS="outside"), "odel",
-        align="center"
+        align="center",
+        class = "main-title"
       ),
       shiny::h3("Version 0.9.7 (Prototype)", align="center"), #update in June
       shiny::br(),
