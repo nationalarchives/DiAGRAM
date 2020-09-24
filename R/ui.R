@@ -41,6 +41,18 @@ app_ui = function(req, question_data, default_response) {
     shiny::tags$link(
       rel = "stylesheet", type = "text/css",
       href = "www/questions.css"
+    ),
+    shiny::tags$link(
+      rel = "stylesheet", type = "text/css",
+      href = "https://use.typekit.net/jwz4fne.css"
+    ),
+    shiny::tags$link(
+      rel = "stylesheet", type = "text/css",
+      href = "https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,600;1,400;1,600&family=Roboto+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+    ),
+    shiny::tags$link(
+      rel = "stylesheet", type = "text/css",
+      href = "www/branding.css"
     )),
     shinydashboard::dashboardPage(
       skin="purple",

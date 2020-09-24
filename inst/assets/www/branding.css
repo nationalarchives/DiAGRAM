@@ -1,0 +1,137 @@
+/**
+ * Accessibility
+ */
+
+a {
+  text-decoration: underline;
+  color: #337ab7;
+}
+
+a:hover {
+  text-decoration: underline;
+  color: #23527c;
+}
+
+
+/**
+ * Fonts
+ */
+
+html, body {
+  font-family: "Open Sans", sans-serif;
+  /*font-size: 16px;
+  line-height: 1.6;*/
+  color: #26262a;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Roboto Mono', monospace;
+}
+
+.question-title, .question-prefix {
+  font-family: 'Roboto Mono', monospace;
+}
+
+.main-header .logo {
+  font-family: 'supria-sans-condensed', sans-serif;
+}
+
+h2.main-title {
+  font-family: 'supria-sans-condensed', sans-serif;
+}
+
+/**
+ * Colours
+ */
+
+/* Sidebar */
+.skin-purple .left-side, .skin-purple .main-sidebar, .skin-purple .wrapper {
+  background-color: #26262A;
+  background-color: #8C9694;
+  color: #8C9694;
+}
+
+/* Header */
+.skin-purple .main-header .logo {
+    background-color: #555299;
+  background-color: #8C9694;
+    color: #fff;
+    border-bottom: 0 solid transparent;
+}
+.skin-purple .main-header .logo:hover {
+  background-color: #8C9694;
+}
+.skin-purple .main-header .navbar {
+    background-color: #605ca8;
+  background-color: #8C9694;
+}
+.skin-purple .main-header .navbar .sidebar-toggle:hover {
+  background-color: #26262A;
+}
+.skin-purple .sidebar a {
+    color: #D9D9D6;
+    color: #fff;
+}
+.skin-purple .sidebar-menu>li.active>a, .skin-purple .sidebar-menu>li:hover>a {
+    color: #26262A;
+    background-color: #D9D9D6;
+    border-left-color: #D9D9D6;
+}
+
+/* Blocks */
+.box {
+  background-color: #F9F7E2;
+  color: #26262A;
+}
+.bg-blue {
+    background-color: #F9E1BC !important;
+    color: #26262a !important;
+}
+.bg-yellow {
+    background-color: #F9F7E2 !important;
+    color: #26262a !important;
+}
+.bg-orange {
+    background-color: #F9E1BC !important;
+    color: #26262a !important;
+}
+.bg-green {
+    background-color: #DDE5D5 !important;
+    color: #26262a !important;
+}
+.bg-purple {
+    background-color: #8C9694 !important;
+    color: #D9D9D6 !important;
+}
+.bg-red {
+    background-color: #FAD3D4 !important;
+    color: #26262a !important;
+}
+.bg-black {
+    background-color: #26262a !important;
+    color: #D9D9D6 !important;
+}
+
+/**
+ * Buttons
+ */
+
+.btn-green {
+    background-color: #DDE5D567 !important;
+    border-color: #DDE5D5 !important;
+    color: #26262a !important;
+    border-radius: 0;
+}
+.btn-green:hover {
+    background-color: #DDE5D5 !important;
+}
+
+.btn-orange {
+    background-color: #F9E1BC67 !important;
+    border-color: #F9E1BC !important;
+    color: #26262a !important;
+    border-radius: 0;
+}
+.btn-orange:hover {
+    background-color: #F9E1BC !important;
+}

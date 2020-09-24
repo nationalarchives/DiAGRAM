@@ -179,13 +179,13 @@ questions_module_ui = function(id, question_data, default_response, is_policy = 
   back_el = shinyjs::hidden(div(
     id = ns('question-back-container'),
     class = "question-back",
-    shiny::actionButton(ns('back'), "Back")
+    shiny::actionButton(ns('back'), "Back", class = "btn-orange")
   ))
 
   forward_el = shinyjs::hidden(div(
     id = ns('question-next-container'),
     class = "question-next",
-    shiny::actionButton(ns("go"), "Next")
+    shiny::actionButton(ns("go"), "Next", class = "btn-green")
   ))
 
 
