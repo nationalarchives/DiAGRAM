@@ -26,6 +26,7 @@
 #' @importFrom shinysky hotable
 #' @importFrom DT dataTableOutput
 #' @importFrom plotly plotlyOutput
+#' @importFrom shinya11y use_tota11y
 #' @export
 app_ui = function(req, question_data, default_response) {
 
@@ -34,6 +35,7 @@ app_ui = function(req, question_data, default_response) {
     "www", system.file("assets/www", package = "diagramNAT")
   )
   shiny::tagList(
+    shinya11y::use_tota11y(),
     shiny::tags$head(shiny::tags$link(
       rel = "stylesheet", type = "text/css",
       href = "www/ui.css"

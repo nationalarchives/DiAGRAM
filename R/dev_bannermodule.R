@@ -11,7 +11,7 @@ dev_banner_module_ui = function(id){
     shinydashboard::box(
       title = NULL,
       width = 12,
-      background="green",
+      background = "red",
       shiny::h3(
         shiny::strong("Important note: This model is still in development")
       ),

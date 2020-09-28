@@ -1,7 +1,13 @@
 question1:
   node: Digital_Object
   type: grouped slider
-  definition: Whether it is a born-digital record, digitised record or surrogate.
+  definition: >
+    Whether it is a born-digital record, digitised record or surrogate.
+
+    Different types of digital records hold different risks for example
+    surrogates are likely to be in a more uniform format such as PDF or
+    JP2 for example, whereas born-digital records could be anything from
+    Python source files, to Word documents, to entire databases.
   text: What proportion of your digital archive are the following?
   detail:
     - Materials have originated from a digital source.

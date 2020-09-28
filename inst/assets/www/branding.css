@@ -26,6 +26,7 @@ html, body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Roboto Mono', monospace;
+    color: #26262A;
 }
 
 .question-title, .question-prefix {
@@ -55,18 +56,23 @@ h2.main-title {
 .skin-purple .main-header .logo {
     background-color: #555299;
   background-color: #8C9694;
+  background-color: #26262A;
     color: #fff;
     border-bottom: 0 solid transparent;
 }
 .skin-purple .main-header .logo:hover {
   background-color: #8C9694;
+  background-color: #26262A;
 }
 .skin-purple .main-header .navbar {
     background-color: #605ca8;
   background-color: #8C9694;
+  background-color: #26262A;
 }
 .skin-purple .main-header .navbar .sidebar-toggle:hover {
   background-color: #26262A;
+    background-color: #D9D9D6;
+    color: #26262A;
 }
 .skin-purple .sidebar a {
     color: #D9D9D6;
@@ -78,13 +84,21 @@ h2.main-title {
     border-left-color: #D9D9D6;
 }
 
+/* Body */
+.content-wrapper, .right-side {
+    background-color: #ecf0f5;
+    background-color: #F9F7E2;
+
+}
+
 /* Blocks */
 .box {
   background-color: #F9F7E2;
+  background-color: #fff;
   color: #26262A;
 }
 .bg-blue {
-    background-color: #F9E1BC !important;
+    background-color: #8C9694 !important;
     color: #26262a !important;
 }
 .bg-yellow {
@@ -117,21 +131,23 @@ h2.main-title {
  */
 
 .btn-green {
-    background-color: #DDE5D567 !important;
+    background-color: #DDE5D5 !important;
     border-color: #DDE5D5 !important;
     color: #26262a !important;
     border-radius: 0;
 }
 .btn-green:hover {
-    background-color: #DDE5D5 !important;
+    background-color: #DDE5D567 !important;
+    border-color: #26262a;
 }
 
 .btn-orange {
-    background-color: #F9E1BC67 !important;
+    background-color: #F9E1BC !important;
     border-color: #F9E1BC !important;
     color: #26262a !important;
     border-radius: 0;
 }
 .btn-orange:hover {
-    background-color: #F9E1BC !important;
+    background-color: #F9E1BC67 !important;
+    border-color: #26262a;
 }
