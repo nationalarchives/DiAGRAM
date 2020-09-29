@@ -27,32 +27,66 @@ policy_bar_chart = function(policy_data){
       values_to = "Score"
     ) %>%
     dplyr::mutate(
-      Metric = factor(.data$Metric)
+      Metric = factor(.data$Metric),
+      Score = round(Score*100),
+      Total = 100
     )
 
-  ## Create plot - needs sprucing up
+  # create nice hover text
+  policy_data = policy_data %>%
+    dplyr::rowwise() %>%
+    dplyr::mutate(hover = glue::glue(
+      "<b>{Model}</b>
+<b>Scenario: </b>{policy}
+<b>Metric: </b>{Metric}
+<b>Score: </b>{Score}%"
+    ))
+
   plot = policy_data %>%
-    ggplot2::ggplot(ggplot2::aes(x = Policy,
-                        y = Score,
-                        fill = Metric,
-                        text = Notes )) + #ifelse(!is.na(Notes), Notes, NULL))) +
-    ggplot2::geom_col() +
-    ggplot2::scale_y_continuous(limits = c(0, 1)) +
+    ggplot2::ggplot(ggplot2::aes(x =  Policy,
+                                 y = Score,
+                                 fill = Metric,
+                                 text = hover )) +
+    ggplot2::geom_col(ggplot2::aes(x = Policy, fill = Metric, y = Total),
+                      alpha = 0.2,
+                      position = ggplot2::position_dodge2(0.5, preserve = "single")) +
+    ggplot2::geom_col(position = ggplot2::position_dodge2(0.5, preserve = "single")) +
+
+    ggplot2::scale_y_continuous(limits = c(0, 100)) +
     ggplot2::labs(x = "Policy",
                   y = "Score",
                   fill = "Score Type") +
+    xlab(NULL) +
     ggplot2::coord_flip() +
     ggplot2::facet_wrap(~ Model,
                         ncol = 1,
                         scales = "free_y",
                         labeller = ggplot2::label_both) +
     ggplot2::theme_minimal() +
-    ggplot2::theme(legend.position = "bottom") # ignored by ggplotly, I know it is really annoying
+    ggplot2::theme(legend.position = "bottom",
+                   strip.text.x = ggplot2::element_text(size = 8)) + # ignored by ggplotly, I know it is really annoying
+    scale_fill_manual(values = c("Intellectual Control" = "#8C9694", "Renderability" = "#bbc7af"))
 
-  plotly::ggplotly(plot)
+  p = plotly::ggplotly(plot, tooltip = "text")
+  # tidy up the extra hover text created by plotly
+  p$x$data = purrr::map(p$x$data, function(x){
+    x$hoverinfo = if(all(x$x == 100)) "skip" else "text"
+    x
+  })
+  # tidy up facet labels
+  p$x$layout$annotations = purrr::map(
+    p$x$layout$annotations, function(x) {
+      if(stringr::str_detect(x$text, "^Model")){
+        x$x = 0.1
+        x$font$size = 2*x$font$size
+      }
+      x
+    }
+  )
+  p %>% plotly::layout(legend = list(orientation = "h", y = -0.1))
+
 
 }
-
 
 
 #' policy_visualisation module ui
