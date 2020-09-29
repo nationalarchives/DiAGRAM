@@ -12,7 +12,7 @@
     "2": ["Not achieved"],
     "3": ["Minimal awareness", "Minimal awareness"]
   },
-  "Digital_Object": [34, 10, 56],
+  "Digital_Object": [0, 0, 100],
   "Storage_Medium": [0, 0, 100],
   "Rep_and_Refresh": {
     "1": [100],
