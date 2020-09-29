@@ -75,8 +75,9 @@ app_server = function(input, output, session, question_data, default_response, m
       shinyalert::shinyalert(
         title = "Warning", type = "warning",
         text = "Data is only stored during an active session, after a period of inactivity the session will end.
-        If you would like to store your data more permanently you should download it.
-        "
+        If you would like to store your data more permanently you should download it.,
+        ",
+        closeOnEsc = FALSE, closeOnClickOutside = FALSE
       )
       seen_warning(TRUE)
     }
