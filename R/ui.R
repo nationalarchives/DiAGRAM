@@ -114,16 +114,24 @@ app_ui = function(req, question_data, default_response) {
               shinydashboard::box(
                 width = 12,
                 questions_module_ui('model-questions', question_data, default_response)
-              )
+              )#,
+              # shinydashboard::box(
+              #   width = 12,
+              #   shiny::div(
+              #     id = "no-model-container",
+              #     "There are currently no models defined in this session"
+              #   )
+              # ),
             ),
-            # shiny::div(
-            #   id = "no-model-container",
-            #   "There are currently no models defined in this session"
-            # ),
             shinyjs::hidden(
-              shiny::div(
-                id = "model-table-container",
-                model_table_module_ui("model_table")
+              shiny::fluidRow(
+                shinydashboard::box(
+                  width = 12,
+                  shiny::div(
+                    id = "model-table-container",
+                    model_table_module_ui("model_table")
+                  )
+                )
               )
             )
           ),
