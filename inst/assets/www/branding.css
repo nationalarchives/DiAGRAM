@@ -104,16 +104,26 @@ h2.main-title {
 /* Blocks */
 .box {
   background-color: #F9F7E2;
-  background-color: #D9D9D644;;
+  background-color: #D9D9D644;
   color: #26262A;
   margin-bottom: 20px;
   border: solid 1px #555;
   border-width: 1px 1px 1px 5px;
-  padding: 0 1rem;
+}
+.box .box-body {
+    color: #26262A;
+    padding: 1rem;
 }
 .box .box {
+    background-color: #fff;
+    color: #26262A;
+}
+.box .box .box-header {
     background-color: #F9F7E2;
-    /* background-color: #fff; */
+    color: #26262A;
+}
+.box .box .box-body {
+    background-color: #F9F7E299;
     color: #26262A;
 }
 .bg-blue {
@@ -143,6 +153,13 @@ h2.main-title {
 .bg-black {
     background-color: #26262a !important;
     color: #D9D9D6 !important;
+}
+
+/**
+ * Box Header
+ */
+.box-header {
+    background-color: #0001;
 }
 
 /**
