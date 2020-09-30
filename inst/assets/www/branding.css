@@ -176,9 +176,11 @@ h2.main-title {
  */
 
 .sidebar-collapse .main-header .sidebar-toggle:before {
-    content: "\f0c9" !important;
+    content: "\f0c9" !important; /* hamburger */
+    content: "\f101" !important; /* double-right */
 }
 
 .main-header .sidebar-toggle:before {
-    content: "\f00d" !important;
+    content: "\f00d" !important; /* cross */
+    content: "\f100" !important; /* double-left */
 }
