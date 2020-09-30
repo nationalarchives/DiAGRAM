@@ -67,7 +67,7 @@ app_ui = function(req, question_data, default_response) {
         shinydashboard::sidebarMenu(
           id = "sidebarMenu",
           shinydashboard::menuItem(
-            "Home page", tabName = "Home", icon = shiny::icon("home")
+            "Home page", tabName = "Home"
           ),
           shinydashboard::menuItem(
             "How to use the tool", tabName = "how-to"
@@ -76,7 +76,7 @@ app_ui = function(req, question_data, default_response) {
             "Definitions", tabName = "definitions"
           ),
           shinydashboard::menuItem(
-            "Create your baseline model", tabName = "model", icon = shiny::icon("user-edit")
+            "Create your baseline model", tabName = "model"
           ),
           shinydashboard::menuItem(
             "Create a Scenario", tabName = "scenario"
