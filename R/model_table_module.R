@@ -61,12 +61,19 @@ model_table_module_server = function(input, output, session, data, model, scorin
       dplyr::mutate_if(is.numeric, ~ round(.x, 2))
   })
 
+  # output$dt = DT::renderDataTable({
+  #   df = formatted_data()
+  #   if(is.null(df)) return(NULL)
+  #   DT::datatable(df)
+  # })
+
   output$table = reactable::renderReactable({
     df = formatted_data()
     if(is.null(df)) return(NULL)
     reactable::reactable(
       df %>% dplyr::select(-.data$Response),
-      groupBy = "Model",
+      groupBy = if(show_policy) "Model" else NULL,
+      # defaultExpanded =
       columns = list(
         Model = reactable::colDef(
           html = TRUE,

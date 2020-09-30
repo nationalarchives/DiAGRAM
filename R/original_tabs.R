@@ -176,7 +176,11 @@ home_tab = function() {
 }
 
 definitions_tab = function() {
- shiny::tagList(
+  shiny::fluidRow(
+    shinydashboard::box(
+      title = NULL,
+      width = 12,
+
    shiny::h1("Definitions"),
    shiny::br(),
    shiny::fluidRow(
@@ -228,11 +232,15 @@ definitions_tab = function() {
        )
      )
    )
- )
+ ))
 }
 
 model_tab = function() {
-  shiny::tagList(
+  shiny::fluidRow(
+    shinydashboard::box(
+      title = NULL,
+      width = 12,
+
     shiny::h1("Create your model"),
     shiny::br(),
     shiny::fluidRow(
@@ -279,5 +287,6 @@ model_tab = function() {
         )
       )
     )
+  )
   )
 }

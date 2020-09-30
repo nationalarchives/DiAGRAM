@@ -26,6 +26,15 @@ html, body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Roboto Mono', monospace;
+    font-weight: bold;
+}
+
+.box-body h1,
+.box-body h2,
+.box-body h3,
+.box-body h4,
+.box-body h5,
+.box-body h6 {
     color: #26262A;
 }
 
@@ -49,6 +58,7 @@ h2.main-title {
 .skin-purple .left-side, .skin-purple .main-sidebar, .skin-purple .wrapper {
   background-color: #26262A;
   background-color: #8C9694;
+    background-color: #555555;
   color: #8C9694;
 }
 
@@ -88,14 +98,23 @@ h2.main-title {
 .content-wrapper, .right-side {
     background-color: #ecf0f5;
     background-color: #F9F7E2;
-
+  background-color: #fff;
 }
 
 /* Blocks */
 .box {
   background-color: #F9F7E2;
-  background-color: #fff;
+  background-color: #D9D9D644;;
   color: #26262A;
+  margin-bottom: 20px;
+  border: solid 1px #555;
+  border-width: 1px 1px 1px 5px;
+  padding: 0 1rem;
+}
+.box .box {
+    background-color: #F9F7E2;
+    /* background-color: #fff; */
+    color: #26262A;
 }
 .bg-blue {
     background-color: #8C9694 !important;
@@ -150,4 +169,16 @@ h2.main-title {
 .btn-orange:hover {
     background-color: #F9E1BC67 !important;
     border-color: #26262a;
+}
+
+/**
+ * Nav Toggle
+ */
+
+.sidebar-collapse .main-header .sidebar-toggle:before {
+    content: "\f0c9" !important;
+}
+
+.main-header .sidebar-toggle:before {
+    content: "\f00d" !important;
 }

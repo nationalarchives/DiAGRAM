@@ -1,22 +1,20 @@
 question1:
   node: Digital_Object
   type: grouped slider
-  definition: >
-    Whether it is a born-digital record, digitised record or surrogate.
-
-    Different types of digital records hold different risks for example
-    surrogates are likely to be in a more uniform format such as PDF or
-    JP2 for example, whereas born-digital records could be anything from
-    Python source files, to Word documents, to entire databases.
+  definition: Whether it is a born-digital record, digitised record or surrogate.
+  explanation: >
+    Different types of digital records hold different risks, for example surrogates are likely to
+    be in a more uniform format such as TIFF or JP2 for example, whereas born-digital records could
+    be anything from open source Python source files, to proprietary Word documents, to bespoke databases.
   text: What proportion of your digital archive are the following?
   detail:
     - Materials have originated from a digital source.
     - Materials have been created as a result of converting analogue originals, but
-      we do not hold the analogue original.
+      you do not hold the analogue original.
     - Materials have been created as a result of converting analogue originals, where
-      we also hold the analogue original.
+      you also hold the analogue original.
   options:
-    - Born_digital
+    - Born Digital
     - Digitised
     - Surrogate
 

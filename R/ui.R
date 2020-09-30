@@ -93,7 +93,7 @@ app_ui = function(req, question_data, default_response) {
         shinyjs::useShinyjs(),
         shinyalert::useShinyalert(),
         id = "dashboardBody",
-        dev_banner_module_ui('dev-banner'),
+        # dev_banner_module_ui('dev-banner'),
         shinydashboard::tabItems(
           # id = "menu-select",
           shinydashboard::tabItem(
@@ -110,10 +110,9 @@ app_ui = function(req, question_data, default_response) {
           ),
           shinydashboard::tabItem(
             tabName = "model",
-            shiny::column(
-              width = 12,
+            shiny::fluidRow(
               shinydashboard::box(
-                title = NULL, width = 12,
+                width = 12,
                 questions_module_ui('model-questions', question_data, default_response)
               )
             ),
@@ -152,9 +151,14 @@ app_ui = function(req, question_data, default_response) {
           ),
           shinydashboard::tabItem(
             tabName = "save",
+
+            shiny::fluidRow(
+              shinydashboard::box(
+                width = 12,
             shiny::fileInput("upload", label = "Upload data", accept = ".json"),
             shiny::downloadButton("download"),
             model_table_module_ui("save_table")
+              ))
           )
         )
       )
