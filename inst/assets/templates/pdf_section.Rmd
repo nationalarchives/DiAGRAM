@@ -1,5 +1,4 @@
 ---
-output: pdf_document
 params:
   model_name: NA
   vis_data: NA
@@ -37,6 +36,9 @@ print_plot = function(model_name) {
       group = .data$Metric
     ), 
     position = ggplot2::position_dodge2(width = .9, preserve = "single")
+  ) + ggplot2::theme(
+    strip.background = ggplot2::element_blank(),
+    strip.text.x = ggplot2::element_blank()
   )
   print(p)
 }
@@ -47,10 +49,14 @@ print_plot(model_name)
 ## Responses to Questions
 
 Here is a summary of the responses given for the model and each scenario.
+```{r, results='asis'}
+any_policies = length(setdiff(download_data$Policy, "baseline")) > 0
+cat(glue::glue("Here is a summary of the responses given for the model{if(any_policies) ' and each scenario.' else '.'}"))
+```
 
 ### Baseline Model
 
-```{r}
+```{r, results='asis'}
 policy_diff = find_diff(download_data, model_name)
 
 download_data %>% 
@@ -60,12 +66,15 @@ download_data %>%
     Question = ifelse(c(FALSE, .data$Question[2:dplyr::n()] == .data$Question[1:(dplyr::n() - 1)]), '', .data$Question),
     Detail = tidyr::replace_na(.data$Detail, '')
   ) %>%
-  knitr::kable()
+  knitr::kable(format = "latex", longtable = TRUE, booktabs = TRUE) %>% 
+  kableExtra::kable_styling(full_width = TRUE, font_size = 7) %>%
+  cat()
 ```
 
 ```{r, results='asis'}
 purrr::iwalk(policy_diff, function(x, y) {
   cat("### ", y, "\n\n")
+  cat(glue::glue("The following responses were changed for {y}."), "\n\n")
   x %>% 
     dplyr::filter(.data$Model == model_name) %>%
     dplyr::select(.data$Question, .data$Detail, .data$Response) %>%
@@ -73,7 +82,8 @@ purrr::iwalk(policy_diff, function(x, y) {
     Question = ifelse(c(FALSE, .data$Question[2:dplyr::n()] == .data$Question[1:(dplyr::n() - 1)]), '', .data$Question),
     Detail = tidyr::replace_na(.data$Detail, '')
   ) %>%
-    knitr::kable(format = "latex") %>%
+    knitr::kable(format = "latex", longtable = TRUE, booktabs = TRUE) %>%
+    kableExtra::kable_styling(full_width = TRUE, font_size = 7) %>%
     cat()
   
 })
