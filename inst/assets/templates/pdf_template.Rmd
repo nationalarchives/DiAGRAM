@@ -1,10 +1,9 @@
 ---
-output: pdf_document
+output: diagramNAT::pdf_report
 params:
   question_data: NA
   download_data: NA
   vis_data: NA
-  
 ---
 
 ```{r setup, include = FALSE}
