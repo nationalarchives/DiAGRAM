@@ -141,6 +141,7 @@ policy_creation_module_server = function(input, output, session, input_data, que
   })
 
   observeEvent(input$create, {
+    # browser()
     question_clone = question_data
     to_remove = c()
     for(i in seq_along(question_clone)) {
@@ -154,33 +155,37 @@ policy_creation_module_server = function(input, output, session, input_data, que
 
     questions_data_subset = question_clone
     response_subset = original_response()[selected_questions()]
+    # browser()
     q_ui = questions_module_ui(ns(unique_id), questions_data_subset, response_subset, is_policy = TRUE)
     q_response = callModule(questions_module_server, unique_id, question_data = questions_data_subset, default_response = response_subset, is_policy = TRUE)
+    # browser()
     subset_picked$data = questions_data_subset
     subset_picked$response = response_subset
     subset_picked$question_ui = q_ui
     subset_picked$server_response = q_response
     current_state(current_state() + 1)
     # shinyjs::hide('back-container')
-    if(!is.null(subset_picked$observers$state)) {
-      subset_picked$observers$state$destroy()
-    }
-    subset_picked$observers$state = observeEvent(subset_picked$server_response$state(), {
-      req(subset_picked$server_response$state())
-
-      state_to_replace = subset_picked$server_response$state()
-      missing = purrr::map_lgl(state_to_replace, ~(is.null(.x) || is.na(.x)))
-      if(any(missing)) {
-        return()
-      }
-
-
-      full_state = original_response()
-      full_state[names(state_to_replace)] = state_to_replace
-      # new_score(
-      #   score_model(model, format_responses(full_state))
-      # )
-    })
+    # if(!is.null(subset_picked$observers$state)) {
+    #   subset_picked$observers$state$destroy()
+    # }
+    # subset_picked$observers$state = observeEvent(subset_picked$server_response$state(), {
+    #   # browser()
+    #   req(subset_picked$server_response$state())
+    #
+    #   state_to_replace = subset_picked$server_response$state()
+    #   missing = purrr::map_lgl(purrr::flatten(state_to_replace), ~(is.null(.x) || is.na(.x)))
+    #   browser()
+    #   if(any(missing)) {
+    #     return()
+    #   }
+    #
+    #   browser()
+    #   full_state = original_response()
+    #   full_state[names(state_to_replace)] = state_to_replace
+    #   # new_score(
+    #   #   score_model(model, format_responses(full_state))
+    #   # )
+    # })
 
     # if(!is.null(subset_picked$observers$namer)) {
     #   # print('destroy')
@@ -223,15 +228,17 @@ policy_creation_module_server = function(input, output, session, input_data, que
       subset_picked$observer$visualise$destroy
     }
     subset_picked$observer$visualise = observeEvent(subset_picked$server_response$visualise(), {
-      subset_picked$observer$vis_clicked = subset_picked$server_response$visualise()
+      subset_picked$observer$vis_clicked = runif(1)#subset_picked$server_response$visualise()
     })
 
     # observeEvent(subset_picked$server_response$go()), {}
+    # browser()
   })
 
 
 
   output$`policy-questions-ui` = renderUI({
+    # browser()
     subset_picked$question_ui
   })
 
