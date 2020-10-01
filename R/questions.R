@@ -346,6 +346,7 @@ questions_module_server = function(input, output, session, question_data, defaul
 
   return_val = reactive({
     orig_state = reactiveValuesToList(rv)
+    req(length(orig_state) > 0)
 
     print("original state questions")
     print(orig_state)
@@ -365,7 +366,7 @@ questions_module_server = function(input, output, session, question_data, defaul
         res[[name]] = orig_state[[paste0(name, "_")]]
       }
     }
-
+    # if(is_policy) browser()
     print("returned result")
     print(res)
     res

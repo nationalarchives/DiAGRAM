@@ -69,14 +69,17 @@ text_slider_pair_module_server = function(input, output, session, state, reactiv
     }
   }
 
-  shiny::observeEvent(input$slider,{
+  slider_d = shiny::reactive(input$slider) %>% shiny::debounce(200)
+  text_d = shiny::reactive(input$text) %>% shiny::debounce(200)
+
+  shiny::observeEvent(slider_d(),{
     print("slider moved")
     shiny::updateNumericInput(session, 'text', value = input$slider)
   })
-  shiny::observeEvent(input$text, {
+  shiny::observeEvent(text_d(), {
     shiny::updateSliderInput(session, "slider", value = input$text)
   })
-  return(shiny::reactive(input$slider))
+  return(slider_d)
 }
 
 
