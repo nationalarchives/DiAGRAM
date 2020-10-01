@@ -25,6 +25,8 @@ model1 = dplyr::bind_rows(
   p2 %>% model_policy_row("default", "policy 2", "If we could increase info management to 70% and technical skills to 40%")
 )
 
+form
+
 # new model
 library("diagramNAT")
 m2 =diagramNAT:::generate_example_reponse()

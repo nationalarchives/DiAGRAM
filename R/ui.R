@@ -85,6 +85,9 @@ app_ui = function(req, question_data, default_response) {
             "Visualise", tabName = "visualise"
           ),
           shinydashboard::menuItem(
+            "Report", tabName = "report"
+          ),
+          shinydashboard::menuItem(
             "Save/Load", tabName = "save"
           )
         )
@@ -167,6 +170,10 @@ app_ui = function(req, question_data, default_response) {
             shiny::downloadButton("download"),
             model_table_module_ui("save_table")
               ))
+          ),
+          shinydashboard::tabItem(
+            tabName = "report",
+            report_tab_module_ui('report')
           )
         )
       )
