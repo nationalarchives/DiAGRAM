@@ -1,0 +1,299 @@
+%------------------------------------------------------------------------------
+% This template was created by taking a copy of rmd/latex/default-1.17.0.2.tex,
+% removing the bits we don't need (to make it more readable) and then
+% shoehorning our code into it.
+%------------------------------------------------------------------------------
+
+%------------------------------------------------------------------------------
+\documentclass[a4paper,oneside]{$documentclass$}
+%------------------------------------------------------------------------------
+
+%------------------------------------------------------------------------------
+% Packages
+
+% Rotate pages
+\usepackage{pdflscape}
+% Set font size (default to 12pt)
+\usepackage[fontsize=$if(fontsize)$$fontsize$$else$12pt$endif$]{scrextend}
+% Use the lato font (everywhere)
+\usepackage[default]{lato}
+% Used for colours
+\usepackage[table]{xcolor}
+% Style sections
+\usepackage{sectsty}
+% Format sections
+\usepackage{titlesec}
+% Headers and footers
+\usepackage{fancyhdr}
+% Use to centre image in footer
+\usepackage[export]{adjustbox}
+% Customise lists
+\usepackage{enumitem}
+% Maths stuff
+\usepackage{amssymb,amsmath}
+% Detect compiler
+\usepackage{ifxetex,ifluatex}
+% Modern latex stuff
+\usepackage{etoolbox}
+% Hyperlinks
+\usepackage{hyperref}
+% Tables
+\usepackage{longtable,booktabs,cellspace,makecell}
+% Columns
+\usepackage{multicol}
+% Format captions of figures
+\usepackage[labelfont={bf}]{caption}
+% Line spacing
+\usepackage[onehalfspacing]{setspace}
+% Generate dummy text
+\usepackage{lipsum}
+% Add background footer
+\usepackage{eso-pic}
+% Vertical spacing between paragraphs
+\usepackage{parskip}
+% Center all images by default
+\usepackage{floatrow}
+% Format output of \today
+\usepackage[ddmmyyyy]{datetime}
+% Reset page colour after title
+\usepackage{afterpage}
+% Stretch tables
+\usepackage{array}
+% Graphics stuff
+\usepackage{graphicx,grffile}
+% Font lyf
+\usepackage{fontspec}
+%------------------------------------------------------------------------------
+
+%------------------------------------------------------------------------------
+\newfontfamily\supria[
+  Path = $font_path$,
+  BoldFont=Supria-Sans-Condensed-Bold.otf,
+  ]
+{Supria-Sans-Condensed-Regular.otf}
+
+% For titlepage
+\newfontfamily\bigsupria[
+  Path = $font_path$,
+  Scale=6]
+{Supria-Sans-Condensed-Regular.otf}
+
+\newfontfamily\opensans{Open Sans}
+
+\newfontfamily\roboto[
+  Path = $font_path$
+]
+{RobotoMono-Regular.ttf}
+
+% CHANGE
+\setmainfont[
+  Path = $font_path$,
+  ]{RobotoMono-Regular.ttf}
+%------------------------------------------------------------------------------
+
+%------------------------------------------------------------------------------
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+%------------------------------------------------------------------------------
+
+%------------------------------------------------------------------------------
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+%------------------------------------------------------------------------------
+
+%------------------------------------------------------------------------------
+% CHANGE
+% Set custom geometry
+\usepackage[a4paper,
+           top=3cm,
+           bottom=2cm,
+           right=2cm,
+           left=2cm,
+           footskip=2cm,
+           includefoot]{geometry}
+%------------------------------------------------------------------------------
+
+%------------------------------------------------------------------------------
+% New column type to align in fixed column width
+\newcolumntype{L}[1]{>{\raggedleft\arraybackslash}m{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}m{#1}}
+
+% Make table in header bigger
+\renewcommand{\arraystretch}{1.75}
+
+\pagestyle{fancy}
+
+% Remove default hrule
+\renewcommand{\headrulewidth}{0pt}
+
+% Clear out headers and footers
+\fancyhead{}
+\fancyfoot{}
+
+\newlength{\footersize}
+\setlength{\footersize}{0.9\textwidth}
+
+% Header for landscape pages
+\fancyfoot[C]{%
+    \roboto
+    \begin{tabular}{|C{0.15\footersize}|C{0.25\footersize}|L{0.59\footersize}|C{0.01\footersize}|}
+    \hline
+    \centering\rotatebox[origin=c]{180}{\today} &
+    \rotatebox[origin=c]{180}{\uppercase{DiAGRAM}} &
+    \rotatebox[origin=c]{180}{\quad{}The National Archives} &
+    \rotatebox[origin=c]{90}{\centering\,\thepage}\\
+    \hline
+    \end{tabular}%
+}
+%------------------------------------------------------------------------------
+
+%------------------------------------------------------------------------------
+% Graphics stuff
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+
+% Scale images is necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+%------------------------------------------------------------------------------
+
+%------------------------------------------------------------------------------
+% Don't indent paragraphs
+\setlength{\parindent}{0pt}
+%------------------------------------------------------------------------------
+
+%------------------------------------------------------------------------------
+% Section numbering
+$if(numbersections)$
+\setcounter{secnumdepth}{5}
+$else$
+\setcounter{secnumdepth}{0}
+$endif$
+%------------------------------------------------------------------------------
+
+%------------------------------------------------------------------------------
+% Redefines (sub)paragraphs to behave more like sections
+$if(subparagraph)$
+$else$
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+$endif$
+$if(dir)$
+\ifxetex
+  % load bidi as late as possible as it modifies e.g. graphicx
+  $if(latex-dir-rtl)$
+  \usepackage[RTLdocument]{bidi}
+  $else$
+  \usepackage{bidi}
+  $endif$
+\fi
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \TeXXeTstate=1
+  \newcommand{\RL}[1]{\beginR #1\endR}
+  \newcommand{\LR}[1]{\beginL #1\endL}
+  \newenvironment{RTL}{\beginR}{\endR}
+  \newenvironment{LTR}{\beginL}{\endL}
+\fi
+$endif$
+%------------------------------------------------------------------------------
+
+%------------------------------------------------------------------------------
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+%------------------------------------------------------------------------------
+
+%------------------------------------------------------------------------------
+% Define nata colours
+\definecolor{nataBlack}{HTML}{26262A}
+\definecolor{nataCoolGrey}{HTML}{D9D9D6}
+\definecolor{nataYellow}{HTML}{F9F7E2}
+\definecolor{nataPink}{HTML}{FAD3D4}
+\definecolor{nataGrey}{HTML}{8C9694}
+\definecolor{nataBrown}{HTML}{B2A38E}
+\definecolor{nataOrange}{HTML}{F9E1BC}
+\definecolor{nataOlive}{HTML}{DDE5D5}
+%------------------------------------------------------------------------------
+
+%------------------------------------------------------------------------------
+% Colour the font
+\color{nataBlack}
+%------------------------------------------------------------------------------
+
+%------------------------------------------------------------------------------
+% Format sections
+\sectionfont{\huge\color{nataBlack}\supria\uppercase}
+\subsectionfont{\Large\color{nataBlack}\supria\uppercase}
+\subsubsectionfont{\large\color{nataBlack}\supria}
+%------------------------------------------------------------------------------
+
+%------------------------------------------------------------------------------
+% Style the title page
+
+% Style title
+\makeatletter
+\def\@maketitle{%
+    \newpage
+    \pagecolor{nataBlack}\afterpage{\nopagecolor}
+    \null
+    \vskip 2cm%
+    \color{white}\bigsupria{DiAGRAM}\\
+    \supria\Huge{Digital Archiving Graphical Risk Assessment Model}\\
+    \vfill\hfill
+    \includegraphics[width=0.6\textwidth]{$tna_logo$}
+    }
+\makeatother
+
+% Don't include a page number on the first page
+\let\oldmaketitle\maketitle
+\renewcommand{\maketitle}{\oldmaketitle\thispagestyle{empty}\clearpage}
+%------------------------------------------------------------------------------
+
+%------------------------------------------------------------------------------
+% Style lists
+\providecommand{\tightlist}{%
+    \setlength{\itemsep}{2pt}\setlength{\parskip}{0pt}}
+
+\setlist[itemize]{topsep=5pt}
+
+\setlist[itemize,1]{label=\color{nataBlack}\textbullet}
+\setlist[itemize,2]{label={\color{nataBlack}\bf\textendash}}
+\setlist[itemize,3]{label={\color{nataBlack}\bf\textasteriskcentered}}
+%------------------------------------------------------------------------------
+
+%------------------------------------------------------------------------------
+% Extra includes
+$for(header-includes)$
+$header-includes$
+$endfor$
+%------------------------------------------------------------------------------
+
+%------------------------------------------------------------------------------
+% Main document
+\begin{document}
+\begin{landscape}
+
+
+\begin{titlepage}
+\maketitle
+\end{titlepage}
+
+\pagecolor{nataCoolGrey}
+
+$body$
+
+\end{landscape}
+\end{document}
+%------------------------------------------------------------------------------
