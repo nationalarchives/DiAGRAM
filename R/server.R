@@ -152,6 +152,12 @@ app_server = function(input, output, session, question_data, default_response, m
     shinydashboard::updateTabItems(session = shiny::getDefaultReactiveDomain(), inputId = "sidebarMenu", selected = 'visualise')
   })
 
+  observeEvent(input$timeout,{
+    shinyalert::shinyalert(
+      title = "Warning", type = "warning",
+      text = "Your session is about to time out."
+    )
+  })
 
   ############################
   ## Old content for user test: to remove again later
