@@ -41,6 +41,14 @@ app_ui = function(req, question_data, default_response) {
     shiny::tags$link(
       rel = "stylesheet", type = "text/css",
       href = "www/questions.css"
+    ),
+    shiny::tags$head(
+      shiny::includeScript(
+        system.file("assets",
+                    "js",
+                    "timeout.js",
+                    package = "diagramNAT")
+        )
     )),
     shinydashboard::dashboardPage(
       skin="purple",
