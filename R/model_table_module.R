@@ -26,6 +26,25 @@ input.table-input:disabled {
   )
 }
 
+format_model_table = function(intermediate, model, scoring_funcs, show_policy) {
+  intermediate = dplyr::bind_cols(intermediate, purrr::map_dfr(intermediate$response, ~{
+    score_model(model, format_responses(.x), scoring_funcs) %>% unlist
+  }))
+  if(show_policy) {
+    res = intermediate %>%
+      dplyr::select(.data$model, .data$policy, "Intellectual Control" = .data$Intellectual_Control, .data$Renderability, .data$notes, .data$response)
+
+  }else{
+    res = intermediate %>%
+      dplyr::filter(is.na(.data$policy)) %>%
+      dplyr::select(.data$model, "Intellectual Control" = .data$Intellectual_Control, .data$Renderability, .data$notes, .data$response)
+  }
+  res %>%
+    dplyr::rename_with(stringr::str_to_title) %>%
+    dplyr::mutate_if(is.numeric, ~ round(.x, 2))
+}
+
+
 #' @importFrom rlang .data
 #' @export
 model_table_module_server = function(input, output, session, data, model, scoring_funcs, selection = "multiple", show_policy = TRUE) {
@@ -44,21 +63,7 @@ model_table_module_server = function(input, output, session, data, model, scorin
       return(NULL)
     }
     intermediate = data()
-    intermediate = dplyr::bind_cols(intermediate, purrr::map_dfr(intermediate$response, ~{
-      score_model(model, format_responses(.x), scoring_funcs) %>% unlist
-    }))
-    if(show_policy) {
-      res = intermediate %>%
-        dplyr::select(.data$model, .data$policy, "Intellectual Control" = .data$Intellectual_Control, .data$Renderability, .data$notes, .data$response)
-
-    }else{
-      res = intermediate %>%
-        dplyr::filter(is.na(.data$policy)) %>%
-        dplyr::select(.data$model, "Intellectual Control" = .data$Intellectual_Control, .data$Renderability, .data$notes, .data$response)
-    }
-    res %>%
-      dplyr::rename_with(stringr::str_to_title) %>%
-      dplyr::mutate_if(is.numeric, ~ round(.x, 2))
+    format_model_table(intermediate, model, scoring_funcs, show_policy)
   })
 
   # output$dt = DT::renderDataTable({

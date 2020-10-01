@@ -67,6 +67,8 @@ app_server = function(input, output, session, question_data, default_response, m
 
   policy_vis = callModule(policy_visualisation_module_server, 'bar', model_data = reactive(model_obj$data), model = model, scoring_funcs = scoring_funcs)
 
+  callModule(report_tab_module_server, 'report', data = reactive(model_obj$data), question_data = question_data, model = model, scoring_funcs = scoring_funcs)
+
   seen_warning = reactiveVal(FALSE)
   observeEvent(input$sidebarMenu,{
     if(input$sidebarMenu == "model" & !seen_warning()) {
