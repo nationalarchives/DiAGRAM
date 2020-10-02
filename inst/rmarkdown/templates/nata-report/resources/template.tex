@@ -15,8 +15,6 @@
 \usepackage{pdflscape}
 % Set font size (default to 12pt)
 \usepackage[fontsize=$if(fontsize)$$fontsize$$else$12pt$endif$]{scrextend}
-% Use the lato font (everywhere)
-\usepackage[default]{lato}
 % Used for colours
 \usepackage[table]{xcolor}
 % Style sections
@@ -47,8 +45,6 @@
 \usepackage[onehalfspacing]{setspace}
 % Generate dummy text
 \usepackage{lipsum}
-% Add background footer
-\usepackage{eso-pic}
 % Vertical spacing between paragraphs
 \usepackage{parskip}
 % Center all images by default
@@ -143,14 +139,16 @@ $endif$
 
 % Header for landscape pages
 \fancyfoot[C]{%
+    \renewcommand\arraystretch{2.5}
+    \setlength\extrarowheight{-2.1pt}
+    \setlength{\arrayrulewidth}{.06em}
     \roboto
-    \begin{tabular}{|C{0.15\footersize}|C{0.25\footersize}|L{0.59\footersize}|C{0.01\footersize}|}
+    \begin{tabular}{|C{0.175\footersize}|C{0.225\footersize}|L{0.59\footersize}|C{0.0175\footersize}|}
     \hline
-    \centering\rotatebox[origin=c]{180}{\today} &
+    \rotatebox[origin=c]{180}{\today} &
     \rotatebox[origin=c]{180}{\uppercase{DiAGRAM}} &
-    \rotatebox[origin=c]{180}{\quad{}The National Archives} &
-    \rotatebox[origin=c]{90}{\centering\,\thepage}\\
-    \hline
+    \rotatebox[origin=c]{180}{\;The National Archives} &
+    \rotatebox[origin=c]{90}{\thepage}\\\hline
     \end{tabular}%
 }
 %------------------------------------------------------------------------------
@@ -246,6 +244,7 @@ $endif$
 
 %------------------------------------------------------------------------------
 % Style the title page
+\graphicspath{{../resources/}}
 
 % Style title
 \makeatletter
@@ -254,10 +253,10 @@ $endif$
     \pagecolor{nataBlack}\afterpage{\nopagecolor}
     \null
     \vskip 2cm%
-    \color{white}\bigsupria{DiAGRAM}\\
+    \color{white}\bigsupria{DiAGRAM}\\[0.5cm]
     \supria\Huge{Digital Archiving Graphical Risk Assessment Model}\\
     \vfill\hfill
-    \includegraphics[width=0.6\textwidth]{$tna_logo$}
+    \input{$tna_logo$}
     }
 \makeatother
 
