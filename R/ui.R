@@ -73,22 +73,28 @@ app_ui = function(req, question_data, default_response) {
             "How to use the tool", tabName = "how-to"
           ),
           shinydashboard::menuItem(
-            "Definitions", tabName = "definitions"
+            "Create a model", tabName = "model"
           ),
           shinydashboard::menuItem(
-            "Create your baseline model", tabName = "model"
-          ),
-          shinydashboard::menuItem(
-            "Create a Scenario", tabName = "scenario"
+            "Create a scenario", tabName = "scenario"
           ),
           shinydashboard::menuItem(
             "Visualise", tabName = "visualise"
           ),
           shinydashboard::menuItem(
-            "Report", tabName = "report"
+            "Download a report", tabName = "report"
           ),
           shinydashboard::menuItem(
-            "Save/Load", tabName = "save"
+            "Upload a previous model", tabName = "save"
+          ),
+          shinydashboard::menuItem(
+            "Learn about the risk network", tabName = "definitions"
+          ),
+          shinydashboard::menuItem(
+            "Advanced", tabName = "advanced"
+          ),
+          shinydashboard::menuItem(
+            "Glossary", tabName = "glossary"
           )
         )
       ),

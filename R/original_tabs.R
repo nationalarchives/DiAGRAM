@@ -48,6 +48,17 @@ home_tab = function() {
           "For more information see our", shiny::tags$a(href = "https://www.nationalarchives.gov.uk/information-management/manage-information/preserving-digital-records/research-collaboration/safeguarding-the-nations-digital-memory/", "project"), "page."
         )
       ),
+      shiny::fluidRow(
+        shiny::column(
+          width=12,
+          shinydashboard::box(
+            title="DiAGRAM structure",
+            collapsible=TRUE,
+            width=NULL,
+            shiny::plotOutput("NetworkStructure_home", click = "home_network_click")
+          )
+        )
+      ),
 
 
 

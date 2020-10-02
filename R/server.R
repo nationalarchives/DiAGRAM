@@ -182,6 +182,17 @@ app_server = function(input, output, session, question_data, default_response, m
       render = TRUE
     )
   })
+  output$NetworkStructure_home <- shiny::renderPlot({
+    bnlearn::graphviz.plot(
+      model, layout = "dot",
+      highlight = list(nodes=c(input$NodeSelection), fill="lightgrey"),
+      shape = "ellipse",
+      render = TRUE
+    )
+  })
+  observeEvent(input$home_network_click, {
+    updateTabItems(session = shiny::getDefaultReactiveDomain(), inputId = "sidebarMenu", selected = 'definitions')
+  })
 
   # Output node definiton text
   output$NodeDefinition <- shiny::renderUI({
