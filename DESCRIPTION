@@ -53,7 +53,8 @@ Imports:
     markdown,
     shinya11y,
     rmarkdown,
-    bookdown
+    bookdown,
+    kableExtra
 Suggests:
     shinytest,
     testthat
