@@ -62,7 +62,12 @@ report_tab_module_server = function(input, output, session, data, model, questio
       paste0("DiAGRAM-", Sys.Date(), ".pdf")
     },
     content = function(file) {
-      pdf_file = prepare_pdf(data()[selected(),], question_data, model, scoring_funcs, template = system.file("assets", "templates", "pdf_template.Rmd", package = "diagramNAT"), file = file)
+      td = tempdir()
+      temp = file.path(td, "report.Rmd")
+      temp_sub = file.path(td, "pdf_section.Rmd")
+      file.copy(system.file("assets", "templates", "pdf_template.Rmd", package = "diagramNAT"), temp, overwrite = TRUE)
+      file.copy(system.file("assets", "templates", "pdf_section.Rmd", package = "diagramNAT"), temp_sub, overwrite = TRUE)
+      pdf_file = prepare_pdf(data()[selected(),], question_data, model, scoring_funcs, template = temp, file = file)
       # on.exit(file.remove(pdf_file))
       # file.copy(pdf_file, file)
     }
