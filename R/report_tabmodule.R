@@ -13,7 +13,7 @@ report_tab_module_ui = function(id){
     shinydashboard::box(
       title = "Summary", width = 12,
       # shinipsum::random_text(nwords = 50)
-      "Text to be added."
+      includeMarkdown(system.file("text_content", "report_summary.md", package = "diagramNAT"))
     ),
     shinydashboard::box(
       width = 12,
@@ -25,9 +25,19 @@ report_tab_module_ui = function(id){
         "2. Select the format of your report",
         # shiny::checkboxGroupInput(ns('download_select'), "Formats", choices = c("pdf", "csv", "json")),
         # shiny::downloadButton(ns("download"))
-        shiny::downloadButton(ns("pdf"), "PDF"),
-        shiny::downloadButton(ns("csv"), "CSV"),
-        shiny::downloadButton(ns("json"), "JSON")
+        shiny::div(
+          shiny::downloadButton(ns("pdf"), "PDF"),
+          "download a PDF to see a presentation version of your results"
+        ),
+        shiny::div(
+          shiny::downloadButton(ns("csv"), "CSV"),
+          "download a CSV file to create your own graphs from the data"
+        ),
+        shiny::div(
+          shiny::downloadButton(ns("json"), "JSON"),
+          "downlad a JSON file to upload your model to DiAGRAM in the future"
+        )
+
 
       )
     )
@@ -52,9 +62,9 @@ report_tab_module_server = function(input, output, session, data, model, questio
       paste0("DiAGRAM-", Sys.Date(), ".pdf")
     },
     content = function(file) {
-      pdf_file = prepare_pdf(data()[selected(),], question_data, model, scoring_funcs, template = system.file("assets", "templates", "pdf_template.Rmd", package = "diagramNAT"))
-      on.exit(file.remove(pdf_file))
-      file.copy(pdf_file, file)
+      pdf_file = prepare_pdf(data()[selected(),], question_data, model, scoring_funcs, template = system.file("assets", "templates", "pdf_template.Rmd", package = "diagramNAT"), file = file)
+      # on.exit(file.remove(pdf_file))
+      # file.copy(pdf_file, file)
     }
   )
 
