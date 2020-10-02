@@ -12,7 +12,8 @@ report_tab_module_ui = function(id){
     ),
     shinydashboard::box(
       title = "Summary", width = 12,
-      shinipsum::random_text(nwords = 50)
+      # shinipsum::random_text(nwords = 50)
+      "Text to be added."
     ),
     shinydashboard::box(
       width = 12,
