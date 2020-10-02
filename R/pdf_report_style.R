@@ -26,7 +26,7 @@ pdf_report = function(keep_tex = TRUE,
   font_path = system.file("rmarkdown", "templates",
                           "nata-report", "resources/",
                           package = "diagramNAT")
-  tna_logo = pkg_resource("tna-logo.png")
+  tna_logo = pkg_resource("tna-square-white-logo.pdf_tex")
 
   pandoc_args = c(
     rmarkdown::pandoc_variable_arg("font_path", font_path),
