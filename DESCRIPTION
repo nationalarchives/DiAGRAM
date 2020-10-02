@@ -50,7 +50,8 @@ Imports:
     V8,
     yaml,
     forcats,
-    markdown
+    markdown,
+    shinya11y
 Suggests:
     shinytest,
     testthat
