@@ -51,7 +51,8 @@ Imports:
     yaml,
     forcats,
     markdown,
-    shinya11y
+    shinya11y,
+    rmarkdown
 Suggests:
     shinytest,
     testthat
