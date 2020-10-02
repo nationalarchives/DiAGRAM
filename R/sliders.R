@@ -120,6 +120,7 @@ sliders_group_module_server = function(input, output, session, state = c(20, 20,
     c(reactive_state$s1, reactive_state$s2, reactive_state$s3)
   })
   observe({
+    print(paste("trip reactive state: ", c(reactive_state$s1, reactive_state$s2, reactive_state$s3)))
     print(c(reactive_state$s1, reactive_state$s2, reactive_state$s3))
   })
 
@@ -138,15 +139,28 @@ sliders_group_module_server = function(input, output, session, state = c(20, 20,
     return(vals)
   }
 
-  total_1_2 = shiny::reactive(
+  observe({
+    req(slider1())
+    req(slider2())
+    req(slider3())
+    print(paste("trip slider", slider1(), slider2(), slider3()))
+  })
+
+  total_1_2 = shiny::reactive({
+    req(slider1())
+    req(slider2())
     slider1() + slider2()
-  )
+  })
 
   ratio_2_3 = shiny::reactive({
+    req(slider3())
+    req(slider2())
     get_ratio(slider2(), slider3())
   })
 
   ratio_1_2 = shiny::reactive({
+    req(slider1())
+    req(slider2())
     get_ratio(slider1(), slider2())
   })
 

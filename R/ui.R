@@ -79,7 +79,7 @@ app_ui = function(req, question_data, default_response) {
             "Create a scenario", tabName = "scenario"
           ),
           shinydashboard::menuItem(
-            "Visualise", tabName = "visualise"
+            "View results", tabName = "visualise"
           ),
           shinydashboard::menuItem(
             "Download a report", tabName = "report"
@@ -88,10 +88,10 @@ app_ui = function(req, question_data, default_response) {
             "Upload a previous model", tabName = "save"
           ),
           shinydashboard::menuItem(
-            "Learn about the risk network", tabName = "definitions"
+            "Learn about DiAGRAM", tabName = "definitions"
           ),
           shinydashboard::menuItem(
-            "Advanced", tabName = "advanced"
+              "Advanced customisation", tabName = "advanced"
           ),
           shinydashboard::menuItem(
             "Glossary", tabName = "glossary"
