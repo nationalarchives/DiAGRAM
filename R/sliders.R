@@ -69,17 +69,23 @@ text_slider_pair_module_server = function(input, output, session, state, reactiv
     }
   }
 
-  slider_d = shiny::reactive(input$slider) %>% shiny::debounce(200)
-  text_d = shiny::reactive(input$text) %>% shiny::debounce(200)
+  slider_d = shiny::reactive(input$slider) %>% shiny::throttle(500)
+  text_d = shiny::reactive(input$text) %>% shiny::throttle(500)
 
   shiny::observeEvent(slider_d(),{
-    print("slider moved")
+    # print("slider moved")
     shiny::updateNumericInput(session, 'text', value = input$slider)
   })
   shiny::observeEvent(text_d(), {
     shiny::updateSliderInput(session, "slider", value = input$text)
   })
-  return(slider_d)
+
+  observe({
+    if(is.null(slider_d())){
+      print("null slider")
+    }
+  })
+  return(reactive(slider_d()))
 }
 
 
@@ -117,11 +123,17 @@ sliders_group_module_server = function(input, output, session, state = c(20, 20,
   )
 
   return_val = reactive({
+    # req(reactive_state$s1)
+    # req(reactive_state$s2)
+    # req(reactive_state$s3)
     c(reactive_state$s1, reactive_state$s2, reactive_state$s3)
   })
   observe({
+    req(reactive_state$s1)
+    req(reactive_state$s2)
+    req(reactive_state$s3)
     print(paste("trip reactive state: ", c(reactive_state$s1, reactive_state$s2, reactive_state$s3)))
-    print(c(reactive_state$s1, reactive_state$s2, reactive_state$s3))
+    # print(c(reactive_state$s1, reactive_state$s2, reactive_state$s3))
   })
 
   slider1 = shiny::callModule(text_slider_pair_module_server, "slider1", state = shiny::reactive(reactive_state$s1))
@@ -211,7 +223,10 @@ sliders_group_module_server = function(input, output, session, state = c(20, 20,
     })
   })
 
-  return(return_val)
+  return({
+    # print(paste("res length", length(isolate(return_val()))))
+    return_val
+  })
 }
 
 

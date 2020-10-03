@@ -26,7 +26,6 @@
 #' @importFrom shinysky hotable
 #' @importFrom DT dataTableOutput
 #' @importFrom plotly plotlyOutput
-#' @importFrom shinya11y use_tota11y
 #' @export
 app_ui = function(req, question_data, default_response) {
 

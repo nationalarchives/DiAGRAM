@@ -21,7 +21,7 @@ input.table-input:disabled {
       )
     ),
     shinyjs::useShinyjs(),
-    shiny::actionButton(ns("edit"), "", icon = shiny::icon("cog")),
+    # shiny::actionButton(ns("edit"), "", icon = shiny::icon("cog")),
     reactable::reactableOutput(ns('table'))
   )
 }

@@ -201,7 +201,7 @@ questions_module_ui = function(id, question_data, default_response, is_policy = 
     ),
     div(
       class = "question-comments",
-      textAreaInput(ns("comment"), label = "Comments", placeholder = "These comments will appear in the summary table and report.")
+      textAreaInput(ns("comment"), label = "Comments", placeholder = "These comments will appear in the summary table and report. They are for you to use to make any notes for your reference as you answer the questions.")
     )
 
   ))
