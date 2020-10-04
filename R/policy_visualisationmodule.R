@@ -149,9 +149,13 @@ policy_visualisation_module_server = function(input, output, session, model_data
 }
 
 format_vis_data = function(intermediate, model, scoring_funcs) {
-  intermediate = dplyr::bind_cols(intermediate, purrr::map_dfr(intermediate$response, ~{
-    score_model(model, format_responses(.x), scoring_funcs) %>% unlist
-  }))
+  # intermediate = dplyr::bind_cols(intermediate, purrr::map_dfr(intermediate$response, ~{
+  #   score_model(model, format_responses(.x), scoring_funcs) %>% unlist
+  # }))
+  intermediate = tryCatch(
+    {dplyr::bind_cols(intermediate, purrr::map_dfr(intermediate$response, ~{
+      score_model(model, format_responses(.x), scoring_funcs) %>% unlist
+    }))}, error = function(e) browser())
   intermediate %>%
     dplyr::select(.data$model, .data$policy, "Intellectual Control" = .data$Intellectual_Control, .data$Renderability, .data$notes, .data$response) %>%
     dplyr::rename_with(stringr::str_to_title) %>%
