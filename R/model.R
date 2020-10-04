@@ -30,8 +30,9 @@
   Op_Environment = function(questions) {
     f_list = purrr::map(questions, make_one_score_func)
     function(group_response) {
+      # browser()
       answers = purrr::map2_dbl(f_list, group_response, ~.x(.y))
-      if(answers[1] == 100 || answers[2] == 1) {
+      if(answers[1] == 100 || answers[2] == 'Yes') {
         return(100)
       }else{
         return(answers[1])
@@ -123,7 +124,9 @@ score_model = function(model, responses, scoring_funcs) {
     }else{
       intermediate = resp
     }
-    as.table(stats::setNames(intermediate/100, name))
+    tab = as.table(stats::setNames(intermediate/100, name))
+    # tab = tryCatch(, error = function(e) browser())
+    tab
   }) #%>% stats::setNames(responses$node)
   # print(probs)
   # update model

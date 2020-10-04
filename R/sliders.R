@@ -69,14 +69,23 @@ text_slider_pair_module_server = function(input, output, session, state, reactiv
     }
   }
 
-  shiny::observeEvent(input$slider,{
-    print("slider moved")
+  slider_d = shiny::reactive(input$slider) %>% shiny::throttle(500)
+  text_d = shiny::reactive(input$text) %>% shiny::throttle(500)
+
+  shiny::observeEvent(slider_d(),{
+    # print("slider moved")
     shiny::updateNumericInput(session, 'text', value = input$slider)
   })
-  shiny::observeEvent(input$text, {
+  shiny::observeEvent(text_d(), {
     shiny::updateSliderInput(session, "slider", value = input$text)
   })
-  return(shiny::reactive(input$slider))
+
+  observe({
+    if(is.null(slider_d())){
+      print("null slider")
+    }
+  })
+  return(reactive(slider_d()))
 }
 
 
@@ -114,10 +123,17 @@ sliders_group_module_server = function(input, output, session, state = c(20, 20,
   )
 
   return_val = reactive({
+    # req(reactive_state$s1)
+    # req(reactive_state$s2)
+    # req(reactive_state$s3)
     c(reactive_state$s1, reactive_state$s2, reactive_state$s3)
   })
   observe({
-    print(c(reactive_state$s1, reactive_state$s2, reactive_state$s3))
+    req(reactive_state$s1)
+    req(reactive_state$s2)
+    req(reactive_state$s3)
+    print(paste("trip reactive state: ", c(reactive_state$s1, reactive_state$s2, reactive_state$s3)))
+    # print(c(reactive_state$s1, reactive_state$s2, reactive_state$s3))
   })
 
   slider1 = shiny::callModule(text_slider_pair_module_server, "slider1", state = shiny::reactive(reactive_state$s1))
@@ -135,15 +151,28 @@ sliders_group_module_server = function(input, output, session, state = c(20, 20,
     return(vals)
   }
 
-  total_1_2 = shiny::reactive(
+  observe({
+    req(slider1())
+    req(slider2())
+    req(slider3())
+    print(paste("trip slider", slider1(), slider2(), slider3()))
+  })
+
+  total_1_2 = shiny::reactive({
+    req(slider1())
+    req(slider2())
     slider1() + slider2()
-  )
+  })
 
   ratio_2_3 = shiny::reactive({
+    req(slider3())
+    req(slider2())
     get_ratio(slider2(), slider3())
   })
 
   ratio_1_2 = shiny::reactive({
+    req(slider1())
+    req(slider2())
     get_ratio(slider1(), slider2())
   })
 
@@ -194,7 +223,10 @@ sliders_group_module_server = function(input, output, session, state = c(20, 20,
     })
   })
 
-  return(return_val)
+  return({
+    # print(paste("res length", length(isolate(return_val()))))
+    return_val
+  })
 }
 
 

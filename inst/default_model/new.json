@@ -12,15 +12,15 @@
     "2": ["Not achieved"],
     "3": ["Minimal awareness", "Minimal awareness"]
   },
-  "Digital_Object": [34, 10, 56],
+  "Digital_Object": [0, 0, 100],
   "Storage_Medium": [0, 0, 100],
   "Rep_and_Refresh": {
     "1": [100],
     "2": [100]
   },
   "Op_Environment": {
-    "1": [100],
-    "2": ["Not Applicable - we do not make copies"]
+    "1": [0],
+    "2": ["Not Applicable - we have copies offsite"]
   },
   "Physical_Disaster": "Very Low"
 }

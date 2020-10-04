@@ -7,6 +7,29 @@
 #' @export
 policy_bar_chart = function(policy_data){
 
+  plot = policy_bar_gg(policy_data)
+  p = plotly::ggplotly(plot, tooltip = "text")
+  # tidy up the extra hover text created by plotly
+  p$x$data = purrr::map(p$x$data, function(x){
+    x$hoverinfo = if(all(x$x == 100)) "skip" else "text"
+    x
+  })
+  # tidy up facet labels
+  p$x$layout$annotations = purrr::map(
+    p$x$layout$annotations, function(x) {
+      if(stringr::str_detect(x$text, "^Model")){
+        x$x = 0.1
+        x$font$size = 2*x$font$size
+      }
+      x
+    }
+  )
+  p %>% plotly::layout(legend = list(orientation = "h", y = -0.1))
+}
+
+
+#' @export
+policy_bar_gg = function(policy_data){
   ## Convert NA to baseline
   policy_data = policy_data %>%
     tidyr::replace_na(list(Policy = "baseline"))
@@ -27,33 +50,46 @@ policy_bar_chart = function(policy_data){
       values_to = "Score"
     ) %>%
     dplyr::mutate(
-      Metric = factor(.data$Metric)
+      Metric = factor(.data$Metric),
+      Score = round(Score*100),
+      Total = 100
     )
 
-  ## Create plot - needs sprucing up
+  # create nice hover text
+  policy_data = policy_data %>%
+    dplyr::rowwise() %>%
+    dplyr::mutate(hover = glue::glue(
+      "<b>{Model}</b>
+<b>Scenario: </b>{policy}
+<b>Metric: </b>{Metric}
+<b>Score: </b>{Score}%"
+    ))
+
   plot = policy_data %>%
-    ggplot2::ggplot(ggplot2::aes(x = Policy,
-                        y = Score,
-                        fill = Metric,
-                        text = Notes )) + #ifelse(!is.na(Notes), Notes, NULL))) +
-    ggplot2::geom_col() +
-    ggplot2::scale_y_continuous(limits = c(0, 1)) +
+    ggplot2::ggplot(ggplot2::aes(x =  Policy,
+                                 y = Score,
+                                 fill = Metric)) +
+    ggplot2::geom_col(ggplot2::aes(x = Policy, fill = Metric, y = Total),
+                      alpha = 0.2,
+                      position = ggplot2::position_dodge2(0.5, preserve = "single")) +
+    ggplot2::geom_col(position = ggplot2::position_dodge2(0.5, preserve = "single"), aes(text = hover )) +
+
+    ggplot2::scale_y_continuous(limits = c(0, 100)) +
     ggplot2::labs(x = "Policy",
                   y = "Score",
                   fill = "Score Type") +
+    xlab(NULL) +
     ggplot2::coord_flip() +
     ggplot2::facet_wrap(~ Model,
                         ncol = 1,
                         scales = "free_y",
                         labeller = ggplot2::label_both) +
     ggplot2::theme_minimal() +
-    ggplot2::theme(legend.position = "bottom") # ignored by ggplotly, I know it is really annoying
-
-  plotly::ggplotly(plot)
-
+    ggplot2::theme(legend.position = "bottom",
+                   strip.text.x = ggplot2::element_text(size = 8)) + # ignored by ggplotly, I know it is really annoying
+    scale_fill_manual(values = c("Intellectual Control" = "#8C9694", "Renderability" = "#bbc7af"))
+  plot
 }
-
-
 
 #' policy_visualisation module ui
 #'
@@ -68,7 +104,10 @@ policy_visualisation_module_ui = function(id){
       width = 12,
       plotly::plotlyOutput(ns("policy_bar_chart"))
     ),
-    model_table_module_ui(ns('bar-select'))
+    shinydashboard::box(
+      width = 12,
+      model_table_module_ui(ns('bar-select'))
+    )
   )
 }
 
@@ -85,15 +124,10 @@ policy_visualisation_module_server = function(input, output, session, model_data
 
   selection = callModule(model_table_module_server, 'bar-select', data = model_data, model = model, selection = "multiple", show_policy = TRUE, scoring_funcs = scoring_funcs)
   vis_data = shiny::reactive({
+    # browser()
     req(nrow(model_data()) > 0)
     intermediate = model_data()
-    intermediate = dplyr::bind_cols(intermediate, purrr::map_dfr(intermediate$response, ~{
-      score_model(model, format_responses(.x), scoring_funcs) %>% unlist
-    }))
-    df = intermediate %>%
-      dplyr::select(.data$model, .data$policy, "Intellectual Control" = .data$Intellectual_Control, .data$Renderability, .data$notes, .data$response) %>%
-      dplyr::rename_with(stringr::str_to_title) %>%
-      dplyr::mutate_if(is.numeric, ~ round(.x, 2))
+    df = format_vis_data(intermediate, model, scoring_funcs)
     df[selection(), ]
   })
 
@@ -112,4 +146,18 @@ policy_visualisation_module_server = function(input, output, session, model_data
       policy_bar_chart(vis_data())
 
   })
+}
+
+format_vis_data = function(intermediate, model, scoring_funcs) {
+  # intermediate = dplyr::bind_cols(intermediate, purrr::map_dfr(intermediate$response, ~{
+  #   score_model(model, format_responses(.x), scoring_funcs) %>% unlist
+  # }))
+  intermediate = tryCatch(
+    {dplyr::bind_cols(intermediate, purrr::map_dfr(intermediate$response, ~{
+      score_model(model, format_responses(.x), scoring_funcs) %>% unlist
+    }))}, error = function(e) browser())
+  intermediate %>%
+    dplyr::select(.data$model, .data$policy, "Intellectual Control" = .data$Intellectual_Control, .data$Renderability, .data$notes, .data$response) %>%
+    dplyr::rename_with(stringr::str_to_title) %>%
+    dplyr::mutate_if(is.numeric, ~ round(.x, 2))
 }

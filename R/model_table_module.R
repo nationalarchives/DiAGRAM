@@ -21,10 +21,30 @@ input.table-input:disabled {
       )
     ),
     shinyjs::useShinyjs(),
-    shiny::actionButton(ns("edit"), "", icon = shiny::icon("cog")),
+    # shiny::actionButton(ns("edit"), "", icon = shiny::icon("cog")),
     reactable::reactableOutput(ns('table'))
   )
 }
+
+format_model_table = function(intermediate, model, scoring_funcs, show_policy) {
+  intermediate = tryCatch(
+    {dplyr::bind_cols(intermediate, purrr::map_dfr(intermediate$response, ~{
+    score_model(model, format_responses(.x), scoring_funcs) %>% unlist
+  }))}, error = function(e) browser())
+  if(show_policy) {
+    res = intermediate %>%
+      dplyr::select(.data$model, .data$policy, "Intellectual Control" = .data$Intellectual_Control, .data$Renderability, .data$notes, .data$response)
+
+  }else{
+    res = intermediate %>%
+      dplyr::filter(is.na(.data$policy)) %>%
+      dplyr::select(.data$model, "Intellectual Control" = .data$Intellectual_Control, .data$Renderability, .data$notes, .data$response)
+  }
+  res %>%
+    dplyr::rename_with(stringr::str_to_title) %>%
+    dplyr::mutate_if(is.numeric, ~ round(.x, 2))
+}
+
 
 #' @importFrom rlang .data
 #' @export
@@ -44,29 +64,22 @@ model_table_module_server = function(input, output, session, data, model, scorin
       return(NULL)
     }
     intermediate = data()
-    intermediate = dplyr::bind_cols(intermediate, purrr::map_dfr(intermediate$response, ~{
-      score_model(model, format_responses(.x), scoring_funcs) %>% unlist
-    }))
-    if(show_policy) {
-      res = intermediate %>%
-        dplyr::select(.data$model, .data$policy, "Intellectual Control" = .data$Intellectual_Control, .data$Renderability, .data$notes, .data$response)
-
-    }else{
-      res = intermediate %>%
-        dplyr::filter(is.na(.data$policy)) %>%
-        dplyr::select(.data$model, "Intellectual Control" = .data$Intellectual_Control, .data$Renderability, .data$notes, .data$response)
-    }
-    res %>%
-      dplyr::rename_with(stringr::str_to_title) %>%
-      dplyr::mutate_if(is.numeric, ~ round(.x, 2))
+    format_model_table(intermediate, model, scoring_funcs, show_policy)
   })
+
+  # output$dt = DT::renderDataTable({
+  #   df = formatted_data()
+  #   if(is.null(df)) return(NULL)
+  #   DT::datatable(df)
+  # })
 
   output$table = reactable::renderReactable({
     df = formatted_data()
     if(is.null(df)) return(NULL)
     reactable::reactable(
       df %>% dplyr::select(-.data$Response),
-      groupBy = "Model",
+      groupBy = if(show_policy) "Model" else NULL,
+      # defaultExpanded =
       columns = list(
         Model = reactable::colDef(
           html = TRUE,

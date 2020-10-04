@@ -79,8 +79,29 @@ questions_module_ui = function(id, question_data, default_response, is_policy = 
   question_block = create_question_block(question_data, default_response, ns)
   questions_el = purrr::map(seq_along(question_block), function(i) {
    #html_text = "hi"
-   html_text = markdown::renderMarkdown(text = as.character(question_data[[i]]$text)) %>%
-     htmltools::HTML()
+   html_text = shiny::tags$div(
+     shiny::tags$div(
+       class = "question-definition",
+       markdown::renderMarkdown(text = as.character(paste0("Definition: ",question_data[[i]]$definition))) %>%
+         htmltools::HTML()
+     ),
+     shiny::tags$div(
+       class = "question-explanation",
+       markdown::renderMarkdown(text = as.character(question_data[[i]]$explanation)) %>%
+         htmltools::HTML()
+     ),
+     shiny::tags$div(
+       class = "question-text",
+       markdown::renderMarkdown(text = as.character(
+         paste0(
+           ifelse(is.null(question_data[[i]]$part), "1. " ,paste0(question_data[[i]]$part,". ")),
+           question_data[[i]]$text
+         )
+       )) %>%
+         htmltools::HTML()
+     )
+   )
+
    popover_html = markdown::renderMarkdown(text = as.character(question_data[[i]]$definition)) %>%
      # shiny::div() #%>%
    htmltools::HTML()
@@ -100,26 +121,31 @@ questions_module_ui = function(id, question_data, default_response, is_policy = 
             id = ns(paste0(question_block[[i]]$id, "-container")),
             style = "width: 100%",
             # title element
-            shiny::div(.node_map[question_data[[i]]$node], ": ", question_data[[i]]$part, class = "question-title"),
-            div(
-              class = "title-hint",
-              bsButton(
-                inputId = ns(paste0('title-hint-',question_data[[i]]$node,question_data[[i]]$part)),label = "", icon = icon("question"),
-                style = "info", size = "extra-small"
-              )
-            ),
-            div(class = "question-prefix", "Please answer the following question:"),
+            shiny::div(
+              class = "question-title",
+              .node_map[question_data[[i]]$node]
+              ),
+            # ,
+            #            ": ", question_data[[i]]$part,),
+            # div(
+            #   class = "title-hint",
+            #   bsButton(
+            #     inputId = ns(paste0('title-hint-',question_data[[i]]$node,question_data[[i]]$part)),label = "", icon = icon("question"),
+            #     style = "info", size = "extra-small"
+            #   )
+            # ),
+            # div(class = "question-prefix", "Please answer the following question:"),
             div(class = "question-content", html_text), #question_data[[i]]$text),
             question_block[[i]]$ui_el
-          )),
-          bsPopover(
-            id = ns(paste0('title-hint-',question_data[[i]]$node,question_data[[i]]$part)), title = .node_map[question_data[[i]]$node],
-            content = popover_html,
-              # glue::glue("`{shiny::HTML(knitr::knit2html(text = question_data[[i]]$definition,fragment = TRUE))}`"),
-            placement = "right",
-            trigger = "click"#,
-            # options = list(container = "body")
-          ),
+          ))#,
+          # bsPopover(
+          #   id = ns(paste0('title-hint-',question_data[[i]]$node,question_data[[i]]$part)), title = .node_map[question_data[[i]]$node],
+          #   content = popover_html,
+          #     # glue::glue("`{shiny::HTML(knitr::knit2html(text = question_data[[i]]$definition,fragment = TRUE))}`"),
+          #   placement = "right",
+          #   trigger = "click"#,
+          #   # options = list(container = "body")
+          # ),
         )
       )
   })
@@ -151,7 +177,7 @@ questions_module_ui = function(id, question_data, default_response, is_policy = 
       shiny::column(
         width = 6, offset = 3,
         div(
-          "Your responses have been stored!",
+          p("Your responses have been stored!"),
           shiny::actionButton(ns("restart"), "Create Another"),
           if(is_policy) NULL else shiny::actionButton(ns("policy"), "Add a scenario"),
           shiny::actionButton(ns("visualise"), "Visualise Results")
@@ -166,12 +192,16 @@ questions_module_ui = function(id, question_data, default_response, is_policy = 
     id = ns('question-header-container'),
     class = "question-header",
     div(
+      class = "question-progress",
+      shinyWidgets::progressBar(ns('progress'), 0, display_pct = TRUE)
+    ),
+    div(
       class = "question-header-name",
       uiOutput(ns("header_name"))
     ),
     div(
       class = "question-comments",
-      textAreaInput(ns("comment"), label = "Comments", placeholder = "These comments will appear in the summary table and report.")
+      textAreaInput(ns("comment"), label = "Comments", placeholder = "These comments will appear in the summary table and report. They are for you to use to make any notes for your reference as you answer the questions.")
     )
 
   ))
@@ -179,13 +209,13 @@ questions_module_ui = function(id, question_data, default_response, is_policy = 
   back_el = shinyjs::hidden(div(
     id = ns('question-back-container'),
     class = "question-back",
-    shiny::actionButton(ns('back'), "Back")
+    shiny::actionButton(ns('back'), "Back", class = "btn-orange")
   ))
 
   forward_el = shinyjs::hidden(div(
     id = ns('question-next-container'),
     class = "question-next",
-    shiny::actionButton(ns("go"), "Next")
+    shiny::actionButton(ns("go"), "Next", class = "btn-green")
   ))
 
 
@@ -197,13 +227,13 @@ questions_module_ui = function(id, question_data, default_response, is_policy = 
       header_el,
       if(is_policy) NULL else launch_el,
       naming_el,
+      questions_el,
       div(
         class = "question-button-row",
         back_el,
         forward_el,
         finish_el
       ),
-      questions_el,
       what_next_el
     )
   )
@@ -238,6 +268,7 @@ questions_module_server = function(input, output, session, question_data, defaul
     purrr::map_chr(question_block,'id'),
     "question-what-next"
   ), "-container")
+  percentage_sequence = seq(0, 100, length.out = length(question_block) + 1)
 
   n_q = length(question_block)
   current_state = shiny::reactiveVal(if(is_policy) 2 else 1)
@@ -253,6 +284,7 @@ questions_module_server = function(input, output, session, question_data, defaul
     shinyjs::toggleElement('question-back-container', condition = ix > 2 & ix < length(state_ids))
     shinyjs::toggleElement('question-header-container', condition = ix > 2 & ix < length(state_ids), anim = TRUE, animType = "fade")
     shinyjs::toggleElement('question-finish-container', condition = ix == (length(state_ids) - 1))
+    shinyWidgets::updateProgressBar(session, "progress", value = percentage_sequence[ix-2])
 
     purrr::iwalk(state_ids, function(x, i) {
       shinyjs::toggleElement(id = x, condition = i == ix, anim = TRUE)
@@ -314,6 +346,7 @@ questions_module_server = function(input, output, session, question_data, defaul
 
   return_val = reactive({
     orig_state = reactiveValuesToList(rv)
+    req(length(orig_state) > 0)
 
     print("original state questions")
     print(orig_state)
@@ -333,7 +366,7 @@ questions_module_server = function(input, output, session, question_data, defaul
         res[[name]] = orig_state[[paste0(name, "_")]]
       }
     }
-
+    # if(is_policy) browser()
     print("returned result")
     print(res)
     res

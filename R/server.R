@@ -67,14 +67,17 @@ app_server = function(input, output, session, question_data, default_response, m
 
   policy_vis = callModule(policy_visualisation_module_server, 'bar', model_data = reactive(model_obj$data), model = model, scoring_funcs = scoring_funcs)
 
+  callModule(report_tab_module_server, 'report', data = reactive(model_obj$data), question_data = question_data, model = model, scoring_funcs = scoring_funcs)
+
   seen_warning = reactiveVal(FALSE)
   observeEvent(input$sidebarMenu,{
     if(input$sidebarMenu == "model" & !seen_warning()) {
       shinyalert::shinyalert(
         title = "Warning", type = "warning",
         text = "Data is only stored during an active session, after a period of inactivity the session will end.
-        If you would like to store your data more permanently you should download it.
-        "
+        If you would like to store your data more permanently you should download it.,
+        ",
+        closeOnEsc = FALSE, closeOnClickOutside = FALSE
       )
       seen_warning(TRUE)
     }
@@ -178,6 +181,17 @@ app_server = function(input, output, session, question_data, default_response, m
       shape = "ellipse",
       render = TRUE
     )
+  })
+  output$NetworkStructure_home <- shiny::renderPlot({
+    bnlearn::graphviz.plot(
+      model, layout = "dot",
+      highlight = list(nodes=c(input$NodeSelection), fill="lightgrey"),
+      shape = "ellipse",
+      render = TRUE
+    )
+  })
+  observeEvent(input$home_network_click, {
+    updateTabItems(session = shiny::getDefaultReactiveDomain(), inputId = "sidebarMenu", selected = 'definitions')
   })
 
   # Output node definiton text

@@ -1,0 +1,4 @@
+name: NATA report
+description: >
+   A custom format to produce NATA branded reports
+create_dir: FALSE
