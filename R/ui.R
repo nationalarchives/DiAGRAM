@@ -131,7 +131,7 @@ app_ui = function(req, question_data, default_response) {
               #   )
               # ),
             ),
-            shinyjs::hidden(
+            # shinyjs::hidden(
               shiny::fluidRow(
                 shinydashboard::box(
                   width = 12,
@@ -141,7 +141,7 @@ app_ui = function(req, question_data, default_response) {
                   )
                 )
               )
-            )
+            # )
           ),
           shinydashboard::tabItem(
             tabName = "scenario",

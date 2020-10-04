@@ -124,7 +124,8 @@ score_model = function(model, responses, scoring_funcs) {
     }else{
       intermediate = resp
     }
-    tab = tryCatch(as.table(stats::setNames(intermediate/100, name)), error = function(e) browser())
+    tab = as.table(stats::setNames(intermediate/100, name))
+    # tab = tryCatch(, error = function(e) browser())
     tab
   }) #%>% stats::setNames(responses$node)
   # print(probs)

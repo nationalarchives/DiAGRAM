@@ -104,7 +104,10 @@ policy_visualisation_module_ui = function(id){
       width = 12,
       plotly::plotlyOutput(ns("policy_bar_chart"))
     ),
-    model_table_module_ui(ns('bar-select'))
+    shinydashboard::box(
+      width = 12,
+      model_table_module_ui(ns('bar-select'))
+    )
   )
 }
 

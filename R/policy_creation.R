@@ -220,7 +220,7 @@ policy_creation_module_server = function(input, output, session, input_data, que
       full_state[intersect(names(full_state), names(new_state))] = new_state
       new_row = model_policy_row(full_state, model_name = model_obj$data$model[[policy_picker()]], policy_name = subset_picked$server_response$name(), notes = subset_picked$server_response$comments())
       # print(new_row)
-      browser()
+      # browser()
       return_val(new_row)
       # model_obj$data = dplyr::bind_rows(
       #   model_obj$data, new_row
