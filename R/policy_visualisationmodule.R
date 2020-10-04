@@ -121,7 +121,7 @@ policy_visualisation_module_server = function(input, output, session, model_data
 
   selection = callModule(model_table_module_server, 'bar-select', data = model_data, model = model, selection = "multiple", show_policy = TRUE, scoring_funcs = scoring_funcs)
   vis_data = shiny::reactive({
-    browser()
+    # browser()
     req(nrow(model_data()) > 0)
     intermediate = model_data()
     df = format_vis_data(intermediate, model, scoring_funcs)
