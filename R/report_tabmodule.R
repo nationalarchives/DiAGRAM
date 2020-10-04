@@ -6,6 +6,7 @@
 report_tab_module_ui = function(id){
   ns = NS(id) # no lint (excluded from lint for jrshinyapp template)
   tagList(
+    shinyjs::useShinyjs(),
     shiny::div(
       class = "download-page-title",
       "Download a Report"
@@ -26,15 +27,15 @@ report_tab_module_ui = function(id){
         # shiny::checkboxGroupInput(ns('download_select'), "Formats", choices = c("pdf", "csv", "json")),
         # shiny::downloadButton(ns("download"))
         shiny::div(
-          shiny::downloadButton(ns("pdf"), "PDF"),
+          shinyjs::disabled(shiny::downloadButton(ns("pdf"), "PDF")),
           "download a PDF to see a presentation version of your results"
         ),
         shiny::div(
-          shiny::downloadButton(ns("csv"), "CSV"),
+          shinyjs::disabled(shiny::downloadButton(ns("csv"), "CSV")),
           "download a CSV file to create your own graphs from the data"
         ),
         shiny::div(
-          shiny::downloadButton(ns("json"), "JSON"),
+          shinyjs::disabled(shiny::downloadButton(ns("json"), "JSON")),
           "downlad a JSON file to upload your model to DiAGRAM in the future"
         )
 
@@ -72,6 +73,12 @@ report_tab_module_server = function(input, output, session, data, model, questio
       # file.copy(pdf_file, file)
     }
   )
+
+  observe({
+    shinyjs::toggleState(id = "pdf", condition = length(selected()) > 0)
+    shinyjs::toggleState(id = "csv", condition = length(selected()) > 0)
+    shinyjs::toggleState(id = "json", condition = length(selected()) > 0)
+  })
 
   output$csv = shiny::downloadHandler(
     filename = function() {
