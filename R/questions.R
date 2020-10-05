@@ -180,7 +180,7 @@ questions_module_ui = function(id, question_data, default_response, is_policy = 
           p("Your responses have been stored!"),
           shiny::actionButton(ns("restart"), "Create Another"),
           if(is_policy) NULL else shiny::actionButton(ns("policy"), "Add a scenario"),
-          shiny::actionButton(ns("visualise"), "Visualise Results")
+          shiny::actionButton(ns("visualise"), "View Results")
         )
       )
     # )
