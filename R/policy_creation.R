@@ -39,13 +39,13 @@ policy_creation_module_ui = function(id) {
       shinyjs::hidden(
         shiny::div(
           id = ns("back-container"),
-          shiny::actionButton(ns('back'), "Back")
+          shiny::actionButton(ns('back'), "Back", class = "btn-orange")
         )
       ),
       shinyjs::hidden(
         shiny::div(
           id = ns("next-container"),
-          shiny::actionButton(ns("go"), "Next")
+          shiny::actionButton(ns("go"), "Next", class = "btn-green")
         )
       ),
       shinyjs::hidden(
@@ -216,9 +216,12 @@ policy_creation_module_server = function(input, output, session, input_data, que
     subset_picked$observers$finish = observeEvent(subset_picked$server_response$finish(), {
       full_state = original_response()
       new_state = subset_picked$server_response$state()
-      full_state[intersect(names(full_state), names(new_state))] = new_state
+      # browser()
+      names = intersect(names(full_state), names(new_state))
+      full_state[names] = new_state[names]
       new_row = model_policy_row(full_state, model_name = model_obj$data$model[[policy_picker()]], policy_name = subset_picked$server_response$name(), notes = subset_picked$server_response$comments())
       # print(new_row)
+      # browser()
       return_val(new_row)
       # model_obj$data = dplyr::bind_rows(
       #   model_obj$data, new_row

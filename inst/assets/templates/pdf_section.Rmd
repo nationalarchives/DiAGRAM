@@ -64,7 +64,8 @@ download_data %>%
   dplyr::select(.data$Question, .data$Detail, .data$Response) %>%
   dplyr::mutate(
     Question = ifelse(c(FALSE, .data$Question[2:dplyr::n()] == .data$Question[1:(dplyr::n() - 1)]), '', .data$Question),
-    Detail = tidyr::replace_na(.data$Detail, '')
+    Detail = tidyr::replace_na(.data$Detail, ''),
+    Question = tidyr::replace_na(.data$Question, '')
   ) %>%
   knitr::kable(format = "latex", longtable = TRUE, booktabs = TRUE) %>% 
   kableExtra::kable_styling(full_width = TRUE, font_size = 7) %>%

@@ -15,6 +15,8 @@ radio_group_module_ui = function(id = 'test', state, label = LETTERS[1:4], conte
   # }
 
   n_q = length(questions)
+  # browser()
+  # if(n_q == 0) browser()
   buttons = purrr::map2(seq_along(questions), options, function(i, opt) {
     div(
       style = "clear: right;",
@@ -66,9 +68,14 @@ radio_group_module_server = function(input, output, session, state) {
 
   observe({
     req(input$x)
-    vals = purrr::map_chr(paste0("test-",1:input$x), ~input[[.x]])
     # browser()
-    print(vals)
+    print(input$x)
+    # if(input$x == 0 || is.null(input$x)) browser()
+    print(input$`test-1`)
+
+    vals = purrr::map_chr(paste0("test-",seq_len(input$x)), ~input[[.x]])
+    # browser()
+    # print(vals)
     return_val(vals)
   })
   return(return_val)

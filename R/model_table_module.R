@@ -21,15 +21,16 @@ input.table-input:disabled {
       )
     ),
     shinyjs::useShinyjs(),
-    shiny::actionButton(ns("edit"), "", icon = shiny::icon("cog")),
+    # shiny::actionButton(ns("edit"), "", icon = shiny::icon("cog")),
     reactable::reactableOutput(ns('table'))
   )
 }
 
 format_model_table = function(intermediate, model, scoring_funcs, show_policy) {
-  intermediate = dplyr::bind_cols(intermediate, purrr::map_dfr(intermediate$response, ~{
+  intermediate = tryCatch(
+    {dplyr::bind_cols(intermediate, purrr::map_dfr(intermediate$response, ~{
     score_model(model, format_responses(.x), scoring_funcs) %>% unlist
-  }))
+  }))}, error = function(e) browser())
   if(show_policy) {
     res = intermediate %>%
       dplyr::select(.data$model, .data$policy, "Intellectual Control" = .data$Intellectual_Control, .data$Renderability, .data$notes, .data$response)

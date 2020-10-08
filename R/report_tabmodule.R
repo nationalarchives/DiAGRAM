@@ -6,13 +6,15 @@
 report_tab_module_ui = function(id){
   ns = NS(id) # no lint (excluded from lint for jrshinyapp template)
   tagList(
+    shinyjs::useShinyjs(),
     shiny::div(
       class = "download-page-title",
       "Download a Report"
     ),
     shinydashboard::box(
       title = "Summary", width = 12,
-      shinipsum::random_text(nwords = 50)
+      # shinipsum::random_text(nwords = 50)
+      includeMarkdown(system.file("text_content", "report_summary.md", package = "diagramNAT"))
     ),
     shinydashboard::box(
       width = 12,
@@ -24,9 +26,19 @@ report_tab_module_ui = function(id){
         "2. Select the format of your report",
         # shiny::checkboxGroupInput(ns('download_select'), "Formats", choices = c("pdf", "csv", "json")),
         # shiny::downloadButton(ns("download"))
-        shiny::downloadButton(ns("pdf"), "PDF"),
-        shiny::downloadButton(ns("csv"), "CSV"),
-        shiny::downloadButton(ns("json"), "JSON")
+        shiny::div(
+          shinyjs::disabled(shiny::downloadButton(ns("pdf"), "PDF")),
+          "download a PDF to see a presentation version of your results"
+        ),
+        shiny::div(
+          shinyjs::disabled(shiny::downloadButton(ns("csv"), "CSV")),
+          "download a CSV file to create your own graphs from the data"
+        ),
+        shiny::div(
+          shinyjs::disabled(shiny::downloadButton(ns("json"), "JSON")),
+          "downlad a JSON file to upload your model to DiAGRAM in the future"
+        )
+
 
       )
     )
@@ -51,11 +63,22 @@ report_tab_module_server = function(input, output, session, data, model, questio
       paste0("DiAGRAM-", Sys.Date(), ".pdf")
     },
     content = function(file) {
-      pdf_file = prepare_pdf(data()[selected(),], question_data, model, scoring_funcs, template = system.file("assets", "templates", "pdf_template.Rmd", package = "diagramNAT"))
-      on.exit(file.remove(pdf_file))
-      file.copy(pdf_file, file)
+      td = tempdir()
+      temp = file.path(td, "report.Rmd")
+      temp_sub = file.path(td, "pdf_section.Rmd")
+      file.copy(system.file("assets", "templates", "pdf_template.Rmd", package = "diagramNAT"), temp, overwrite = TRUE)
+      file.copy(system.file("assets", "templates", "pdf_section.Rmd", package = "diagramNAT"), temp_sub, overwrite = TRUE)
+      pdf_file = prepare_pdf(data()[selected(),], question_data, model, scoring_funcs, template = temp, file = file)
+      # on.exit(file.remove(pdf_file))
+      # file.copy(pdf_file, file)
     }
   )
+
+  observe({
+    shinyjs::toggleState(id = "pdf", condition = length(selected()) > 0)
+    shinyjs::toggleState(id = "csv", condition = length(selected()) > 0)
+    shinyjs::toggleState(id = "json", condition = length(selected()) > 0)
+  })
 
   output$csv = shiny::downloadHandler(
     filename = function() {

@@ -177,10 +177,10 @@ questions_module_ui = function(id, question_data, default_response, is_policy = 
       shiny::column(
         width = 6, offset = 3,
         div(
-          "Your responses have been stored!",
+          p("Your responses have been stored!"),
           shiny::actionButton(ns("restart"), "Create Another"),
           if(is_policy) NULL else shiny::actionButton(ns("policy"), "Add a scenario"),
-          shiny::actionButton(ns("visualise"), "Visualise Results")
+          shiny::actionButton(ns("visualise"), "View Results")
         )
       )
     # )
@@ -201,7 +201,7 @@ questions_module_ui = function(id, question_data, default_response, is_policy = 
     ),
     div(
       class = "question-comments",
-      textAreaInput(ns("comment"), label = "Comments", placeholder = "These comments will appear in the summary table and report.")
+      textAreaInput(ns("comment"), label = "Comments", placeholder = "These comments will appear in the summary table and report. They are for you to use to make any notes for your reference as you answer the questions.")
     )
 
   ))
@@ -209,13 +209,13 @@ questions_module_ui = function(id, question_data, default_response, is_policy = 
   back_el = shinyjs::hidden(div(
     id = ns('question-back-container'),
     class = "question-back",
-    shiny::actionButton(ns('back'), "Back")
+    shiny::actionButton(ns('back'), "Back", class = "btn-orange")
   ))
 
   forward_el = shinyjs::hidden(div(
     id = ns('question-next-container'),
     class = "question-next",
-    shiny::actionButton(ns("go"), "Next")
+    shiny::actionButton(ns("go"), "Next", class = "btn-green")
   ))
 
 

@@ -9,11 +9,12 @@ home_tab = function() {
         "DiAGRAM - The ",
         shiny::tags$b("Di", .noWS="outside"), "gital ",
         shiny::tags$b("A", .noWS="outside"), "rchiving ",
-        shiny::tags$b("G", .noWS="outside"), "raphical",
+        shiny::tags$b("G", .noWS="outside"), "raphical ",
         shiny::tags$b("R", .noWS="outside"), "isk ",
         shiny::tags$b("A", .noWS="outside"), "ssessment ",
         shiny::tags$b("M", .noWS="outside"), "odel",
-        align="center"
+        align="center",
+        class = "main-title"
       ),
       shiny::h3("Version 0.9.7 (Prototype)", align="center"), #update in June
       shiny::br(),
@@ -45,6 +46,17 @@ home_tab = function() {
         shiny::br(),
         shiny::p(
           "For more information see our", shiny::tags$a(href = "https://www.nationalarchives.gov.uk/information-management/manage-information/preserving-digital-records/research-collaboration/safeguarding-the-nations-digital-memory/", "project"), "page."
+        )
+      ),
+      shiny::fluidRow(
+        shiny::column(
+          width=12,
+          shinydashboard::box(
+            title="DiAGRAM structure",
+            collapsible=TRUE,
+            width=NULL,
+            shiny::plotOutput("NetworkStructure_home", click = "home_network_click")
+          )
         )
       ),
 
@@ -175,7 +187,11 @@ home_tab = function() {
 }
 
 definitions_tab = function() {
- shiny::tagList(
+  shiny::fluidRow(
+    shinydashboard::box(
+      title = NULL,
+      width = 12,
+
    shiny::h1("Definitions"),
    shiny::br(),
    shiny::fluidRow(
@@ -227,11 +243,15 @@ definitions_tab = function() {
        )
      )
    )
- )
+ ))
 }
 
 model_tab = function() {
-  shiny::tagList(
+  shiny::fluidRow(
+    shinydashboard::box(
+      title = NULL,
+      width = 12,
+
     shiny::h1("Create your model"),
     shiny::br(),
     shiny::fluidRow(
@@ -278,5 +298,6 @@ model_tab = function() {
         )
       )
     )
+  )
   )
 }

@@ -104,7 +104,10 @@ policy_visualisation_module_ui = function(id){
       width = 12,
       plotly::plotlyOutput(ns("policy_bar_chart"))
     ),
-    model_table_module_ui(ns('bar-select'))
+    shinydashboard::box(
+      width = 12,
+      model_table_module_ui(ns('bar-select'))
+    )
   )
 }
 
@@ -121,6 +124,7 @@ policy_visualisation_module_server = function(input, output, session, model_data
 
   selection = callModule(model_table_module_server, 'bar-select', data = model_data, model = model, selection = "multiple", show_policy = TRUE, scoring_funcs = scoring_funcs)
   vis_data = shiny::reactive({
+    # browser()
     req(nrow(model_data()) > 0)
     intermediate = model_data()
     df = format_vis_data(intermediate, model, scoring_funcs)
@@ -145,9 +149,13 @@ policy_visualisation_module_server = function(input, output, session, model_data
 }
 
 format_vis_data = function(intermediate, model, scoring_funcs) {
-  intermediate = dplyr::bind_cols(intermediate, purrr::map_dfr(intermediate$response, ~{
-    score_model(model, format_responses(.x), scoring_funcs) %>% unlist
-  }))
+  # intermediate = dplyr::bind_cols(intermediate, purrr::map_dfr(intermediate$response, ~{
+  #   score_model(model, format_responses(.x), scoring_funcs) %>% unlist
+  # }))
+  intermediate = tryCatch(
+    {dplyr::bind_cols(intermediate, purrr::map_dfr(intermediate$response, ~{
+      score_model(model, format_responses(.x), scoring_funcs) %>% unlist
+    }))}, error = function(e) browser())
   intermediate %>%
     dplyr::select(.data$model, .data$policy, "Intellectual Control" = .data$Intellectual_Control, .data$Renderability, .data$notes, .data$response) %>%
     dplyr::rename_with(stringr::str_to_title) %>%
