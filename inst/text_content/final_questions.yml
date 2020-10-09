@@ -21,17 +21,16 @@ question2:
   node: Storage_Medium
   type: grouped slider
   definition: The type of media on which your digital material is stored such as USB hard drives, CDs or the Cloud.
-  explanation: Storage medium makes a big difference to the longevity of your digital material. Some are designed to be very robust (some degree of error detection and correction built in or less susceptible to many errors by design) and others are not  intended for long term storage.
-  text: What proportion of your records are stored on the following media types? A)
-    less stable, B) more stable, C) outsourced data storage.
+  explanation: Storage medium makes a big difference to the longevity of your digital material. Some are designed to be very robust (some degree of error detection and correction built in or less susceptible to many errors by design) and others are not intended for long-term storage.
+  text: What proportion of your records are stored on the following media types?
   detail:
   - Expected lifespan below 10 years or unknown, highly susceptible to physical damage, requires specific environmental conditions and very sensitive to changes, does not support error-detection methods, supporting technology is novel, proprietary and limited. Examples include USB flash drives (memory sticks), floppy disks, SD drives and CD-R discs.
   - A proven lifespan of at least 10 years, low susceptibility to physical damage, tolerant of a wide range of environmental conditions without data loss, supports robust error-detection methods, supporting technology is well established and widely available. Examples include LTO tapes, Blu-ray discs, enterprise/corporate managed hard drives and CD-ROM discs.
   - An external company is responsible for our digital storage. Examples include Amazon Simple Storage Service, Microsoft Azure Archive Storage and Google Cloud Storage.
   options:
-  - A
-  - B
-  - C
+  - A Less stable
+  - B More stable
+  - C Outsourced Data Storage
 
 question3_1:
   node: Rep_and_Refresh
@@ -50,10 +49,10 @@ question3_2:
   definition: >
     Your archive's policies on making copies and regularly moving digital material on to newer versions of the storage media.
   explanation: >
-    As well as keeping copies of their digital material, it is good practice to refresh your storage media (i.e. move the material on to newer versions of the LTO tapes or hard drives for example). This ensures the material is not corrupted as storage media ages and requires replacement.
+    As well as keeping copies of your digital material, it is good practice to refresh your storage media (i.e. move the material on to newer versions of the LTO tapes or hard drives for example). This reduces the risk that the material is not corrupted as storage media ages and requires replacement.
   text: For those files with an additional copy, do you ensure you always have at least 2 independent copies?
 
-question5_1:
+question4_1:
   node: Op_Environment
   type: slider
   part: 1
@@ -63,7 +62,7 @@ question5_1:
   explanation: >
     It is good practice to keep a copy of your digital material offsite in case of a disaster at your primary location.
 
-question5_2:
+question4_2:
   node: Op_Environment
   type: multiple choice
   part: 2
@@ -83,7 +82,7 @@ question5_2:
     - 2
     - 3
 
-question4:
+question5:
   node: Physical_Disaster
   type: non-numeric slider
   definition: >
@@ -95,7 +94,7 @@ question4:
   text: >
     Based on the Government's long term flood risk assessment, how likely is it that your safest digital storage location will experience a flood?
 
-    Click here to check your flood risk: [https://flood-warning-information.service.gov.uk/long-term-flood-risk/postcode](https://flood-warning-information.service.gov.uk/long-term-flood-risk/postcode){target="_blank"}
+    Click here to check your flood risk: <a href = "https://flood-warning-information.service.gov.uk/long-term-flood-risk/postcode" target="_blank">https://flood-warning-information.service.gov.uk/long-term-flood-risk/postcode</a>
   options:
     - Very Low
     - Low
@@ -113,12 +112,12 @@ question6:
   type: grouped slider
   definition: >
     A unique numerical signature dreived from a file that can be used to compare copies
-    Definition from the DPC [handbook](https://www.dpconline.org/handbook/glossary){target="_blank"}.
+    Definition from the DPC <a href = "https://www.dpconline.org/handbook/glossary" target="_blank">handbook</a>.
     A checksum is needed to ensure integrity of the digital object.
   explanation: >
-    If your digital material does not have checksums or the checksums are generated after it is accessioned choose 100% for C.
+    A checksum is needed to ensure the integrity of the digital object. Some depositors are unable to include checksums for the material they deposit in the archive. In these cases, archivists may decide to generate checksums for the material when they receive it to enable them to check it has not changed while in their custody.
 
-    A checksum is unique numerical signature derived from a file that can be used to compare copies. (Definition from the DPC handbook: https://www.dpconline.org/handbook/glossary). It is needed to ensure the integrity of the digital object. Some depositors are unable to include checksums for the material they deposit to the archive. In these cases, archivists may decide to generate checksums for the material when they receive it to enable them to check that it has not changed while in their custody.
+    If your digital material does not have checksums or the checksums are generated after it is accessioned, choose 100% for C.
   text: For what proportion of files do you have a checksum from following sources?
   detail:
     - The depositor
@@ -135,7 +134,7 @@ question7_1:
   type: multiple choice
   part: 1
   definition: >
-    A secure system can protect data from deletion or modification from any unauthorized party, and it ensures that when an authorized person makes a change that should not have been made, the damage can be reversed. Definition from Forcepoint, [https://www.forcepoint.com/cyber-edu/cia-triad](https://www.forcepoint.com/cyber-edu/cia-triad){target = "_blank"}.
+    A secure system can protect data from deletion or modification from any unauthorized party, and it ensures that when an authorized person makes a change that should not have been made, the damage can be reversed. Definition from Forcepoint, <a href = "https://www.forcepoint.com/cyber-edu/cia-triad" target="_blank">https://www.forcepoint.com/cyber-edu/cia-triad</a>.
   explanation: >
     Many archives do not have direct control of the security of their archival systems. If this is your situation, you can answer for the security managed at a corporate level.
   text:
@@ -157,7 +156,7 @@ question7_2:
   type: multiple choice
   part: 2
   definition: >
-    A secure system can protect data from deletion or modification from any unauthorized party, and it ensures that when an authorized person makes a change that should not have been made, the damage can be reversed. Definition from Forcepoint, [https://www.forcepoint.com/cyber-edu/cia-triad](https://www.forcepoint.com/cyber-edu/cia-triad){target = "_blank"}.
+    A secure system can protect data from deletion or modification from any unauthorized party, and it ensures that when an authorized person makes a change that should not have been made, the damage can be reversed. Definition from Forcepoint, <a href = "https://www.forcepoint.com/cyber-edu/cia-triad" target="_blank">https://www.forcepoint.com/cyber-edu/cia-triad</a>.
   explanation: >
     If you don’t know what a penetration (or “Pen”) test is then choose "No test".
   text:
@@ -180,13 +179,13 @@ question7_3:
   type: multiple choice
   part: 3
   definition: >
-    A secure system can protect data from deletion or modification from any unauthorized party, and it ensures that when an authorized person makes a change that should not have been made, the damage can be reversed. Definition from Forcepoint, [https://www.forcepoint.com/cyber-edu/cia-triad](https://www.forcepoint.com/cyber-edu/cia-triad){target = "_blank"}.
+    A secure system can protect data from deletion or modification from any unauthorized party, and it ensures that when an authorized person makes a change that should not have been made, the damage can be reversed. Definition from Forcepoint, <a href = "https://www.forcepoint.com/cyber-edu/cia-triad" target="_blank">https://www.forcepoint.com/cyber-edu/cia-triad</a>.
   explanation: >
     By asking you to assess your skills against a standard, the tool will be able to give a more objective score for this question.
   text:
   detail:
     - >
-      Referring to the [NDSA Levels of Preservation](https://ndsa.org/publications/levels-of-digital-preservation/){target="_blank"}, what level is your archive for the Control functional area?
+      Referring to the <a href = "https://ndsa.org/publications/levels-of-digital-preservation/" target="_blank">NDSA Levels of Preservation</a>, what level is your archive for the Control functional area?
   options:
     - Not achieved
     - Level 1
@@ -205,7 +204,7 @@ question7_4:
   type: multiple choice
   part: 4
   definition: >
-    A secure system can protect data from deletion or modification from any unauthorized party, and it ensures that when an authorized person makes a change that should not have been made, the damage can be reversed. Definition from Forcepoint, [https://www.forcepoint.com/cyber-edu/cia-triad](https://www.forcepoint.com/cyber-edu/cia-triad){target = "_blank"}.
+    A secure system can protect data from deletion or modification from any unauthorized party, and it ensures that when an authorized person makes a change that should not have been made, the damage can be reversed. Definition from Forcepoint, <a href = "https://www.forcepoint.com/cyber-edu/cia-triad" target="_blank">https://www.forcepoint.com/cyber-edu/cia-triad</a>.
   explanation: >
     If the result is not recorded choose No as you cannot prove that the file was virus-free when it was received.
   text:
@@ -231,7 +230,7 @@ question8_1:
   text:
   detail:
     - >
-      Referring to the [NDSA Levels of Preservation](https://ndsa.org/publications/levels-of-digital-preservation/){target="_blank"}, what level is your archive for the Metadata functional area?
+      Referring to the <a href = "https://ndsa.org/publications/levels-of-digital-preservation/" target="_blank">NDSA Levels of Preservation</a>, what level is your archive for the Metadata functional area?
   options:
     - Not achieved
     - Level 1
@@ -255,7 +254,7 @@ question8_2:
     For this tool, information management refers to the recording of digital preservation activities such as emulation, copying and fixity checking. It does not refer to the information management capabilities of your wider organisation such as a library, university or business.
   text:
   detail:
-    - Referring to the [NDSA Levels of Preservation](https://ndsa.org/publications/levels-of-digital-preservation/){target="_blank"}, what level is your archive for the Content functional area?
+    - Referring to the <a href = "https://ndsa.org/publications/levels-of-digital-preservation/" target="_blank">NDSA Levels of Preservation</a>, what level is your archive for the Content functional area?
   options:
     - Not achieved
     - Level 1
@@ -279,8 +278,8 @@ question8_3:
     By asking you to assess your skills against a standard, the tool will be able to give a more objective score for this question.
   text:
   detail:
-    - Referring to [DPC RAM](https://www.dpconline.org/digipres/dpc-ram){target="_blank"}, what level is your archive for Service capability, I - Content preservation
-    - Referring to [DPC RAM](https://www.dpconline.org/digipres/dpc-ram){target="_blank"}, what level is your archive for Service capability, J - Metadata management
+    - Referring to <a href = "https://www.dpconline.org/digipres/dpc-ram" target="_blank">DPC RAM</a>, what level is your archive for Service capability, I - Content preservation
+    - Referring to <a href = "https://www.dpconline.org/digipres/dpc-ram" target="_blank">DPC RAM</a>, what level is your archive for Service capability, J - Metadata management
   options:
     - Minimal awareness
     - Awareness
@@ -303,7 +302,7 @@ question9:
   explanation: >
     By asking you to assess your skills against a standard, the tool will be able to give a more objective score for this question.
   text: >
-    The following statements on digital preservation skills are from the [DigCurV curriculum framework](https://www.digcurv.gla.ac.uk/skills.html){target="_blank"} for digital curation. For each, rate the level of skill in your organisation.
+    The following statements on digital preservation skills are from the <a href = "https://www.digcurv.gla.ac.uk/skills.html" target="_blank">DigCurV curriculum framework</a> for digital curation. For each, rate the level of skill in your organisation.
   detail:
     - KIA 1.9 Apply appropriate technological solutions
     - KIA 1.12 Digital preservation standards
