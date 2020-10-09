@@ -59,11 +59,13 @@ model_table_module_server = function(input, output, session, data, model, scorin
   # })
   formatted_data = shiny::reactive({
     # req(nrow(data()) > 0)
+    print(data())
     if(nrow(data()) == 0){
       # print("Early return")
       return(NULL)
     }
     intermediate = data()
+    print(intermediate)
     format_model_table(intermediate, model, scoring_funcs, show_policy)
   })
 
