@@ -7,17 +7,17 @@ You can download these questions if you wish to prepare your responses offline.
 
 We use definitions from existing standards to help standardise responses and make scores more comparable across different institutions. Completing the input questions will be quicker if you are already familiar with these standards (and particularly if you have already assessed your archive against them). You will also need to have some information about the composition of your digital holdings and how they are currently stored. For the security questions you may need information from your IT support team or outsourcing partner. The standards used are, for digital preservation concepts:
 
-* the [NDSA Levels of Preservation](https://ndsa.org/publications/levels-of-digital-preservation/) and,
-* the [Digital Preservation Coalition’s Rapid Assessment (DPC RAM),](https://www.dpconline.org/digipres/dpc-ram) particularly service capabilities I and J (Content Preservation and Metadata Management).
+* the <a href = "https://ndsa.org/publications/levels-of-digital-preservation/" target="_blank">NDSA Levels of Preservation</a> and,
+* the <a href = "https://www.dpconline.org/digipres/dpc-ram" target="_blank">Digital Preservation Coalition’s Rapid Assessment (DPC RAM),</a> particularly service capabilities I and J (Content Preservation and Metadata Management).
 
 For security:
 
-* the [UK’s National Centre for Cyber Security Cyber Essentials/Cyber Essentials Plus](https://www.ncsc.gov.uk/cyberessentials/overview) and
-* [ISO 27001](https://www.iso.org/isoiec-27001-information-security.html).
+* the <a href = "https://www.ncsc.gov.uk/cyberessentials/overview" target="_blank">UK’s National Centre for Cyber Security Cyber Essentials/Cyber Essentials Plus</a> and
+* <a href = "https://www.iso.org/isoiec-27001-information-security.html" target="_blank">ISO 27001</a>.
 
 For technical skills:
 
-* the [DigCurV framework](https://www.digcurv.gla.ac.uk/skills.html)
+* the <a href = "https://www.digcurv.gla.ac.uk/skills.html" target="_blank">DigCurV framework</a>
 
 ### Q1. Digital Object
 
@@ -104,7 +104,7 @@ Single choice option: ‘0 - Minimal awareness’ , ‘1 – Awareness’, ‘2 
 
 ### Q9. Technical Skills
 
-Please consider the following statements about digital preservation skills taken from [the DigCurV curriculum framework for digital curation](https://www.digcurv.gla.ac.uk/skills.html). For each skill, rate the level of skill in your organisation on the scale indicated.
+Please consider the following statements about digital preservation skills taken from <a href = "https://www.digcurv.gla.ac.uk/skills.html" target="_blank">the DigCurV curriculum framework for digital curation</a>. For each skill, rate the level of skill in your organisation on the scale indicated.
 
 Single choice option for each statement: ‘None, ‘Basic’, ‘Intermediate’, ‘Advanced’
 

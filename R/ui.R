@@ -179,6 +179,11 @@ app_ui = function(req, question_data, default_response) {
           shinydashboard::tabItem(
             tabName = "report",
             report_tab_module_ui('report')
+          ),
+          shinydashboard::tabItem(
+            tabName = "glossary",
+            shiny::includeMarkdown(system.file("text_content", "glossary.md",
+                                               package = "diagramNAT"))
           )
         )
       )
