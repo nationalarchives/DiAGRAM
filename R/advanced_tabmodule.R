@@ -99,6 +99,13 @@ advanced_tab_module_server = function(input, output, session, data, model, scori
     )
   })
 
+  response = reactive({
+    data = reactiveValuesToList(my_nodes)
+    # standard inputs
+    data[.user_nodes] = purrr::map(data[.user_nodes], unlist)
+
+  })
+
 
   output$table = rhandsontable::renderRHandsontable({
     req(input$node_select != "")
