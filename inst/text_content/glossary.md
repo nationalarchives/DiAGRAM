@@ -490,7 +490,7 @@ The typical output of a digitisation project, usually in the form of a digital i
 
 ## Technical Metadata
 
-**Definition**: Technical information that describes how a file functions and that enables a computer to understand it at the bit level, so that it can be rendered in a way that is faithful to its original content. Definition adapted from: <a href = "https://www.nedcc.org/fundamentals-of-av-preservation-textbook/chapter-4-introduction/chapter-4-section-5" target="_blank">https://www.nedcc.org/fundamentals-of-av-preservation-textbook/chapter-4-introduction/chapter-4-section-5</a>.
+**Definition**: Technical information that describes how a file functions and that enables a computer to understand it at the bit level, so that it can be rendered in a way that is faithful to its original content. Definition adapted from: <a onclick="window.open(this.href,'_blank');return false;" href = "https://www.nedcc.org/fundamentals-of-av-preservation-textbook/chapter-4-introduction/chapter-4-section-5" target="_blank">https://www.nedcc.org/fundamentals-of-av-preservation-textbook/chapter-4-introduction/chapter-4-section-5</a>.
 
 **Data source:** **gathered from the structured expert judgement workshop**
 

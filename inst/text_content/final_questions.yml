@@ -94,7 +94,7 @@ question5:
   text: >
     Based on the Government's long term flood risk assessment, how likely is it that your safest digital storage location will experience a flood?
 
-    Click here to check your flood risk: <a href = "https://flood-warning-information.service.gov.uk/long-term-flood-risk/postcode" target="_blank">https://flood-warning-information.service.gov.uk/long-term-flood-risk/postcode</a>
+    Click here to check your flood risk: <a href="https://flood-warning-information.service.gov.uk/long-term-flood-risk/postcode" target="_blank">https://flood-warning-information.service.gov.uk/long-term-flood-risk/postcode</a>
   options:
     - Very Low
     - Low
@@ -112,7 +112,7 @@ question6:
   type: grouped slider
   definition: >
     A unique numerical signature dreived from a file that can be used to compare copies
-    Definition from the DPC <a href = "https://www.dpconline.org/handbook/glossary" target="_blank">handbook</a>.
+    Definition from the DPC <a href="https://www.dpconline.org/handbook/glossary" target="_blank">handbook</a>.
     A checksum is needed to ensure integrity of the digital object.
   explanation: >
     A checksum is needed to ensure the integrity of the digital object. Some depositors are unable to include checksums for the material they deposit in the archive. In these cases, archivists may decide to generate checksums for the material when they receive it to enable them to check it has not changed while in their custody.
@@ -134,7 +134,7 @@ question7_1:
   type: multiple choice
   part: 1
   definition: >
-    A secure system can protect data from deletion or modification from any unauthorized party, and it ensures that when an authorized person makes a change that should not have been made, the damage can be reversed. Definition from Forcepoint, <a href = "https://www.forcepoint.com/cyber-edu/cia-triad" target="_blank">https://www.forcepoint.com/cyber-edu/cia-triad</a>.
+    A secure system can protect data from deletion or modification from any unauthorized party, and it ensures that when an authorized person makes a change that should not have been made, the damage can be reversed. Definition from Forcepoint, <a href="https://www.forcepoint.com/cyber-edu/cia-triad" target="_blank">https://www.forcepoint.com/cyber-edu/cia-triad</a>.
   explanation: >
     Many archives do not have direct control of the security of their archival systems. If this is your situation, you can answer for the security managed at a corporate level.
   text:
@@ -156,7 +156,7 @@ question7_2:
   type: multiple choice
   part: 2
   definition: >
-    A secure system can protect data from deletion or modification from any unauthorized party, and it ensures that when an authorized person makes a change that should not have been made, the damage can be reversed. Definition from Forcepoint, <a href = "https://www.forcepoint.com/cyber-edu/cia-triad" target="_blank">https://www.forcepoint.com/cyber-edu/cia-triad</a>.
+    A secure system can protect data from deletion or modification from any unauthorized party, and it ensures that when an authorized person makes a change that should not have been made, the damage can be reversed. Definition from Forcepoint, <a href="https://www.forcepoint.com/cyber-edu/cia-triad" target="_blank">https://www.forcepoint.com/cyber-edu/cia-triad</a>.
   explanation: >
     If you don’t know what a penetration (or “Pen”) test is then choose "No test".
   text:
@@ -179,13 +179,13 @@ question7_3:
   type: multiple choice
   part: 3
   definition: >
-    A secure system can protect data from deletion or modification from any unauthorized party, and it ensures that when an authorized person makes a change that should not have been made, the damage can be reversed. Definition from Forcepoint, <a href = "https://www.forcepoint.com/cyber-edu/cia-triad" target="_blank">https://www.forcepoint.com/cyber-edu/cia-triad</a>.
+    A secure system can protect data from deletion or modification from any unauthorized party, and it ensures that when an authorized person makes a change that should not have been made, the damage can be reversed. Definition from Forcepoint, <a href="https://www.forcepoint.com/cyber-edu/cia-triad" target="_blank">https://www.forcepoint.com/cyber-edu/cia-triad</a>.
   explanation: >
     By asking you to assess your skills against a standard, the tool will be able to give a more objective score for this question.
   text:
   detail:
     - >
-      Referring to the <a href = "https://ndsa.org/publications/levels-of-digital-preservation/" target="_blank">NDSA Levels of Preservation</a>, what level is your archive for the Control functional area?
+      Referring to the <a href="https://ndsa.org/publications/levels-of-digital-preservation/" target="_blank">NDSA Levels of Preservation</a>, what level is your archive for the Control functional area?
   options:
     - Not achieved
     - Level 1
@@ -204,7 +204,7 @@ question7_4:
   type: multiple choice
   part: 4
   definition: >
-    A secure system can protect data from deletion or modification from any unauthorized party, and it ensures that when an authorized person makes a change that should not have been made, the damage can be reversed. Definition from Forcepoint, <a href = "https://www.forcepoint.com/cyber-edu/cia-triad" target="_blank">https://www.forcepoint.com/cyber-edu/cia-triad</a>.
+    A secure system can protect data from deletion or modification from any unauthorized party, and it ensures that when an authorized person makes a change that should not have been made, the damage can be reversed. Definition from Forcepoint, <a href="https://www.forcepoint.com/cyber-edu/cia-triad" target="_blank">https://www.forcepoint.com/cyber-edu/cia-triad</a>.
   explanation: >
     If the result is not recorded choose No as you cannot prove that the file was virus-free when it was received.
   text:
@@ -230,7 +230,7 @@ question8_1:
   text:
   detail:
     - >
-      Referring to the <a href = "https://ndsa.org/publications/levels-of-digital-preservation/" target="_blank">NDSA Levels of Preservation</a>, what level is your archive for the Metadata functional area?
+      Referring to the <a href="https://ndsa.org/publications/levels-of-digital-preservation/" target="_blank">NDSA Levels of Preservation</a>, what level is your archive for the Metadata functional area?
   options:
     - Not achieved
     - Level 1
@@ -254,7 +254,7 @@ question8_2:
     For this tool, information management refers to the recording of digital preservation activities such as emulation, copying and fixity checking. It does not refer to the information management capabilities of your wider organisation such as a library, university or business.
   text:
   detail:
-    - Referring to the <a href = "https://ndsa.org/publications/levels-of-digital-preservation/" target="_blank">NDSA Levels of Preservation</a>, what level is your archive for the Content functional area?
+    - Referring to the <a href="https://ndsa.org/publications/levels-of-digital-preservation/" target="_blank">NDSA Levels of Preservation</a>, what level is your archive for the Content functional area?
   options:
     - Not achieved
     - Level 1
@@ -278,8 +278,8 @@ question8_3:
     By asking you to assess your skills against a standard, the tool will be able to give a more objective score for this question.
   text:
   detail:
-    - Referring to <a href = "https://www.dpconline.org/digipres/dpc-ram" target="_blank">DPC RAM</a>, what level is your archive for Service capability, I - Content preservation
-    - Referring to <a href = "https://www.dpconline.org/digipres/dpc-ram" target="_blank">DPC RAM</a>, what level is your archive for Service capability, J - Metadata management
+    - Referring to <a href="https://www.dpconline.org/digipres/dpc-ram" target="_blank">DPC RAM</a>, what level is your archive for Service capability, I - Content preservation
+    - Referring to <a href="https://www.dpconline.org/digipres/dpc-ram" target="_blank">DPC RAM</a>, what level is your archive for Service capability, J - Metadata management
   options:
     - Minimal awareness
     - Awareness
@@ -302,7 +302,7 @@ question9:
   explanation: >
     By asking you to assess your skills against a standard, the tool will be able to give a more objective score for this question.
   text: >
-    The following statements on digital preservation skills are from the <a href = "https://www.digcurv.gla.ac.uk/skills.html" target="_blank">DigCurV curriculum framework</a> for digital curation. For each, rate the level of skill in your organisation.
+    The following statements on digital preservation skills are from the <a href="https://www.digcurv.gla.ac.uk/skills.html" target="_blank">DigCurV curriculum framework</a> for digital curation. For each, rate the level of skill in your organisation.
   detail:
     - KIA 1.9 Apply appropriate technological solutions
     - KIA 1.12 Digital preservation standards
