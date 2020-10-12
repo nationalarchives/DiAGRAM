@@ -1,0 +1,17 @@
+{
+  "private": true,
+  "dependencies": {
+    "react-ion-slider": "^1.0.5",
+    "prop-types": "^15.5.4",
+    "jquery": ">=1.8",
+    "shortid": "^2.2.15"
+  },
+  "devDependencies": {
+    "webpack": "^4.27.1",
+    "webpack-cli": "^3.1.2",
+    "@babel/core": "^7.2.0",
+    "babel-loader": "^8.0.4",
+    "@babel/preset-env": "^7.2.0",
+    "@babel/preset-react": "^7.0.0"
+  }
+}

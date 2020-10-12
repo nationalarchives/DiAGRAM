@@ -59,7 +59,7 @@ advanced_tab_module_server = function(input, output, session, data, model, scori
   mod_names = names(model)
   nice_nodes = setNames(mod_names, .node_map[mod_names])
   shiny::updateSelectInput(session = shiny::getDefaultReactiveDomain(), inputId = "node_select", choices = nice_nodes, selected = nice_nodes[1])
-  original_nodes = purrr::imap(model, ~{
+  original_nodes = do.call(reactiveValues, purrr::imap(model, ~{
     df = as.data.frame(.x$prob)
     if("Var1" %in% colnames(df)){
       df = dplyr::rename(df, !!.y := .data$Var1)
@@ -70,11 +70,12 @@ advanced_tab_module_server = function(input, output, session, data, model, scori
           stringr::str_replace_all(.x, "_", " ") %>%
             stringr::str_to_title()
         })
-  })
+  }))
 
-  intermediate_nodes = do.call(shiny::reactiveValues, original_nodes)
-  my_nodes = do.call(shiny::reactiveValues, original_nodes)
-  node_changes = reactive({
+  intermediate_nodes = isolate(original_nodes)
+  my_nodes = isolate(original_nodes)
+  node_changes = eventReactive(reactiveValuesToList(my_nodes), {
+    print("fire")
     purrr::map_dfr(setNames(names(original_nodes), names(original_nodes)), ~{
       dplyr::anti_join(my_nodes[[.x]], original_nodes[[.x]]) %>%
         dplyr::mutate_if(is.factor, as.character) %>%
@@ -99,12 +100,17 @@ advanced_tab_module_server = function(input, output, session, data, model, scori
     )
   })
 
-  response = reactive({
-    data = reactiveValuesToList(my_nodes)
-    # standard inputs
-    data[.user_nodes] = purrr::map(data[.user_nodes], unlist)
-
-  })
+  # response = reactive({
+  #   data = reactiveValuesToList(my_nodes)
+  #   class(data) = c("custom_model", class(data))
+  #   # standard inputs
+  #   data[.user_nodes] = purrr::map(data[.user_nodes], unlist)
+  #
+  #
+  #   # temp for testing
+  #   m_data = model_policy_row(data, "custom")
+  #   responses = format_responses(m_data$response[[1]])
+  # })
 
 
   output$table = rhandsontable::renderRHandsontable({
@@ -135,6 +141,19 @@ advanced_tab_module_server = function(input, output, session, data, model, scori
       )
     }
     rht
+
+  })
+
+  observeEvent(selected(), {
+    row = data()[selected(),]
+    row_response = row$response[[1]]
+    probs = calculate_probabilities(model, format_responses(row_response), scoring_funcs)
+    for(node in names(probs)){
+      node_probs = probs[[node]]
+      df = tibble::as_tibble_row(setNames(as.vector(node_probs), names(node_probs)))
+      original_nodes[[node]] = df
+      intermediate_nodes[[node]] = df
+    }
 
   })
 
