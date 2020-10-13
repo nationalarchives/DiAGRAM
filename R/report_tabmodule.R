@@ -68,16 +68,16 @@ report_tab_module_server = function(input, output, session, data, model, questio
       temp_sub = file.path(td, "pdf_section.Rmd")
       file.copy(system.file("assets", "templates", "pdf_template.Rmd", package = "diagramNAT"), temp, overwrite = TRUE)
       file.copy(system.file("assets", "templates", "pdf_section.Rmd", package = "diagramNAT"), temp_sub, overwrite = TRUE)
-      pdf_file = prepare_pdf(data()[selected(),], question_data, model, scoring_funcs, template = temp, file = file)
+      pdf_file = prepare_pdf(data()[selected$selected(),], question_data, model, scoring_funcs, template = temp, file = file)
       # on.exit(file.remove(pdf_file))
       # file.copy(pdf_file, file)
     }
   )
 
   observe({
-    shinyjs::toggleState(id = "pdf", condition = length(selected()) > 0)
-    shinyjs::toggleState(id = "csv", condition = length(selected()) > 0)
-    shinyjs::toggleState(id = "json", condition = length(selected()) > 0)
+    shinyjs::toggleState(id = "pdf", condition = length(selected$selected()) > 0)
+    shinyjs::toggleState(id = "csv", condition = length(selected$selected()) > 0)
+    shinyjs::toggleState(id = "json", condition = length(selected$selected()) > 0)
   })
 
   output$csv = shiny::downloadHandler(
@@ -85,7 +85,7 @@ report_tab_module_server = function(input, output, session, data, model, questio
       paste0("DiAGRAM-data-",Sys.Date(), ".csv")
     },
     content = function(file) {
-      csv_file = data()[selected(),] %>%
+      csv_file = data()[selected$selected(),] %>%
         format_model_table(model, scoring_funcs, TRUE) %>%
         format_data_for_download(question_data) %>%
         prepare_csv()
@@ -99,7 +99,7 @@ report_tab_module_server = function(input, output, session, data, model, questio
       paste0("DiAGRAM-data-", Sys.Date(), ".json")
     },
     content = function(file) {
-      json_file = prepare_json(data()[selected(),])
+      json_file = prepare_json(data()[selected$selected(),])
       on.exit(file.remove(json_file))
       file.copy(json_file, file)
     }
@@ -131,4 +131,5 @@ report_tab_module_server = function(input, output, session, data, model, questio
   #   },
   #   contentType = "application/zip"
   # )
+  return(selected$data)
 }

@@ -55,7 +55,12 @@ home_tab = function() {
             title="DiAGRAM structure",
             collapsible=TRUE,
             width=NULL,
-            shiny::plotOutput("NetworkStructure_home", click = "home_network_click")
+            # shiny::plotOutput("NetworkStructure_home", click = "home_network_click")
+            shiny::img(
+              src="www/DiAGRAM-Roboto.svg",
+              height="500px",
+              width="100%"
+            )
           )
         )
       ),

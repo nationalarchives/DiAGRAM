@@ -104,14 +104,14 @@ policy_creation_module_server = function(input, output, session, input_data, que
 
   # data from picked policy builder
   original_response = reactive({
-    req(!is.null(policy_picker()))
-    model_obj$data$response[[policy_picker()]]
+    req(!is.null(policy_picker$selected()))
+    model_obj$data$response[[policy_picker$selected()]]
   })
 
-  observe({
-    req(!is.null(policy_picker()))
-    print(model_obj$data$response[[policy_picker()]])
-  })
+  # observe({
+  #   req(!is.null(policy_picker()))
+  #   print(model_obj$data$response[[policy_picker()]])
+  # })
 
   # original_score = reactive({
   #   req(!is.null(policy_picker()))
@@ -219,7 +219,7 @@ policy_creation_module_server = function(input, output, session, input_data, que
       # browser()
       names = intersect(names(full_state), names(new_state))
       full_state[names] = new_state[names]
-      new_row = model_policy_row(full_state, model_name = model_obj$data$model[[policy_picker()]], policy_name = subset_picked$server_response$name(), notes = subset_picked$server_response$comments())
+      new_row = model_policy_row(full_state, model_name = model_obj$data$model[[policy_picker$selected()]], policy_name = subset_picked$server_response$name(), notes = subset_picked$server_response$comments())
       # print(new_row)
       # browser()
       return_val(new_row)
@@ -280,7 +280,11 @@ policy_creation_module_server = function(input, output, session, input_data, que
   return_val = reactiveVal(NULL)
   # finish_click = reactiveVal(0)
 
-  return(list(state = return_val, visualise = reactive(subset_picked$observer$vis_clicked)))
+  return(list(
+    state = return_val,
+    visualise = reactive(subset_picked$observer$vis_clicked),
+    data = policy_picker$data
+  ))
 }
 
 

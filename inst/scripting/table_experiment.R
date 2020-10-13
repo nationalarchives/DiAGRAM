@@ -167,10 +167,152 @@ createModal = function(ns, model, policy, comment) {
   )
 }
 
-ui = fluidPage(
-  shinyalert::useShinyalert(),
-  DT::dataTableOutput("table")
-)
+
+
+dt_table_ui = function(id) {
+  ns = shiny::NS(id)
+  DT::dataTableOutput(ns("table"))
+}
+
+dt_table_server = function(input, output, session, data, model, scoring_funcs, selection = "none", show_policy = TRUE, pre_selected = selection == "multiple", editable = TRUE, response_show = TRUE) {
+  select_opts = list(
+    mode = selection
+  )
+  ns = session$ns
+  data_src= reactiveVal(NULL)
+  observeEvent(data(), {
+    data_src(data())
+  })
+  table_contents = reactiveVal(NULL)
+
+  observeEvent(data_src(), {
+    print("data change")
+    df = data_src()
+    print(df)
+    if(pre_selected & selection == "multiple"){
+      select_opts$selected = seq_len(nrow(df))
+    }
+    df = format_model_table(df, model, scoring_funcs, TRUE)
+    if(!show_policy) {
+      df = dplyr::filter(is.na(.data$Policy))
+    }
+    df = df %>% dplyr::mutate_if(is.numeric, ~{.x*100})
+    if(editable){
+      df = add_delete_column(df, ns)
+      df = add_edit_column(df, ns)
+    }
+    if(response_show){
+      df = add_show_column(df, ns)
+    }
+    tab = DT::datatable(
+      dplyr::select(df, #Select,
+             .data$Edit, .data$Delete, tidyr::everything(), -.data$Response, Response = .data$Show),
+      extensions = 'RowGroup',
+      selection = select_opts,
+      escape = FALSE,
+      editable = list(target = "cell", disable = list(columns = c(1,4,5,7))),
+      options = list(
+        rowGroup = list(dataSrc = 3),
+        preDrawCallback = DT::JS('function() { Shiny.unbindAll(this.api().table().node()); }'),
+        drawCallback = DT::JS('function() { Shiny.bindAll(this.api().table().node()); } ')
+      )
+    ) %>%
+      DT::formatStyle(
+        'Renderability',
+        background = DT::styleColorBar(c(0,100), 'orange'),
+        backgroundSize = '100% 90%',
+        backgroundRepeat = 'no-repeat',
+        backgroundPosition = 'center'
+      ) %>%
+      DT::formatStyle(
+        'Intellectual Control',
+        background = DT::styleColorBar(c(0,100), 'purple'),
+        backgroundSize = '100% 90%',
+        backgroundRepeat = 'no-repeat',
+        backgroundPosition = 'center'
+      )
+    # to_delete(numeric(0))
+    table_contents(tab)
+  })
+
+  output$table = DT::renderDataTable({
+    print("draw table")
+    table_contents()
+  })
+
+  observeEvent(input$editPressed, {
+    print("edit press")
+    ix = parse_column_event(input$editPressed)
+    df = data_src()
+    row = df[ix, ]
+    # print(row)
+    model_name = row$model
+    policy_name = row$policy
+    notes = row$notes
+    # print(policy_name)
+    modal = createModal(ns, model_name, policy_name, notes)
+    showModal(modal)
+  })
+
+  observeEvent(input$modal_cancel, {
+    print("modal cancel")
+    removeModal()
+  })
+
+  observeEvent(input$modal_submit, {
+    print("modal submit")
+    will_close = TRUE
+    ix = parse_column_event(input$editPressed)
+    df = data_src()
+    model_name = input$modal_model
+    is_baseline = is.na(df[ix,]$policy)
+    policy = input$modal_policy # if non existent = NULL, if empty
+    comment = input$modal_comment # if placeholder = ''
+    if(is_baseline){ # update all those with the same name
+      if(!is.null(model_name) && model_name != ''){
+        df[df$model == df[ix,]$model, ]$model = model_name
+      }else{
+        will_close = FALSE
+      }
+
+    }else {
+      # check that policy is not empty
+      if(!is.null(policy) && policy == ''){
+        will_close = FALSE
+      }else{
+        df[ix,]$policy = policy
+      }
+    }
+    if(comment == '') {
+      comment = NA
+    }
+    df[ix,]$notes = comment
+
+    if(will_close) {
+      removeModal()
+      data_src(df)
+    }
+  })
+
+  observeEvent(input$deletePressed, {
+    print("delete pressed")
+    ix = parse_column_event(input$deletePressed)
+    df = data_src()
+    df = df[-ix,]
+    data_src(df)
+  })
+
+  selected = shiny::reactive({
+    print("change selection")
+    input$table_rows_selected
+  })
+
+  observe({
+    print(selected())
+  })
+
+  return(selected)
+}
 
 server = function(input, output, session) {
   selection_mode = "multiple"
@@ -310,6 +452,14 @@ server = function(input, output, session) {
     data_src(df)
   })
 
+  selected = shiny::reactive({
+    input$table_rows_selected
+  })
+
+  observe({
+    print(selected())
+  })
+
   # observeEvent(shinyValue('del_1', nrow(data_src())), {
   #   btn_press = shinyValue('del_1', nrow(data_src()))
   #   print(btn_press)
@@ -339,6 +489,14 @@ server = function(input, output, session) {
   #   old_delete_state(numeric(nrow(df)))
   #   data_src(df)
   # })
+}
+
+ui = fluidPage(
+  dt_table_ui('test')
+)
+
+server = function(input, output, session) {
+  selected = callModule(dt_table_server, "test", data = reactive(unformatted), model = model, scoring_funcs = scoring_funcs, selection = "single", session= session)
 }
 
 shiny::shinyApp(ui, server)

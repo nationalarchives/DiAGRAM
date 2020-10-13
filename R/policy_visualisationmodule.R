@@ -87,7 +87,7 @@ policy_bar_gg = function(policy_data){
     ggplot2::theme_minimal() +
     ggplot2::theme(legend.position = "bottom",
                    strip.text.x = ggplot2::element_text(size = 8)) + # ignored by ggplotly, I know it is really annoying
-    scale_fill_manual(values = c("Intellectual Control" = "#8C9694", "Renderability" = "#bbc7af"))
+    scale_fill_manual(values = c("Intellectual Control" = "#FF6E3A", "Renderability" = "#8400CD"))
   plot
 }
 
@@ -128,7 +128,7 @@ policy_visualisation_module_server = function(input, output, session, model_data
     req(nrow(model_data()) > 0)
     intermediate = model_data()
     df = format_vis_data(intermediate, model, scoring_funcs)
-    df[selection(), ]
+    df[selection$selected(), ]
   })
 
   observe({
@@ -146,6 +146,8 @@ policy_visualisation_module_server = function(input, output, session, model_data
       policy_bar_chart(vis_data())
 
   })
+
+  return(selection$data)
 }
 
 format_vis_data = function(intermediate, model, scoring_funcs) {

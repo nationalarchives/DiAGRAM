@@ -58,16 +58,29 @@
 
 app_server = function(input, output, session, question_data, default_response, model, scoring_funcs) {
   shiny::addResourcePath("sbs", system.file("www", package = "shinyBS"))
+  model_obj = reactiveValues(
+    data = tibble(model = character(), policy = character(), notes = character(), response = list())
+  )
   # output from the model builder tab
   q_output = callModule(questions_module_server, 'model-questions', question_data = question_data, default_response = default_response)
   p_output = callModule(policy_creation_module_server, 'policy-questions', reactive(model_obj$data), question_data = question_data, model = model, scoring_funcs = scoring_funcs)
+  observeEvent(p_output$data(), {
+    # if()
+    model_obj$data = p_output$data()
+  }, ignoreInit = TRUE)
 
   mod_only_table = callModule(model_table_module_server, "model_table", data = reactive(model_obj$data), model = model, selection = "none", show_policy = FALSE, scoring_funcs = scoring_funcs)
-  save_table = callModule(model_table_module_server, "save_table", data = reactive(model_obj$data), model = model, selection = "multiple", show_policy = TRUE, scoring_funcs = scoring_funcs)
+  # save_table = callModule(model_table_module_server, "save_table", data = reactive(model_obj$data), model = model, selection = "multiple", show_policy = TRUE, scoring_funcs = scoring_funcs)
 
   policy_vis = callModule(policy_visualisation_module_server, 'bar', model_data = reactive(model_obj$data), model = model, scoring_funcs = scoring_funcs)
+  observeEvent(policy_vis(), {
+    model_obj$data = policy_vis()
+  }, ignoreInit = TRUE)
 
-  callModule(report_tab_module_server, 'report', data = reactive(model_obj$data), question_data = question_data, model = model, scoring_funcs = scoring_funcs)
+  report_update = callModule(report_tab_module_server, 'report', data = reactive(model_obj$data), question_data = question_data, model = model, scoring_funcs = scoring_funcs)
+  observeEvent(report_update(), {
+    model_obj$data = report_update()
+  }, ignoreInit = TRUE)
 
   seen_warning = reactiveVal(FALSE)
   observeEvent(input$sidebarMenu,{
@@ -86,14 +99,14 @@ app_server = function(input, output, session, question_data, default_response, m
   observeEvent(input$createModel, {
     shinydashboard::updateTabItems(session = shiny::getDefaultReactiveDomain(), inputId = "sidebarMenu", selected = 'model')
   })
-  output$download = shiny::downloadHandler(
-    filename = function() {
-      paste0("Diagram-data-", Sys.Date(), ".json")
-    },
-    content = function(file) {
-      save_responses(model_obj$data[save_table(),], file)
-    }
-  )
+  # output$download = shiny::downloadHandler(
+  #   filename = function() {
+  #     paste0("Diagram-data-", Sys.Date(), ".json")
+  #   },
+  #   content = function(file) {
+  #     save_responses(model_obj$data[save_table(),], file)
+  #   }
+  # )
 
   observeEvent(input$upload, {
     file = input$upload
@@ -116,9 +129,7 @@ app_server = function(input, output, session, question_data, default_response, m
     shinydashboard::updateTabItems(session = shiny::getDefaultReactiveDomain(), inputId = "sidebarMenu", selected = 'visualise')
   })
 
-  model_obj = reactiveValues(
-    data = tibble(model = character(), policy = character(), notes = character(), response = list())
-  )
+
 
   # observeEvent(model_obj$data, {
   #   shinyjs::toggleElement("no-model-container", condition = nrow(model_obj$data) == 0)
@@ -155,6 +166,21 @@ app_server = function(input, output, session, question_data, default_response, m
     shinydashboard::updateTabItems(session = shiny::getDefaultReactiveDomain(), inputId = "sidebarMenu", selected = 'visualise')
   })
 
+  advanced_return = callModule(advanced_tab_module_server, 'adv', data = reactive(model_obj$data), model = model, scoring_funcs = scoring_funcs)
+
+  observeEvent(advanced_return$data(), {
+    # if table is edited in advanced, update it here
+    print("advanced update")
+    print(advanced_return$data)
+    print(advanced_return$data())
+    model_obj$data = advanced_return$data()
+  })
+
+  observeEvent(advanced_return$store(), {
+    print(advanced_return$new_data())
+    model_obj$data = dplyr::bind_rows(model_obj$data, advanced_return$new_data())
+  })
+
 
   ############################
   ## Old content for user test: to remove again later
@@ -182,14 +208,14 @@ app_server = function(input, output, session, question_data, default_response, m
       render = TRUE
     )
   })
-  output$NetworkStructure_home <- shiny::renderPlot({
-    bnlearn::graphviz.plot(
-      model, layout = "dot",
-      highlight = list(nodes=c(input$NodeSelection), fill="lightgrey"),
-      shape = "ellipse",
-      render = TRUE
-    )
-  })
+  # output$NetworkStructure_home <- shiny::renderPlot({
+  #   bnlearn::graphviz.plot(
+  #     model, layout = "dot",
+  #     highlight = list(nodes=c(input$NodeSelection), fill="lightgrey"),
+  #     shape = "ellipse",
+  #     render = TRUE
+  #   )
+  # })
   observeEvent(input$home_network_click, {
     updateTabItems(session = shiny::getDefaultReactiveDomain(), inputId = "sidebarMenu", selected = 'definitions')
   })

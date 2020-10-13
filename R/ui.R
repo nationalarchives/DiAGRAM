@@ -171,14 +171,18 @@ app_ui = function(req, question_data, default_response) {
             shiny::fluidRow(
               shinydashboard::box(
                 width = 12,
-            shiny::fileInput("upload", label = "Upload data", accept = ".json"),
-            shiny::downloadButton("download"),
-            model_table_module_ui("save_table")
+            shiny::fileInput("upload", label = "Upload data", accept = ".json")#,
+            # shiny::downloadButton("download"),
+            # model_table_module_ui("save_table")
               ))
           ),
           shinydashboard::tabItem(
             tabName = "report",
             report_tab_module_ui('report')
+          ),
+          shinydashboard::tabItem(
+            tabName = "advanced",
+            advanced_tab_module_ui('adv')
           )
         )
       )
