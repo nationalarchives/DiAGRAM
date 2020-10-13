@@ -94,7 +94,7 @@ question5:
   text: >
     Based on the Government's long term flood risk assessment, how likely is it that your safest digital storage location will experience a flood?
 
-    Click here to check your flood risk: <a href="https://flood-warning-information.service.gov.uk/long-term-flood-risk/postcode" target="_blank">https://flood-warning-information.service.gov.uk/long-term-flood-risk/postcode</a>
+    Click <a href="https://flood-warning-information.service.gov.uk/long-term-flood-risk/postcode" target="_blank">here</a> to check your flood risk.
   options:
     - Very Low
     - Low
@@ -134,7 +134,7 @@ question7_1:
   type: multiple choice
   part: 1
   definition: >
-    A secure system can protect data from deletion or modification from any unauthorized party, and it ensures that when an authorized person makes a change that should not have been made, the damage can be reversed. Definition from Forcepoint, <a href="https://www.forcepoint.com/cyber-edu/cia-triad" target="_blank">https://www.forcepoint.com/cyber-edu/cia-triad</a>.
+    A secure system can protect data from deletion or modification from any unauthorized party, and it ensures that when an authorized person makes a change that should not have been made, the damage can be reversed. Definition from Forcepoint, <a href="https://www.forcepoint.com/cyber-edu/cia-triad" target="_blank">here</a>.
   explanation: >
     Many archives do not have direct control of the security of their archival systems. If this is your situation, you can answer for the security managed at a corporate level.
   text:
@@ -156,7 +156,7 @@ question7_2:
   type: multiple choice
   part: 2
   definition: >
-    A secure system can protect data from deletion or modification from any unauthorized party, and it ensures that when an authorized person makes a change that should not have been made, the damage can be reversed. Definition from Forcepoint, <a href="https://www.forcepoint.com/cyber-edu/cia-triad" target="_blank">https://www.forcepoint.com/cyber-edu/cia-triad</a>.
+    A secure system can protect data from deletion or modification from any unauthorized party, and it ensures that when an authorized person makes a change that should not have been made, the damage can be reversed. Definition from Forcepoint, <a href="https://www.forcepoint.com/cyber-edu/cia-triad" target="_blank">here</a>.
   explanation: >
     If you don’t know what a penetration (or “Pen”) test is then choose "No test".
   text:
@@ -179,7 +179,7 @@ question7_3:
   type: multiple choice
   part: 3
   definition: >
-    A secure system can protect data from deletion or modification from any unauthorized party, and it ensures that when an authorized person makes a change that should not have been made, the damage can be reversed. Definition from Forcepoint, <a href="https://www.forcepoint.com/cyber-edu/cia-triad" target="_blank">https://www.forcepoint.com/cyber-edu/cia-triad</a>.
+    A secure system can protect data from deletion or modification from any unauthorized party, and it ensures that when an authorized person makes a change that should not have been made, the damage can be reversed. Definition from Forcepoint, <a href="https://www.forcepoint.com/cyber-edu/cia-triad" target="_blank">here</a>.
   explanation: >
     By asking you to assess your skills against a standard, the tool will be able to give a more objective score for this question.
   text:
@@ -204,7 +204,7 @@ question7_4:
   type: multiple choice
   part: 4
   definition: >
-    A secure system can protect data from deletion or modification from any unauthorized party, and it ensures that when an authorized person makes a change that should not have been made, the damage can be reversed. Definition from Forcepoint, <a href="https://www.forcepoint.com/cyber-edu/cia-triad" target="_blank">https://www.forcepoint.com/cyber-edu/cia-triad</a>.
+    A secure system can protect data from deletion or modification from any unauthorized party, and it ensures that when an authorized person makes a change that should not have been made, the damage can be reversed. Definition from Forcepoint, <a href="https://www.forcepoint.com/cyber-edu/cia-triad" target="_blank">here</a>.
   explanation: >
     If the result is not recorded choose No as you cannot prove that the file was virus-free when it was received.
   text:

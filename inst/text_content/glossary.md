@@ -70,7 +70,7 @@ The typical output of a digitisation project, usually in the form of a digital i
 
 ## Checksum
 
-**Definition**: A unique numerical signature derived from a file that can be used to compare copies (definition from the DPC handbook: <a href = "https://www.dpconline.org/handbook/glossary" target="_blank">https://www.dpconline.org/handbook/glossary</a>). A checksum is needed to ensure integrity of the digital object.
+**Definition**: A unique numerical signature derived from a file that can be used to compare copies (definition from the DPC <a href = "https://www.dpconline.org/handbook/glossary" target="_blank">handbook</a>.). A checksum is needed to ensure integrity of the digital object.
 
 **Data source**: Loosely based on JISC digital skills survey results.
 
@@ -122,7 +122,7 @@ The typical output of a digitisation project, usually in the form of a digital i
 
 ## Content Metadata
 
-**Definition**: Describes the intellectual entity through properties such as author and title, and supports discovery and delivery of digital content. It may also provide an historic context, by, for example, specifying which print-based material was the original source for a digital derivative (source provenance). It also includes provenance information of who has cared for the digital object and what preservation actions have been performed on it. This definition is adapted from the Digital Preservation Metadata Standards publication <a href = "https://www.loc.gov/standards/premis/FE_Dappert_Enders_MetadataStds_isqv22no2.pdf" target="_blank">https://www.loc.gov/standards/premis/FE_Dappert_Enders_MetadataStds_isqv22no2.pdf.</a>
+**Definition**: Describes the intellectual entity through properties such as author and title, and supports discovery and delivery of digital content. It may also provide an historic context, by, for example, specifying which print-based material was the original source for a digital derivative (source provenance). It also includes provenance information of who has cared for the digital object and what preservation actions have been performed on it. This definition is adapted from the <a href = "https://www.loc.gov/standards/premis/FE_Dappert_Enders_MetadataStds_isqv22no2.pdf" target="_blank">Digital Preservation Metadata Standards publication</a>.
 
 **Data source**: gathered from the structured expert judgement workshop
 
@@ -146,7 +146,7 @@ The typical output of a digitisation project, usually in the form of a digital i
 
 ## Digital Object
 
-**Defin**ition: The proportion of your archive made up of born-digital, digitised and surrogate files.
+**Definition**: The proportion of your archive made up of born-digital, digitised and surrogate files.
 
 **Data source**: Loosely based on JISC digital skills survey results and TNA data
 
@@ -174,7 +174,7 @@ The typical output of a digitisation project, usually in the form of a digital i
 
 ## File format
 
-**Definition**: A file format is a standard way that information is encoded for storage in a computer file. It tells the computer how to display, print, and process, and save the information. It is dictated by the application program which created the file, and the operating system under which it was created and stored (definition from http://en.wikipedia.org/wiki/File_format). The file format can be described as ubiquitous if it is widely known and used by non-specialists. If the file format is not proprietary, it can be described as open. The availability of tools and software to render a digital object depends on the file format.
+**Definition**: A file format is a standard way that information is encoded for storage in a computer file. It tells the computer how to display, print, and process, and save the information. It is dictated by the application program which created the file, and the operating system under which it was created and stored (definition from <a href = "http://en.wikipedia.org/wiki/File_format" target="_blank">wikipedia</a>). The file format can be described as ubiquitous if it is widely known and used by non-specialists. If the file format is not proprietary, it can be described as open. The availability of tools and software to render a digital object depends on the file format.
 
 **Data source**: TNA data and JISC digital skills survey results
 
@@ -466,7 +466,7 @@ The typical output of a digitisation project, usually in the form of a digital i
 
 ## System Security
 
-**Definition**: **A secure system can protect data from deletion or modification from any unauthorized party, and it ensures that when an authorized person makes a change that should not have been made, the damage can be reversed. Definition from Forcepoint, <a href = "https://www.forcepoint.com/cyber-edu/cia-triad" target="_blank">https://www.forcepoint.com/cyber-edu/cia-triad.</a>**
+**Definition**: **A secure system can protect data from deletion or modification from any unauthorized party, and it ensures that when an authorized person makes a change that should not have been made, the damage can be reversed. Definition from <a href = "https://www.forcepoint.com/cyber-edu/cia-triad" target="_blank">Forcepoint.</a>**
 
 **Data source**: JISC digital skills survey results
 
@@ -490,7 +490,7 @@ The typical output of a digitisation project, usually in the form of a digital i
 
 ## Technical Metadata
 
-**Definition**: Technical information that describes how a file functions and that enables a computer to understand it at the bit level, so that it can be rendered in a way that is faithful to its original content. Definition adapted from: <a onclick="window.open(this.href,'_blank');return false;" href = "https://www.nedcc.org/fundamentals-of-av-preservation-textbook/chapter-4-introduction/chapter-4-section-5" target="_blank">https://www.nedcc.org/fundamentals-of-av-preservation-textbook/chapter-4-introduction/chapter-4-section-5</a>.
+**Definition**: Technical information that describes how a file functions and that enables a computer to understand it at the bit level, so that it can be rendered in a way that is faithful to its original content. Definition adapted from <a href = "https://www.nedcc.org/fundamentals-of-av-preservation-textbook/chapter-4-introduction/chapter-4-section-5" target="_blank">here</a>.
 
 **Data source:** **gathered from the structured expert judgement workshop**
 
