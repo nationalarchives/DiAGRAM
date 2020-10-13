@@ -173,6 +173,13 @@ ui = fluidPage(
 )
 
 server = function(input, output, session) {
+  selection_mode = "multiple"
+  pre_selected = TRUE
+
+  select_opts = list(
+    mode = selection_mode
+  )
+
 
   ns = session$ns
 
@@ -188,10 +195,13 @@ server = function(input, output, session) {
 
   observeEvent(data_src(), {
     df = data_src()
+    if(pre_selected & selection_mode == "multiple"){
+      select_opts$selected = seq_len(nrow(df))
+    }
     df = format_model_table(df, model, scoring_funcs, TRUE)
     df = df %>% mutate_if(is.numeric, ~{.x*100})
     # df$Response_button = shinyButtonInput(actionButton, nrow(df), 'res_1', "response")
-    df$Select = shinyCheckboxInput(checkboxInput, nrow(df), 'check_1')
+    # df$Select = shinyCheckboxInput(checkboxInput, nrow(df), 'check_1')
     # df$Edit = shinyButtonInput(actionButton, nrow(df), "edit_1", icon = shiny::icon('edit'), 'Edit')
     # df$Delete = shinyButtonInput(actionButton, nrow(df), "del_1", icon = shiny::icon('trash'), 'Delete')
     df = add_delete_column(df, ns)
@@ -199,13 +209,14 @@ server = function(input, output, session) {
     df = add_show_column(df, ns)
     # df$Control = shinyGroupInput(nrow(df), "dt_control")
     tab = datatable(
-      select(df, Select, Edit, Delete, everything(), -Response, Response = Show),
+      select(df, #Select,
+             Edit, Delete, everything(), -Response, Response = Show),
       extensions = 'RowGroup',
-      selection = 'none',
+      selection = select_opts,
       escape = FALSE,
       editable = list(target = "cell", disable = list(columns = c(1,4,5,7))),
       options = list(
-        rowGroup = list(dataSrc = 4),
+        rowGroup = list(dataSrc = 3),
         preDrawCallback = DT::JS('function() { Shiny.unbindAll(this.api().table().node()); }'),
         drawCallback = DT::JS('function() { Shiny.bindAll(this.api().table().node()); } ')
       )
