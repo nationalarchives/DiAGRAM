@@ -7,9 +7,9 @@ report_tab_module_ui = function(id){
   ns = NS(id) # no lint (excluded from lint for jrshinyapp template)
   tagList(
     shinyjs::useShinyjs(),
-    shiny::div(
-      class = "download-page-title",
-      "Download a Report"
+    shinydashboard::box(
+      width = 12,
+      shiny::h1("Download a Report")
     ),
     shinydashboard::box(
       title = "Summary", width = 12,

@@ -102,14 +102,16 @@ model_table_module_server = function(input, output, session, data, model, scorin
         background = DT::styleColorBar(c(0,100), '#8400CD'),
         backgroundSize = '100% 90%',
         backgroundRepeat = 'no-repeat',
-        backgroundPosition = 'center'
+        backgroundPosition = 'center',
+        color = 'white'
       ) %>%
       DT::formatStyle(
         'Intellectual Control',
         background = DT::styleColorBar(c(0,100), '#FF6E3A'),
         backgroundSize = '100% 90%',
         backgroundRepeat = 'no-repeat',
-        backgroundPosition = 'center'
+        backgroundPosition = 'center',
+        color = 'white'
       )
     # to_delete(numeric(0))
     table_contents(tab)

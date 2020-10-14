@@ -44,7 +44,6 @@ advanced_tab_module_ui = function(id){
 
       )
     ),
-    fluidRow(
       shinydashboard::box(
         width = 6,
         title = "Edit",
@@ -63,7 +62,6 @@ advanced_tab_module_ui = function(id){
         title = "Changes",
         reactable::reactableOutput(ns("changes"))
       )
-    )
 
     # shinyjs::hidden(
 

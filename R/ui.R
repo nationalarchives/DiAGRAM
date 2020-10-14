@@ -180,11 +180,15 @@ app_ui = function(req, question_data, default_response) {
           ),
           shinydashboard::tabItem(
             tabName = "report",
-            report_tab_module_ui('report')
+            shiny::fluidRow(
+              report_tab_module_ui('report')
+            )
           ),
           shinydashboard::tabItem(
             tabName = "advanced",
-            advanced_tab_module_ui('adv')
+            shiny::fluidRow(
+              advanced_tab_module_ui('adv')
+            )
           ),
           shinydashboard::tabItem(
             tabName = "glossary",

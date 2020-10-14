@@ -110,7 +110,7 @@ h2.main-title {
   border: solid 1px #555;
   border-width: 1px 1px 1px 5px;
     max-width: 1100px;
-    margin: 0 auto;
+    margin: 0 auto 2rem auto;
 }
 .box .box-body {
     color: #26262A;
@@ -291,14 +291,14 @@ div.logos {
   max-width: 25%;
   min-width: 20%;
   padding-right: 1.5rem;
-};
+}
 .customSliderTriple .react-tbox {
   display: inline-block;
   vertical-align: middle;
   padding-top: 2%;
   max-width: 10%;
   margin-left: .5rem;
-};
+}
 .customSliderTriple .react-content {
   display: inline-block;
   vertical-align: middle;
@@ -320,4 +320,16 @@ td, th {
 }
 tbody tr {
     border-bottom: solid 1px #999;
+}
+button.btn.radiobtn {
+    height: 6rem;
+    white-space: normal;
+}
+
+.dataTables_wrapper {
+    margin: 2rem;
+}
+
+.handsontable {
+    margin: .5rem 0;
 }
