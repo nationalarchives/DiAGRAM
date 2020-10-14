@@ -183,10 +183,14 @@ app_ui = function(req, question_data, default_response) {
           shinydashboard::tabItem(
             tabName = "advanced",
             advanced_tab_module_ui('adv')
+          ),
+          shinydashboard::tabItem(
+            tabName = "glossary",
+            shiny::includeMarkdown(system.file("text_content", "glossary.md",
+                                               package = "diagramNAT"))
           )
         )
       )
-
     )
   )
 }

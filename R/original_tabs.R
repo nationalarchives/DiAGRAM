@@ -45,7 +45,9 @@ home_tab = function() {
         ),
         shiny::br(),
         shiny::p(
-          "For more information see our", shiny::tags$a(href = "https://www.nationalarchives.gov.uk/information-management/manage-information/preserving-digital-records/research-collaboration/safeguarding-the-nations-digital-memory/", "project"), "page."
+          "For more information see our", shiny::tags$a(href = "https://www.nationalarchives.gov.uk/information-management/manage-information/preserving-digital-records/research-collaboration/safeguarding-the-nations-digital-memory/",
+                                                        "project",
+                                                        target = "_blank"), "page."
         )
       ),
       shiny::fluidRow(
