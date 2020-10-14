@@ -56,7 +56,8 @@ Imports:
     bookdown,
     kableExtra,
     cicerone,
-    rhandsontable
+    rhandsontable,
+    reactR
 Suggests:
     shinytest,
     testthat
