@@ -54,7 +54,8 @@ Imports:
     shinya11y,
     rmarkdown,
     bookdown,
-    kableExtra
+    kableExtra,
+    cicerone
 Suggests:
     shinytest,
     testthat
