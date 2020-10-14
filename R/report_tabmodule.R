@@ -28,15 +28,15 @@ report_tab_module_ui = function(id){
         # shiny::downloadButton(ns("download"))
         shiny::div(
           shinyjs::disabled(shiny::downloadButton(ns("pdf"), "PDF")),
-          "download a PDF to see a presentation version of your results"
+          "download a PDF to see a presentation version of your results."
         ),
         shiny::div(
           shinyjs::disabled(shiny::downloadButton(ns("csv"), "CSV")),
-          "download a CSV file to create your own graphs from the data"
+          "download a CSV file to create your own graphs from the data."
         ),
         shiny::div(
-          shinyjs::disabled(shiny::downloadButton(ns("json"), "JSON")),
-          "downlad a JSON file to upload your model to DiAGRAM in the future"
+          shinyjs::disabled(shiny::downloadButton(ns("json"), "App data")),
+          "download a binary data file to upload your model to DiAGRAM in the future."
         )
 
 
@@ -96,10 +96,11 @@ report_tab_module_server = function(input, output, session, data, model, questio
 
   output$json = shiny::downloadHandler(
     filename = function() {
-      paste0("DiAGRAM-data-", Sys.Date(), ".json")
+      paste0("DiAGRAM-data-", Sys.Date(), ".rds")
     },
     content = function(file) {
-      json_file = prepare_json(data()[selected$selected(),])
+      json_file = tempfile(fileext = ".rds")
+      saveRDS(data()[selected$selected(),], json_file)#prepare_json(data()[selected$selected(),])
       on.exit(file.remove(json_file))
       file.copy(json_file, file)
     }

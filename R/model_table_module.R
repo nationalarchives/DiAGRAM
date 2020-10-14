@@ -64,7 +64,8 @@ model_table_module_server = function(input, output, session, data, model, scorin
     print("data change")
     df = data_src()
     if(nrow(df) == 0){
-      return(NULL)
+      table_contents(DT::datatable(NULL))
+      return()
     }
 
     if(pre_selected & selection == "multiple"){

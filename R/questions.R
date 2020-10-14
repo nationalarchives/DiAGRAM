@@ -76,6 +76,7 @@ create_question_block = function(questions, default_response = NA, ns) {
 #' @importFrom markdown markdownToHTML
 questions_module_ui = function(id, question_data, default_response, is_policy = FALSE) {
   ns = shiny::NS(id)
+
   question_block = create_question_block(question_data, default_response, ns)
   questions_el = purrr::map(seq_along(question_block), function(i) {
    #html_text = "hi"
@@ -173,17 +174,18 @@ questions_module_ui = function(id, question_data, default_response, is_policy = 
   what_next_el = shinyjs::hidden(div(
     id = ns('question-what-next-container'),
     class = "question-what-next",
-    # shiny::div(
+    shiny::div(
       shiny::column(
         width = 6, offset = 3,
-        div(
-          p("Your responses have been stored!"),
+    #     div(
+    #       p("Your responses have been stored!"),
+          shiny::actionButton(ns("guide"), "What next?"),
           shiny::actionButton(ns("restart"), "Create Another"),
-          if(is_policy) NULL else shiny::actionButton(ns("policy"), "Add a scenario"),
-          shiny::actionButton(ns("visualise"), "View Results")
-        )
+    #       if(is_policy) NULL else shiny::actionButton(ns("policy"), "Add a scenario"),
+    #       shiny::actionButton(ns("visualise"), "View Results")
+    #     )
       )
-    # )
+    )
   ))
 
   # a header banner to follow across the top as you go through questions
@@ -220,6 +222,8 @@ questions_module_ui = function(id, question_data, default_response, is_policy = 
 
 
   shiny::tagList(
+    # rintrojs::introjsUI()
+    cicerone::use_cicerone(),
     shiny::h2("Create your baseline model"),
     div(
       class = "question-container",
@@ -252,6 +256,63 @@ questions_module_server = function(input, output, session, question_data, defaul
     x
   })
 
+  next_steps_guide = if(!is_policy){
+    cicerone::Cicerone$
+      new(opacity = 0)$
+      step(
+        ns("restart"),
+        "Create another",
+        "Click here to build another model."
+      )$
+      step(
+        "li > a[data-value='scenario']",
+        "Create a Scenario",
+        "Navigate here if you want to create a scenario from your model.",
+        is_id = FALSE
+      )$
+      step(
+        "li > a[data-value='visualise']",
+        "View Results",
+        "Come here if you want to see a graph of your models and scenarios.",
+        is_id = FALSE
+      )$
+      step(
+        "li > a[data-value='report']",
+        "Download a report",
+        "This tab is to create a downloadable report of your data in different formats.",
+        is_id = FALSE
+      )
+  }else{
+    cicerone::Cicerone$
+      new(opacity = 0)$
+      step(
+        ns("restart"),
+        "Create another",
+        "Click here to build another scenario."
+      )$
+      step(
+        "li > a[data-value='model']",
+        "Create a Model",
+        "Navigate here if you want to create a new model.",
+        is_id = FALSE
+      )$
+      step(
+        "li > a[data-value='visualise']",
+        "View Results",
+        "Come here if you want to see a graph of your models and scenarios.",
+        is_id = FALSE
+      )$
+      step(
+        "li > a[data-value='report']",
+        "Download a report",
+        "This tab is to create a downloadable report of your data in different formats.",
+        is_id = FALSE
+      )
+  }
+
+  observeEvent(input$guide, {
+    next_steps_guide$init()$start()
+  })
   # print(question_block[[1]]$server_args)
 
   # observe({

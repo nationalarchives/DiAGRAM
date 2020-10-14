@@ -12,6 +12,8 @@ download_data = params$download_data
 vis_data = params$vis_data
 model_name = params$model_name
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+in_both = model_name %in% vis_data$Model & model_name %in% unique(download_data$Model)
 ```
 
 ## Model: `r model_name`
@@ -48,19 +50,36 @@ print_plot(model_name)
 
 ## Responses to Questions
 
-Here is a summary of the responses given for the model and each scenario.
 ```{r, results='asis'}
 any_policies = length(setdiff(download_data$Policy, "baseline")) > 0
-cat(glue::glue("Here is a summary of the responses given for the model{if(any_policies) ' and each scenario.' else '.'}"))
+if(in_both) {
+  cat(glue::glue("Here is a summary of the responses given for the model{if(any_policies) ' and each scenario.' else '.'}"))
+} else {
+  cat("Responses are not shown for customised models.")
+}
+
 ```
 
-### Baseline Model
+```{r, results = 'asis'}
+if(in_both){
+  cat('\n\n### Baseline Model\n\n')
+}
+```
+
+
 
 ```{r, results='asis'}
 policy_diff = find_diff(download_data, model_name)
-
-download_data %>% 
-  dplyr::filter(.data$Model == model_name) %>%
+# 
+# create_table = function(data) {
+#   
+# }
+if(in_both){
+  download_data %>% 
+  dplyr::filter(.data$Model == model_name & .data$Policy == "baseline") %>%
+  # {
+  #   if(!)
+  # }
   dplyr::select(.data$Question, .data$Detail, .data$Response) %>%
   dplyr::mutate(
     Question = ifelse(c(FALSE, .data$Question[2:dplyr::n()] == .data$Question[1:(dplyr::n() - 1)]), '', .data$Question),
@@ -70,10 +89,13 @@ download_data %>%
   knitr::kable(format = "latex", longtable = TRUE, booktabs = TRUE) %>% 
   kableExtra::kable_styling(full_width = TRUE, font_size = 7) %>%
   cat()
+}
+
 ```
 
 ```{r, results='asis'}
-purrr::iwalk(policy_diff, function(x, y) {
+if(in_both) {
+  purrr::iwalk(policy_diff, function(x, y) {
   cat("### ", y, "\n\n")
   cat(glue::glue("The following responses were changed for {y}."), "\n\n")
   x %>% 
@@ -88,5 +110,7 @@ purrr::iwalk(policy_diff, function(x, y) {
     cat()
   
 })
+}
+
 ```
 

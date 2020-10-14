@@ -70,6 +70,9 @@ app_server = function(input, output, session, question_data, default_response, m
   }, ignoreInit = TRUE)
 
   mod_only_table = callModule(model_table_module_server, "model_table", data = reactive(model_obj$data), model = model, selection = "none", show_policy = FALSE, scoring_funcs = scoring_funcs)
+  observeEvent(mod_only_table$data(), {
+    model_obj$data = mod_only_table$data()
+  },ignoreInit = TRUE)
   # save_table = callModule(model_table_module_server, "save_table", data = reactive(model_obj$data), model = model, selection = "multiple", show_policy = TRUE, scoring_funcs = scoring_funcs)
 
   policy_vis = callModule(policy_visualisation_module_server, 'bar', model_data = reactive(model_obj$data), model = model, scoring_funcs = scoring_funcs)
@@ -112,8 +115,9 @@ app_server = function(input, output, session, question_data, default_response, m
     file = input$upload
     print(file)
     req(file)
-    shiny::validate(need(tools::file_ext(file$datapath) == "json", "Please upload a json file."))
-    content = load_responses(file$datapath)
+    shiny::validate(need(tools::file_ext(file$datapath) == "rds", "Please upload a .rds file."))
+    # content = load_responses(file$datapath)
+    content = readRDS(file$datapath)
     print("content")
     model_obj$data = dplyr::bind_rows(
       model_obj$data, content

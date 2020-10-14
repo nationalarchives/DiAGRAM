@@ -23,14 +23,55 @@ prepare_csv = function(data, file = tempfile(fileext = ".csv")) {
 }
 
 format_data_for_download = function(data, question_data) {
-  data %>% dplyr::mutate(
-    Policy = tidyr::replace_na(.data$Policy, "baseline"),
-    csv_data = purrr::map(.data$Response, ~bind_questions(question_data, .x))
-  ) %>%
+  # data %>% dplyr::mutate(
+  #   Policy = tidyr::replace_na(.data$Policy, "baseline"),
+  #   csv_data = purrr::map(.data$Response, ~bind_questions(question_data, .x))
+  # ) %>%
+  #   dplyr::select(-.data$Response) %>%
+  #   tidyr::unnest(
+  #     .data$csv_data
+  #   )
+  intermediate = data %>%
+    dplyr::mutate(
+      Policy = tidyr::replace_na(.data$Policy, "baseline"),
+      csv_data = purrr::map(.data$Response, ~{
+        # print(.x)
+        tryCatch(
+          dplyr::bind_cols(
+            `Custom Model` = FALSE,
+            bind_questions(question_data, .x)
+          ),
+          error = function(e) NA
+          # purrr::imap(.x, ~{
+          # df = ..1
+          # df$`Network Element` = ..2
+          # df$`Custom_Model` = TRUE
+          # dplyr::select(df, `Custom_Model`, `Network Element`, tidyr::everything())
+          # })
+        )
+      })
+    ) %>%
     dplyr::select(-.data$Response) %>%
     tidyr::unnest(
       .data$csv_data
-    )
+    ) %>%
+    filter(!.data$`Custom Model`)
+  # if("csv_data" %in% colnames(intermediate)){
+  #   intermediate = intermediate %>%
+  #     tidyr::unnest(
+  #       .data$csv_data
+  #     )
+  # }
+  # if(all(c("Custom Model","Custom_Model") %in% colnames(intermediate))){
+  #   intermediate = intermediate %>%
+  #     dplyr::mutate(`Custom Model` = dplyr::coalesce(.data$`Custom Model`, .data$Custom_Model)) %>%
+  #     dplyr::select(-.data$Custom_Model)
+  # }
+  # intermediate %>%
+  #   dplyr::mutate_if(is.character, ~{
+  #     stringr::str_replace_all(.x, "_", " ")
+  #   }) %>%
+  #   `colnames<-`(stringr::str_replace_all(colnames(intermediate), "_", " "))
 }
 
 prepare_pdf = function(data, question_data, model, scoring_funcs, template = system.file("assets", "templates", "pdf_template.Rmd", package = "diagramNAT"), file = tempfile(fileext = ".pdf")) {
