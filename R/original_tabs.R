@@ -200,58 +200,58 @@ definitions_tab = function() {
     shinydashboard::box(
       title = NULL,
       width = 12,
-
-   shiny::h1("Definitions"),
-   shiny::br(),
-   shiny::fluidRow(
-     shiny::column(
-       width=4,
-       shinydashboard::box(
-         title="Node selection",
-         width=NULL,
-         collapsible=TRUE,
-         shiny::h4("Please select a node from the menu to view its definition."),
-         shiny::br(),
-         shiny::br(),
-         shiny::selectInput(
-           inputId="NodeSelection",
-           label=NULL,
-           choices="No Nodes Available"
-         )
-       )
-     ),
-     shiny::column(
-       width=8,
-       shinydashboard::box(
-         title="Node description",
-         width=NULL,
-         collapsible=TRUE,
-         shiny::column(
-           width=6,
-           shiny::uiOutput("NodeDefinition"),
-           shiny::br(),
-           shiny::uiOutput("DataLink"),
-           shiny::br(),
-           shiny::uiOutput("DataYear")
-         ),
-         shiny::column(
-           width=6,
-           shiny::tableOutput("StateDefinition")
-         )
-       )
-     )
-   ),
-   shiny::fluidRow(
-     shiny::column(
-       width=12,
-       shinydashboard::box(
-         title="DiAGRAM structure",
-         collapsible=TRUE,
-         width=NULL,
-         shiny::plotOutput("NetworkStructure")
-       )
-     )
-   )
+      includeMarkdown(system.file('text_content/learn_about.md', package = "diagramNAT"))
+   # shiny::h1("Definitions"),
+   # shiny::br(),
+   # shiny::fluidRow(
+   #   shiny::column(
+   #     width=4,
+   #     shinydashboard::box(
+   #       title="Node selection",
+   #       width=NULL,
+   #       collapsible=TRUE,
+   #       shiny::h4("Please select a node from the menu to view its definition."),
+   #       shiny::br(),
+   #       shiny::br(),
+   #       shiny::selectInput(
+   #         inputId="NodeSelection",
+   #         label=NULL,
+   #         choices="No Nodes Available"
+   #       )
+   #     )
+   #   ),
+   #   shiny::column(
+   #     width=8,
+   #     shinydashboard::box(
+   #       title="Node description",
+   #       width=NULL,
+   #       collapsible=TRUE,
+   #       shiny::column(
+   #         width=6,
+   #         shiny::uiOutput("NodeDefinition"),
+   #         shiny::br(),
+   #         shiny::uiOutput("DataLink"),
+   #         shiny::br(),
+   #         shiny::uiOutput("DataYear")
+   #       ),
+   #       shiny::column(
+   #         width=6,
+   #         shiny::tableOutput("StateDefinition")
+   #       )
+   #     )
+   #   )
+   # ),
+   # shiny::fluidRow(
+   #   shiny::column(
+   #     width=12,
+   #     shinydashboard::box(
+   #       title="DiAGRAM structure",
+   #       collapsible=TRUE,
+   #       width=NULL,
+   #       shiny::plotOutput("NetworkStructure")
+   #     )
+   #   )
+   # )
  ))
 }
 
