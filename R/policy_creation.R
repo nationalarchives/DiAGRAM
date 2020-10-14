@@ -253,6 +253,7 @@ policy_creation_module_server = function(input, output, session, input_data, que
 
   output$policy_response_picker = reactable::renderReactable({
     responses = format_responses(original_response())
+    responses$response = purrr::map(responses$response, unlist)
     # q_text = purrr::map_dfr(question_data, function(x){
     #   # tibble(Text = x$text, node = x$node)
     #   if(is.null(x$part)) {
