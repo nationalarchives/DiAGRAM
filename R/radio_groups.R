@@ -22,7 +22,7 @@ radio_group_module_ui = function(id = 'test', state, label = LETTERS[1:4], conte
       style = "clear: right;",
       div(
         style = if(length(questions) > 1) "max-width: 40%; display: inline-block; vertical-align: middle;",
-        shiny::p(questions[i])
+        markdown::renderMarkdown(text = questions[i]) %>% HTML()
       ),
       div(
         style = if(length(questions) > 1) "max-width: 55%; display: inline-block; vertical-align: middle; float: right;" else NULL,

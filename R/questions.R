@@ -95,7 +95,7 @@ questions_module_ui = function(id, question_data, default_response, is_policy = 
        class = "question-text",
        markdown::renderMarkdown(text = as.character(
          paste0(
-           ifelse(is.null(question_data[[i]]$part), "1\\. " ,paste0(question_data[[i]]$part,"\\. ")),
+           ifelse(is.null(question_data[[i]]$part), "**1\\.** <br/>" ,paste0("**",question_data[[i]]$part,"\\.** <br/>")),
            question_data[[i]]$text
          )
        )) %>%

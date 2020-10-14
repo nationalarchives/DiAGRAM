@@ -10,7 +10,8 @@ policy_visualisation_module_server(
   session,
   model_data,
   model,
-  scoring_funcs
+  scoring_funcs,
+  question_data
 )
 }
 \arguments{

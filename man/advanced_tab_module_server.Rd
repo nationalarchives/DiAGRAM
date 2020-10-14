@@ -4,7 +4,15 @@
 \alias{advanced_tab_module_server}
 \title{advanced_tab module server}
 \usage{
-advanced_tab_module_server(input, output, session, data, model, scoring_funcs)
+advanced_tab_module_server(
+  input,
+  output,
+  session,
+  data,
+  model,
+  scoring_funcs,
+  question_data
+)
 }
 \arguments{
 \item{input}{necessary input arg for shiny server function}
