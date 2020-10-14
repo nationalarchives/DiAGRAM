@@ -103,9 +103,9 @@ questions_module_ui = function(id, question_data, default_response, is_policy = 
      )
    )
 
-   popover_html = markdown::renderMarkdown(text = as.character(question_data[[i]]$definition)) %>%
-     # shiny::div() #%>%
-   htmltools::HTML()
+   # popover_html = markdown::renderMarkdown(text = as.character(question_data[[i]]$definition)) %>%
+   #   # shiny::div() #%>%
+   # htmltools::HTML()
     # html_text = markdown::markdownToHTML(text = question_data[[i]]$text,
     #                                      fragment.only = TRUE)
       return(
@@ -265,15 +265,15 @@ questions_module_server = function(input, output, session, question_data, defaul
         "Click here to build another model."
       )$
       step(
-        "li > a[data-value='scenario']",
-        "Create a Scenario",
-        "Navigate here if you want to create a scenario from your model.",
-        is_id = FALSE
-      )$
-      step(
         "li > a[data-value='visualise']",
         "View Results",
         "Come here if you want to see a graph of your models and scenarios.",
+        is_id = FALSE
+      )$
+      step(
+        "li > a[data-value='scenario']",
+        "Create a Scenario",
+        "Navigate here if you want to create a scenario from your model.",
         is_id = FALSE
       )$
       step(

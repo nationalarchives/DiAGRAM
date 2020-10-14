@@ -2,6 +2,7 @@ import { reactShinyInput } from 'reactR';
 import { useState, useRef } from 'react';
 import IonRangeSlider from 'react-ion-slider';
 import shortid from 'shortid';
+import ReactMarkdown from 'react-markdown';
 
 function get_ratio(a, b) {
   var vals;
@@ -126,39 +127,39 @@ const TripleSliderInput = ({ configuration, value, setValue }) => {
   return  (
   <div>
     <div>
-      <div style={ionStyle}>
+      <div className={'react-slider'}>
         <label htmlFor={id1}>{value.label[0]}</label>
         <IonRangeSlider id={id1} type={"single"} min={0} max={100} from={value.state[0]} step={1} onChange={(x) => handle_ion(x,0)} ref={sliders[0]} grid={true} postfix={"%"}/>
       </div>
-      <div style={tinputStyle}>
+      <div className={'react-tbox'}>
         <input type="number" value={value.state[0]} min={0} max={100} onChange={(evt) => handle_numeric(evt, 0)}/>
       </div>
-      <div style={contentStyle}>
-        {value.content[0]}
+      <div className={'react-content'}>
+        <ReactMarkdown source={value.content[0]} />
       </div>
     </div>
     <div>
-      <div style={ionStyle}>
+      <div className={'react-slider'}>
         <label htmlFor={id2}>{value.label[1]}</label>
         <IonRangeSlider id={id2} type={"single"} min={0} max={100} from={value.state[1]} step={1} onChange={(x) => handle_ion(x,1)} ref={sliders[1]}  grid={true} postfix={"%"} />
       </div>
-      <div style={tinputStyle}>
+      <div className={'react-tbox'}>
         <input type="number" value={value.state[1]} min={0} max={100} onChange={(evt) => handle_numeric(evt, 1)}/>
       </div>
-      <div style={contentStyle}>
-        {value.content[1]}
+      <div className={'react-content'}>
+        <ReactMarkdown source={value.content[1]} />
       </div>
     </div>
     <div>
-      <div style={ionStyle}>
+      <div className={'react-slider'}>
         <label htmlFor={id3}>{value.label[2]}</label>
         <IonRangeSlider id={id3} type={"single"} min={0} max={100} from={value.state[2]} step={1} onChange={(x) => handle_ion(x,2)} ref={sliders[2]}  grid={true} postfix={"%"} />
       </div>
-      <div style={tinputStyle}>
+      <div className={'react-tbox'}>
         <input type="number" value={value.state[2]} min={0} max={100} onChange={(evt) => handle_numeric(evt, 2)}/>
       </div>
-      <div style={contentStyle}>
-        {value.content[2]}
+      <div className={'react-content'}>
+        <ReactMarkdown source={value.content[2]} />
       </div>
     </div>
   </div>
