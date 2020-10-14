@@ -16,6 +16,7 @@ home_tab = function() {
         align="center",
         class = "main-title"
       ),
+      shiny::div(shiny::img(src = "www/diagram_logo_transparent.png", width = "400px"), style = "text-align:center"),
       shiny::h3("Version 0.9.7 (Prototype)", align="center"), #update in June
       shiny::br(),
       shiny::div(
