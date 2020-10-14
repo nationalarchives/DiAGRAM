@@ -158,8 +158,18 @@ advanced_tab_module_server = function(input, output, session, data, model, scori
   new_row = reactiveVal(NULL)
   # response = reactive({
   observeEvent(reactiveValuesToList(my_nodes), {
-    data = reactiveValuesToList(my_nodes)
-    m_data = model_policy_row(data, input$name)
+    my_data = reactiveValuesToList(my_nodes)
+    # is this a model or policy?
+    type = input$type
+    if(type == "Model"){
+      m_data = model_policy_row(my_data, input$name)
+    }else{
+      row = data()[selected$selected(),]
+      prev_name = row$model
+      m_data = model_policy_row(my_data, prev_name, input$name)
+    }
+
+
     new_row(m_data)
   })
     # data = reactiveValuesToList(my_nodes)
