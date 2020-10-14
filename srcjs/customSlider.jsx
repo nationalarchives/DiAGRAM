@@ -2,6 +2,7 @@ import { reactShinyInput } from 'reactR';
 import { useState, useRef } from 'react';
 import IonRangeSlider from 'react-ion-slider';
 import shortid from 'shortid';
+import ReactMarkdown from 'react-markdown';
 
 const SingleSliderInput = ({ configuration, value, setValue }) => {
 
@@ -50,15 +51,15 @@ const SingleSliderInput = ({ configuration, value, setValue }) => {
 
   return  (
   <div>
-    <div style={ionStyle}>
+    <div className={'react-slider'}>
       <label htmlFor={id}>{value.label}</label>
       <IonRangeSlider id={id} type={"single"} min={0} max={100} from={value.state} step={1} onChange={handle_ion} ref={sliderEl}  grid={true} postfix={"%"} />
     </div>
-    <div style={tinputStyle}>
+    <div className={'react-tbox'}>
       <input type="number" value={value.state} min={0} max={100} onChange={handle_numeric}/>
     </div>
-    <div style={contentStyle}>
-      {value.content}
+    <div className={'react-content'}>
+      <ReactMarkdown source={value.content} />
     </div>
   </div>
   )

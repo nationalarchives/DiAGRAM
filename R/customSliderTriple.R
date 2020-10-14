@@ -11,6 +11,8 @@ customSliderTripleInput <- function(inputId, state = c(20,20,60), label, content
   default = list(
     state = state, label = label, content = content
   )
+  print("triple slider create")
+  print(default)
   main = reactR::createReactShinyInput(
     inputId,
     "customSliderTriple",

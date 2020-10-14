@@ -69,9 +69,9 @@ radio_group_module_server = function(input, output, session, state) {
   observe({
     req(input$x)
     # browser()
-    print(input$x)
+    # print(input$x)
     # if(input$x == 0 || is.null(input$x)) browser()
-    print(input$`test-1`)
+    # print(input$`test-1`)
 
     vals = purrr::map_chr(paste0("test-",seq_len(input$x)), ~input[[.x]])
     # browser()

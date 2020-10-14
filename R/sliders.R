@@ -97,10 +97,11 @@ sliders_group_module_ui = function(id = 'test', state = c(20,20,40), label = pas
   ns = shiny::NS(id)
   labels = label
   text_content = purrr::map2(labels, content, function(x, y) {
-    shiny::tagList(
-      shiny::tags$strong(x), #shiny::tags$span(" - "),
-      shiny::tags$p(y)
-    )
+    glue::glue("
+               **{x}**
+
+               {y}
+               ")
   })
 
   shiny::tagList(
