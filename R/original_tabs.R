@@ -136,22 +136,25 @@ home_tab = function() {
       # ),
       shiny::br(),
       # Adding Logos
-      shiny::img(
-        src="www/TNA - SQUARE LOGO POSITIVE.png",
-        height=100,
-        width=100
-      ),
-      shiny::img(
-        src="www/university_of_warwick_logo_detail.png",
-        height=80,
-        width=120
-      ),
-      shiny::img(
-        src="www/TNLHLF_Colour_Logo_English_RGB_0_0.jpg",
-        height=80,
-        width=216
-      ),
-      shiny::img(src="www/UKRI_EPSR_Council-Logo_Horiz-RGB.png", height=75)
+      shiny::div(
+        class = "logos",
+        shiny::img(
+          src="www/TNA - SQUARE LOGO POSITIVE.png",
+          height=100,
+          width=100
+        ),
+        shiny::img(
+          src="www/university_of_warwick_logo_detail.png",
+          height=80,
+          width=120
+        ),
+        shiny::img(
+          src="www/TNLHLF_Colour_Logo_English_RGB_0_0.jpg",
+          height=80,
+          width=216
+        ),
+        shiny::img(src="www/UKRI_EPSR_Council-Logo_Horiz-RGB.png", height=75)
+      )
       # ),
     # shinydashboard::box(
     #   width = 12,

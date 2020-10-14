@@ -38,6 +38,7 @@ Imports:
     shinyalert,
     shinyBS,
     shinydashboard,
+    shinydashboardPlus,
     shinyjs,
     shinysky,
     shinyWidgets,

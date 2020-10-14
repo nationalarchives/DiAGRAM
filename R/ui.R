@@ -16,6 +16,8 @@
 #' @importFrom shinydashboard sidebarMenu
 #' @importFrom shinydashboard menuItem
 #' @importFrom shinydashboard tabItems tabItem box
+#' @importFrom shinydashboardPlus dashboardPagePlus
+#' @importFrom shinydashboardPlus dashboardFooter
 #' @importFrom shiny icon fluidRow h3 strong p h2 tags a br div actionButton img h1 column
 #' @importFrom shiny selectInput uiOutput tableOutput fileInput textInput HTML h5 checkboxGroupInput
 #' @importFrom shiny h4 radioButtons htmlOutput sliderInput downloadButton addResourcePath
@@ -55,14 +57,14 @@ app_ui = function(req, question_data, default_response) {
       rel = "stylesheet", type = "text/css",
       href = "www/branding.css"
     )),
-    shinydashboard::dashboardPage(
+    shinydashboardPlus::dashboardPagePlus(
       skin="purple",
       # Add header and title to Dashboard
-      shinydashboard::dashboardHeader(
+      header = shinydashboard::dashboardHeader(
         title="DiAGRAM"
       ),
       # Add dashboard sidebar
-      shinydashboard::dashboardSidebar(
+      sidebar = shinydashboard::dashboardSidebar(
         shinydashboard::sidebarMenu(
           id = "sidebarMenu",
           shinydashboard::menuItem(
@@ -97,7 +99,9 @@ app_ui = function(req, question_data, default_response) {
           )
         )
       ),
-      shinydashboard::dashboardBody(
+      body = shinydashboard::dashboardBody(
+        shiny::includeScript(system.file("assets", "js", "close_warning.js",
+                                         package = "diagramNAT")),
         shinyjs::useShinyjs(),
         shinyalert::useShinyalert(),
         id = "dashboardBody",
@@ -145,8 +149,7 @@ app_ui = function(req, question_data, default_response) {
           ),
           shinydashboard::tabItem(
             tabName = "scenario",
-            shiny::column(
-              width = 12,
+            shiny::fluidRow(
               shinydashboard::box(
                 title = NULL, width = 12,
                 policy_creation_module_ui('policy-questions')
@@ -156,18 +159,17 @@ app_ui = function(req, question_data, default_response) {
           ),
           shinydashboard::tabItem(
             tabName = "visualise",
-            shiny::column(
-              width = 12, #NULL
-              # shinydashboard::box(
-              #   width = 12,
+            shiny::fluidRow(
+              # width = 12, #NULL
+              shinydashboard::box(
+                width = 12,
                 policy_visualisation_module_ui('bar'),
-              # ),
+              )
               # model_table_module_ui('bar-select')
             )
           ),
           shinydashboard::tabItem(
             tabName = "save",
-
             shiny::fluidRow(
               shinydashboard::box(
                 width = 12,
@@ -186,11 +188,21 @@ app_ui = function(req, question_data, default_response) {
           ),
           shinydashboard::tabItem(
             tabName = "glossary",
-            shiny::includeMarkdown(system.file("text_content", "glossary.md",
+            shiny::fluidRow(
+              shinydashboard::box(
+                width = 12,
+                shiny::includeMarkdown(system.file("text_content", "glossary.md",
                                                package = "diagramNAT"))
+              )
+            )
           )
         )
-      )
+      ),
+      footer = shinydashboardPlus::dashboardFooter(
+        shiny::includeMarkdown(system.file("text_content", "footer.md",
+                                           package = "diagramNAT"))
+      ),
+      sidebar_fullCollapse = TRUE
     )
   )
 }
