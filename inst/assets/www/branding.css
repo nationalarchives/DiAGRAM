@@ -112,7 +112,7 @@ h2.main-title {
 }
 .box .box-body {
     color: #26262A;
-    padding: 1rem;
+    padding: 1rem 2rem;
 }
 .box .box {
     background-color: #fff;
@@ -166,26 +166,34 @@ h2.main-title {
  * Buttons
  */
 
+.btn {
+    border: solid 1px #333;
+    background-color: #444;
+    border-radius: 0;
+    color: #fff;
+}
+
 .btn-green {
-    background-color: #DDE5D5 !important;
-    border-color: #DDE5D5 !important;
+    background-color: #a8dea8 !important;
+    /*border-color: #DDE5D5 !important;*/
     color: #26262a !important;
     border-radius: 0;
 }
 .btn-green:hover {
     background-color: #DDE5D567 !important;
-    border-color: #26262a;
+    background-color: #a8dea867 !important;
+    /*border-color: #26262a;*/
 }
 
 .btn-orange {
     background-color: #F9E1BC !important;
-    border-color: #F9E1BC !important;
+    /*border-color: #F9E1BC !important;*/
     color: #26262a !important;
     border-radius: 0;
 }
 .btn-orange:hover {
     background-color: #F9E1BC67 !important;
-    border-color: #26262a;
+    /*border-color: #26262a;*/
 }
 
 /**
@@ -201,3 +209,60 @@ h2.main-title {
     content: "\f00d" !important; /* cross */
     content: "\f100" !important; /* double-left */
 }
+
+/**
+ * Footer
+ */
+
+.main-footer {
+  text-align: center;
+}
+.main-footer span {
+  color: #999;
+}
+
+/** Tests
+ */
+.skin-purple .left-side, .skin-purple .main-sidebar, .skin-purple .wrapper {
+    background-color: #D9D9D644;
+}
+
+.skin-purple .sidebar-menu>li>a {
+    background-color: #000;
+    margin: 5px 5px;
+    border-left: none;
+}
+
+.skin-purple .sidebar-menu>li.active>a, .skin-purple .sidebar-menu>li:hover>a {
+    color: #26262A;
+    background-color: #fff;
+    border-left: none;
+    box-shadow: inset 0 0 0 3px #000;
+    /*margin: 0 3px;*/
+}
+.sidebar-mini.sidebar-collapse .sidebar-menu>li>a {
+    margin: 2px 0;
+}
+
+.sidebar-mini:not(.sidebar-mini-expand-feature).sidebar-collapse .sidebar-menu>li:hover>a>span {
+    border: solid 1px #000;
+}
+
+/**
+ * Logos
+ */
+
+div.logos {
+  background-color: #fff;
+  text-align: center;
+}
+
+/**
+ * Question Headers
+ */
+
+.question-header-name {
+    width: 38%;
+    padding: 0 1rem;
+}
+
