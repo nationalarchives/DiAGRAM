@@ -55,7 +55,8 @@ Imports:
     rmarkdown,
     bookdown,
     kableExtra,
-    cicerone
+    cicerone,
+    rhandsontable
 Suggests:
     shinytest,
     testthat
