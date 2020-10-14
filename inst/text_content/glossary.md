@@ -1,5 +1,7 @@
 The glossary is divided into two sections, "General terms" which has definitions for terms used across several parts of the model, and “Definitions of nodes” which covers the specific definitions developed for each risk node identified within our overall network of digital preservation risk, and the states that each node can take as part of the model.
 
+<hr>
+
 # General terms
 
 ## Bitstream
@@ -42,6 +44,8 @@ Each node will have a few possible states. These represent the different options
 
 The typical output of a digitisation project, usually in the form of a digital image file (such as tiff, jpeg or jpeg2000), or a PDF file. If digitising audiovisual material this could also include digital video or audio files. However, the archive retains the original analogue material (on paper, parchment, film etc) which remains the original archival record. The surrogate provides more convenient access without risk of damaging the original (microfilm or facsimile copies are also forms of surrogate). Also, since the archive can influence the digitisation process and the file formats created there will typically be a narrower range of file formats found in archives of surrogate material compared to born-digital material. Also, because the original analogue material remains in the archive, it is possible to redigitise if surrogate materials are themselves damaged or lost (though there would obviously be a cost in doing this). Therefore you might be prepared to tolerate somewhat higher risks to surrogates than to unique born digital materials. If users of the archive have questions about the completeness of capture in a surrogate digitisation project, it will be possible to produce the original record.
 
+<hr>
+
 # Definitions of Nodes
 
 ## Bit Preservation
@@ -53,18 +57,22 @@ The typical output of a digitisation project, usually in the form of a digital i
 **Data collected**: April 2020
 
 <table>
-  <tr>
-    <td>Node State</td>
-    <td>State Definition</td>
-  </tr>
-  <tr>
-    <td>Yes</td>
-    <td>The bitstream is preserved.</td>
-  </tr>
-  <tr>
-    <td>No</td>
-    <td>The bitstream is not preserved.</td>
-  </tr>
+  <thead>
+    <tr>
+      <td>Node State</td>
+      <td>State Definition</td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Yes</td>
+      <td>The bitstream is preserved.</td>
+    </tr>
+    <tr>
+      <td>No</td>
+      <td>The bitstream is not preserved.</td>
+    </tr>
+  </tbody>
 </table>
 
 
@@ -77,10 +85,13 @@ The typical output of a digitisation project, usually in the form of a digital i
 **Data collected**: 2019
 
 <table>
+  <thead>
   <tr>
     <td>Node State</td>
     <td>State Definition</td>
   </tr>
+  </thead>
+  <tbody>
   <tr>
     <td>Yes</td>
     <td>We have a checksum from the depositor.</td>
@@ -93,6 +104,7 @@ The typical output of a digitisation project, usually in the form of a digital i
     <td>No</td>
     <td>You don't have checksums at all, or they were generated sometime after initial receipt.</td>
   </tr>
+  </tbody>
 </table>
 
 
@@ -105,10 +117,13 @@ The typical output of a digitisation project, usually in the form of a digital i
 **Data collected**: April 2020
 
 <table>
+  <thead>
   <tr>
     <td>Node State</td>
     <td>State Definition</td>
   </tr>
+  </thead>
+  <tbody>
   <tr>
     <td>Yes</td>
     <td>We know the conditions of use and any restrictions on the digital material.</td>
@@ -117,6 +132,7 @@ The typical output of a digitisation project, usually in the form of a digital i
     <td>No</td>
     <td>We do not know the conditions of use of the digital material.</td>
   </tr>
+  </tbody>
 </table>
 
 
@@ -129,10 +145,13 @@ The typical output of a digitisation project, usually in the form of a digital i
 **Data collected**: April 2020
 
 <table>
+  <thead>
   <tr>
     <td>Node State</td>
     <td>State Definition</td>
   </tr>
+  </thead>
+  <tbody>
   <tr>
     <td>Yes</td>
     <td>The content metadata is sufficient and meets all our requirements.</td>
@@ -141,6 +160,7 @@ The typical output of a digitisation project, usually in the form of a digital i
     <td>No</td>
     <td>The content metadata is insufficient and does not meet all our requirements.</td>
   </tr>
+  </tbody>
 </table>
 
 
@@ -153,10 +173,13 @@ The typical output of a digitisation project, usually in the form of a digital i
 **Data collected**: 2019
 
 <table>
+  <thead>
   <tr>
     <td>Node State</td>
     <td>State Definition</td>
   </tr>
+  </thead>
+  <tbody>
   <tr>
     <td>Born_digital</td>
     <td>Records were created in a digital format.</td>
@@ -169,6 +192,7 @@ The typical output of a digitisation project, usually in the form of a digital i
     <td>Surrogate</td>
     <td>Digital images have been created as a result of converting analogue originals, and you also hold those originals. </td>
   </tr>
+  </tbody>
 </table>
 
 
@@ -181,10 +205,13 @@ The typical output of a digitisation project, usually in the form of a digital i
 **Data collected**: Jan 2020
 
 <table>
+  <thead>
   <tr>
     <td>Node State</td>
     <td>State Definition</td>
   </tr>
+  </thead>
+  <tbody>
   <tr>
     <td>Yes</td>
     <td>The file formats are open and/or ubiquitous.</td>
@@ -193,6 +220,7 @@ The typical output of a digitisation project, usually in the form of a digital i
     <td>No</td>
     <td>The file formats are proprietary and not widely used.</td>
   </tr>
+  </tbody>
 </table>
 
 
@@ -205,10 +233,13 @@ The typical output of a digitisation project, usually in the form of a digital i
 **Data collected**: April 2020
 
 <table>
+  <thead>
   <tr>
     <td>Node State</td>
     <td>State Definition</td>
   </tr>
+  </thead>
+  <tbody>
   <tr>
     <td>Yes</td>
     <td>We know what the material is and where it is from.</td>
@@ -217,6 +248,7 @@ The typical output of a digitisation project, usually in the form of a digital i
     <td>No</td>
     <td>We do not know what the material is and where it is from.</td>
   </tr>
+  </tbody>
 </table>
 
 
@@ -229,10 +261,13 @@ The typical output of a digitisation project, usually in the form of a digital i
 **Data collected**: 2019
 
 <table>
+  <thead>
   <tr>
     <td>Node State</td>
     <td>State Definition</td>
   </tr>
+  </thead>
+  <tbody>
   <tr>
     <td>Sufficient</td>
     <td>We have sufficient internal information management systems to track the preservation actions taken on a digital object since acquisition.</td>
@@ -241,6 +276,7 @@ The typical output of a digitisation project, usually in the form of a digital i
     <td>Insufficient</td>
     <td>We have insufficient internal information management systems to track the preservation actions carried out on a digital object since acquisition.</td>
   </tr>
+  </tbody>
 </table>
 
 
@@ -253,10 +289,13 @@ The typical output of a digitisation project, usually in the form of a digital i
 **Data collected**: April 2020
 
 <table>
+  <thead>
   <tr>
     <td>Node State</td>
     <td>State Definition</td>
   </tr>
+  </thead>
+  <tbody>
   <tr>
     <td>Yes</td>
     <td>We know that the material has not been changed, aside from any deliberate preservation actions.</td>
@@ -265,6 +304,7 @@ The typical output of a digitisation project, usually in the form of a digital i
     <td>No</td>
     <td>We do not know whether the material has been changed, or we know that it has been changed unexpectedly and is not restorable.</td>
   </tr>
+  </tbody>
 </table>
 
 
@@ -277,10 +317,13 @@ The typical output of a digitisation project, usually in the form of a digital i
 **Data collected**: 2020
 
 <table>
+  <thead>
   <tr>
     <td>Node State</td>
     <td>State Definition</td>
   </tr>
+  </thead>
+  <tbody>
   <tr>
     <td>Yes</td>
     <td>We have full knowledge of the material content, provenance and conditions of use.</td>
@@ -289,6 +332,7 @@ The typical output of a digitisation project, usually in the form of a digital i
     <td>No</td>
     <td>We do not have full knowledge of the material content, provenance and conditions of use.</td>
   </tr>
+  </tbody>
 </table>
 
 
@@ -301,10 +345,13 @@ The typical output of a digitisation project, usually in the form of a digital i
 **Data collected**: April 2020
 
 <table>
+  <thead>
   <tr>
     <td>Node State</td>
     <td>State Definition</td>
   </tr>
+  </thead>
+  <tbody>
   <tr>
     <td>Yes</td>
     <td>We cannot access the bit stream.</td>
@@ -313,6 +360,7 @@ The typical output of a digitisation project, usually in the form of a digital i
     <td>No</td>
     <td>We can access the bit stream.</td>
   </tr>
+  </tbody>
 </table>
 
 
@@ -324,11 +372,13 @@ The typical output of a digitisation project, usually in the form of a digital i
 
 **Data collected**: 2019
 
-<table>
+<table><thead>
   <tr>
     <td>Node State</td>
     <td>State Definition</td>
   </tr>
+  </thead>
+  <tbody>
   <tr>
     <td>Yes</td>
     <td>We have a copy stored in a different geographical location or if not, we have adequate mitigation strategies in place at our storage location in case of a flood.</td>
@@ -337,7 +387,7 @@ The typical output of a digitisation project, usually in the form of a digital i
     <td>No</td>
     <td>We store all our digital material in the same geographical location and do not have adequate mitigation strategies in place in case of a flood.</td>
   </tr>
-</table>
+</tbody><table>
 
 
 ## Physical Disaster
@@ -348,11 +398,13 @@ The typical output of a digitisation project, usually in the form of a digital i
 
 **Data collected**: 2020
 
-<table>
+<table><thead>
   <tr>
     <td>Node State</td>
     <td>State Definition</td>
   </tr>
+  </thead>
+  <tbody>
   <tr>
     <td>Yes</td>
     <td>There is a flood at the primary storage location.</td>
@@ -361,7 +413,7 @@ The typical output of a digitisation project, usually in the form of a digital i
     <td>No</td>
     <td>There is no flood at the primary storage location.</td>
   </tr>
-</table>
+</tbody><table>
 
 
 ## Renderability
@@ -372,11 +424,13 @@ The typical output of a digitisation project, usually in the form of a digital i
 
 **Data collected**: April 2020
 
-<table>
+<table><thead>
   <tr>
     <td>Node State</td>
     <td>State Definition</td>
   </tr>
+  </thead>
+  <tbody>
   <tr>
     <td>Yes</td>
     <td>The object can be rendered to provide a sufficiently useful representation of the original file.</td>
@@ -385,7 +439,7 @@ The typical output of a digitisation project, usually in the form of a digital i
     <td>No</td>
     <td>The object cannot be rendered to provide a sufficiently useful representation of the original file.</td>
   </tr>
-</table>
+</tbody><table>
 
 
 ## Replication and Refreshment
@@ -396,11 +450,13 @@ The typical output of a digitisation project, usually in the form of a digital i
 
 **Data collected**: 2019
 
-<table>
+<table><thead>
   <tr>
     <td>Node State</td>
     <td>State Definition</td>
   </tr>
+  </thead>
+  <tbody>
   <tr>
     <td>Good</td>
     <td>We always have at least two copies of the bitstream at any time and the bitstream is copied to newer versions of the storage media regularly to avoid corruption due to aging media. </td>
@@ -409,7 +465,7 @@ The typical output of a digitisation project, usually in the form of a digital i
     <td>Poor</td>
     <td>We do not have copies of the material or we have copies but we do not have a refreshment policy to ensure that there will always be at least one additional copy if another became damaged or lost.</td>
   </tr>
-</table>
+</tbody><table>
 
 
 ## Storage Life
@@ -420,11 +476,13 @@ The typical output of a digitisation project, usually in the form of a digital i
 
 **Data collected**: April 2020
 
-<table>
+<table><thead>
   <tr>
     <td>Node State</td>
     <td>State Definition</td>
   </tr>
+  </thead>
+  <tbody>
   <tr>
     <td>Yes</td>
     <td>We expect the bit-stream to be stored, unaltered by the storage medium, for at least 12 months.</td>
@@ -433,7 +491,7 @@ The typical output of a digitisation project, usually in the form of a digital i
     <td>No</td>
     <td>We expect the bit-stream to be altered or lost due to the storage medium within 12 months.</td>
   </tr>
-</table>
+</tbody><table>
 
 
 ## Storage Medium
@@ -444,11 +502,13 @@ The typical output of a digitisation project, usually in the form of a digital i
 
 **Data collected**: 2020
 
-<table>
+<table><thead>
   <tr>
     <td>Node State</td>
     <td>State Definition</td>
   </tr>
+  </thead>
+  <tbody>
   <tr>
     <td>A</td>
     <td>Expected lifespan below 10 years or unknown, highly susceptible to physical damage, requires specific environmental conditions and very sensitive to changes, does not support error-detection methods, supporting technology is novel, proprietary and limited. Examples include USB flash drives (memory sticks), floppy disks, SD drives and CD-R discs.</td>
@@ -461,7 +521,7 @@ The typical output of a digitisation project, usually in the form of a digital i
     <td>C</td>
     <td>An external company is responsible for our digital storage. Examples include Amazon Simple Storage Service, Microsoft Azure Archive Storage and Google Cloud Storage.</td>
   </tr>
-</table>
+</tbody><table>
 
 
 ## System Security
@@ -472,11 +532,13 @@ The typical output of a digitisation project, usually in the form of a digital i
 
 **Data collected**: 2019
 
-<table>
+<table><thead>
   <tr>
     <td>Node State</td>
     <td>State Definition</td>
   </tr>
+  </thead>
+  <tbody>
   <tr>
     <td>Good</td>
     <td>We have a good security system, that is we actively manage access restrictions both virtually and physically, we have up-to-date antivirus software, we perform regular audits, etc.</td>
@@ -485,7 +547,7 @@ The typical output of a digitisation project, usually in the form of a digital i
     <td>Poor</td>
     <td>We have a poor security system, that is we do not actively manage access restrictions, we do not have up-to-date antivirus software, we do not perform audits, etc.</td>
   </tr>
-</table>
+</tbody><table>
 
 
 ## Technical Metadata
@@ -496,11 +558,13 @@ The typical output of a digitisation project, usually in the form of a digital i
 
 **Data collected**: April 2020
 
-<table>
+<table><thead>
   <tr>
     <td>Node State</td>
     <td>State Definition</td>
   </tr>
+  </thead>
+  <tbody>
   <tr>
     <td>Sufficient</td>
     <td>The technical metadata documentation is sufficient - we have an identification report, and if necessary, further validation tools have also been used.</td>
@@ -509,7 +573,7 @@ The typical output of a digitisation project, usually in the form of a digital i
     <td>Insufficient</td>
     <td>The technical metadata documentation is insufficient - we do not have enough information documented to ensure that the file can be rendered in a way that is faithful to its original content.</td>
   </tr>
-</table>
+</tbody><table>
 
 
 ## Technical Skills 
@@ -520,11 +584,13 @@ The typical output of a digitisation project, usually in the form of a digital i
 
 **Data collected**: 2019
 
-<table>
+<table><thead>
   <tr>
     <td>Node State</td>
     <td>State Definition</td>
   </tr>
+  </thead>
+  <tbody>
   <tr>
     <td>Good</td>
     <td>We have the capability to perform actions such as file format migration, software emulation and data recovery, as well as the ability to investigate and manipulate data, and basic coding skills.We have the capability to perform actions such as file format migration, software emulation and data recovery, as well as the ability to investigate and manipulate data, and basic coding skills.</td>
@@ -533,7 +599,7 @@ The typical output of a digitisation project, usually in the form of a digital i
     <td>Poor</td>
     <td>We do not have the capability to perform actions such as file format migration, software emulation and data recovery, nor the ability to investigate and manipulate data.</td>
   </tr>
-</table>
+</tbody><table>
 
 
 ## Tools to Render

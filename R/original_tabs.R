@@ -59,9 +59,8 @@ home_tab = function() {
             width=NULL,
             # shiny::plotOutput("NetworkStructure_home", click = "home_network_click")
             shiny::img(
-              src="www/DiAGRAM-Roboto.svg",
-              height="500px",
-              width="100%"
+              src="www/DiAGRAM-Roboto.png",
+              style="max-width:100%;max-height:500px;"
             )
           )
         )
