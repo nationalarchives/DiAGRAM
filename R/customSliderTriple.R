@@ -18,7 +18,7 @@ customSliderTripleInput <- function(inputId, state = c(20,20,60), label, content
       name = "customSliderTriple-input",
       version = "1.0.0",
       src = "www/customSlider/customSliders",
-      package = "customSlider",
+      package = "diagramNAT",
       script = "multi.js"
     ),
     default,

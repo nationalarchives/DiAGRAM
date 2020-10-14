@@ -18,7 +18,7 @@ customSliderInput <- function(inputId, state = 10, label, content) {
       name = "customSlider-input",
       version = "1.0.0",
       src = "www/customSlider/customSliders",
-      package = "customSlider",
+      package = "diagramNAT",
       script = "single.js"
     ),
     default,
