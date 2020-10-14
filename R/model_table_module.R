@@ -49,7 +49,7 @@ format_model_table = function(intermediate, model, scoring_funcs, show_policy) {
 
 #' @importFrom rlang .data
 #' @export
-model_table_module_server = function(input, output, session, data, model, scoring_funcs, selection = "multiple", show_policy = TRUE, pre_selected = selection == "multiple", editable = TRUE, response_show = TRUE) {
+model_table_module_server = function(input, output, session, data, model, scoring_funcs, selection = "multiple", show_policy = TRUE, pre_selected = selection == "multiple", editable = TRUE, response_show = TRUE, question_data) {
   select_opts = list(
     mode = selection
   )
@@ -174,6 +174,30 @@ model_table_module_server = function(input, output, session, data, model, scorin
       removeModal()
       data_src(df)
     }
+  })
+
+  show_modal_data = reactiveVal(NULL)
+  observeEvent(input$showPressed, {
+    ix = parse_column_event(input$showPressed)
+    df = data_src()
+    row = df[ix,]
+    print(row)
+    to_show = row %>%
+      format_model_table(model, scoring_funcs, TRUE) %>%
+      format_data_for_download(question_data)
+    print(to_show)
+    # print()
+    show_modal_data(to_show)
+    modal = create_data_modal(ns, to_show)
+    showModal(modal)
+  })
+  observeEvent(
+    input$data_modal_cancel,{
+      removeModal()
+    }
+  )
+  output$modal_table = DT::renderDataTable({
+    DT::datatable(dplyr::select(show_modal_data(), .data$Question:.data$Response))
   })
 
   observeEvent(input$deletePressed, {
@@ -378,6 +402,23 @@ add_edit_column = function(df, ns, ...) {
 parse_column_event = function(idstr) {
   res = as.integer(sub(".*_([0-9]+)", "\\1", idstr))
   if (! is.na(res)) res
+}
+
+create_data_modal = function(ns, data) {
+  is_custom = unique(data$`Custom Model`)
+  if(!is_custom) {
+    el = DT::dataTableOutput(ns('modal_table'))
+  }else{
+    el = div("Data from custom models can not be shown.")
+  }
+  modalDialog(
+    title = "View",
+    el,
+    footer = tagList(
+      actionButton(ns("data_modal_cancel"), "Close"),
+      # actionButton(ns("data_modal_submit"), "Submit")
+    )
+  )
 }
 
 createModal = function(ns, model, policy, comment) {

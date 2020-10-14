@@ -41,7 +41,7 @@ format_data_for_download = function(data, question_data) {
             `Custom Model` = FALSE,
             bind_questions(question_data, .x)
           ),
-          error = function(e) NA
+          error = function(e) tibble(`Custom Model` = TRUE)
           # purrr::imap(.x, ~{
           # df = ..1
           # df$`Network Element` = ..2
@@ -54,8 +54,9 @@ format_data_for_download = function(data, question_data) {
     dplyr::select(-.data$Response) %>%
     tidyr::unnest(
       .data$csv_data
-    ) %>%
-    filter(!.data$`Custom Model`)
+    )
+  # %>%
+    # filter(!.data$`Custom Model`)
   # if("csv_data" %in% colnames(intermediate)){
   #   intermediate = intermediate %>%
   #     tidyr::unnest(

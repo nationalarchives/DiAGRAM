@@ -82,7 +82,7 @@ policy_creation_module_server = function(input, output, session, input_data, que
     # "policy-questions"
   ), "-container")
 
-  policy_picker = callModule(model_table_module_server, 'policy-starter', data = reactive(model_obj$data), model = model, selection = "single", scoring_funcs = scoring_funcs)
+  policy_picker = callModule(model_table_module_server, 'policy-starter', data = reactive(model_obj$data), model = model, selection = "single", scoring_funcs = scoring_funcs,  question_data = question_data)
 
   current_state = reactiveVal(1)
   hide_back = reactiveVal(FALSE)

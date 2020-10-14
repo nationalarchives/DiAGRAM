@@ -118,11 +118,11 @@ policy_visualisation_module_ui = function(id){
 #' @param session necessary session arg for shiny server function
 #' @import shiny
 #' @importFrom plotly renderPlotly
-policy_visualisation_module_server = function(input, output, session, model_data, model, scoring_funcs){
+policy_visualisation_module_server = function(input, output, session, model_data, model, scoring_funcs, question_data){
   ns = session$ns # no lint (excluded from lint for jrshinyapp template)
   # model_data() is reactive
 
-  selection = callModule(model_table_module_server, 'bar-select', data = model_data, model = model, selection = "multiple", show_policy = TRUE, scoring_funcs = scoring_funcs)
+  selection = callModule(model_table_module_server, 'bar-select', data = model_data, model = model, selection = "multiple", show_policy = TRUE, scoring_funcs = scoring_funcs, question_data = question_data)
   vis_data = shiny::reactive({
     # browser()
     req(nrow(model_data()) > 0)

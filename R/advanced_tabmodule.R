@@ -78,7 +78,7 @@ advanced_tab_module_ui = function(id){
 #' @param output necessary output arg for shiny server function
 #' @param session necessary session arg for shiny server function
 #' @import shiny
-advanced_tab_module_server = function(input, output, session, data, model, scoring_funcs){
+advanced_tab_module_server = function(input, output, session, data, model, scoring_funcs, question_data){
   ns = session$ns # no lint (excluded from lint for jrshinyapp template)
   mod_names = names(model)
   nice_nodes = setNames(mod_names, .node_map[mod_names])
@@ -132,7 +132,7 @@ advanced_tab_module_server = function(input, output, session, data, model, scori
 
 
   # observe({print(data())})
-  selected = shiny::callModule(model_table_module_server, 'models', data = data, model = model, scoring_funcs = scoring_funcs, selection = "single")
+  selected = shiny::callModule(model_table_module_server, 'models', data = data, model = model, scoring_funcs = scoring_funcs, selection = "single",  question_data = question_data)
 
   output$changes = reactable::renderReactable({
     df = node_changes()

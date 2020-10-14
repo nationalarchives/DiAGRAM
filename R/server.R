@@ -69,13 +69,13 @@ app_server = function(input, output, session, question_data, default_response, m
     model_obj$data = p_output$data()
   }, ignoreInit = TRUE)
 
-  mod_only_table = callModule(model_table_module_server, "model_table", data = reactive(model_obj$data), model = model, selection = "none", show_policy = FALSE, scoring_funcs = scoring_funcs)
+  mod_only_table = callModule(model_table_module_server, "model_table", data = reactive(model_obj$data), model = model, selection = "none", show_policy = FALSE, scoring_funcs = scoring_funcs, question_data = question_data)
   observeEvent(mod_only_table$data(), {
     model_obj$data = mod_only_table$data()
   },ignoreInit = TRUE)
   # save_table = callModule(model_table_module_server, "save_table", data = reactive(model_obj$data), model = model, selection = "multiple", show_policy = TRUE, scoring_funcs = scoring_funcs)
 
-  policy_vis = callModule(policy_visualisation_module_server, 'bar', model_data = reactive(model_obj$data), model = model, scoring_funcs = scoring_funcs)
+  policy_vis = callModule(policy_visualisation_module_server, 'bar', model_data = reactive(model_obj$data), model = model, scoring_funcs = scoring_funcs,  question_data = question_data)
   observeEvent(policy_vis(), {
     model_obj$data = policy_vis()
   }, ignoreInit = TRUE)
@@ -170,7 +170,7 @@ app_server = function(input, output, session, question_data, default_response, m
     shinydashboard::updateTabItems(session = shiny::getDefaultReactiveDomain(), inputId = "sidebarMenu", selected = 'visualise')
   })
 
-  advanced_return = callModule(advanced_tab_module_server, 'adv', data = reactive(model_obj$data), model = model, scoring_funcs = scoring_funcs)
+  advanced_return = callModule(advanced_tab_module_server, 'adv', data = reactive(model_obj$data), model = model, scoring_funcs = scoring_funcs,  question_data = question_data)
 
   observeEvent(advanced_return$data(), {
     # if table is edited in advanced, update it here

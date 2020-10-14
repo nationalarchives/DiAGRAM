@@ -56,7 +56,7 @@ report_tab_module_ui = function(id){
 #' @import shiny
 report_tab_module_server = function(input, output, session, data, model, question_data, scoring_funcs){
   ns = session$ns # no lint (excluded from lint for jrshinyapp template)
-  selected = shiny::callModule(model_table_module_server, 'table', data = data, model = model, scoring_funcs = scoring_funcs)
+  selected = shiny::callModule(model_table_module_server, 'table', data = data, model = model, scoring_funcs = scoring_funcs, question_data = question_data)
 
   output$pdf = shiny::downloadHandler(
     filename = function() {
