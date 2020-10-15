@@ -90,9 +90,7 @@ app_server = function(input, output, session, question_data, default_response, m
     if(input$sidebarMenu == "model" & !seen_warning()) {
       shinyalert::shinyalert(
         title = "Warning", type = "warning",
-        text = "Data is only stored during an active session, after a period of inactivity the session will end.
-        If you would like to store your data more permanently you should download it.,
-        ",
+        text = "Your data will be lost after 15 minutes of inactivity.",
         closeOnEsc = FALSE, closeOnClickOutside = FALSE
       )
       seen_warning(TRUE)

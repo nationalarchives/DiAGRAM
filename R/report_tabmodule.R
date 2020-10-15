@@ -7,10 +7,10 @@ report_tab_module_ui = function(id){
   ns = NS(id) # no lint (excluded from lint for jrshinyapp template)
   tagList(
     shinyjs::useShinyjs(),
-    shinydashboard::box(
-      width = 12,
-      shiny::h1("Download a Report")
-    ),
+    # shinydashboard::box(
+    #   width = 12,
+      shiny::h3("Download a Report"),
+    # ),
     shinydashboard::box(
       title = "Summary", width = 12,
       # shinipsum::random_text(nwords = 50)
@@ -30,10 +30,12 @@ report_tab_module_ui = function(id){
           shinyjs::disabled(shiny::downloadButton(ns("pdf"), "PDF")),
           "download a PDF to see a presentation version of your results."
         ),
+        shiny::br(),
         shiny::div(
           shinyjs::disabled(shiny::downloadButton(ns("csv"), "CSV")),
           "download a CSV file to create your own graphs from the data."
         ),
+        shiny::br(),
         shiny::div(
           shinyjs::disabled(shiny::downloadButton(ns("json"), "App data")),
           "download a binary data file to upload your model to DiAGRAM in the future."

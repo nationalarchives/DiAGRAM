@@ -8,15 +8,20 @@ policy_creation_module_ui = function(id) {
     shiny::div(
       shiny::div(
         id = ns('policy-start-container'),
-        shiny::div(
-          "Please choose a model or scenario to build a new scenario from."
+        shiny::h3("Create a scenario"),
+        shiny::p(
+          "By creating a scenario you will be able to change the answers you used to create your model and see how it impacts your score."
         ),
+        uiOutput(ns('scenario_text')),
+        # shiny::p(
+        #   "Choose a model first before you create a new scenario."
+        # ),
         model_table_module_ui(ns('policy-starter'))
       ),
       shinyjs::hidden(shiny::div(
         id = ns('policy-response-picker-container'),
-        shiny::div(
-          "Which responses would you like to change?"
+        shiny::p(
+          "Select the responses you would like to change in order to see the impact on your digital preservation risk."
         ),
         reactable::reactableOutput(ns('policy_response_picker'))
       )),
@@ -81,6 +86,18 @@ policy_creation_module_server = function(input, output, session, input_data, que
     "policy-questions"
     # "policy-questions"
   ), "-container")
+
+  output$scenario_text = renderUI({
+    if(nrow(model_obj$data) > 0){
+      shiny::p(
+        "Choose a model first before you create a new scenario."
+      )
+    }else{
+      shiny::p(
+        "Create a model first before creating a scenario."
+      )
+    }
+  })
 
   policy_picker = callModule(model_table_module_server, 'policy-starter', data = reactive(model_obj$data), model = model, selection = "single", scoring_funcs = scoring_funcs,  question_data = question_data)
 

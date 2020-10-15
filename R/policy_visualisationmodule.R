@@ -100,14 +100,24 @@ policy_bar_gg = function(policy_data){
 policy_visualisation_module_ui = function(id){
   ns = NS(id) # no lint (excluded from lint for jrshinyapp template)
   tagList(
+    shiny::h3("View Results"),
+    shinydashboard::box(
+      width = 12,
+      model_table_module_ui(ns('bar-select'))
+    ),
     shinydashboard::box(
       width = 12,
       plotly::plotlyOutput(ns("policy_bar_chart"))
     ),
-    shinydashboard::box(
-      width = 12,
-      model_table_module_ui(ns('bar-select'))
-    )
+    shiny::h4("Your results"),
+    shiny::p("Your result has been calculated from your answers to the questions combined with the data in the underlying network. This shows you the probability of successfully preserving your records in terms of the two main digital preservation outcomes: renderability and intellectual control."),
+    shiny::p("For example, if your score for Intellectual Control is 21, this means that out of a 100 files you are likely to have full knowledge of the material content, provenance and conditions of use for 21 of them. If your score for Renderability is 45 this means that out of a 100 files you would be able to provide a sufficiently useful representation of 45 of the original files."),
+    shiny::p("If you would like to know more about how your results were calculated see Learn about Diagram."),
+    shiny::p("To save your results to view offline or upload later go to Download a report."),
+    shiny::h4("How do I improve my results?"),
+    shiny::p("To improve your results, you have to improve your answers to the questions, which you can do by creating scenarios."),
+    shiny::p("Some of your answers may not be things you can change, for instance the type of digital objects in your collection, so bear in mind this may limit the maximum score you can get. It is also impossible to get 100, because no archive will ever be risk free!"),
+    shiny::p("The risk variables interact in a complex way, so you may wish to review the network first to identify which areas you’d like to focus on. You can see a diagram of the network on Learn about DiAGRAM.")
   )
 }
 

@@ -125,6 +125,8 @@ app_ui = function(req, question_data, default_response) {
             shiny::fluidRow(
               shinydashboard::box(
                 width = 12,
+                shiny::h2("Create your model"),
+                shiny::p("By creating a model, you will be able to see the current risk to your digital material. If you have not prepared your answers we suggest you to do so before you begin. You can find these on \"How to use the tool\"."),
                 questions_module_ui('model-questions', question_data, default_response)
               )#,
               # shinydashboard::box(

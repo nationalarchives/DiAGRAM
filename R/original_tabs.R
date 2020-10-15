@@ -18,39 +18,41 @@ home_tab = function() {
       ),
       shiny::div(shiny::img(src = "www/diagram_logo_transparent.png", width = "400px"), style = "text-align:center"),
       shiny::h3("Version 0.9.7 (Prototype)", align="center"), #update in June
-      shiny::br(),
-      shiny::div(
-        shiny::p(
-          "With DiAGRAM you can score your archive’s current digital preservation risk and then explore how this would change if you made different decisions or your collection changed. The risk score is based on the proportion of files that are renderable (meaning that you can provide a sufficiently useful representation of the original file) and where the archivist has full intellectual control meaning that you have full knowledge of the file’s content, provenance and conditions of use."
-        ),
-        shiny::br(),
-        shiny::p(
-          "DiAGRAM is a tool designed to help you:"
-        ),
-        shiny::br(),
-        shiny::tags$ul(
-          shiny::tags$li("Understand the risks involved in digital preservation as defined in the model and how the risk events are linked together"),
-          shiny::tags$li("Create a model that reflects the records and practices of your digital archive"),
-          shiny::tags$li("Test alternative scenarios to see how this impacts the risk score"),
-          shiny::tags$li("Download your models and a summary of the results to include in a report or business case"),
-          shiny::tags$li("Upload a model from a previous session and continue exploring scenarios from there")
-        ),
-        shiny::br(),
-        shiny::h3("Methodology"),
-        shiny::p(
-          "The methodology used to create the underlying model for the tool is a Bayesian network - a probabilistic graphical model that captures the conditional dependencies of risk events. As historical data was not available for some risks, the probabilities were established using a formal expert elicitation procedure involving a number of UK digital archivists and preservation experts at a workshop conducted in April 2020."
-        ),
-        shiny::h3("Project Team"),
-        shiny::p(
-          "DiAGRAM was built by the University of Warwick and The National Archives with support from the National Lottery Heritage Fund and the Engineering and Physical Sciences Research Council."
-        ),
-        shiny::br(),
-        shiny::p(
-          "For more information see our", shiny::tags$a(href = "https://www.nationalarchives.gov.uk/information-management/manage-information/preserving-digital-records/research-collaboration/safeguarding-the-nations-digital-memory/",
-                                                        "project",
-                                                        target = "_blank"), "page."
-        )
-      ),
+      shiny::includeMarkdown(system.file("text_content/home_content.md", package = "diagramNAT")),
+      # shiny::br(),
+      # shiny::div(
+      #   shiny::p(
+      #     # "With DiAGRAM you can score your archive’s current digital preservation risk and then explore how this would change if you made different decisions or your collection changed. The risk score is based on the proportion of files that are renderable (meaning that you can provide a sufficiently useful representation of the original file) and where the archivist has full intellectual control meaning that you have full knowledge of the file’s content, provenance and conditions of use."
+      #     "DiAGRAM is an online tool designed to help archivists manage the risks to their digital collections. By answering a set of questions relating to archives such as storage media, system security and technical skills, the tool will use statistical methods to calculate the probability that your digital material is preserved."
+      #   ),
+      #   shiny::br(),
+      #   # shiny::p(
+      #   #   "DiAGRAM is a tool designed to help you:"
+      #   # ),
+      #   shiny::br(),
+      #   shiny::tags$ul(
+      #     shiny::tags$li("Understand the risks involved in digital preservation as defined in the model and how the risk events are linked together"),
+      #     shiny::tags$li("Create a model that reflects the records and practices of your digital archive"),
+      #     shiny::tags$li("Test alternative scenarios to see how this impacts the risk score"),
+      #     shiny::tags$li("Download your models and a summary of the results to include in a report or business case"),
+      #     shiny::tags$li("Upload a model from a previous session and continue exploring scenarios from there")
+      #   ),
+      #   shiny::br(),
+      #   shiny::h3("Methodology"),
+      #   shiny::p(
+      #     "The methodology used to create the underlying model for the tool is a Bayesian network - a probabilistic graphical model that captures the conditional dependencies of risk events. As historical data was not available for some risks, the probabilities were established using a formal expert elicitation procedure involving a number of UK digital archivists and preservation experts at a workshop conducted in April 2020."
+      #   ),
+      #   shiny::h3("Project Team"),
+      #   shiny::p(
+      #     "DiAGRAM was built by the University of Warwick and The National Archives with support from the National Lottery Heritage Fund and the Engineering and Physical Sciences Research Council."
+      #   ),
+      #   shiny::br(),
+      #   shiny::p(
+      #     "For more information see our", shiny::tags$a(href = "https://www.nationalarchives.gov.uk/information-management/manage-information/preserving-digital-records/research-collaboration/safeguarding-the-nations-digital-memory/",
+      #                                                   "project",
+      #                                                   target = "_blank"), "page."
+      #   )
+      # ),
       shiny::fluidRow(
         shiny::column(
           width=12,

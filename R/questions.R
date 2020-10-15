@@ -224,7 +224,7 @@ questions_module_ui = function(id, question_data, default_response, is_policy = 
   shiny::tagList(
     # rintrojs::introjsUI()
     cicerone::use_cicerone(),
-    shiny::h2("Create your baseline model"),
+
     div(
       class = "question-container",
       shinyjs::useShinyjs(),
@@ -260,28 +260,28 @@ questions_module_server = function(input, output, session, question_data, defaul
     cicerone::Cicerone$
       new(opacity = 0)$
       step(
-        ns("restart"),
-        "Create another",
-        "Click here to build another model."
-      )$
-      step(
         "li > a[data-value='visualise']",
         "View Results",
-        "Come here if you want to see a graph of your models and scenarios.",
+        "This will show you the probability (as a percentage) of having adequate intellectual control and the renderability of your digital records.",
         is_id = FALSE
       )$
       step(
         "li > a[data-value='scenario']",
         "Create a Scenario",
-        "Navigate here if you want to create a scenario from your model.",
+        "If you want to change your answers and see how it impacts your risk score you can create different scenarios.",
         is_id = FALSE
       )$
       step(
-        "li > a[data-value='report']",
-        "Download a report",
-        "This tab is to create a downloadable report of your data in different formats.",
-        is_id = FALSE
+        ns("restart"),
+        "Create another",
+        "If you want to create another model this link will take you back to the questions assessing the risk of your archive."
       )
+    # $step(
+    #     "li > a[data-value='report']",
+    #     "Download a report",
+    #     "This tab is to create a downloadable report of your data in different formats.",
+    #     is_id = FALSE
+    #   )
   }else{
     cicerone::Cicerone$
       new(opacity = 0)$
