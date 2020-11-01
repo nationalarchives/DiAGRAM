@@ -63,3 +63,5 @@ vignettes/*.pdf
 
 renv
 .Rprofile
+docs
+inst/doc

@@ -61,7 +61,8 @@ Imports:
     reactR
 Suggests:
     shinytest,
-    testthat
+    testthat,
+    knitr
 Remotes:
     AnalytixWare/ShinySky,
     ewenme/shinya11y
@@ -70,3 +71,4 @@ Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
+VignetteBuilder: knitr
