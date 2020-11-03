@@ -62,13 +62,6 @@ advanced_tab_module_ui = function(id){
         title = "Changes",
         reactable::reactableOutput(ns("changes"))
       )
-
-    # shinyjs::hidden(
-
-    # ),
-    # shinyjs::hidden(
-
-    # )
   )
 }
 
@@ -92,8 +85,6 @@ advanced_tab_module_server = function(input, output, session, data, model, scori
       dplyr::mutate_if(is.factor, as.character) %>%
       dplyr::mutate_if(is.character, ~{
         stringr::str_replace_all(.x, "_", " ")
-        # %>%
-        #   stringr::str_to_title()
       })
   }))
 
@@ -101,7 +92,6 @@ advanced_tab_module_server = function(input, output, session, data, model, scori
   my_nodes = isolate(do.call(reactiveValues, reactiveValuesToList(original_nodes)))
 
   observe({
-    # shinyjs::toggle("modify", condition = !is.null(selected()))
     shinyjs::toggle("node_select", condition = input$name != "")
   })
 
@@ -109,7 +99,6 @@ advanced_tab_module_server = function(input, output, session, data, model, scori
     input$new
   }, {
     shinyjs::show("name")
-    # shinyjs::show("type")
   })
 
   observeEvent(
@@ -131,12 +120,10 @@ advanced_tab_module_server = function(input, output, session, data, model, scori
   })
 
 
-  # observe({print(data())})
   selected = shiny::callModule(model_table_module_server, 'models', data = data, model = model, scoring_funcs = scoring_funcs, selection = "single",  question_data = question_data)
 
   output$changes = reactable::renderReactable({
     df = node_changes()
-    # browser()
     print("draw changes")
     print(df)
     reactable::reactable(
@@ -147,16 +134,13 @@ advanced_tab_module_server = function(input, output, session, data, model, scori
         print(df$Node[index])
         print(df$data)
         shiny::div(
-          # reactable::reactable(df$data[[df$Node == df$Node[index]]])
           reactable::reactable(df$data[[index]])
         )
       }
     )
   })
 
-
   new_row = reactiveVal(NULL)
-  # response = reactive({
   observeEvent(reactiveValuesToList(my_nodes), {
     my_data = reactiveValuesToList(my_nodes)
     # is this a model or policy?
@@ -172,18 +156,6 @@ advanced_tab_module_server = function(input, output, session, data, model, scori
 
     new_row(m_data)
   })
-    # data = reactiveValuesToList(my_nodes)
-    # class(data) = c("custom_model", class(data))
-    # # standard inputs
-    # data[.user_nodes] = purrr::map(data[.user_nodes], unlist)
-    #
-    #
-    # # temp for testing
-    # m_data = model_policy_row(data, "custom")
-    # responses = format_responses(m_data$response[[1]])
-    # score_model(model, responses, scoring_funcs)
-  # })
-
 
   output$table = rhandsontable::renderRHandsontable({
     req(input$node_select != "")
@@ -237,52 +209,20 @@ advanced_tab_module_server = function(input, output, session, data, model, scori
     print(df)
     intermediate_nodes[[input$node_select]] = df
     my_nodes[[input$node_select]] = df
-    # my_nodes[[input$node_select]] = intermediate_nodes[[input$node_select]]
   })
 
   data_in_table = reactiveVal(NULL)
   observeEvent(input$table, {
     df = rhandsontable::hot_to_r(input$table)
-    # print("data in table")
-    print(df)
     data_in_table(df)
-    # intermediate_nodes[[input$node_select]] <<- df
-    # print(intermediate_nodes[[input$node_select]])
   })
 
-  # observeEvent(data_in_table(), {
-  #   df = data_in_table()
-  #   if(!identical(df, intermediate_nodes[[input$node_select]])) {
-  #     print("prop change")
-  #     intermediate_nodes[[input$node_select]] = df
-  #   }
-  # })
-
-  # observe({
-  #   req(input$node_select != "")
-  #   print(original_nodes[[input$node_select]])
-  #   print(my_nodes[[input$node_select]])
-  #   print(all.equal(original_nodes[[input$node_select]], my_nodes[[input$node_select]]))
-  #   print(!identical(original_nodes[[input$node_select]], reactiveValuesToList(my_nodes)[[input$node_select]]))
-  #   shinyjs::toggle(
-  #     "add_change",
-  #     condition = !identical(original_nodes[[input$node_select]], reactiveValuesToList(my_nodes)[[input$node_select]])
-  #   )
-  # })
-
-
-
-  # observeEvent(selected(),{
-  #
-  # }, ignoreNULL = FALSE)
   return(list(new_data = new_row, store = reactive(input$store), data = selected$data))
 }
 
 
 .numeric_pair_renderer = "function(el, x) {
           var hot = this.hot;
-
-
           hot.addHook(
             'afterChange',
             function(changes, source) {
@@ -306,20 +246,6 @@ advanced_tab_module_server = function(input, output, session, data, model, scori
           );
         }"
 
-# "
-# /*
-#   var data = hot.getDataAtRow(change[0])
-# var sum = data.map(
-#   function(d) {
-#     return parseFloat(d) || 0
-#   }
-# ).reduce(
-#   function(a, b){
-#     return a + b
-#   },
-#   0
-# );
-# */"
 
 # # example
 # pkgload::load_all()

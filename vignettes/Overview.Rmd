@@ -97,3 +97,11 @@ which delegates to the [webpack](https://webpack.js.org/) program to build the f
 ### R wrapper for React components
 
 Each React component also has a dedicated R function wrapper which handles passing of data to and from the created JavaScript widgets. See for example the source code of `customSliderTripleInput` or refer to the very useful ReactR tutorial at https://react-r.github.io/reactR/articles/intro_inputs.html.
+
+## Other assets
+
+### PDF
+
+The package contains a pdf template style based on the branding guide that we received. This is used for the purpose of rendering the reports that users can download and was also used in creating the downloadable questions. The assets for this template are found under `inst/rmarkdown` in line with the standard approach to creating new rmarkdown templates. A useful guide to creating such templates is found at https://bookdown.org/yihui/rmarkdown/document-templates.html. 
+
+The directory contains all of the necessary assets for style and layout. In particular `inst/rmarkdown/templates/nata-report/resources/template.tex` is where the fonts and colours are set for the documents.

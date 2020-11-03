@@ -22,32 +22,24 @@ prepare_csv = function(data, file = tempfile(fileext = ".csv")) {
   return(file)
 }
 
+#' format data for download
+#'
+#' Will format data such that the questions and responses are kept readable together
+#'
+#' @param data a tibble of model/scenario response and comment data
+#' @param question_data A named list of questions
+#' @return a tibble
 format_data_for_download = function(data, question_data) {
-  # data %>% dplyr::mutate(
-  #   Policy = tidyr::replace_na(.data$Policy, "baseline"),
-  #   csv_data = purrr::map(.data$Response, ~bind_questions(question_data, .x))
-  # ) %>%
-  #   dplyr::select(-.data$Response) %>%
-  #   tidyr::unnest(
-  #     .data$csv_data
-  #   )
   intermediate = data %>%
     dplyr::mutate(
       Policy = tidyr::replace_na(.data$Policy, "baseline"),
       csv_data = purrr::map(.data$Response, ~{
-        # print(.x)
         tryCatch(
           dplyr::bind_cols(
             `Custom Model` = FALSE,
             bind_questions(question_data, .x)
           ),
           error = function(e) tibble(`Custom Model` = TRUE)
-          # purrr::imap(.x, ~{
-          # df = ..1
-          # df$`Network Element` = ..2
-          # df$`Custom_Model` = TRUE
-          # dplyr::select(df, `Custom_Model`, `Network Element`, tidyr::everything())
-          # })
         )
       })
     ) %>%
@@ -55,26 +47,19 @@ format_data_for_download = function(data, question_data) {
     tidyr::unnest(
       .data$csv_data
     )
-  # %>%
-    # filter(!.data$`Custom Model`)
-  # if("csv_data" %in% colnames(intermediate)){
-  #   intermediate = intermediate %>%
-  #     tidyr::unnest(
-  #       .data$csv_data
-  #     )
-  # }
-  # if(all(c("Custom Model","Custom_Model") %in% colnames(intermediate))){
-  #   intermediate = intermediate %>%
-  #     dplyr::mutate(`Custom Model` = dplyr::coalesce(.data$`Custom Model`, .data$Custom_Model)) %>%
-  #     dplyr::select(-.data$Custom_Model)
-  # }
-  # intermediate %>%
-  #   dplyr::mutate_if(is.character, ~{
-  #     stringr::str_replace_all(.x, "_", " ")
-  #   }) %>%
-  #   `colnames<-`(stringr::str_replace_all(colnames(intermediate), "_", " "))
 }
 
+#' prepare pdf
+#'
+#' Create a downloadable pdf from the selected responses to the models/scenarios
+#'
+#' @param data a tibble containing the data for models/scenarios
+#' @param question_data A named list of question data
+#' @param model The underlying bayesian network model
+#' @param scoring_funcs A named list of functions which translate user responses into probabilities
+#' @param template A pdf template to use for rendering the output
+#' @param file A file path to act as a target for the rendered pdf prior to download.
+#' @return a character, file path to the rendered pdf
 prepare_pdf = function(data, question_data, model, scoring_funcs, template = system.file("assets", "templates", "pdf_template.Rmd", package = "diagramNAT"), file = tempfile(fileext = ".pdf")) {
     download_data = format_data_for_download(format_model_table(data, model, scoring_funcs, TRUE), question_data)
     vis_data = format_vis_data(data, model, scoring_funcs)
@@ -103,11 +88,15 @@ find_diff = function(download_data, model_name) {
   purrr::map(policies, function(p) {
     df = download_data %>% dplyr::filter(.data$Model == model_name & .data$Policy == p)
     df[which(df$Response != base$Response),]
-    # comp = compare::compare(base, df, allowAll = TRUE)
   }) %>% setNames(policies)
 }
 
-
+#' bind questions
+#'
+#' Will recursively bind questions and their sub elements to the reponses
+#'
+#' @param questions A list of all the question data
+#' @param responses A named list of responses
 bind_questions = function(questions, responses) {
   q_names = unique(purrr::map_chr(questions, 'node'))
   purrr::map_dfr(seq_along(q_names), function(i){
