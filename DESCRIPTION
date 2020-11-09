@@ -38,6 +38,7 @@ Imports:
     shinyalert,
     shinyBS,
     shinydashboard,
+    shinydashboardPlus,
     shinyjs,
     shinysky,
     shinyWidgets,
@@ -54,10 +55,14 @@ Imports:
     shinya11y,
     rmarkdown,
     bookdown,
-    kableExtra
+    kableExtra,
+    cicerone,
+    rhandsontable,
+    reactR
 Suggests:
     shinytest,
-    testthat
+    testthat,
+    knitr
 Remotes:
     AnalytixWare/ShinySky,
     ewenme/shinya11y
@@ -66,3 +71,4 @@ Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
+VignetteBuilder: knitr

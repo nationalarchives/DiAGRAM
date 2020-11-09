@@ -38,7 +38,7 @@ load_responses = function(path) {
     responses = purrr::map(x$response, unlist)
     tibble::tibble(
       model = x$model, policy = if(!is.null(x$policy)) x$policy else NA,
-      response = list(responses), notes = x$notes
+      response = list(responses), notes = if(!is.null(x$notes)) x$notes else ''
     )
   })
   # purrr::map(res, unlist)

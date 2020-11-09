@@ -7,10 +7,10 @@ report_tab_module_ui = function(id){
   ns = NS(id) # no lint (excluded from lint for jrshinyapp template)
   tagList(
     shinyjs::useShinyjs(),
-    shiny::div(
-      class = "download-page-title",
-      "Download a Report"
-    ),
+    # shinydashboard::box(
+    #   width = 12,
+      shiny::h3("Download a Report"),
+    # ),
     shinydashboard::box(
       title = "Summary", width = 12,
       # shinipsum::random_text(nwords = 50)
@@ -28,15 +28,17 @@ report_tab_module_ui = function(id){
         # shiny::downloadButton(ns("download"))
         shiny::div(
           shinyjs::disabled(shiny::downloadButton(ns("pdf"), "PDF")),
-          "download a PDF to see a presentation version of your results"
+          "download a PDF to see a presentation version of your results."
         ),
+        shiny::br(),
         shiny::div(
           shinyjs::disabled(shiny::downloadButton(ns("csv"), "CSV")),
-          "download a CSV file to create your own graphs from the data"
+          "download a CSV file to create your own graphs from the data."
         ),
+        shiny::br(),
         shiny::div(
-          shinyjs::disabled(shiny::downloadButton(ns("json"), "JSON")),
-          "downlad a JSON file to upload your model to DiAGRAM in the future"
+          shinyjs::disabled(shiny::downloadButton(ns("json"), "App data")),
+          "download a binary data file to upload your model to DiAGRAM in the future."
         )
 
 
@@ -56,7 +58,7 @@ report_tab_module_ui = function(id){
 #' @import shiny
 report_tab_module_server = function(input, output, session, data, model, question_data, scoring_funcs){
   ns = session$ns # no lint (excluded from lint for jrshinyapp template)
-  selected = shiny::callModule(model_table_module_server, 'table', data = data, model = model, scoring_funcs = scoring_funcs)
+  selected = shiny::callModule(model_table_module_server, 'table', data = data, model = model, scoring_funcs = scoring_funcs, question_data = question_data)
 
   output$pdf = shiny::downloadHandler(
     filename = function() {
@@ -68,16 +70,16 @@ report_tab_module_server = function(input, output, session, data, model, questio
       temp_sub = file.path(td, "pdf_section.Rmd")
       file.copy(system.file("assets", "templates", "pdf_template.Rmd", package = "diagramNAT"), temp, overwrite = TRUE)
       file.copy(system.file("assets", "templates", "pdf_section.Rmd", package = "diagramNAT"), temp_sub, overwrite = TRUE)
-      pdf_file = prepare_pdf(data()[selected(),], question_data, model, scoring_funcs, template = temp, file = file)
+      pdf_file = prepare_pdf(data()[selected$selected(),], question_data, model, scoring_funcs, template = temp, file = file)
       # on.exit(file.remove(pdf_file))
       # file.copy(pdf_file, file)
     }
   )
 
   observe({
-    shinyjs::toggleState(id = "pdf", condition = length(selected()) > 0)
-    shinyjs::toggleState(id = "csv", condition = length(selected()) > 0)
-    shinyjs::toggleState(id = "json", condition = length(selected()) > 0)
+    shinyjs::toggleState(id = "pdf", condition = length(selected$selected()) > 0)
+    shinyjs::toggleState(id = "csv", condition = length(selected$selected()) > 0)
+    shinyjs::toggleState(id = "json", condition = length(selected$selected()) > 0)
   })
 
   output$csv = shiny::downloadHandler(
@@ -85,7 +87,7 @@ report_tab_module_server = function(input, output, session, data, model, questio
       paste0("DiAGRAM-data-",Sys.Date(), ".csv")
     },
     content = function(file) {
-      csv_file = data()[selected(),] %>%
+      csv_file = data()[selected$selected(),] %>%
         format_model_table(model, scoring_funcs, TRUE) %>%
         format_data_for_download(question_data) %>%
         prepare_csv()
@@ -96,10 +98,11 @@ report_tab_module_server = function(input, output, session, data, model, questio
 
   output$json = shiny::downloadHandler(
     filename = function() {
-      paste0("DiAGRAM-data-", Sys.Date(), ".json")
+      paste0("DiAGRAM-data-", Sys.Date(), ".rds")
     },
     content = function(file) {
-      json_file = prepare_json(data()[selected(),])
+      json_file = tempfile(fileext = ".rds")
+      saveRDS(data()[selected$selected(),], json_file)#prepare_json(data()[selected$selected(),])
       on.exit(file.remove(json_file))
       file.copy(json_file, file)
     }
@@ -131,4 +134,5 @@ report_tab_module_server = function(input, output, session, data, model, questio
   #   },
   #   contentType = "application/zip"
   # )
+  return(selected$data)
 }

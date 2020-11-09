@@ -25,5 +25,5 @@ DO NOT REMOVE.}
 \item{model}{The stored model, loaded from a .bif file}
 }
 \description{
-The application server-side
+This function largely calls the sub modules for the application and deals with the top level data manipulation.
 }

@@ -5,3 +5,6 @@
 ^\.travis\.yml$
 ^deploy_to_shinyapps\.R$
 ^README\.Rmd$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
