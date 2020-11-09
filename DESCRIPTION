@@ -19,7 +19,7 @@ Imports:
     DT,
     ggplot2,
     glue,
-    gRain (== 1.3.0),
+    gRain,
     graph,
     gridExtra,
     htmltools,
