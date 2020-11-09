@@ -45,6 +45,12 @@ app_ui = function(req, question_data, default_response) {
       rel = "stylesheet", type = "text/css",
       href = "www/questions.css"
     ),
+    shiny::includeScript(
+      system.file("assets",
+                  "js",
+                  "timeout.js",
+                  package = "diagramNAT")
+    ),
     shiny::tags$link(
       rel = "stylesheet", type = "text/css",
       href = "https://use.typekit.net/jwz4fne.css"
@@ -92,7 +98,7 @@ app_ui = function(req, question_data, default_response) {
             "Learn about DiAGRAM", tabName = "definitions"
           ),
           shinydashboard::menuItem(
-              "Advanced customisation", tabName = "advanced"
+            "Advanced customisation", tabName = "advanced"
           ),
           shinydashboard::menuItem(
             "Glossary", tabName = "glossary"
@@ -138,15 +144,15 @@ app_ui = function(req, question_data, default_response) {
               # ),
             ),
             # shinyjs::hidden(
-              shiny::fluidRow(
-                shinydashboard::box(
-                  width = 12,
-                  shiny::div(
-                    id = "model-table-container",
-                    model_table_module_ui("model_table")
-                  )
+            shiny::fluidRow(
+              shinydashboard::box(
+                width = 12,
+                shiny::div(
+                  id = "model-table-container",
+                  model_table_module_ui("model_table")
                 )
               )
+            )
             # )
           ),
           shinydashboard::tabItem(
@@ -175,9 +181,9 @@ app_ui = function(req, question_data, default_response) {
             shiny::fluidRow(
               shinydashboard::box(
                 width = 12,
-            shiny::fileInput("upload", label = "Upload data", accept = ".json")#,
-            # shiny::downloadButton("download"),
-            # model_table_module_ui("save_table")
+                shiny::fileInput("upload", label = "Upload data", accept = ".json")#,
+                # shiny::downloadButton("download"),
+                # model_table_module_ui("save_table")
               ))
           ),
           shinydashboard::tabItem(
@@ -198,7 +204,7 @@ app_ui = function(req, question_data, default_response) {
               shinydashboard::box(
                 width = 12,
                 shiny::includeMarkdown(system.file("text_content", "glossary.md",
-                                               package = "diagramNAT"))
+                                                   package = "diagramNAT"))
               )
             )
           )

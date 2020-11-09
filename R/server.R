@@ -161,6 +161,13 @@ app_server = function(input, output, session, question_data, default_response, m
     shinydashboard::updateTabItems(session = shiny::getDefaultReactiveDomain(), inputId = "sidebarMenu", selected = 'visualise')
   })
 
+  ## listen to the timeout warning
+  observeEvent(input$timeout,{
+    shinyjs::alert(
+      # title = "Warning", type = "warning",
+      text = "Your session is due to time out in two minutes. Please take an action or your session will be lost."
+    )
+  })
   ### listen to events from advanced tab
   advanced_return = shiny::callModule(advanced_tab_module_server, 'adv', data = reactive(model_obj$data), model = model, scoring_funcs = scoring_funcs,  question_data = question_data)
 
