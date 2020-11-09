@@ -1,6 +1,11 @@
 
-
-
+#' policy creation module ui
+#'
+#' Lays out the user interface for the scenario building, choosing the model
+#' to build a policy from, the questions and then cycling through the questions to
+#' build a set of responses
+#'
+#' @param id namespace id requried by shiny modules
 policy_creation_module_ui = function(id) {
   ns = shiny::NS(id)
   shiny::column(
@@ -12,10 +17,8 @@ policy_creation_module_ui = function(id) {
         shiny::p(
           "By creating a scenario you will be able to change the answers you used to create your model and see how it impacts your score."
         ),
-        uiOutput(ns('scenario_text')),
-        # shiny::p(
-        #   "Choose a model first before you create a new scenario."
-        # ),
+        shiny::uiOutput(ns('scenario_text')),
+
         model_table_module_ui(ns('policy-starter'))
       ),
       shinyjs::hidden(shiny::div(
@@ -33,11 +36,6 @@ policy_creation_module_ui = function(id) {
               width = 10,
               uiOutput(ns('policy-questions-ui'))
             )
-            # ,
-            # shiny::column(
-            #   width = 2,
-            #   flash_table_module_ui(ns('flash-table-ui'), list("Intellectual_Control" = 0, "Renderability" = 0))
-            # )
           )
         )
       ),
@@ -63,14 +61,27 @@ policy_creation_module_ui = function(id) {
   )
 }
 
+#' policy creation module server
+#'
+#' Server side logic to handle policy creation
+#'
+#' @param input necessary for shiny module
+#' @param output necessary for shiny module
+#' @param session necessary for shiny module
+#' @param input_data The data which lays out the list of existing models/scenarios
+#' @param question_data The named list of questions
+#' @param model The underlying bayesian network model
+#' @param scoring_funcs A named list of functions which translate user inputs into probabilities for the mode
 policy_creation_module_server = function(input, output, session, input_data, question_data, model, scoring_funcs) {
   ns = session$ns
   # output from table in policy creation
   model_obj = reactiveValues(data = NULL)
+  # update from global list of models/scenarios
   observeEvent(input_data(), {
     model_obj$data= input_data()
   })
 
+  # values to track the specifics of a policy
   subset_picked = reactiveValues(
     data = NULL,
     response = NULL,
@@ -80,12 +91,14 @@ policy_creation_module_server = function(input, output, session, input_data, que
     vis_clicked = 0
   )
 
+  # sequence of UI states to cycle through on clicking next/back
   state_ids = paste0(c(
     "policy-start",
     "policy-response-picker",
     "policy-questions"
     # "policy-questions"
   ), "-container")
+
 
   output$scenario_text = renderUI({
     if(nrow(model_obj$data) > 0){
@@ -99,11 +112,14 @@ policy_creation_module_server = function(input, output, session, input_data, que
     }
   })
 
+  # table module for choosing existing model to start the policy
   policy_picker = callModule(model_table_module_server, 'policy-starter', data = reactive(model_obj$data), model = model, selection = "single", scoring_funcs = scoring_funcs,  question_data = question_data)
 
+  # state tracking for UI
   current_state = reactiveVal(1)
   hide_back = reactiveVal(FALSE)
 
+  # update visible UI based on state
   observeEvent({
     current_state()
     original_response()
@@ -125,29 +141,11 @@ policy_creation_module_server = function(input, output, session, input_data, que
     model_obj$data$response[[policy_picker$selected()]]
   })
 
-  # observe({
-  #   req(!is.null(policy_picker()))
-  #   print(model_obj$data$response[[policy_picker()]])
-  # })
-
-  # original_score = reactive({
-  #   req(!is.null(policy_picker()))
-  #   score_model(model, format_responses(original_response()))
-  # })
-
-  # observe({
-  #   print("original score")
-  #   print(original_score())
-  # })
-
-  # new_score = reactiveVal(list("Intellectual_Control" = 0, "Renderability" = 0))
-
-  # callModule(flash_table_module_server, 'flash-table-ui', original_score = original_score, new_score = new_score)
-
   observeEvent(original_response(), {
     shinyjs::show("next-container")
   })
 
+  ## cycle the states of UI by the next and back buttons
   observeEvent(input$go, {
     current_state(current_state() + 1 )
   })
@@ -157,6 +155,7 @@ policy_creation_module_server = function(input, output, session, input_data, que
     current_state(current_state() - 1)
   })
 
+  # create a question builder from the chosen model and questions
   observeEvent(input$create, {
     # browser()
     question_clone = question_data
@@ -181,37 +180,10 @@ policy_creation_module_server = function(input, output, session, input_data, que
     subset_picked$question_ui = q_ui
     subset_picked$server_response = q_response
     current_state(current_state() + 1)
-    # shinyjs::hide('back-container')
-    # if(!is.null(subset_picked$observers$state)) {
-    #   subset_picked$observers$state$destroy()
-    # }
-    # subset_picked$observers$state = observeEvent(subset_picked$server_response$state(), {
-    #   # browser()
-    #   req(subset_picked$server_response$state())
-    #
-    #   state_to_replace = subset_picked$server_response$state()
-    #   missing = purrr::map_lgl(purrr::flatten(state_to_replace), ~(is.null(.x) || is.na(.x)))
-    #   browser()
-    #   if(any(missing)) {
-    #     return()
-    #   }
-    #
-    #   browser()
-    #   full_state = original_response()
-    #   full_state[names(state_to_replace)] = state_to_replace
-    #   # new_score(
-    #   #   score_model(model, format_responses(full_state))
-    #   # )
-    # })
 
-    # if(!is.null(subset_picked$observers$namer)) {
-    #   # print('destroy')
-    #   subset_picked$observers$namer$destroy()
-    # }
-    # subset_picked$observers$namer = observeEvent(subset_picked$server_response$name(), {
-    #   print("naming time")
-    # })
-
+    # because we are dynamically starting a module dependent on selected questions
+    # we register the handlers for the different events that we need and destroy
+    # any existing ones that are registered
     if(!is.null(subset_picked$observers$go)) {
       subset_picked$observers$go$destroy
     }
@@ -237,12 +209,7 @@ policy_creation_module_server = function(input, output, session, input_data, que
       names = intersect(names(full_state), names(new_state))
       full_state[names] = new_state[names]
       new_row = model_policy_row(full_state, model_name = model_obj$data$model[[policy_picker$selected()]], policy_name = subset_picked$server_response$name(), notes = subset_picked$server_response$comments())
-      # print(new_row)
-      # browser()
       return_val(new_row)
-      # model_obj$data = dplyr::bind_rows(
-      #   model_obj$data, new_row
-      # )
     })
     if(!is.null(subset_picked$observer$visualise)) {
       subset_picked$observer$visualise$destroy
@@ -250,33 +217,16 @@ policy_creation_module_server = function(input, output, session, input_data, que
     subset_picked$observer$visualise = observeEvent(subset_picked$server_response$visualise(), {
       subset_picked$observer$vis_clicked = runif(1)#subset_picked$server_response$visualise()
     })
-
-    # observeEvent(subset_picked$server_response$go()), {}
-    # browser()
   })
 
-
-
   output$`policy-questions-ui` = renderUI({
-    # browser()
     subset_picked$question_ui
   })
 
-  # observeEvent(subset_picked$server_response, {
-  #   req(subset_picked)
-  #   # print('server response')
-  #   # print(subset_picked$server_response)
-  # })
-
+  # table of questions to choose for building the scenario
   output$policy_response_picker = reactable::renderReactable({
     responses = format_responses(original_response())
     responses$response = purrr::map(responses$response, unlist)
-    # q_text = purrr::map_dfr(question_data, function(x){
-    #   # tibble(Text = x$text, node = x$node)
-    #   if(is.null(x$part)) {
-    #
-    #   }
-    # })
     q_text = tibble::tibble(node = unique(purrr::map_chr(question_data,'node')))
     responses %>%
       dplyr::left_join(q_text) %>%
@@ -288,15 +238,13 @@ policy_creation_module_server = function(input, output, session, input_data, que
       reactable::reactable(onClick = "select", selection = "multiple")
   })
 
+  # tracks the selected quetsions
   selected_questions = reactive({
     names(original_response())[reactable::getReactableState('policy_response_picker', 'selected')]
   })
 
-  # observe({
-  #   print(selected_questions())
-  # })
+  # a reactive to track the state of the policy responses ready to return
   return_val = reactiveVal(NULL)
-  # finish_click = reactiveVal(0)
 
   return(list(
     state = return_val,

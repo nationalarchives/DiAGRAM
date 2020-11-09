@@ -22,5 +22,5 @@ policy_visualisation_module_server(
 \item{session}{necessary session arg for shiny server function}
 }
 \description{
-policy_visualisation module server
+server side logic for the visualisation of model/scenario data
 }

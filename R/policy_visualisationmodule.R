@@ -28,6 +28,12 @@ policy_bar_chart = function(policy_data){
 }
 
 
+#' policy bar gg
+#'
+#' Creates a nice bar chart using ggplot with fixed colours for policies and
+#' models
+#'
+#' @param policy_data a tibble of model/scenario data
 #' @export
 policy_bar_gg = function(policy_data){
   ## Convert NA to baseline
@@ -123,6 +129,8 @@ policy_visualisation_module_ui = function(id){
 
 #' policy_visualisation module server
 #'
+#' server side logic for the visualisation of model/scenario data
+#'
 #' @param input necessary input arg for shiny server function
 #' @param output necessary output arg for shiny server function
 #' @param session necessary session arg for shiny server function
@@ -134,36 +142,23 @@ policy_visualisation_module_server = function(input, output, session, model_data
 
   selection = callModule(model_table_module_server, 'bar-select', data = model_data, model = model, selection = "multiple", show_policy = TRUE, scoring_funcs = scoring_funcs, question_data = question_data)
   vis_data = shiny::reactive({
-    # browser()
     req(nrow(model_data()) > 0)
     intermediate = model_data()
     df = format_vis_data(intermediate, model, scoring_funcs)
     df[selection$selected(), ]
   })
 
-  observe({
-    print("vis data")
-    print(vis_data())
-  })
-
   output$policy_bar_chart = plotly::renderPlotly({
-
     validate(
       need(nrow(vis_data()) > 0,
            "No policies currently selected.")
     )
-
       policy_bar_chart(vis_data())
-
   })
-
   return(selection$data)
 }
 
 format_vis_data = function(intermediate, model, scoring_funcs) {
-  # intermediate = dplyr::bind_cols(intermediate, purrr::map_dfr(intermediate$response, ~{
-  #   score_model(model, format_responses(.x), scoring_funcs) %>% unlist
-  # }))
   intermediate = tryCatch(
     {dplyr::bind_cols(intermediate, purrr::map_dfr(intermediate$response, ~{
       score_model(model, format_responses(.x), scoring_funcs) %>% unlist
