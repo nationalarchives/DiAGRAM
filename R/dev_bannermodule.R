@@ -9,12 +9,16 @@ dev_banner_module_ui = function(id){
   tagList(
     # Welcome box
     shinydashboard::box(
-      title = NULL,
+      title = "Important note: This model is still in development",
       width = 12,
-      background="orange",
-      shiny::h3(
-        shiny::strong("Important note: This model is still in development")
-      ),
+      background = "red",
+      # status = "warning",
+      solidHeader = TRUE,
+      collapsible = TRUE,
+      collapsed = TRUE,
+      # shiny::h3(
+      #   shiny::strong("Important note: This model is still in development")
+      # ),
       shiny::p(
         "There will be further user interface changes and additional functionality added as the
         project progresses. Any feedback to inform the future development would be welcome

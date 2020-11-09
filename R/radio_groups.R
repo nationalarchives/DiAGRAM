@@ -15,12 +15,14 @@ radio_group_module_ui = function(id = 'test', state, label = LETTERS[1:4], conte
   # }
 
   n_q = length(questions)
+  # browser()
+  # if(n_q == 0) browser()
   buttons = purrr::map2(seq_along(questions), options, function(i, opt) {
     div(
       style = "clear: right;",
       div(
         style = if(length(questions) > 1) "max-width: 40%; display: inline-block; vertical-align: middle;",
-        shiny::p(questions[i])
+        markdown::renderMarkdown(text = questions[i]) %>% HTML()
       ),
       div(
         style = if(length(questions) > 1) "max-width: 55%; display: inline-block; vertical-align: middle; float: right;" else NULL,
@@ -65,8 +67,15 @@ radio_group_module_server = function(input, output, session, state) {
   })
 
   observe({
-    vals = purrr::map_chr(paste0("test-",1:input$x), ~input[[.x]])
-    print(vals)
+    req(input$x)
+    # browser()
+    # print(input$x)
+    # if(input$x == 0 || is.null(input$x)) browser()
+    # print(input$`test-1`)
+
+    vals = purrr::map_chr(paste0("test-",seq_len(input$x)), ~input[[.x]])
+    # browser()
+    # print(vals)
     return_val(vals)
   })
   return(return_val)

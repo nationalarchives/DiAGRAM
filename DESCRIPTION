@@ -1,6 +1,6 @@
 Package: diagramNAT
 Title: Package For National Archives Diagram App
-Version: 0.0.0.9007
+Version: 0.0.0.9008
 Authors@R: 
     person(given = "Jamie",
            family = "Owen",
@@ -38,6 +38,7 @@ Imports:
     shinyalert,
     shinyBS,
     shinydashboard,
+    shinydashboardPlus,
     shinyjs,
     shinysky,
     shinyWidgets,
@@ -50,14 +51,24 @@ Imports:
     V8,
     yaml,
     forcats,
-    markdown
+    markdown,
+    shinya11y,
+    rmarkdown,
+    bookdown,
+    kableExtra,
+    cicerone,
+    rhandsontable,
+    reactR
 Suggests:
     shinytest,
-    testthat
+    testthat,
+    knitr
 Remotes:
-    AnalytixWare/ShinySky
+    AnalytixWare/ShinySky,
+    ewenme/shinya11y
 biocViews:
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
+VignetteBuilder: knitr

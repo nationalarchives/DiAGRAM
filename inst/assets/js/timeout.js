@@ -1,5 +1,5 @@
 (function() {
-  var timeoutWarningMsecs = 10 * 60 * 1000;
+  var timeoutWarningMsecs = 13 * 60 * 1000;
   var idleTimer;
 
   function onTimeout() {

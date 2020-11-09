@@ -30,8 +30,9 @@
   Op_Environment = function(questions) {
     f_list = purrr::map(questions, make_one_score_func)
     function(group_response) {
+      # browser()
       answers = purrr::map2_dbl(f_list, group_response, ~.x(.y))
-      if(answers[1] == 100 || answers[2] == 1) {
+      if(answers[1] == 100 || answers[2] == 'Yes') {
         return(100)
       }else{
         return(answers[1])
@@ -79,6 +80,56 @@ calculate_utility = function(model) {
   return(utility)
 }
 
+
+calculate_probabilities = function(model, responses, scoring_funcs) {
+  prob_names = model[responses$node] %>% purrr::map(~names(.x$prob))
+
+  # translate the given responses to numeric
+  numeric_scores = purrr::map2(scoring_funcs[responses$node], responses$response[responses$node], function(f, x) {
+    if(inherits(x, "data.frame")) { #implies advanced
+      return(identity(x))
+    }
+    # print("score start")
+    # print(f)
+    # print(x)
+    # print(f(x))
+    # print("score end")
+    f(x)
+  })
+
+
+  # rescale to probabilities
+  probs = purrr::pmap(list(numeric_scores, prob_names[names(numeric_scores)], names(numeric_scores)), function(resp, name, node) {
+    # print(node)
+    if(inherits(resp, "data.frame")) { # implies custom model
+      if(nrow(resp) == 1) {# implies it is a standard user node
+        tab = as.table(setNames(unlist(resp), name))
+      }else {
+        nc = ncol(resp)
+        intermediate = tidyr::pivot_longer(resp, c(nc-1,nc), names_to = node) %>%
+          dplyr::select(!!node, tidyr::everything()) %>%
+          dplyr::mutate_if(is.character, ~stringr::str_replace_all(.x, " ", "_"))
+        # existing_spec = attr(model[[node]]$prob, "dimnames")
+        # purrr::imap(existing_spec, function(x, i){
+        #   forcats::fct_relevel(intermediate[[i]], x)
+        # })
+        tab = stats::xtabs(value ~., data = intermediate)
+      }
+    }else {
+      if(length(resp) == 1) {
+        intermediate = c(resp, 100-resp)
+      }else{
+        intermediate = resp
+      }
+      tab = as.table(stats::setNames(intermediate/100, name))
+    }
+
+    # tab = tryCatch(, error = function(e) browser())
+    tab
+  })
+  probs
+}
+
 #' Score model
 #'
 #' This function will take a set of user values as a tibble and return the
@@ -103,30 +154,7 @@ score_model = function(model, responses, scoring_funcs) {
   if(!response_valid(responses)){
     return()
   }
-  prob_names = model[responses$node] %>% purrr::map(~names(.x$prob))
-
-  # translate the given responses to numeric
-  numeric_scores = purrr::map2(scoring_funcs, responses$response[names(scoring_funcs)], function(f, x) {
-    # print("score start")
-    # print(f)
-    # print(x)
-    # print(f(x))
-    # print("score end")
-    f(x)
-  })
-
-
-  # rescale to probabilities
-  probs = purrr::map2(numeric_scores, prob_names[names(numeric_scores)], function(resp, name) {
-    if(length(resp) == 1) {
-      intermediate = c(resp, 100-resp)
-    }else{
-      intermediate = resp
-    }
-    as.table(stats::setNames(intermediate/100, name))
-  }) #%>% stats::setNames(responses$node)
-  # print(probs)
-  # update model
+  probs = calculate_probabilities(model, responses, scoring_funcs)
   for(node in responses$node) {
     model[[node]] = probs[[node]]
   }
@@ -153,7 +181,7 @@ make_one_score_func = function(question) {
 }
 
 make_scoring_functions = function(grouped_question_data) {
-  purrr::imap(grouped_question_data, function(question, node) {
+  l1 = purrr::imap(grouped_question_data, function(question, node) {
     if(length(question[[1]]) == 1) {
       make_one_score_func(question)
     } else if(node %in% names(.custom_scoring_functions)){
@@ -166,6 +194,10 @@ make_scoring_functions = function(grouped_question_data) {
       f
     }
   }) #%>% setNames(nodes)
+  # for non user nodes, use identity
+  other = setdiff(.reverse_node_map, .user_nodes)
+  l2 = purrr::map(other, ~{identity}) %>% setNames(other)
+  c(l1, l2)
   # replace the special nodes with the custom funcs
 }
 
