@@ -30,5 +30,5 @@ For more information about how the tool works see 'Learn about DiAGRAM'.
 
 #### Project Team
 
-DiAGRAM was built by The National Archives and the University of Warwick with support from the National Lottery Heritage Fund and the Engineering and Physical Sciences Research Council.
+DiAGRAM was built by <a href="https://www.nationalarchives.gov.uk/" target="_blank">The National Archives</a> and the <a href="https://warwick.ac.uk/fac/sci/statistics/asru" target="_blank">University of Warwick</a> with support from the <a href="https://www.heritagefund.org.uk/" target="_blank">National Lottery Heritage Fund</a> and the <a href="https://epsrc.ukri.org/" target="_blank">Engineering and Physical Sciences Research Council</a>.
 

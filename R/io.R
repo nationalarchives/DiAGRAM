@@ -32,7 +32,7 @@ prepare_csv = function(data, file = tempfile(fileext = ".csv")) {
 format_data_for_download = function(data, question_data) {
   intermediate = data %>%
     dplyr::mutate(
-      Policy = tidyr::replace_na(.data$Policy, "baseline"),
+      Policy = tidyr::replace_na(.data$Policy, "baseline"), #change to Scenario?
       csv_data = purrr::map(.data$Response, ~{
         tryCatch(
           dplyr::bind_cols(

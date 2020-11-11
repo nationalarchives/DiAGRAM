@@ -21,7 +21,7 @@ home_tab = function() {
         class = "main-title"
       ),
       shiny::div(shiny::img(src = "www/diagram_logo_transparent.png", width = "400px"), style = "text-align:center"),
-      shiny::h3("Version 0.9.7 (Prototype)", align="center"), #update in June
+      shiny::h3("Version 0.10.0 (Prototype)", align="center"),
       shiny::includeMarkdown(system.file("text_content/home_content.md", package = "diagramNAT")),
       shiny::fluidRow(
         shiny::column(
@@ -60,3 +60,32 @@ home_tab = function() {
     )
   )
 }
+
+##Alternative code that has logos as links
+# shiny::div(
+#   class = "logos",
+#   tags$a(
+#     href="https://www.nationalarchives.gov.uk/",
+#     target="_blank",
+#     tags$img(src="www/TNA - SQUARE LOGO POSITIVE.png",
+#              width="100",
+#              height="100")),
+#   tags$a(
+#     href="https://warwick.ac.uk/fac/sci/statistics/asru",
+#     target="_blank",
+#     tags$img(src="www/university_of_warwick_logo_detail.png",
+#              height=80,
+#              width=120
+#     )),
+#   tags$a(
+#     href="https://www.heritagefund.org.uk/",
+#     target="_blank",
+#     tags$img(src="www/TNLHLF_Colour_Logo_English_RGB_0_0.jpg",
+#              height=80,
+#              width=216
+#     )),
+#   tags$a(
+#     href="https://epsrc.ukri.org/",
+#     target="_blank",
+#     tags$img(src="www/UKRI_EPSR_Council-Logo_Horiz-RGB.png", height=75))
+# )

@@ -181,7 +181,7 @@ app_ui = function(req, question_data, default_response) {
             shiny::fluidRow(
               shinydashboard::box(
                 width = 12,
-                shiny::fileInput("upload", label = "Upload data", accept = ".json")#,
+                shiny::fileInput("upload", label = "Upload data", accept = ".rds")#,
                 # shiny::downloadButton("download"),
                 # model_table_module_ui("save_table")
               ))

@@ -39,6 +39,7 @@ format_model_table = function(intermediate, model, scoring_funcs, show_policy) {
       dplyr::select(.data$model, "Intellectual Control" = .data$Intellectual_Control, .data$Renderability, .data$notes, .data$response)
   }
   res %>%
+    #dplyr::rename(Scenario=policy) %>%
     dplyr::rename_with(stringr::str_to_title) %>%
     dplyr::mutate_if(is.numeric, ~ round(.x, 2))
 }

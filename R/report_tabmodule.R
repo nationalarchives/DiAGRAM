@@ -37,7 +37,7 @@ report_tab_module_ui = function(id){
         ),
         shiny::br(),
         shiny::div(
-          shinyjs::disabled(shiny::downloadButton(ns("json"), "App data")),
+          shinyjs::disabled(shiny::downloadButton(ns("rds"), "App data")),
           "download a binary data file to upload your model to DiAGRAM in the future."
         )
 
@@ -79,7 +79,7 @@ report_tab_module_server = function(input, output, session, data, model, questio
   observe({
     shinyjs::toggleState(id = "pdf", condition = length(selected$selected()) > 0)
     shinyjs::toggleState(id = "csv", condition = length(selected$selected()) > 0)
-    shinyjs::toggleState(id = "json", condition = length(selected$selected()) > 0)
+    shinyjs::toggleState(id = "rds", condition = length(selected$selected()) > 0)
   })
 
   output$csv = shiny::downloadHandler(
@@ -96,15 +96,15 @@ report_tab_module_server = function(input, output, session, data, model, questio
     }
   )
 
-  output$json = shiny::downloadHandler(
+  output$rds = shiny::downloadHandler(
     filename = function() {
       paste0("DiAGRAM-data-", Sys.Date(), ".rds")
     },
     content = function(file) {
-      json_file = tempfile(fileext = ".rds")
-      saveRDS(data()[selected$selected(),], json_file)#prepare_json(data()[selected$selected(),])
-      on.exit(file.remove(json_file))
-      file.copy(json_file, file)
+      rds_file = tempfile(fileext = ".rds")
+      saveRDS(data()[selected$selected(),], rds_file)#prepare_json(data()[selected$selected(),])
+      on.exit(file.remove(rds_file))
+      file.copy(rds_file, file)
     }
   )
 
