@@ -41,7 +41,7 @@ terminate = function(account = "jumpingrivers", server = "shinyapps.io") {
 
 
 install_pkg()
-deploy()
-terminate()
+deploy(account = "nationalarchives")
+terminate(account = "nationalarchives")
 
 
