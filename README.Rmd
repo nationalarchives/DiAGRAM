@@ -1,0 +1,42 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# DiAGRAM  [![Travis build status](https://travis-ci.com/jumpingrivers/DiAGRAM.svg?branch=master)](https://travis-ci.com/jumpingrivers/DiAGRAM)
+
+Repository for the Digital Archiving Graphical Risk Assessment Model - DiAGRAM
+
+For more details [see the project webpage](https://nationalarchives.gov.uk/information-management/manage-information/preserving-digital-records/research-collaboration/safeguarding-the-nations-digital-memory/).
+
+## Getting Started
+
+### Installing Dependencies
+
+```R
+devtools::install_deps()
+devtools::install_version("gRain", "1.3-0")
+devtools::install()
+```
+
+### Running the App
+
+See `inst/example/app.R`
+
+```R
+`r paste(readLines("inst/example/app.R"), collapse = "\n")`
+```
+
+## Development
+
+Branches are published to ShinyApps.io via Travis. See https://travis-ci.org/github/jumpingrivers/DiAGRAM.
