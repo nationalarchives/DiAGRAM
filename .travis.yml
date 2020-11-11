@@ -45,8 +45,8 @@ r_github_packages:
 # Delete this when R package passes with no warnings
 # gRain is installed then we need to install on top
 script:
-  - Rscript -e 'install.packages("functional")' # for gRain 1.3-0
-  - Rscript -e 'install.packages("https://cran.r-project.org/src/contrib/Archive/gRain/gRain_1.3-0.tar.gz", repos=NULL, type="source")'
+  #- Rscript -e 'install.packages("functional")' # for gRain 1.3-0
+  #- Rscript -e 'install.packages("https://cran.r-project.org/src/contrib/Archive/gRain/gRain_1.3-0.tar.gz", repos=NULL, type="source")'
   - R CMD build .
 
 after_success:
