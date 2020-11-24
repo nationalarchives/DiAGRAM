@@ -13,20 +13,24 @@ install_pkg = function() {
   cli::cli_alert_success("{path} installed!")
 }
 
-deploy = function(account = "jumpingrivers", server = "shinyapps.io") {
+deploy = function(account = "nationalarchives", server = "shinyapps.io") {
   cli::cli_h1("Deploying app")
   rsconnect::setAccountInfo(name = account,
                             token = Sys.getenv("shinyapps_io_token"),
                             secret = Sys.getenv("shinyapps_io_secret"))
   slug = stringr::str_match(Sys.getenv('TRAVIS_REPO_SLUG'), "/(.*)")[1, 2]
-  appName = paste(slug, Sys.getenv("TRAVIS_BRANCH"), sep = "-")
+  if (Sys.getenv("TRAVIS_BRANCH") == "master") {
+    appName = paste(slug)
+  }  else {
+    appName = paste(slug, Sys.getenv("TRAVIS_BRANCH"), sep = "-")
+  }
   rsconnect::deployApp(
     account = account, server = server,
     appDir = system.file("example", package = "diagramNAT"), appName = appName)
   cli::cli_alert_success("{appName} successfully deployed")
 }
 
-terminate = function(account = "jumpingrivers", server = "shinyapps.io") {
+terminate = function(account = "nationalarchives", server = "shinyapps.io") {
   msg = Sys.getenv("TRAVIS_COMMIT_MESSAGE")
   if (stringr::str_detect(msg, "^Merge pull", negate = TRUE)) return(NULL)
 
@@ -41,7 +45,7 @@ terminate = function(account = "jumpingrivers", server = "shinyapps.io") {
 
 
 install_pkg()
-deploy(account = "nationalarchives")
-terminate(account = "nationalarchives")
+deploy()
+terminate()
 
 
