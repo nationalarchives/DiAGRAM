@@ -147,7 +147,13 @@ model_table_module_server = function(
         backgroundSize = '100% 90%',
         backgroundRepeat = 'no-repeat',
         backgroundPosition = 'center',
-        color = 'white'
+        color = 'black'
+      ) %>%
+      DT::formatStyle(
+        "Model",
+        target = 'row',
+        fontStyle = DT::styleEqual("Ref: Commercial Backup",'italic'),
+        backgroundColor = DT::styleEqual("Ref: Commercial Backup",'#F9F7E2')
       )
     # to_delete(numeric(0))
     table_contents(tab)
