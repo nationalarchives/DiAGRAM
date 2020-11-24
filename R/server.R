@@ -57,12 +57,14 @@
 #' @importFrom DT datatable renderDataTable
 #' @importFrom stats reorder
 #' @export
-app_server = function(input, output, session, question_data, default_response, model, scoring_funcs) {
+app_server = function(input, output, session, question_data, default_response, reference, model, scoring_funcs) {
   shiny::addResourcePath("sbs", system.file("www", package = "shinyBS"))
 
   # reactive value to store the state of models/scenarios
+  # # store reference models in the table
   model_obj = shiny::reactiveValues(
-    data = tibble::tibble(model = character(), policy = character(), notes = character(), response = list())
+    data = reference
+     #data = tibble::tibble(model = character(), policy = character(), notes = character(), response = list())
   )
   # output from the model builder tab
   q_output = shiny::callModule(questions_module_server, 'model-questions', question_data = question_data, default_response = default_response)
