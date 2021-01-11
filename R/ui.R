@@ -95,6 +95,9 @@ app_ui = function(req, question_data, default_response) {
             "Upload a previous model", tabName = "save"
           ),
           shinydashboard::menuItem(
+            "Understand reference models", tabName = "reference"
+          ),
+          shinydashboard::menuItem(
             "Learn about DiAGRAM", tabName = "definitions"
           ),
           shinydashboard::menuItem(
@@ -190,6 +193,12 @@ app_ui = function(req, question_data, default_response) {
             tabName = "report",
             shiny::fluidRow(
               report_tab_module_ui('report')
+            )
+          ),
+          shinydashboard::tabItem(
+            tabName = "reference",
+            shiny::fluidRow(
+              reference_tab()
             )
           ),
           shinydashboard::tabItem(
