@@ -32,6 +32,10 @@ DiAGRAM is built on an underlying general model of digital preservation processe
 
 Each risk to digital material identified during the development of DiAGRAM is represented by a node (displayed as an oval shape) in the Bayesian network, the arrows linking nodes show how risks influence each other, reducing or increasing the related risks.
 
+## Reference Model
+
+A pre-set model built into DiAGRAM which can be used as a guide to benchmark your own score or as a template from which to create your own model. Currently there are two reference models that represent two extremes of digital preservation policies - we would expect most archives to be somewhere inbetween these.
+
 ## Scenario
 
 Following the creation of the initial model of your own archive you can create scenarios by adjusting the input values you used in order to model possible future states of your archive. For example, how would your risk prevention score change if you were able to provide training to all your staff to improve their technical skills. Alternatively, if you focussed all your efforts on improving your information management around the digital archive, would that give you an even greater improvement. If you then add appropriate costing information to these potential interventions you can begin to build a business case to implement the desired changes.

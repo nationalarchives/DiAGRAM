@@ -152,8 +152,14 @@ model_table_module_server = function(
       DT::formatStyle(
         "Model",
         target = 'row',
-        fontStyle = DT::styleEqual("Ref: Commercial Backup",'italic'),
-        backgroundColor = DT::styleEqual("Ref: Commercial Backup",'#F9F7E2')
+        fontStyle = DT::styleEqual("Pre-set ref: Commercial Backup",'italic'),
+        backgroundColor = DT::styleEqual("Pre-set ref: Commercial Backup",'#F9F7E2')
+      )    %>%
+      DT::formatStyle(
+        "Model",
+        target = 'row',
+        fontStyle = DT::styleEqual("Pre-set ref: Established National Archive",'italic'),
+        backgroundColor = DT::styleEqual("Pre-set ref: Established National Archive",'#F9F7E2')
       )
     # to_delete(numeric(0))
     table_contents(tab)
