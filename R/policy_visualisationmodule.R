@@ -15,15 +15,15 @@ policy_bar_chart = function(policy_data){
     x
   })
   # tidy up facet labels
-  p$x$layout$annotations = purrr::map(
-    p$x$layout$annotations, function(x) {
-      if(stringr::str_detect(x$text, "^Model")){
-        x$x = 0.1
-        x$font$size = 2*x$font$size
-      }
-      x
-    }
-  )
+  # p$x$layout$annotations = purrr::map(
+  #   p$x$layout$annotations, function(x) {
+  #     if(stringr::str_detect(x$text, "^Model")){
+  #       x$x = 0.1
+  #       x$font$size = 2*x$font$size
+  #     }
+  #     x
+  #   }
+  # )
   p %>% plotly::layout(legend = list(orientation = "h", y = -0.1))
 }
 
