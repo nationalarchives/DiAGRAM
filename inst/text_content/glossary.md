@@ -10,7 +10,7 @@ The stored set of binary information that comprises each file making up a digita
 
 ## Born-digital
 
-Digital material that has only ever existed as digital objects. This includes material such as spreadsheets, word-processor documents, original digital photos from phones and digital cameras (however, if the image was of an analogue archival document that would be a surrogate). Unless an archive is able to specify that they will only accept certain file formats for accessioning born-digital material can be very variable in terms of the range of file formats held within the archive, making the ongoing processes of digital preservation more complex. Archivists and other digital preservation specialists will require a greater range of technical skills and tools in order to be able to understand and maintain the files.
+Digital material that has only ever existed as digital objects. This includes material such as spreadsheets, word-processed documents, original digital photos from phones and digital cameras (however, if the image was of an analogue archival document that would be a surrogate). Unless an archive can specify that they will only accept certain file formats for accessioning, the file formats of born-digital material can vary widely, making the ongoing processes of digital preservation more complex. Archivists and other digital preservation specialists will require a greater range of technical skills and tools in order to be able to understand and maintain the files.
 
 ## Digital material
 
