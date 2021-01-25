@@ -199,6 +199,7 @@ app_ui = function(req, question_data, default_response) {
             tabName = "reference",
             shiny::fluidRow(
               reference_tab()
+              #ref_table_module_ui('ref_table')
             )
           ),
           shinydashboard::tabItem(

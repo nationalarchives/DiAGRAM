@@ -8,6 +8,13 @@ reference_tab = function() {
     shinydashboard::box(
       width = 12,
       shiny::includeMarkdown(system.file("text_content", "ref_models.md", package = "diagramNAT"))
-    )
+    ),
+    shinydashboard::box(
+      title = "Reference models", width = 12,
+      shiny::div(
+        "table and graph of reference models only here"
+      ) #,
+      #model_table_module_ui(ns('table')
+      )
   )
 }
