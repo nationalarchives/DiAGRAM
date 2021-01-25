@@ -1,4 +1,4 @@
-## Understand the Reference Models
+## Using the Reference Models
 
 To help you understand how 'good' you score is, there are two reference models already loaded into DiAGRAM which can be used as benchmarks to compare your own models against. 
 
@@ -7,8 +7,6 @@ The first is called 'Pre-set ref: Commercial Backup' and is based upon an Archiv
 The second is 'Pre-set ref: Established National Archive' and represents the type of responses and score from a well-established and well-funded National Archive. There is a dedicated digital archive infrastructure to record and manage information about material. Multiple copies of the bit-stream are maintained on and off site on stable media and new copies are automatically made whenever an error is detected. Staff are experts in preservation practices and very active in digital preservation communities. The archive has reasonable control over metadata requirements from depositors. 
 
 These reference models are both created using DiAGRAM so you can see the inputs used and high level description. We have produced additional guidance on the how the 'Commercial Backup' model was created and the reasoning behind each of the inputs which can be found <a href="https://docs.google.com/document/d/1rllUojYyZlDH4GgbMTQGn9xHiP7WPftXhxHlM9N8kdw" target="_blank" download>here</a>. 
-
-** Coming Soon - a video walkthrough of how the 'Established National Archive' model was created **
 
 ### How can I use these?
 

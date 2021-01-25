@@ -335,7 +335,7 @@ add_show_column = function(df, ns, ...) {
       shiny::actionButton(
         # The id prefix with index
         paste(ns("show"), i, sep="_"),
-        label = "Show",
+        label = "Show answers",
         # icon = icon('trash'),
         onclick = glue::glue('Shiny.setInputValue(\"{ns("showPressed")}\", this.id, {{priority: "event"}})')
       )

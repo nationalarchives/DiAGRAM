@@ -95,7 +95,7 @@ app_ui = function(req, question_data, default_response) {
             "Upload a previous model", tabName = "save"
           ),
           shinydashboard::menuItem(
-            "Understand reference models", tabName = "reference"
+            "Using the reference models", tabName = "reference"
           ),
           shinydashboard::menuItem(
             "Learn about DiAGRAM", tabName = "definitions"

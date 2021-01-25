@@ -30,3 +30,4 @@ reference = base::readRDS(system.file("default_model", "reference_model.rds", pa
 model = bnlearn::read.bif(system.file("default_model", "Model.bif", package = "diagramNAT"))
 diagramNAT::run_app(questions, default_response, reference, model)
 ```
+
