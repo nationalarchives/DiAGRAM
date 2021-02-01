@@ -12,4 +12,3 @@ These reference models are both created using DiAGRAM so you can see the inputs 
 
 - To understand how you're performing: These scores provide a benchmark for users to compare and assess themselves against other two other plausible digital archives. 
 
-- As a template to create your own model: You may wish to build a model for your archive by starting from one of the reference models and adapting it to better reflect your own situation. 
