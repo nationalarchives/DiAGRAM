@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# DiAGRAM [![Travis build status](https://travis-ci.com/jumpingrivers/DiAGRAM.svg?branch=master)](https://travis-ci.com/jumpingrivers/DiAGRAM)
+# DiAGRAM [![Travis build status](https://travis-ci.com/nationalarchives/DiAGRAM.svg?branch=master)](https://travis-ci.com/nationalarchives/DiAGRAM)
 
 Repository for the Digital Archiving Graphical Risk Assessment Model -
 DiAGRAM
