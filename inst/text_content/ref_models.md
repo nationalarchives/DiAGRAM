@@ -10,6 +10,6 @@ These reference models were both created using DiAGRAM so you can see the inputs
 
 ### How can I use these?
 
-- To understand how you are performing: these scores provide a benchmark so that you can compare and assess yourself against two other (fictitious) digital archives. 
+- To understand how you are performing: these scores provide a benchmark so that you can compare and assess yourself against two other (fictitious but plausible) digital archives. 
 
 - As a template to create your own model: you may wish to build a model for your archive by basing your answers on one of the reference models, adapting them where neccessary to better reflect your own archive.
