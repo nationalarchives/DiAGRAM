@@ -6,7 +6,7 @@ The first is called 'Example - Commercial Backup' and is based on an archive tha
 
 The second is 'Example - Established National Archive' and represents the type of responses and score from a well-established and well-funded national archive. In this example there is a dedicated digital archive infrastructure to record and manage information about the material. Multiple copies of the bit-stream are maintained on- and off-site on stable media, and new copies are automatically made whenever an error is detected. The staff are experts in preservation practices and very active in the digital preservation community. The archive has reasonable control over metadata requirements from depositors. 
 
-These reference models were both created using DiAGRAM so you can see the inputs used. We have produced additional guidance on how the 'Commercial Backup' model was created and the reasoning behind each of the inputs. These can be found <a href="https://docs.google.com/document/d/1rllUojYyZlDH4GgbMTQGn9xHiP7WPftXhxHlM9N8kdw" target="_blank" download>here</a>. 
+These reference models were both created using DiAGRAM so you can see the inputs used. We have produced additional guidance on how these models were created and the reasoning behind each of the inputs. See the guidance for Commerical Backup <a href="https://docs.google.com/document/d/1rllUojYyZlDH4GgbMTQGn9xHiP7WPftXhxHlM9N8kdw" target="_blank" download>here</a> and the Established National Archive <a href="https://docs.google.com/document/d/1OyNQmL4k59AgeIcihXGi9EbU5Y_r_O5mdOxzBxM_uaY" target="_blank" download>here</a>. 
 
 ### How can I use these?
 
