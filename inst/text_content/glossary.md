@@ -10,7 +10,7 @@ The stored set of binary information that comprises each file making up a digita
 
 ## Born-digital
 
-Digital material that has only ever existed as digital objects. This includes material such as spreadsheets, word-processor documents, original digital photos from phones and digital cameras (however, if the image was of an analogue archival document that would be a surrogate). Unless an archive is able to specify that they will only accept certain file formats for accessioning born-digital material can be very variable in terms of the range of file formats held within the archive, making the ongoing processes of digital preservation more complex. Archivists and other digital preservation specialists will require a greater range of technical skills and tools in order to be able to understand and maintain the files.
+Digital material that has only ever existed as digital objects. This includes material such as spreadsheets, word-processed documents, original digital photos from phones and digital cameras (however, if the image was of an analogue archival document that would be a surrogate). Unless an archive can specify that they will only accept certain file formats for accessioning, the file formats of born-digital material can vary widely, making the ongoing processes of digital preservation more complex. Archivists and other digital preservation specialists will require a greater range of technical skills and tools in order to be able to understand and maintain the files.
 
 ## Digital material
 
@@ -31,6 +31,10 @@ DiAGRAM is built on an underlying general model of digital preservation processe
 ## Node
 
 Each risk to digital material identified during the development of DiAGRAM is represented by a node (displayed as an oval shape) in the Bayesian network, the arrows linking nodes show how risks influence each other, reducing or increasing the related risks.
+
+## Reference Model
+
+A pre-set model built into DiAGRAM which can be used as a guide to benchmark your own score or as a template from which to create your own model. Currently there are two reference models that represent two extremes of digital preservation policies - we would expect most archives to be somewhere inbetween these.
 
 ## Scenario
 

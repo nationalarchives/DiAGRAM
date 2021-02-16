@@ -26,6 +26,8 @@ See `inst/example/app.R`
 ``` r
 questions = diagramNAT::read_config(system.file("text_content", "final_questions.yml", package = "diagramNAT"))
 default_response = diagramNAT::load_single_response(system.file("default_model", "new.json", package = "diagramNAT"))
+reference = base::readRDS(system.file("default_model", "reference_model.rds", package = "diagramNAT"))
 model = bnlearn::read.bif(system.file("default_model", "Model.bif", package = "diagramNAT"))
-diagramNAT::run_app(questions, default_response, model)
+diagramNAT::run_app(questions, default_response, reference, model)
 ```
+

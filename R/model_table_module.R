@@ -147,7 +147,19 @@ model_table_module_server = function(
         backgroundSize = '100% 90%',
         backgroundRepeat = 'no-repeat',
         backgroundPosition = 'center',
-        color = 'white'
+        color = 'black'
+      ) %>%
+      DT::formatStyle(
+        "Model",
+        target = 'row',
+        fontStyle = DT::styleEqual("Example - Commercial Backup",'italic'),
+        backgroundColor = DT::styleEqual("Example - Commercial Backup",'#F9F7E2')
+      )    %>%
+      DT::formatStyle(
+        "Model",
+        target = 'row',
+        fontStyle = DT::styleEqual("Example - Established National Archive",'italic'),
+        backgroundColor = DT::styleEqual("Example - Established National Archive",'#F9F7E2')
       )
     # to_delete(numeric(0))
     table_contents(tab)
@@ -323,7 +335,7 @@ add_show_column = function(df, ns, ...) {
       shiny::actionButton(
         # The id prefix with index
         paste(ns("show"), i, sep="_"),
-        label = "Show",
+        label = "Show answers",
         # icon = icon('trash'),
         onclick = glue::glue('Shiny.setInputValue(\"{ns("showPressed")}\", this.id, {{priority: "event"}})')
       )

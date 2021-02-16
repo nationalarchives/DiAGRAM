@@ -21,7 +21,7 @@ home_tab = function() {
         class = "main-title"
       ),
       shiny::div(shiny::img(src = "www/diagram_logo_transparent.png", width = "400px"), style = "text-align:center"),
-      shiny::h3("Version 0.10.0 (Prototype)", align="center"),
+      shiny::h3("Version 0.11.0 (Prototype)", align="center"),
       shiny::includeMarkdown(system.file("text_content/home_content.md", package = "diagramNAT")),
       shiny::fluidRow(
         shiny::column(

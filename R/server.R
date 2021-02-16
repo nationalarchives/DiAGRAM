@@ -57,18 +57,20 @@
 #' @importFrom DT datatable renderDataTable
 #' @importFrom stats reorder
 #' @export
-app_server = function(input, output, session, question_data, default_response, model, scoring_funcs) {
+app_server = function(input, output, session, question_data, default_response, reference, model, scoring_funcs) {
   shiny::addResourcePath("sbs", system.file("www", package = "shinyBS"))
 
   # reactive value to store the state of models/scenarios
   model_obj = shiny::reactiveValues(
-    data = tibble::tibble(model = character(), policy = character(), notes = character(), response = list())
+     data = tibble::tibble(model = character(), policy = character(), notes = character(), response = list())
   )
+  # # store reference models in the table
+  ref_obj = shiny::reactiveValues(
+      data = reference)
   # output from the model builder tab
   q_output = shiny::callModule(questions_module_server, 'model-questions', question_data = question_data, default_response = default_response)
   # output from the policy builder tab
   p_output = shiny::callModule(policy_creation_module_server, 'policy-questions', reactive(model_obj$data), question_data = question_data, model = model, scoring_funcs = scoring_funcs)
-
 
   # listen for changes to data in the table in the model building tab
   mod_only_table = shiny::callModule(model_table_module_server, "model_table", data = reactive(model_obj$data), model = model, selection = "none", show_policy = FALSE, scoring_funcs = scoring_funcs, question_data = question_data)
@@ -77,7 +79,7 @@ app_server = function(input, output, session, question_data, default_response, m
   },ignoreInit = TRUE)
 
   # listen for changes to data in the visualisation tab
-  policy_vis = shiny::callModule(policy_visualisation_module_server, 'bar', model_data = reactive(model_obj$data), model = model, scoring_funcs = scoring_funcs,  question_data = question_data)
+  policy_vis = shiny::callModule(policy_visualisation_module_server, 'bar', model_data = reactive(rbind(model_obj$data,ref_obj$data)), model = model, scoring_funcs = scoring_funcs,  question_data = question_data)
   observeEvent(policy_vis(), {
     model_obj$data = policy_vis()
   }, ignoreInit = TRUE)
