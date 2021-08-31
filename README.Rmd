@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# DiAGRAM  [![Travis build status](https://travis-ci.com/github/nationalarchives/DiAGRAM.svg?branch=master)](https://travis-ci.com/github/nationalarchives/DiAGRAM)
+# DiAGRAM  [![Travis build status](https://travis-ci.com/nationalarchives/DiAGRAM.svg?branch=master)](https://travis-ci.com/github/nationalarchives/DiAGRAM)
 
 Repository for the Digital Archiving Graphical Risk Assessment Model - DiAGRAM
 
