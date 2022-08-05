@@ -1,0 +1,36 @@
+---
+title: "Template for preparing reports using RMarkdown"
+author: "Jumping Rivers Ltd"
+date: "`r format(Sys.Date(), '%b %d %Y')`"
+output:
+  diagramLambda::pdf_report
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Section
+
+h1 is a section in the underlying `article` document class I used. Here is some sample text:
+
+\lipsum[1-3]
+
+## Subsection
+
+Tables are best constructed with the `kable` and `kableExtra` packages.
+
+```{r echo = FALSE}
+iris2 = head(iris)
+knitr::kable(iris2, format = "latex", booktabs = TRUE)
+```
+
+## Another subsection
+
+A list 
+
+  - item 1
+  - item 2
+    - nested 1
+    - nested 2
+  - item 3

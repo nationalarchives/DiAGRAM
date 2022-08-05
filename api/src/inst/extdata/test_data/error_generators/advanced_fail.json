@@ -1,0 +1,25 @@
+{
+  "model_name": "JAMIE LOOK AT THIS",
+  "scenario": "Base Model",
+  "notes": "",
+  "is_advanced": true,
+  "intellectual_control": {},
+  "renderability": {},
+  "response": {},
+  "advanced": {
+    "Tech_Metadata": {
+      "Technical_Skills": [
+        "Good",
+        "Poor"
+      ],
+      "Sufficient": [
+        0.7725,
+        0.427
+      ],
+      "Insufficient": [
+        0.2275,
+        0.573
+      ]
+    }
+  }
+}

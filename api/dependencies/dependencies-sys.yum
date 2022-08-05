@@ -1,0 +1,7 @@
+openssl-devel
+libicu-devel
+epel-release
+pandoc
+perl
+perl-Digest-MD5
+tar
