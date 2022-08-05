@@ -1,0 +1,37 @@
+<main>
+  <div class="box-body">    
+    <h2>Download a report</h2>
+
+    <section id="no-models">
+        <p id="no-models-text">Create a model or scenario first before downloading a report.</p>
+    </section>
+
+    <section id="have-models" class="hidden">
+      <p>Your result has been calculated from the answers you provided to the previous questions. This shows you the probability of successfully preserving your records in terms of the two main digital preservation outcomes: renderability and intellectual control.</p>
+
+      <p>These are defined as:</p>
+      
+      <ul>
+        <li>Renderability: The object is a sufficiently useful representation of the original file.</li>
+        <li>Intellectual Control: Having full knowledge of the material content, provenance and conditions of use.</li>
+      </ul>
+      
+      <p>The risk prevention probabilities below are calculated on the answers inputs you gave combined with data in the underlying network.</p>
+      
+      <p>You can now download your results in various formats. Download one or more of the models and scenarios you have created selecting them in the table below.</p>
+
+      <div id="model-chooser" class="table-wrapper flex-center"></div>
+
+      <div id="download-buttons">
+        <p><button id="download-pdf" class="btn-start" aria-labelledby="download-pdf-label">PDF</button></a></strong> <span id="download-pdf-label">Download a PDF to see a presentation version of your results.</span></p>
+        <p><button id="download-csv" class="btn-start" aria-labelledby="download-csv-label">CSV</button></a> <span id="download-csv-label">Download a CSV file to create your own graphs from the data. <span id="no-response" class="hidden">This option is not available because you have selected one or more advanced models.</span></span></p>
+        <p><button id="download-json" class="btn-start" aria-labelledby="download-json-label">JSON</button></a> <span id="download-json-label">Download a JSON file to upload your model to DiAGRAM in the future.</span></p>
+        <a id="download-link" class='hidden'></a>
+      </div>
+
+      <div id="loading-indicator-container"></div>
+
+    </section>
+
+  </div>
+</main>

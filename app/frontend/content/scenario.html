@@ -1,0 +1,119 @@
+<main>
+  <div class="box-body">
+
+    <section id='overview'>
+      <h2>Create a scenario</h2>
+      <p id="preamble">By creating a scenario you will be able to change the answers you used to create your model and
+        see how it impacts your score.</p>
+    </section>
+
+    <section id="no-models">
+      <p id="no-models-text"><a href="model.html" target="_blank">Create a model</a> first before creating a scenario.</p>
+    </section>
+
+    <section id="prequestions" class="hidden">
+      <div id="choose-model-container">
+        <div id="model-chooser" class="table-wrapper flex-center"></div>
+
+        <div class="button-row">
+          <button class="btn-next" type="button">Next</button>
+        </div>
+      </div>
+
+      <div id='response-changes' class="hidden">
+        <p>Select the responses you would like to change in order to see the impact on your digital preservation risk.
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th><input type="checkbox" aria-label="Toggle all" /></th>
+              <th>Question</th>
+              <th>Responses</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><input id="Digital_Object" type="checkbox" /></td>
+              <td><label for="Digital_Object">Digital Object</label></td>
+              <td class="answers"></td>
+            </tr>
+            <tr>
+              <td><input id="Storage_Medium" type="checkbox" /></td>
+              <td><label for="Storage_Medium">Storage Medium</label></td>
+              <td class="answers"></td>
+            </tr>
+            <tr>
+              <td><input id="Rep_and_Refresh" type="checkbox" /></td>
+              <td><label for="Rep_and_Refresh">Replication and Refreshment</label></td>
+              <td class="answers"></td>
+            </tr>
+            <tr>
+              <td><input id="Op_Environment" type="checkbox" /></td>
+              <td><label for="Op_Environment">Operating Environment</label></td>
+              <td class="answers"></td>
+            </tr>
+            <tr>
+              <td><input id="Physical_Disaster" type="checkbox" /></td>
+              <td><label for="Physical_Disaster">Physical Disaster</label></td>
+              <td class="answers"></td>
+            </tr>
+            <tr>
+              <td><input id="Checksum" type="checkbox" /></td>
+              <td><label for="Checksum">Checksum</label></td>
+              <td class="answers"></td>
+            </tr>
+            <tr>
+              <td><input id="System_Security" type="checkbox" /></td>
+              <td><label for="System_Security">System Security</label></td>
+              <td class="answers"></td>
+            </tr>
+            <tr>
+              <td><input id="Info_Management" type="checkbox" /></td>
+              <td><label for="Info_Management">Information Management</label></td>
+              <td class="answers"></td>
+            </tr>
+            <tr>
+              <td><input id="Technical_Skills" type="checkbox" /></td>
+              <td><label for="Technical_Skills">Technical Skills</label></td>
+              <td class="answers"></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="button-row">
+          <button class="btn-previous" type="button">Back</button>
+          <button class="btn-finish hidden" type="button">Create Scenario</button>
+        </div>
+      </div>
+
+      <div id="name-container" class="hidden">
+        <label for="scenario-name">Give it a name</label>
+        <input id="scenario-name" name="scenario-name" type="text" placeholder="Scenario" />
+        <p id="valid-text-alert" class="warning" role="status" aria-atomic="true"></p>
+        <div class="button-row">
+          <button class="btn-previous" type="button">Back</button>
+          <button class="btn-next hidden" type="button">Next</button>
+        </div>
+      </div>
+
+    </section>
+
+    <include src="content/questions/questions.html"></include>
+
+    <div id="loading-indicator-container"></div>
+
+    <section id='postquestions' class="hidden">
+      <h2>What next?</h2>
+      <p><strong><a href="/visualise.html" tabindex="-1"><button class="btn-start"
+              aria-labelledby="next-visualise">Results</button></a></strong> <span id="next-visualise">This will show
+          you the probability (as a percentage) of having adequate intellectual control and the renderability of your
+          digital records.</span></p>
+      <p><strong><a href="/model.html" tabindex="-1"><button class="btn-start" aria-labelledby="next-model">Create a
+              model</button></a></strong> <span id="next-scenario">If you want to create another model this link will
+          take you back to the questions assessing the risk of your archive.</span></p>
+      <p><strong><a href="/scenario.html" tabindex="-1"><button class="btn-start" aria-labelledby="next-scenario">Create
+              another scenario</button></a></strong> <span id="next-model">If you want to create another scenario this
+          link will take you back to the start of the scenario creation.</span></p>
+    </section>
+
+  </div>
+</main>

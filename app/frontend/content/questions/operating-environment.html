@@ -1,0 +1,38 @@
+<div class="question hidden" data-section="Op_Environment" data-interface="single-slider">
+  <div class="question-header">
+    <h3 tabindex="-1">Operating Environment</h3>
+  </div>
+  <div class="question-content">
+    <p class="question-definition">Definition: Your archive's policy on the storage location of your digital material.</p>
+    <p class="question-explanation">It is good practice to keep a copy of your digital material offsite in case of a disaster at your primary location.</p>
+    <div class="question-text">
+      <p class="question-number">1.</p>
+      <p id="oe-q1" >What percentage of your digital material has a copy kept offsite?</p>
+      <div id="oe-a1" class="slider-single" role="group" aria-labelledby="oe-q1">
+        <div class="slider-container">
+          <input type="range" min="0" max="100" value="0" aria-labelledby="oe-q1" list="percentage-ticks">
+          <input type="number" min="0" max="100" value="0" aria-labelledby="oe-q1">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="question hidden" data-section="Op_Environment" data-interface="single-button-group">
+  <div class="question-header">
+    <h3 tabindex="-1">Operating Environment</h3>
+  </div>
+  <div class="question-content">
+    <p class="question-definition">Definition: Your archive's policy on the storage location of your digital material.</p>
+    <p class="question-explanation">In the current version of the tool, the operating environment variable is only affected by the physical disaster of flood (not for example by fire or earthquake) so we are only asking if you have protection in place for flood. Other types of physical disasters may be added to later versions of the tool.</p>
+    <div class="question-text">
+      <p class="question-number">2.</p>
+      <p id="oe-q2">If all of your digital material is in one location, is there adequate protection against damage from a flood?</p>
+      <div id="oe-a2" class="answer" role="radiogroup" aria-labelledby="oe-q2">
+        <button value="yes" role="radio" aria-checked="false">Yes</button>
+        <button value="no" role="radio" aria-checked="false">No</button>
+        <button value="na" role="radio" aria-checked="true" class="selected">Not Applicable - we have copies offsite</button>
+      </div>
+    </div>
+  </div>
+</div>

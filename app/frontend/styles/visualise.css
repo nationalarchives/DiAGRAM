@@ -1,0 +1,16 @@
+.image-container img {
+  width: 700px;
+  max-width: 100%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+[id="visualisation-box"] {
+  position: relative;
+  min-height: 80px;
+}
+
+[id="visualisation-box"] [id="loading-indicator-container"] {
+  position: absolute;
+}
