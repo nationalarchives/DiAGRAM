@@ -1,0 +1,83 @@
+.questions-ancillary-top-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.questions-ancillary p {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+textarea {
+  width: 100%;
+  height: 55px;
+}
+
+[role="radiogroup"] {
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  align-content: flex-start;
+}
+
+[role="radiogroup"] button[role="radio"] {
+  flex: 1 1 0px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  color: white;
+  border: 1px solid black;
+  margin-bottom: 10px;
+  min-height: 75px;
+}
+
+[role="radiogroup"] button[role="radio"]:before {
+  content: "✘ ";
+}
+
+button[role="radio"]:focus {
+  outline: 2px solid #286090;
+}
+
+button[role="radio"].selected {
+  background-color: #286090;
+}
+
+[role="radiogroup"] button[role="radio"].selected:before {
+  content: "✔ ";
+}
+
+button[role="radio"].selected:focus {
+  outline: 2px solid #444444;
+}
+
+.question-number {
+  font-weight: bold;
+}
+
+.slider-container input[type="range"] {
+  vertical-align: middle;
+  width: 130px;
+}
+
+.slider-container input[type="number"] {
+  width: 65px;
+}
+
+.answer-wrapper {
+  display: flex;
+  min-width: 0px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.answer-wrapper p {
+  flex: 1 0 300px;
+  padding-right: 15px;
+}
+
+.answer-wrapper div {
+  flex: 1 1 500px;
+  max-width: 100%;
+}

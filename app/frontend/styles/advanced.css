@@ -1,0 +1,110 @@
+.form-element {
+  display: inline-block;
+}
+
+.form-element input[type="text"] {
+  width: 300px;
+  max-width: 100%;
+  padding: 0px 10px 0px 10px;
+  height: 30px
+}
+
+.choose-existing-container {
+  padding: 10px 0px 20px 0px;
+}
+
+.svg-container svg {
+  display: block;
+  max-width: 100%;
+  user-select: none;
+}
+
+.svg-container svg.is-selection {
+  cursor: pointer;
+}
+
+svg text {
+  pointer-events: none;
+}
+
+svg .vertex.editable {
+  cursor: pointer;
+}
+
+svg .vertex:not(.editable) {
+  cursor: not-allowed;
+}
+
+svg .hovered {
+  opacity: 1;
+}
+
+svg .hovered ellipse {
+  stroke-width: 3px;
+}
+
+svg.is-selection .vertex, svg.is-selection .edge {
+  opacity: 0.25;
+}
+
+svg.is-selection .vertex.hovered {
+  opacity: 1;
+}
+
+svg .vertex.subnetwork, svg .edge.subnetwork {
+  opacity: 1;
+}
+
+svg .vertex.selected ellipse {
+  stroke-width: 5px;
+}
+
+svg .vertex.selected text {
+  font-weight: bold;
+}
+
+td, th {
+  cursor: default;
+}
+
+td input {
+  text-align: right;
+}
+
+details[open]{
+  margin-bottom: 30px;
+}
+
+summary {
+  cursor: pointer;
+  user-select: none;
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+[id="choose-existing-container"] {
+  position: relative;
+}
+
+
+[id="valid-existing-text-alert"] > * {
+  display: inline-block;
+}
+
+[id="valid-existing-text-alert"] button {
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+.btn-finish-invert {
+  color: black;
+  background-color: rgb(224, 224, 224);
+}
+
+.btn-finish-invert:hover {
+  background-color: white;
+}
+
+textarea {
+  width: 100%;
+}

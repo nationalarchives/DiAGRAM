@@ -1,0 +1,129 @@
+<main>
+  <div class="box-body">
+
+    <section id="preamble">
+      <h2>Advanced Customisation</h2>
+      <p>Using Advanced customisation, you can modify the underlying Bayesian Network for your model by changing the probability tables for any of the nodes in it. Most importantly it gives you control over the nodes for which you do not provide data when you answer the questions in the simple Create a model process. These nodes are conditional on the earlier nodes, so you will see multiple entries in the tables. Some may not be relevant depending how you have set nodes higher in the network. For example, if your archive holds 100% Born Digital material then changing rows in tables for the nodes descending which relate to Digitised and Surrogate material will have no effect on the final risk scores for your model.</p> 
+      <div id="start-container">
+        <div class="button-row">
+          <button id="start" class="btn-start" type="button">Start</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="configure" class="hidden">
+      <h3 tabindex="-1">Configure</h3>
+      <div id="scratch-modify">
+        <p>Creating a model from an existing model will initialise its values those of the chosen model, you can then adjust those values and save, either as a scenario of that existing model, or as a brand new model.</p>
+        <div class="button-row">
+          <button id="from-scratch" class="btn-start" type="button">New model</button>
+          <button id="modify" class="btn-start" type="button">Create from existing</button>
+        </div>
+      </div>
+      <div id="adv-options" class="adv-options hidden">
+        <div id="choose-new-container" class="hidden">
+          <div class="form-element">
+            <label for="adv-name-new">Name</label>
+            <input id="adv-name-new" name="adv-name-new" type="text" placeholder="Name your custom model" />
+          </div>
+          <p id="valid-newmodel-text-alert" class="warning" role="status" aria-atomic="true"></p>
+          <div class="button-row">
+            <button class="btn-previous" type="button">Back</button>
+            <button class="btn-start hidden" type="button" data-mode="new">Start editing</button>
+          </div>
+        </div>
+        <div id="choose-existing-container" class="choose-existing-container hidden">
+          <div id="adv-name-controls" class="form-element">
+            <label for="adv-name-existing">Name</label>
+            <input id="adv-name-existing" name="adv-name-existing" type="text" placeholder="Name your custom model or scenario" />
+          </div>
+          <div id="new-adv-radio-group" class="form-element" role="radiogroup" aria-label="Choose whether to create a model or a scenario">
+            <input type="radio" id="radio-model" name="type" value="model" checked>
+            <label for="radio-model">Model</label>
+            <input type="radio" id="radio-scenario" name="type" value="scenario">
+            <label for="radio-scenario">Scenario</label>
+          </div>
+          <p id="valid-existing-text-alert" class="warning sticky" role="status" aria-atomic="true"></p>
+          <p id="choose-existing-text">Choose a model or scenario from the table below.</p>
+          <div id="choose-model-table" class="table-wrapper"></div>
+          <p id="no-name" class="warning">Please give your model a name via the <a href="#adv-name-existing">"Name" field</a> above the table.</p>
+          <div class="button-row">
+            <button class="btn-previous" type="button">Back</button>
+            <button class="btn-start hidden" type="button" data-mode="existing">Start editing</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="edit" class="hidden">
+      <h3 tabindex="-1">Edit nodes</h3>
+      <div>
+        <p> <span id="advanced-comments-label">Comments:</span> <span id="advanced-comments-description">these will appear in the summary table and report. They are for you to use to make any notes for your reference as you edit nodes.</span></p>
+        <textarea id="advanced-comments" name="advanced-comments" aria-labelledby="advanced-comments-label" aria-describedby="advanced-comments-description"></textarea>
+      </div>
+      <div id="diagram" class="svg-container">
+        <include src="./content/diagram.html" />
+      </div>
+      <p class="select-instruction">Select a node above or from the dropdown to edit it below.
+        <label> Node:
+          <select id="select-edit" aria-label="Select a node to edit">
+            <option>None</option>
+            <option>Operating Environment</option>
+            <option>Replication and Refreshment</option>
+            <option>Physical Disaster</option>
+            <option>Storage Medium</option>
+            <option>Technical Skills</option>
+            <option>Digital Object</option>
+            <option>Information Management</option>
+            <option>System Security</option>
+            <option>Checksum</option>
+            <option>File Format</option>
+            <option>Storage Life</option>
+            <option>Obsolescence</option>
+            <option>Tools to Render</option>
+            <option>Technical Metadata</option>
+            <option>Conditions of Use</option>
+            <option>Content Metadata</option>
+            <option>Integrity</option>
+            <option>Bit Preservation</option>
+            <option>Identity</option>
+          </select>
+        </label>
+      </p>
+      <div id="editing-container" class="hidden">
+        <h4>Editing: <span id="editing-name"></span></h4>
+        <p>Learn about <a id="glossary-link" target="_blank" href="">this node</a>.</p>
+        <div class="table-wrapper">
+         <table id="editing-table" class="zebra"></table>
+        </div>
+        <div class="button-row">
+          <button id="add-change" class="btn-add" type="button" disabled>Add change</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="changed-nodes" class="hidden">
+      <hr />
+      <h3>Log of changes</h3>
+      <p id="no-nodes-changed">No nodes have been changed.</p>
+      <div id="changed-nodes-list"></div>
+    </section>
+
+    <section id="store" class="hidden">
+      <hr />
+      <div class="button-row">
+        <button id="store-model" class="btn-finish" type="button" disabled>Store model</button>
+      </div>
+    </section>
+
+    <section id='post-editing' class="hidden">
+      <div id="loading-indicator-container"></div>
+      <div id="what-next" class="hidden">
+        <h2 tabindex="-1">What next?</h2>
+        <p><strong><a href="/visualise.html" tabindex="-1"><button class="btn-start" aria-labelledby="next-visualise">Results</button></a></strong> <span id="next-visualise">This will show you the probability (as a percentage) of having adequate intellectual control and the renderability of your digital records.</span></p>
+        <p><strong><a href="/advanced.html" tabindex="-1"><button  class="btn-start" aria-labelledby="next-advanced">Create another advanced model</button></a></strong> <span id="next-advanced">If you want to create another advanced model this link will take you back to the start of this process.</span></p>
+      </div>
+    </section>
+
+  </div>
+</main>
