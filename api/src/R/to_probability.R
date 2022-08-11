@@ -1,8 +1,7 @@
 #' Numeric to Probability
 #'
-#' Convert a list of numeric responses to model form
-#' questions into approriate probability tables for
-#' executing the model.
+#' Convert a list of numeric responses to model form questions into appropriate
+#' probability tables for executing the model.
 #'
 #' @param numeric_response a named list of numeric values
 numeric_to_probability = function(numeric_response) {
@@ -57,8 +56,8 @@ numeric_to_probability_single_advanced = function(res, name) { # nolint
 
 #' Numeric to Probability
 #'
-#' Convert a single numeric response from the model form
-#' answers to a probability.
+#' Convert a single numeric response from the model form answers to a
+#' probability.
 #'
 #' @param res numeric vector
 #' @param name character, name of corresponding node in network

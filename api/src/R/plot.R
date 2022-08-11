@@ -1,6 +1,6 @@
-#' write pngs to temporary file
-#' for sending via the API
-#' @param data raw list data as parsed from json
+#' Write PNGs to temporary file for sending via the API
+#'
+#' @param data raw list data as parsed from JSON
 write_temp_png = function(data) {
   path = tempfile(fileext = ".png")
   g = bar_chart(data)
@@ -8,7 +8,9 @@ write_temp_png = function(data) {
   path
 }
 
-# @param data raw list data as parsed from json
+#' Prepare data to be plotted as a bar chart
+#'
+#' @param data raw list data as parsed from JSON
 prepare_bar_chart_data = function(data) {
   df = dplyr::bind_rows(data)
   df = dplyr::distinct(
@@ -24,7 +26,9 @@ prepare_bar_chart_data = function(data) {
   )
 }
 
-# @param data raw list data as parsed from json
+#' Create a bar chart plot from data
+#'
+#' @param data raw list data as parsed from JSON
 bar_chart = function(data) {
   df = prepare_bar_chart_data(data)
   df = dplyr::rename(df, Model = .data$model_name)

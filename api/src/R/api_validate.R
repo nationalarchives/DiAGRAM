@@ -1,9 +1,9 @@
-#' Validate json
+#' Validate JSON
 #'
-#' Validate whether the json data posted fits with
-#' the restrictions of expected data structure for DiAGRAM
+#' Validate whether the JSON data posted fits with the restrictions of expected
+#' data structure for DiAGRAM
 #'
-#' @param req a rook request object
+#' @eval param_req()
 #' @export
 validate_json = function(req) {
   ensure_json_input(req)

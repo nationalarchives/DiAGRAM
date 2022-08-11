@@ -69,11 +69,11 @@ validate_post = function() {
 
 running_api = callr::r_bg(
   function(port) {
-    # diagramAPI::setup_logger()
-    dir = diagramAPI::get_internal_routes()
-    routes = diagramAPI::create_routes(dir)
-    api = diagramAPI::generate_api(routes)
-    api = diagramAPI:::add_default_hooks(api)
+    # diagramLambda::setup_logger()
+    dir = diagramLambda::get_internal_routes()
+    routes = diagramLambda::create_routes(dir)
+    api = diagramLambda::generate_api(routes)
+    api = diagramLambda:::add_default_hooks(api)
     api$run(port = port, host = "0.0.0.0")
   }, list(port = port)
 )

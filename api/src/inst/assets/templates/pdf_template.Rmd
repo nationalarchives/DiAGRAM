@@ -1,19 +1,14 @@
 ---
-output: diagramAPI::pdf_report
+output: diagramLambda::pdf_report
 params:
   req: NA # all objects to be viewed
-header-includes:
-  - \usepackage{tabu}
 ---
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = TRUE, message = FALSE)
 library(magrittr)
-# req = params$req
-# req = diagramAPI:::test_req_csv("mixed_simple")$postBody %>%
-#     jsonlite::parse_json() %>%
-#     diagramAPI:::extract_responses()
-models = diagramAPI::group_objects_by_model(req)
+req = params$req
+models = diagramLambda::group_objects_by_model(req)
 ```
 
 DiAGRAM produces a risk prevention score for the digital preservation outcomes of renderability and intellectual control.

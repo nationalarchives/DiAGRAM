@@ -7,16 +7,16 @@
 # behaviour that captures warnings (and continues execution), errors and success with
 # the expression trapped for narrowing down debugging or fixes.
 # layout_json_custom allows us to properly format an arbitrary number of objects
-# as a json log entry
+# as a JSON log entry
 
 #' Set up default logger
 #'
-#' Creates a rotating file log using json format, see
+#' Creates a rotating file log using JSON format, see
 #' \link[logger]{appender_file} for details.
 #'
 #' @param dir directory path for logs
 #' @export
-setup_logger = function(dir = "./diagramAPI_logs") {
+setup_logger = function(dir = "./diagramLambda_logs") {
   if (! dir.exists(dir)) dir.create(dir)
   f = normalizePath(path.expand(file.path(dir, "log")))
   logger::log_formatter(logger::formatter_json)

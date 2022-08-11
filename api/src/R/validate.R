@@ -13,8 +13,7 @@ validation_generator = function(class_name = NULL) {
 
 #' Validate data on a single node
 #'
-#' @param res result object for a single node in the bayesian
-#' network
+#' @param res result object for a single node in the bayesian network
 #' @export
 validate_node = function(res) {
   check(res, options = get_option_val(res))

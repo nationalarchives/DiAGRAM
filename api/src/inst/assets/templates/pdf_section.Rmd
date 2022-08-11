@@ -6,15 +6,12 @@ params:
 ```{r include = FALSE}
 library(magrittr)
 req = params$req
-# req = diagramAPI:::test_req_csv("mixed_simple")$postBody %>%
-#     jsonlite::parse_json() %>%
-#     diagramAPI:::extract_responses()
 knitr::opts_chunk$set(echo = FALSE, warning = TRUE, message = FALSE)
-question_data = diagramAPI::get_questions_tibble()
-base_model = diagramAPI::get_base_model(req)
-policies = diagramAPI::find_scenario_diffs(req)
-comments_data = diagramAPI::get_comments(req)
-scenario_names = diagramAPI::get_scenario_names(req)
+question_data = diagramLambda::get_questions_tibble()
+base_model = diagramLambda::get_base_model(req)
+policies = diagramLambda::find_scenario_diffs(req)
+comments_data = diagramLambda::get_comments(req)
+scenario_names = diagramLambda::get_scenario_names(req)
 
 model_name = base_model$model_name
 ```
@@ -72,16 +69,17 @@ if (is_advanced) {
     colnames(.x) = colnames(.x) %>%
       stringr::str_replace_all("_", " ") %>%
       stringr::str_to_title()
+    # Drop full_width = TRUE for: https://github.com/haozhu233/kableExtra/issues/625
     knitr::kable(.x, format = "latex", longtable = TRUE, booktabs = TRUE) %>%
-    kableExtra::kable_styling(full_width = TRUE, font_size = 7) %>%
+    kableExtra::kable_styling(font_size = 7) %>%
     cat()
   })
-  # diagramAPI::join_questions_responses(question_data, simple_base)
+  # diagramLambda::join_questions_responses(question_data, simple_base)
 } else {
-  diagramAPI::join_questions_responses(question_data, base_model) %>%
-    diagramAPI::pdf_table() %>%
+  diagramLambda::join_questions_responses(question_data, base_model) %>%
+    diagramLambda::pdf_table() %>%
     knitr::kable(format = "latex", longtable = TRUE, booktabs = TRUE) %>%
-    kableExtra::kable_styling(full_width = TRUE, font_size = 7) %>%
+    kableExtra::kable_styling(font_size = 7) %>%
     cat()
 }
 
@@ -94,10 +92,10 @@ if (any_policies) {
     if (nrow(x$data) > 0) {
       cat("### ", y, "\n\n")
       cat(glue::glue("The following responses were changed for {y}."), "\n\n")
-      diagramAPI::join_questions_responses(question_data, x) %>%
-        diagramAPI::diff_table() %>%
+      diagramLambda::join_questions_responses(question_data, x) %>%
+        diagramLambda::diff_table() %>%
         knitr::kable(format = "latex", longtable = TRUE, booktabs = TRUE) %>%
-        kableExtra::kable_styling(full_width = TRUE, font_size = 7) %>%
+        kableExtra::kable_styling(font_size = 7) %>%
         cat()
     }
   })

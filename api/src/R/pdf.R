@@ -1,44 +1,47 @@
-# Write a pdf report to a temporary file
-# @return path to temporary pdf file
+#' Write a PDF report to a temporary file
+#'
+#' @return Path to temporary PDF file
 write_temp_pdf = function(data) {
-  td = tempdir()
-  temp_base = file.path(td, "report.Rmd")
-  temp_section = file.path(td, "pdf_section.Rmd")
+  temp_dir = "/tmp"
+  temp_base = file.path(temp_dir, "report.Rmd")
+  temp_section = file.path(temp_dir, "pdf_section.Rmd")
   file.copy(
     system.file(
-      "assets", "templates", "pdf_template.Rmd", package = "diagramAPI",
+      "assets", "templates", "pdf_template.Rmd", package = "diagramLambda",
       mustWork = TRUE
     ),
     temp_base, overwrite = TRUE
   )
   file.copy(
     system.file(
-      "assets", "templates", "pdf_section.Rmd", package = "diagramAPI",
+      "assets", "templates", "pdf_section.Rmd", package = "diagramLambda",
       mustWork = TRUE
     ),
     temp_section, overwrite = TRUE
   )
-  pdf_file = prepare_pdf(data, td, temp_base)
+  pdf_file = prepare_pdf(data, temp_dir, temp_base)
   pdf_file
 }
 
-# Build a report pdf from package templates
-prepare_pdf = function(data, dir, template) {
-  target_file = tempfile(tmpdir = dir, fileext = ".pdf")
+# Build a report PDF from package templates
+prepare_pdf = function(data, temp_dir, template) {
+  out_fname = glue::glue("{as.integer(Sys.time())}.pdf")
+  out_fpath = file.path(temp_dir, out_fname)
   rmarkdown::render(
     template,
-    output_file = target_file,
+    output_file = out_fpath,
+    intermediates_dir = temp_dir,
     params = list(req = data)
   )
-  target_file
+  out_fpath
 }
 
-# Get a pkg resource for building pdfs
+# Get a pkg resource for building PDFs
 pkg_resource = function(file) {
   system.file(
     "rmarkdown", "templates",
     "nata-report", "resources",
-    file, package = "diagramAPI",
+    file, package = "diagramLambda",
     mustWork = TRUE
   )
 }
@@ -63,7 +66,7 @@ pdf_report = function() {
   font_path = system.file(
     "rmarkdown", "templates",
     "nata-report", "resources",
-    package = "diagramAPI",
+    package = "diagramLambda",
     mustWork = TRUE
   )
   tna_logo = pkg_resource("tna-logo.png")
@@ -85,10 +88,10 @@ pdf_report = function() {
   )
 }
 
-#' Build a single row of the table for pdf
+#' Build a single row of the table for PDF
 #'
-#' Collapses questions and responses with multiple parts
-#' and structure to a single consistent tibble chunk
+#' Collapses questions and responses with multiple parts and structure to a
+#' single consistent tibble chunk
 #'
 #' @param question either a list or a character vector
 #' @param response either a list of equivalent shape to question, or a vector
@@ -117,14 +120,13 @@ pdf_table_part = function(question, response, node) {
   res
 }
 
-#' Build a nice tibble for pdf
+#' Build a nice tibble for PDF
 #'
-#' Builds a nicely formatted tibble of questions and responses
-#' for a model (not scenario). Requires full set of simple_response
-#' nodes.
+#' Builds a nicely formatted tibble of questions and responses for a model (not
+#' scenario). Requires full set of simple_response nodes.
 #'
 #' @param obj is a tibble full of questions and responses, typically
-#' from \code{diagramAPI::join_questions_responses}
+#' from \code{diagramLambda::join_questions_responses}
 #' @export
 pdf_table = function(obj) {
   purrr::pmap_dfr(obj, pdf_table_part)
@@ -134,16 +136,15 @@ pdf_table = function(obj) {
 get_questions = function() {
   f = system.file(
     "extdata", "config", "pdf_questions.yml",
-    package = "diagramAPI", mustWork = TRUE
+    package = "diagramLambda", mustWork = TRUE
   )
   yaml::read_yaml(f)[.user_nodes]
 }
 
 #' Get a formatted set of questions
 #'
-#' Convenience function exported for building pdfs that
-#' grabs the question and answer text used in the front end
-#' and formats it as tibble.
+#' Convenience function exported for building PDFs that grabs the question and
+#' answer text used in the front end and formats it as tibble.
 #'
 #' @export
 get_questions_tibble = function() {
@@ -154,11 +155,10 @@ get_questions_tibble = function() {
   )
 }
 
-#' Bind questions to repsonses
+#' Bind questions to responses
 #'
-#' Generic (for simple_responses and scenario_diff) for
-#' building a single tibble that contains nicely formatted
-#' questions and responses for the pdfs.
+#' Generic (for simple_responses and scenario_diff) for building a single
+#' tibble that contains nicely formatted questions and responses for the PDFs.
 #'
 #' @param questions a tibble of questions, see \code{get_questions_tibble()}
 #' @param responses a tibble of responses for a model/scenario
@@ -189,25 +189,26 @@ join_questions_responses.scenario_diff = function(questions, responses, ...) { #
 #' Get the base model
 #'
 #' From a list of responses, return the one which represents a base model
-#' @param responses, a whole group of responses
+#' @param responses A whole group of responses
 #' @export
 get_base_model = function(responses) {
   purrr::keep(responses, ~.x$scenario == "Base Model")[[1]]
 }
 
-# from a list of responses, return those which represents a scenario
-# @param responses, a whole group of responses
+#' From a list of responses, return those which represents a scenario
+#'
+#' @param responses A whole group of responses
 get_policies = function(responses) {
   purrr::discard(responses, ~.x$scenario == "Base Model")
 }
 
 #' Calculate model/scenario diff
 #'
-#' Calculate the difference between each scenario and the base-model
-#' in a grouped set of responses with the same base-model $name.
-#' Exported for pdf.
+#' Calculate the difference between each scenario and the base-model in a
+#' grouped set of responses with the same base-model $name. Exported for PDF.
 #'
-#' @param responses, a whole group of responses that come from the same model name
+#' @param responses A whole group of responses that come from the same model
+#' name
 #' @export
 find_scenario_diffs = function(responses) {
   # get the base model
@@ -280,12 +281,11 @@ diff_table_part = function(question, scenario, base_model, node) {
 
 #' Build a table of diffs
 #'
-#' A table which builds a table showing only
-#' the responses to questions that are different
-#' to the base model.
+#' A table which builds a table showing only the responses to questions that
+#' are different to the base model.
 #'
-#' @param obj a collection of models/policies (full responses),
-#' each with the same $name
+#' @param obj a collection of models/policies (full responses), each with the
+#' same $name
 #' @export
 diff_table = function(obj) {
   purrr::pmap_dfr(obj, diff_table_part)
@@ -312,9 +312,8 @@ get_model_names = function(obj) {
 
 #' Get scenario names
 #'
-#' Convenience function exported for pdf template
-#' to grab the scenario names from a set of models/policies
-#' (responses)
+#' Convenience function exported for PDF template to grab the scenario names
+#' from a set of models/policies (responses)
 #'
 #' @inheritParams group_objects_by_model
 #' @export
@@ -324,9 +323,8 @@ get_scenario_names = function(obj) {
 
 #' Get comment data
 #'
-#' Convenience function exported for pdf template
-#' to grab the scenario names from a set of models/policies
-#' (responses)
+#' Convenience function exported for PDF template to grab the scenario names
+#' from a set of models/policies (responses)
 #'
 #' @inheritParams group_objects_by_model
 #' @export

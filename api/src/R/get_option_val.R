@@ -1,10 +1,9 @@
 #' Get option val
 #'
-#' Generic function for getting allowed options for
-#' single node responses.
+#' Generic function for getting allowed options for single node responses.
 #'
-#' @param res typically single response node, may be a
-#' numeric or character vector, or a list of such objects.
+#' @param res typically single response node, may be a numeric or character
+#' vector, or a list of such objects.
 get_option_val = function(res) UseMethod("get_option_val")
 
 get_option_val.default = function(res) { # nolint

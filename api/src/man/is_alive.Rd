@@ -2,11 +2,10 @@
 % Please edit documentation in R/api_alive.R
 \name{is_alive}
 \alias{is_alive}
-\title{Is alive}
+\title{A simple endpoint that can be used to check whether an API is alive.}
 \usage{
 is_alive()
 }
 \description{
-Simple endpoint that can be used to check whether a router
-is alive.
+A simple endpoint that can be used to check whether an API is alive.
 }

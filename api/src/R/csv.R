@@ -1,4 +1,6 @@
-# @param parsed raw data parsed from json (list)
+#' Build CSV report
+#'
+#' @param parsed raw data parsed from JSON (list)
 build_csv = function(parsed) {
   res = extract_responses(parsed)
   adv_flag = advanced_flags(parsed)
@@ -16,8 +18,9 @@ build_csv = function(parsed) {
   })
 }
 
-# @param responses a set of responses (tibble) of class
-# simple_responses
+#' Prepare data for CSV report from responses
+#'
+#' @param responses a set of responses (tibble) of class simple_responses
 build_csv_data = function(responses) {
   purrr::pmap_dfr(responses, csv_part)
 }
@@ -65,7 +68,9 @@ csv_part = function(question, response, node) {
   qs
 }
 
-# @param parsed_json raw data as parsed from json (list)
+#' Extract scores from data
+#'
+#' @param parsed_json raw data as parsed from JSON (list)
 extract_scores = function(parsed_json) {
   purrr::map_dfr(parsed_json, ~{
     tibble::tibble(

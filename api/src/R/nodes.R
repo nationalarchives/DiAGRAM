@@ -1,5 +1,5 @@
-# keys for the nodes a user can edit for a simple model
-# sorted by order they appear in front end
+# keys for the nodes a user can edit for a simple model sorted by order they
+# appear in front end
 .user_nodes = c(
   "Digital_Object", "Storage_Medium",
   "Rep_and_Refresh", "Op_Environment",

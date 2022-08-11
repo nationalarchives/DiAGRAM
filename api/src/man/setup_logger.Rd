@@ -4,7 +4,7 @@
 \alias{setup_logger}
 \title{Set up default logger}
 \usage{
-setup_logger(dir = "./diagramAPI_logs")
+setup_logger(dir = "./diagramLambda_logs")
 }
 \arguments{
 \item{dir}{directory path for logs}

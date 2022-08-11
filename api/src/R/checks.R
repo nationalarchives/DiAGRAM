@@ -1,9 +1,8 @@
-# Generic functions for checking assertions on response nodes.
-#
-# @param x: typically single response node, may be a
-# numeric or character vector, or a list of such objects.
-# @param options named vector (or list) of allowed options for
-# a response
+#' Generic functions for checking assertions on response nodes.
+#'
+#' @param x Typically single response node, may be a numeric or character
+#' vector, or a list of such objects.
+#' @param options named vector (or list) of allowed options for a response
 check = function(x, ...) UseMethod("check")
 
 check.default = function(x, ...) return(invisible(NULL)) # nolint

@@ -8,7 +8,7 @@ pdf_table(obj)
 }
 \arguments{
 \item{obj}{is a tibble full of questions and responses, typically
-from \code{diagramAPI::join_questions_responses}}
+from \code{diagramLambda::join_questions_responses}}
 }
 \description{
 Builds a nicely formatted tibble of questions and responses

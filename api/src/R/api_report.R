@@ -1,25 +1,28 @@
+#' Generate PDF report from request object
+#'
 #' @rdname csv_report
+#' @eval param_req()
 #' @export
-# see https://www.rplumber.io/articles/rendering-output.html#customizing-image-serializers
-pdf_report_gen = function(req) {
+make_pdf_report = function(req) {
   ensure_json_input(req)
   parsed_json = jsonlite::parse_json(req$postBody)
   adv_flag = advanced_flags(parsed_json)
   tmp_file = with_log_handle(
     write_temp_pdf(extract_responses(parsed_json[!adv_flag]))
   )
-  readBin(tmp_file, "raw", n = file.info(tmp_file)$size)
+  on.exit(unlink(tmp_file))
+  body = readBin(tmp_file, "raw", n = file.info(tmp_file)$size)
+  serialise_pdf(body)
 }
 
 
-#' Generate reports
+#' Generate CSV report from request object
 #'
-#' API endpoints
-#' @param req rook request object
+#' @eval param_req()
 #' @export
-csv_report = function(req) {
+make_csv_report = function(req) {
   ensure_json_input(req)
   parsed_json = jsonlite::parse_json(req$postBody)
   csv_data = build_csv(parsed_json)
-  csv_data
+  serialise_csv(csv_data)
 }

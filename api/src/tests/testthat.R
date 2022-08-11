@@ -1,4 +1,4 @@
 library("testthat")
-library("diagramAPI")
+library("diagramLambda")
 
-test_check("diagramAPI")
+test_check("diagramLambda")

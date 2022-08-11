@@ -1,8 +1,8 @@
 #' Model node to probability table names map
 #'
 #' each node in the network has fixed outcomes which are attributed
-#' probabilities. This object allows a map between the node names
-#' and the names of the probability tables in the network object.
+#' probabilities. This object allows a map between the node names and the names
+#' of the probability tables in the network object.
 .model_prob_names = list(
   Technical_Skills = c("Good", "Poor"),
   System_Security = c("Good", "Poor"),
@@ -15,11 +15,11 @@
   Physical_Disaster = c("Yes", "No")
 )
 
-#' Unpack json
+#' Unpack JSON
 #'
-#' Convert unnamed lists in a list of lists to a vector.
-#' This ensures that JSON arrays are converted to vectors rather than
-#' lists. Operates recursively across the whole list of lists.
+#' Convert unnamed lists in a list of lists to a vector. This ensures that JSON
+#' arrays are converted to vectors rather than lists. Operates recursively
+#' across the whole list of lists.
 #'
 #' @param res a list (of lists)
 #' @return a list (of lists) where unnamed lists have become vectors.
@@ -33,7 +33,7 @@ unpack_json = function(res) {
   })
 }
 
-# @param parsed_json an array of json objects
+#' @param parsed_json an array of JSON objects
 extract_simple_responses = function(parsed_json) {
   if (is_array(parsed_json)) {
     purrr::map(parsed_json, ~create_simple_responses(.x))
@@ -48,7 +48,7 @@ is_array = function(parsed_json) {
 
 advanced_flags = function(parsed_json) {
   if (is_array(parsed_json)) {
-    # implies array of json objects
+    # implies array of JSON objects
     purrr::map_lgl(parsed_json, ~isTRUE(.x$is_advanced))
   } else {
     isTRUE(parsed_json$is_advanced)
@@ -60,7 +60,7 @@ format_simple_responses = function(response) {
   res
 }
 
-# @param parsed_json a single json object
+#' @param parsed_json a single JSON object
 create_simple_responses = function(parsed_json) {
   res = list(
     data = format_simple_responses(unpack_json(parsed_json$response)),
@@ -98,8 +98,7 @@ extract_advanced_responses = function(parsed_json) {
   }
 }
 
-# a full advanced model is composed of both the simple
-# and advanced parts
+# a full advanced model is composed of both the simple and advanced parts
 format_advanced_responses = function(parsed_json) {
   simple = unpack_json(parsed_json$response)
   advanced = parsed_json$advanced

@@ -7,7 +7,7 @@
 validate_json(req)
 }
 \arguments{
-\item{req}{a rook request object}
+\item{req}{A request object satisfying the \href{Rook interface}{https://cran.r-project.org/web/packages/Rook/README.html} between web servers and R applications.}
 }
 \description{
 Validate whether the json data posted fits with

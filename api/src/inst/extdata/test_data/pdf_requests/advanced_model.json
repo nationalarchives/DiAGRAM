@@ -1,1 +1,32 @@
-[{"model_name":"ddd","scenario":"Base Model","notes":"","intellectual_control":44,"renderability":43,"response":null,"is_advanced":true,"advanced":{"Tech_Metadata":{"Technical_Skills":["Good","Poor"],"Sufficient":[0.7726,0.427],"Insufficient":[0.2274,0.573]},"Digital_Object":{"Born_digital":0.34,"Digitised":0.0997,"Surrogate":0.5603}}}]
+[
+  {
+    "model_name": "ddd",
+    "scenario": "Base Model",
+    "notes": "",
+    "intellectual_control": 44,
+    "renderability": 43,
+    "response": null,
+    "is_advanced": true,
+    "advanced": {
+      "Tech_Metadata": {
+        "Technical_Skills": [
+          "Good",
+          "Poor"
+        ],
+        "Sufficient": [
+          0.7726,
+          0.427
+        ],
+        "Insufficient": [
+          0.2274,
+          0.573
+        ]
+      },
+      "Digital_Object": {
+        "Born_digital": 0.34,
+        "Digitised": 0.0997,
+        "Surrogate": 0.5603
+      }
+    }
+  }
+]

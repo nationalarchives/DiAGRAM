@@ -1,9 +1,6 @@
-#' Is alive
-#'
-#' Simple endpoint that can be used to check whether a router
-#' is alive.
+#' A simple endpoint that can be used to check whether an API is alive.
 #'
 #' @export
 is_alive = function() {
-  unbox(list("alive" = TRUE))
+  serialise_r(list("alive" = TRUE))
 }

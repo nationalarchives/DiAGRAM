@@ -3,7 +3,7 @@ title: "Template for preparing reports using RMarkdown"
 author: "Jumping Rivers Ltd"
 date: "`r format(Sys.Date(), '%b %d %Y')`"
 output:
-  diagramAPI::pdf_report
+  diagramLambda::pdf_report
 ---
 
 ```{r setup, include=FALSE}
