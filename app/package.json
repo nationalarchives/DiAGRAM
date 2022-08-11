@@ -16,7 +16,7 @@
     "build": "parcel build frontend/index.html --public-url ./",
     "lint": "eslint frontend/scripts/*.js",
     "fix-lint": "eslint frontend/scripts/*.js --fix",
-    "prepare": "husky install",
+    "prepare": "cd .. && husky install app/.husky",
     "test": "npm run lint && npm run build"
   },
   "repository": {
