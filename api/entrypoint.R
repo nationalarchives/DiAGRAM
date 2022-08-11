@@ -1,0 +1,6 @@
+pkgload::load_all()
+setup_logger()
+dir = get_internal_routes()
+routes = create_routes(dir)
+apis = generate_api(routes)
+final = add_default_hooks(apis)

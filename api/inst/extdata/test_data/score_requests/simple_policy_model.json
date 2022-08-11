@@ -1,0 +1,122 @@
+[
+  {
+      "model_name": "BINGO",
+      "policy": "base-model",
+      "notes": "",
+      "intellectual_control": null,
+      "renderability": null,
+      "response": {
+          "Digital_Object": [
+              0,
+              0,
+              100
+          ],
+          "Storage_Medium": [
+              0,
+              0,
+              100
+          ],
+          "Rep_and_Refresh": {
+              "1": 0,
+              "2": 0
+          },
+          "Op_Environment": {
+              "1": 0,
+              "2": "Not Applicable - we have copies offsite"
+          },
+          "Physical_Disaster": "High",
+          "Checksum": [
+              0,
+              0,
+              100
+          ],
+          "System_Security": {
+              "1": "ISO 27001",
+              "2": "None, or only minor issues outstanding",
+              "3": "Level 4",
+              "4": "Yes"
+          },
+          "Info_Management": {
+              "1": "Level 4",
+              "2": "Not achieved",
+              "3": [
+                  "Minimal awareness",
+                  "Optimized"
+              ]
+          },
+          "Technical_Skills": [
+              "None",
+              "None",
+              "Advanced",
+              "None",
+              "None",
+              "None",
+              "None",
+              "None",
+              "None",
+              "None"
+          ]
+      },
+      "advanced": null
+  },
+  {
+      "model_name": "BINGO",
+      "policy": "low disaster",
+      "notes": "",
+      "intellectual_control": null,
+      "renderability": null,
+      "response": {
+          "Digital_Object": [
+              0,
+              0,
+              100
+          ],
+          "Storage_Medium": [
+              0,
+              0,
+              100
+          ],
+          "Rep_and_Refresh": {
+              "1": 0,
+              "2": 0
+          },
+          "Op_Environment": {
+              "1": 0,
+              "2": "Not Applicable - we have copies offsite"
+          },
+          "Physical_Disaster": "Low",
+          "Checksum": [
+              0,
+              0,
+              100
+          ],
+          "System_Security": {
+              "1": "ISO 27001",
+              "2": "None, or only minor issues outstanding",
+              "3": "Level 4",
+              "4": "Yes"
+          },
+          "Info_Management": {
+              "1": "Level 4",
+              "2": "Not achieved",
+              "3": [
+                  "Minimal awareness",
+                  "Optimized"
+              ]
+          },
+          "Technical_Skills": [
+              "None",
+              "None",
+              "Advanced",
+              "None",
+              "None",
+              "None",
+              "None",
+              "None",
+              "None",
+              "None"
+          ]
+      },
+      "advanced": null
+  }
+]

@@ -1,0 +1,17 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^\.gitlab-ci\.yml$
+^\.lintr$
+_files$
+^_
+docs
+^CODEOWNERS$
+/rsconnect/
+/connect_records/
+entrypoint.R
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^CONTRIBUTING\.md$
+^\.rscignore$
+^\.rcsignore$

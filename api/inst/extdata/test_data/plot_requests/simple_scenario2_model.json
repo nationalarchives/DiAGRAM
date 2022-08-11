@@ -1,0 +1,20 @@
+[
+  {
+      "model_name": "BINGO",
+      "scenario": "Base Model",
+      "intellectual_control": 20,
+      "renderability": 31
+  },
+  {
+      "model_name": "BINGO",
+      "scenario": "low disaster",
+      "intellectual_control": 25,
+      "renderability": 31
+  },
+  {
+    "model_name": "TEST",
+    "scenario": "Base Model",
+    "intellectual_control": 20,
+    "renderability": 31
+  }
+]
