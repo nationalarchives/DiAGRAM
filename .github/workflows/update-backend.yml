@@ -1,0 +1,52 @@
+name: Build Docker image, push to ECR, and update Lambda
+
+on: 
+  push:
+    paths:
+      - api/**
+
+jobs:
+
+  push_to_env_matching_branch:
+    runs-on: ubuntu-latest
+    if: "! contains(toJSON(github.event.commits.*.message), '[ci skip]')"
+
+    strategy:
+      matrix:
+        config:
+          - {branch: master, aws_region: eu-west-2 }
+
+    steps:
+
+      - uses: actions/checkout@v3
+        if: ${{ contains(github.ref, matrix.config.branch) }}
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ matrix.config.aws_region }}
+        if: ${{ contains(github.ref, matrix.config.branch) }}
+
+      - name: Login to ECR
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ matrix.config.aws_region }}.amazonaws.com
+        if: ${{ contains(github.ref, matrix.config.branch) }}
+
+      - name: Build docker image and push to ECR
+        id: docker_build
+        uses: docker/build-push-action@v3
+        with:
+          context: api/
+          push: true
+          tags: ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ matrix.config.aws_region }}.amazonaws.com/${{ secrets.ECR_REPO_NAME }}:latest
+        if: ${{ contains(github.ref, matrix.config.branch) }}
+
+      - name: Update Lambda to use the latest image push
+        run: |
+          aws lambda update-function-code --function-name ${{ secrets.LAMBDA_NAME }} --image-uri ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ matrix.config.aws_region }}.amazonaws.com/${{ secrets.ECR_REPO_NAME }}@${{ steps.docker_build.outputs.digest }}
+          aws lambda wait function-updated --function-name ${{ secrets.LAMBDA_NAME }}
+        if: ${{ contains(github.ref, matrix.config.branch) }}
+

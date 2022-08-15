@@ -1,0 +1,34 @@
+---
+output: diagramLambda::pdf_report
+params:
+  req: NA # all objects to be viewed
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = TRUE, message = FALSE)
+library(magrittr)
+req = params$req
+models = diagramLambda::group_objects_by_model(req)
+```
+
+DiAGRAM produces a risk prevention score for the digital preservation outcomes of renderability and intellectual control.
+
+* Renderability - The object is a sufficiently useful representation of the original file.
+* Intellectual Control - Having full knowledge of the material content, provenance and conditions of use.
+
+The higher the score, the lower the risk to the digital archive.
+
+```{r, results='asis'}
+purrr::walk(models, function(model_name) {
+  e = new.env(parent = knitr::knit_global())
+  message(model_name)
+  e$params = list(
+    req = model_name
+  )
+  cat(paste(
+    suppressMessages(knitr::knit_child("pdf_section.Rmd", envir = e, quiet = TRUE)),
+    collapse = "\n"
+  ))
+})
+```
+

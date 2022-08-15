@@ -1,0 +1,14 @@
+[
+  {
+    "model_name": "BINGO",
+    "policy": "base-model",
+    "intellectual_control": 20,
+    "renderability": 31
+  },
+  {
+    "model_name": "BINGO",
+    "policy": "low disaster",
+    "intellectual_control": 25,
+    "renderability": 31
+  }
+]
