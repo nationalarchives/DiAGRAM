@@ -1,0 +1,39 @@
+<div class="question hidden" data-section="Digital_Object" data-interface="triple-slider">
+  <div class="question-header">
+    <h3 tabindex="-1">Digital Object</h3>
+  </div>
+  <div class="question-content">
+    <p class="question-definition">Definition: The proportion of your archive made up of born-digital, digitised and surrogate files.</p>
+    <div class="question-explanation">Different types of digital material hold different risks, for example some file formats may be easier to preserve than others. The amount of metadata held about the material and their conditions of use will also differ. All these aspects contribute to their digital preservation risk. If your archive does not distinguish between surrogates and digitised records put the percentage for surrogates only.</div>
+    <div class="question-text">
+      <p class="question-number">1.</p>
+      <p id="do-q1">What proportion of your digital archive are the following?</p>
+      <div id="do-a1" class="slider-group" role="group" aria-labelledby="do-q1">
+        <div>
+          <h4 id="do-a1-born-digital-heading">Born digital (%)</h4>
+          <div id="do-a1-born-digital" class="slider-container">
+            <input type="range" min="0" max="100" step="1" value="0" aria-labelledby="do-a1-born-digital-heading do-a1-born-digital-label" list="percentage-ticks">
+            <input type="number" min="0" max="100" value="0" aria-labelledby="do-a1-born-digital-heading do-a1-born-digital-label">
+            <label id="do-a1-born-digital-label">Records were created in a digital format.</label>
+          </div>
+        </div>
+        <div>
+          <h4 id="do-a1-digitised-heading">Digitised (%)</h4>
+          <div id="do-a1-digitised" class="slider-container">
+            <input type="range" min="0" max="100" value="0" aria-labelledby="do-a1-digitised-heading do-a1-digitised-label" list="percentage-ticks">
+            <input type="number" min="0" max="100" value="0" aria-labelledby="do-a1-digitised-heading do-a1-digitised-label">
+            <label id="do-a1-digitised-label">Records have been created as a result of converting analogue originals, but you do not hold those originals.</label>
+          </div>
+        </div>
+        <div>
+          <h4 id="do-a1-surrogate-heading">Surrogate (%)</h4>
+          <div id="do-a1-surrogate" class="slider-container">
+            <input type="range" min="0" max="100" value="100" aria-labelledby="do-a1-surrogate-heading do-a1-surrogate-label" list="percentage-ticks">
+            <input type="number" min="0" max="100" value="100" aria-labelledby="do-a1-surrogate-heading do-a1-surrogate-label">
+            <label id="do-a1-surrogate-label">Digital images have been created as a result of converting analogue originals, and you also hold the originals</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

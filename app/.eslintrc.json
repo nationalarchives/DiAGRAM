@@ -1,0 +1,24 @@
+{
+	"env": {
+		"browser": true,
+		"es2021": true
+	},
+	"extends": "eslint:recommended",
+	"parserOptions": {
+		"ecmaVersion": 13
+	},
+	"rules": {
+		"indent": [	"error", "tab", { "SwitchCase": 1 } ],
+		"linebreak-style": [ "error",	"unix" ],
+		"quotes": [ "error", "single"	],
+		"semi": [	"error", "always"	],
+		"camelcase": [ "error", { "properties": "never" } ],
+		"eqeqeq": [ "error", "always" ],
+		"no-bitwise": [ "warn" ],
+		"strict": [ "error" ],
+		"array-bracket-spacing": [ "error" ],
+		"block-spacing": [ "error", "always" ],
+		"brace-style": [ "error", "stroustrup", { "allowSingleLine": true } ],
+		"padded-blocks": [ "error", "never" ]
+	}
+}

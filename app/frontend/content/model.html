@@ -1,0 +1,52 @@
+<main>
+  <div class="box-body">
+    <section id='overview'>
+      <h2>Create your model</h2>
+      <p id="preamble">By creating a model, you will be able to see the current risk to your digital material. If you
+        have not prepared your answers we suggest you to do so before you begin. You can find these on <a
+          href="how-to.html">"How to use the tool"</a>.</p>
+    </section>
+
+    <section id="prequestions">
+      <div id="start-container">
+        <div class="button-row">
+          <button id="model-start" class="btn-start" type="button">Start</button>
+        </div>
+      </div>
+      <div id="name-container" class="hidden">
+        <label for="model-name">Give it a name</label>
+        <input id="model-name" name="model-name" type="text" placeholder="Baseline" />
+        <p id="valid-text-alert" class="warning" role="status" aria-atomic="true"></p>
+        <div class="button-row">
+          <button class="btn-next hidden" type="button">Next</button>
+        </div>
+      </div>
+    </section>
+
+    <include src="content/questions/questions.html"></include>
+
+    <section id='postquestions' class="hidden">
+      <h2>What next?</h2>
+      <p><strong><a href="/visualise.html" tabindex="-1"><button class="btn-start"
+              aria-labelledby="next-visualise">Results</button></a></strong> <span id="next-visualise">This will show
+          you the probability (as a percentage) of having adequate intellectual control and the renderability of your
+          digital records.</span></p>
+      <p><strong><a href="/scenario.html" tabindex="-1"><button class="btn-start" aria-labelledby="next-scenario">Create
+              a scenario</button></a></strong> <span id="next-scenario">If you want to change your answers and see how
+          it impacts your risk score you can create different scenarios.</span></p>
+      <p><strong><a href="/model.html" tabindex="-1"><button class="btn-start" aria-labelledby="next-model">Create
+              another model</button></a></strong> <span id="next-model">If you want to create another model this link
+          will take you back to the questions assessing the risk of your archive.</span></p>
+    </section>
+  </div>
+
+  <div id="models-section-container" class="box-body hidden">
+    <div id="loading-indicator-container"></div>
+    <section id='models-section'>
+      <h2>Models</h2>
+      <div id="model-list" class="table-wrapper flex-center"></div>
+    </section>
+  </div>
+
+
+</main>

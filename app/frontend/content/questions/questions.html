@@ -1,0 +1,58 @@
+<section id='questions-section' class="hidden">
+
+  <datalist id="percentage-ticks">
+    <option value="0" label="0%"></option>
+    <option value="10"></option>
+    <option value="20"></option>
+    <option value="30"></option>
+    <option value="40"></option>
+    <option value="50" label="50%"></option>
+    <option value="60"></option>
+    <option value="70"></option>
+    <option value="80"></option>
+    <option value="90"></option>
+    <option value="100" label="100%"></option>
+  </datalist>
+
+  <div id="questions-ancillary" class="questions-ancillary">
+    <div class="questions-ancillary-top-row">
+      <div class="questions-name-container">
+        <p>Currently defining: <span id="questions-name"></span></p>
+      </div>
+      <div id="questions-progress" class="questions-progress">
+        <label>
+          <span>Progress</span>
+          <progress value="0" max="100"></progress>
+          <span id="questions-progress-text">0</span>
+          <span>%</span>
+        </label>
+      </div>
+    </div>
+    
+    <div class="questions-comments-container">
+      <p> <span id="questions-comments-label">Comments:</span> <span id="questions-comments-description">these will appear in the summary table and report. They are for you to use to make any notes for your reference as you answer the questions.</span></p>
+      <textarea id="questions-comments" name="questions-comments" aria-labelledby="questions-comments-label" aria-describedby="questions-comments-description"></textarea>
+    </div>
+  </div>
+
+  <div id="questions">
+    <include src="content/questions/digital-object.html"></include>
+    <include src="content/questions/storage-medium.html"></include>
+    <include src="content/questions/replication-and-refreshment.html"></include>
+    <include src="content/questions/operating-environment.html"></include>
+    <include src="content/questions/physical-disaster.html"></include>
+    <include src="content/questions/checksum.html"></include>
+    <include src="content/questions/system-security.html"></include>
+    <include src="content/questions/information-management.html"></include>
+    <include src="content/questions/technical-skills.html"></include>
+  </div>
+
+  <div id="questions-buttons">
+    <div class="button-row">
+      <button class="btn-previous" type="button">Back</button>
+      <button class="btn-next" type="button">Next</button>
+      <button class="btn-finish hidden" type="button">Finish</button>
+    </div>
+  </div>
+
+</section>
