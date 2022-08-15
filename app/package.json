@@ -3,13 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "frontend/index.html",
-  "dependencies": {
-    "parcel-bundler": "^1.12.5"
-  },
   "devDependencies": {
-    "eslint": "^8.2.0",
+    "eslint": "^8.22.0",
     "husky": "^7.0.4",
-    "posthtml-include": "^1.7.2"
+    "parcel-bundler": "^1.12.5",
+    "posthtml-include": "^1.7.4"
   },
   "scripts": {
     "start": "parcel frontend/index.html -d .dev-build",
