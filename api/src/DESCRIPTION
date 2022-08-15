@@ -1,0 +1,79 @@
+Type: Package
+Package: diagramLambda
+Title: Lambda runtime for DiAGRAM backend
+Version: 0.0.1
+Authors@R: c(
+    person("Jumping Rivers", email = "info@jumpingrivers.com", role = c("aut", "cre")),
+    person("The National Archives", email = "digitalpreservation@nationalarchives.gov.uk", role = "fnd")
+)
+Description: A package for defining an R runtime for the DiAGRAM application's
+    Lambda backend.
+License: file LICENSE
+Depends: 
+    R (>= 4.0.0)
+Imports:
+    assertthat,
+    bnlearn,
+    bookdown,
+    dplyr,
+    ggplot2,
+    glue,
+    gRain,
+    jsonlite,
+    lambdr,
+    logger,
+    magrittr,
+    plumber,
+    purrr,
+    readr,
+    rlang,
+    rmarkdown,
+    stats,
+    stringr,
+    tibble,
+    tidyr,
+    tidyselect,
+    tinytex,
+    yaml
+Suggests: 
+    callr,
+    httpuv,
+    httr,
+    kableExtra,
+    png,
+    R.utils,
+    readr,
+    testthat (>= 3.0.0)
+biocViews:
+Config/testthat/edition: 3
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.2.0
+SystemRequirements: GLPK library package (e.g., libglpk-dev on
+    Debian/Ubuntu)
+Collate: 
+    'api_alive.R'
+    'api_chart.R'
+    'api_report.R'
+    'api_score_model.R'
+    'api_validate.R'
+    'checks.R'
+    'csv.R'
+    'custom_serialisers.R'
+    'deserialise.R'
+    'get_option_val.R'
+    'global_imports.R'
+    'handler.R'
+    'logger.R'
+    'model.R'
+    'nodes.R'
+    'pdf.R'
+    'plot.R'
+    'reexports.R'
+    'responses.R'
+    'to_numeric.R'
+    'to_probability.R'
+    'utils_api.R'
+    'utils_roxygen.R'
+    'utils_test.R'
+    'validate.R'

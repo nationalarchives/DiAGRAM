@@ -1,0 +1,39 @@
+<div class="question hidden" data-section="Checksum" data-interface="triple-slider">
+  <div class="question-header">
+    <h3 tabindex="-1">Checksum</h3>
+  </div>
+  <div class="question-content">
+    <p class="question-definition">Definition: A unique numerical signature dreived from a file that can be used to compare copies Definition from the DPC handbook. A checksum is needed to ensure integrity of the digital object.</p>
+    <p class="question-explanation">A checksum is needed to ensure the integrity of the digital object. Some depositors are unable to include checksums for the material they deposit in the archive. In these cases, archivists may decide to generate checksums for the material when they receive it to enable them to check it has not changed while in their custody. If your digital material does not have checksums or the checksums are generated after it is accessioned, choose 100% for C.</p>
+    <div class="question-text">
+      <p class="question-number">1.</p>
+      <p id="c-q1">For what proportion of files do you have a checksum from following sources?</p>
+      <div id="c-a1" class="slider-group" role="group" aria-labelledby="c-q1">
+        <div>
+          <h4 id="c-a1-yes-heading">Yes (%)</h4>
+          <div id="c-a1-yes" class="slider-container">
+            <input type="range" min="0" max="100" value="0" aria-labelledby="c-a1-yes-heading c-a1-yes-label" list="percentage-ticks">
+            <input type="number" min="0" max="100" value="0" aria-labelledby="c-a1-yes-heading c-a1-yes-label">
+            <label id="c-a1-yes-label">The depositor</label>
+          </div>
+        </div>
+        <div>
+          <h4 id="c-a1-archivist-generated-heading">Archivist-generated (%)</h4>
+          <div id="c-a1-archivist-generated" class="slider-container">
+            <input type="range" min="0" max="100" value="0" aria-labelledby="c-a1-archivist-generated-heading c-a1-archivist-generated-label" list="percentage-ticks">
+            <input type="number" min="0" max="100" value="0" aria-labelledby="c-a1-archivist-generated-heading c-a1-archivist-generated-label">
+            <label id="c-a1-archivist-generated-label">The archivist, generated on receipt of the record but prior to accessioning</label>
+          </div>
+        </div>
+        <div>
+          <h4 id="c-a1-no-heading">No (%)</h4>
+          <div id="c-a1-no" class="slider-container">
+            <input type="range" min="0" max="100" value="100" aria-labelledby="c-a1-no-heading c-a1-no-label" list="percentage-ticks">
+            <input type="number" min="0" max="100" value="100" aria-labelledby="c-a1-no-heading c-a1-no-label">
+            <label id="c-a1-no-label">You don't have checksums at all, or they were generated sometime after initial receipt</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
