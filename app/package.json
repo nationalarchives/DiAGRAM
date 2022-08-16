@@ -2,15 +2,14 @@
   "name": "diagram-plumber",
   "version": "1.0.0",
   "description": "",
-  "main": "frontend/index.html",
   "devDependencies": {
     "eslint": "^8.22.0",
     "husky": "^8.0.1",
-    "parcel-bundler": "^1.12.5",
+    "parcel": "^2.0.0",
     "posthtml-include": "^1.7.4"
   },
   "scripts": {
-    "start": "parcel frontend/index.html -d .dev-build",
+    "start": "parcel frontend/index.html --dist-dir .dev-build",
     "build": "parcel build frontend/index.html --public-url ./",
     "lint": "eslint frontend/scripts/*.js",
     "fix-lint": "eslint frontend/scripts/*.js --fix",

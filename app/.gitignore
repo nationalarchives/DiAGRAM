@@ -1,6 +1,6 @@
 node_modules/
 dist/
-.cache/
+.parcel-cache/
 .dev-build
 .env
 .DS_Store
