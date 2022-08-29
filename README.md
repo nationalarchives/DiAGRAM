@@ -15,3 +15,8 @@ The backend code is located in the `api/` directory. You can read more about thi
 
 The code to provision the infrastructure required to deploy the frontend and backend is located
 [in this repository](https://github.com/nationalarchives/DiAGRAM-terraform/).
+
+## Environments (TODO)
+
+TODO: Add a description of each of the different development environments (live / production,
+staging and development), their purpose, and how to use them.
