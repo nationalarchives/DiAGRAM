@@ -52,6 +52,7 @@ SystemRequirements: GLPK library package (e.g., libglpk-dev on
 Collate: 
     'api_alive.R'
     'api_chart.R'
+    'api_dev.R'
     'api_report.R'
     'api_score_model.R'
     'api_validate.R'
