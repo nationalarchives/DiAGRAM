@@ -12,6 +12,7 @@ on:
 jobs:
 
   push_to_env_matching_branch:
+    environment: ${{ github.ref_name }}
     runs-on: ubuntu-latest
     if: "! contains(toJSON(github.event.commits.*.message), '[ci skip]')"
 
