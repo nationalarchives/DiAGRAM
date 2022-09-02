@@ -93,3 +93,29 @@ for {lambdr}'s serialiser allows multiple different object types to be returned 
 function, and for custom serialisers to be created for returning PDF documents, PNG images, and CSV
 data.
 
+## Deployment
+
+Updating of the Docker image used by AWS Lambda is performed _automatically_ by a GitHub Action when
+required. As a developer, you should _not_ typically need to manually push any images to AWS ECR.
+
+If you _really must_ push directly to AWS ECR (perhaps for a redeployment to an _entirely new_
+environment, or if GitHub Actions is experiencing downtime and you need to apply a hotfix), you will
+require write-access to the correct ECR repository, and an AWS Access Key and corresponding AWS
+Secret Access Key (see 
+[the documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_CreateAccessKey)
+on how to generate these). You should add these keys to a profile by running 
+[`aws configure`](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html#cli-configure-quickstart-config).
+
+Once you have configured your AWS profile, you can authenticate against ECR with:
+
+```sh
+aws ecr get-login-password --region <AWS-REGION-HERE> | docker login --username AWS --password-stdin <AWS-ACCOUNT-ID-HERE>.dkr.ecr.<AWS-REGION-HERE>.amazonaws.com
+```
+
+Then, from the this directory you can build and push your image as:
+
+```sh
+docker build -t <AWS-REPO-NAME-HERE> .
+docker tag <AWS-REPO-NAME-HERE>:latest <AWS-ACCOUNT-ID-HERE>.dkr.ecr.<AWS-REGION-HERE>.amazonaws.com/<AWS-REPO-NAME-HERE>:latest
+docker push <AWS-ACCOUNT-ID-HERE>.dkr.ecr.<AWS-REGION-HERE>.amazonaws.com/<AWS-REPO-NAME-HERE>:latest
+```
