@@ -5,8 +5,8 @@ on:
     paths:
       - api/**
     branches:
-      - master
-      - stg
+      - live
+      - stage
       - dev
 
 jobs:
