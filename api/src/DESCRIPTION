@@ -55,6 +55,7 @@ Collate:
     'api_dev.R'
     'api_report.R'
     'api_score_model.R'
+    'api_utils.R'
     'api_validate.R'
     'checks.R'
     'csv.R'
