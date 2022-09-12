@@ -193,6 +193,7 @@
 			var editModal = document.createElement('div');
 			document.body.appendChild(editModal);
 			editModal.setAttribute('role', 'dialog');
+			editModal.setAttribute('aria-modal', 'true');
 			editModal.setAttribute('aria-labelledby', 'edit-modal-title');
 			editModal.setAttribute('aria-describedby', 'edit-modal-description');
 
@@ -362,6 +363,7 @@
 			var responsesModal = document.createElement('div');
 			document.body.appendChild(responsesModal);
 			responsesModal.setAttribute('role', 'dialog');
+			responsesModal.setAttribute('aria-modal', 'true');
 			responsesModal.setAttribute('aria-labelledby', 'responses-modal-title');
 			responsesModal.setAttribute('aria-describedby', 'responses-modal-description');
 
