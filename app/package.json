@@ -9,7 +9,7 @@
     "posthtml-include": "^1.7.4"
   },
   "scripts": {
-    "start": "parcel frontend/index.html --dist-dir .dev-build --log-level error",
+    "start": "parcel frontend/index.html --dist-dir .dev-build",
     "build": "parcel build frontend/index.html --public-url ./",
     "lint": "eslint frontend/scripts/*.js",
     "fix-lint": "eslint frontend/scripts/*.js --fix",
