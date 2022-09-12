@@ -559,11 +559,11 @@
 	
 		function createEditCell(props) {
 			var editCell = props.row.insertCell();
+			editCell.setAttribute('headers', 'column_header_edit ' + props.headers);
 			var editBtn = document.createElement('input');
 			editBtn.setAttribute('type', 'button');
 			editBtn.setAttribute('value', 'Edit');
 			editBtn.setAttribute('id', 'editBtn' + props.index);
-			editBtn.setAttribute('headers', 'column_header_edit ' + props.headers);
 			editBtn.setAttribute('data-index', props.index);
 			if (fixedModelNames.includes(props.data[modelNameKey])) { editBtn.setAttribute('disabled', true); }
 			editBtn.addEventListener('click', function () { editClick(this); });
@@ -572,11 +572,11 @@
 	
 		function createDeleteCell(props) {
 			var deleteCell = props.row.insertCell();
+			deleteCell.setAttribute('headers', 'column_header_delete ' + props.headers);
 			var delBtn = document.createElement('input');
 			delBtn.setAttribute('type', 'button');
 			delBtn.setAttribute('value', 'Delete');
 			delBtn.setAttribute('id', 'delBtn' + props.index);
-			delBtn.setAttribute('headers', 'column_header_delete ' + props.headers);
 			delBtn.setAttribute('data-index', props.index);
 			if (fixedModelNames.includes(props.data[modelNameKey])) { delBtn.setAttribute('disabled', true); }
 			delBtn.addEventListener('click', function () { deleteClick(this); });
@@ -593,12 +593,12 @@
 	
 		function createResponsesCell(props) {
 			var responseCell = props.row.insertCell();
+			responseCell.setAttribute('headers', 'column_header_delete ' + props.headers);
 			if (props.data['response'] !== null && !props.data.is_advanced) {
 				var resBtn = document.createElement('input');
 				resBtn.setAttribute('type', 'button');
 				resBtn.setAttribute('value', 'Responses');
 				resBtn.setAttribute('id', 'resBtn' + props.index);
-				resBtn.setAttribute('headers', 'column_header_delete ' + props.headers);
 				resBtn.setAttribute('data-index', props.index);
 				resBtn.addEventListener('click', function() { responsesClick(this); });
 				responseCell.appendChild(resBtn);
