@@ -299,11 +299,13 @@
 		function trySaveModelDetails(modal, selectedModel) {
 			var modalAlert = modal.querySelector('#modal-alert');
 			var oldName = selectedModel.model_name;
-			var newName = modal.querySelector('#edit-modal-model-name').value;
+			var nameField = modal.querySelector('#edit-modal-model-name');
+			var newName = nameField.value;
 			var newNotes = modal.querySelector('#edit-modal-notes').value;
 			var modelValidationErrors = newName !== oldName ? getModelValidationErrors(newName, models) : '';
 			if (modelValidationErrors) {
 				modalAlert.innerText = 'Unable to save: ' + modelValidationErrors;
+				nameField.focus();
 			}
 			else {
 				updateAllModelsWithName(selectedModel, newName, newNotes);
@@ -314,11 +316,13 @@
 		function trySaveScenarioDetails(modal, selectedModel) {
 			var modalAlert = modal.querySelector('#modal-alert');
 			var oldName = selectedModel.scenario;
-			var newName = modal.querySelector('#edit-modal-scenario-name').value;
+			var nameField = modal.querySelector('#edit-modal-scenario-name');
+			var newName = nameField.value;
 			var newNotes = modal.querySelector('#edit-modal-notes').value;
 			var scenarioValidationErrors = newName !== oldName ? getScenarioValidationErrors(selectedModel, newName, models) : '';
 			if (scenarioValidationErrors) {
 				modalAlert.innerText = 'Unable to save: ' + scenarioValidationErrors;
+				nameField.focus();
 			}
 			else {
 				updateScenario(selectedModel, newName, newNotes);
