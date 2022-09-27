@@ -157,8 +157,9 @@
 	var processChangeToExistingForm = function() {
 		model = modelChooser.getSelectedModels()[0];
 		var startButton = document.querySelector('#choose-existing-container .btn-start');
+		var nameField = document.querySelector('#adv-name-existing');
 		var textAlert = document.querySelector('#valid-existing-text-alert');
-		var value = document.querySelector('#adv-name-existing').value;
+		var value = nameField.value;
 		var validationErrors;
 
 		if (document.querySelector('#radio-model').checked) {
@@ -186,7 +187,16 @@
 			close.setAttribute('aria-label', 'Dismiss warning');
 			close.classList.add('btn-finish-invert');
 			textAlert.appendChild(close);
-			close.addEventListener('click', function() { textAlert.innerText = ''; });
+
+			close.addEventListener('click', function() {
+				textAlert.innerText = '';
+				// Don't refocus on nameField if current focus is on some other element
+				// This can happen if pressing the escape key
+				var refocusList = [close, nameField, document.body, null];
+				if (refocusList.some(function(d) { return d === document.activeElement; })) {
+					nameField.focus();
+				}
+			});
 		}
 
 		document.querySelector('#no-name').classList[value.length ? 'add' : 'remove']('hidden');
@@ -195,9 +205,7 @@
 	document.addEventListener('keydown', function(evt) {
 		if (evt.key === 'Escape') {
 			var close = document.querySelector('#alert-close');
-			if (close) {
-				document.querySelector('#valid-existing-text-alert').innerText = '';
-			}
+			if (close) { close.click(); }
 		}
 	});
 
