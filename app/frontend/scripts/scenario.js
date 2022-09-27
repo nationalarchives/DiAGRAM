@@ -26,6 +26,8 @@
 	hideNode('#no-models');
 	showNode('#prequestions');
 
+	var overviewTitle = document.querySelector('#overview h2');
+
 	var setButtonStatus = function() {
 		var nextButton = document.querySelector('#choose-model-container .btn-next');
 		if (modelChooser.getSelectedModels().length) {
@@ -52,6 +54,7 @@
 
 	var unstart = function () {
 		showNode('#prequestions');
+		document.querySelector('#scenario-name').focus();
 	};
 
 	var end = function () {
@@ -99,11 +102,16 @@
 			var answer = input.parentElement.parentElement.querySelector('.answers');
 			answer.innerText = spreadEntity(model.response[key]).join(', ');
 		});
+
+		if (document.activeElement === this) {
+			overviewTitle.focus();
+		}
 	});
 
 	document.querySelector('#response-changes .btn-previous').addEventListener('click', function () {
 		showNode('#choose-model-container');
 		hideNode('#response-changes');
+		if (document.activeElement === this) { overviewTitle.focus(); }
 	});
 
 
@@ -150,11 +158,19 @@
 	scenarioButton.addEventListener('click', function () {
 		hideNode('#response-changes');
 		showNode('#name-container');
+		document.querySelector('#scenario-name').focus();
 	});
 
 	document.querySelector('#name-container .btn-previous').addEventListener('click', function () {
 		showNode('#response-changes');
 		hideNode('#name-container');
+		overviewTitle.focus();
+	});
+
+	var awaitingClick;
+
+	document.querySelector('#name-container .btn-next').addEventListener('mousedown', function () {
+		awaitingClick = true;
 	});
 
 	document.querySelector('#name-container .btn-next').addEventListener('click', function () {
@@ -166,6 +182,8 @@
 			}
 		});
 		scenarioBuilder.start(document.querySelector('#scenario-name').value, skip);
+		if (!awaitingClick) { document.querySelector('#questions-comments').focus(); }
+		awaitingClick = false;
 	});
 
 	document.querySelector('#scenario-name').addEventListener('input', function () {
