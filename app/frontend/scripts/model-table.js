@@ -257,7 +257,7 @@
 			focusTrap.push(saveButton);
 				
 			showDialog(editModal);
-			addCloseModalFunctionality(close, clicked, editModal);
+			addCloseModalFunctionality(close, clicked.getAttribute('id'), editModal);
 
 			initEditFormValues(editModal, selectedModel);
 			initEditFormFunctionality(editModal, selectedModel);
@@ -428,7 +428,7 @@
 			});
 
 			focusTrap = [close];
-			addCloseModalFunctionality(close, clicked, responsesModal);
+			addCloseModalFunctionality(close, clicked.getAttribute('id'), responsesModal);
 		}
 	
 		function generateQuestionData(questions, answers) {
@@ -468,21 +468,21 @@
 			return outputArray;
 		}
 	
-		function addCloseModalFunctionality(closeElement, ModalTriggeringElement, dialogElement) {
+		function addCloseModalFunctionality(closeElement, triggeringElementId, dialogElement) {
 			closeElement.focus();
 			closeElement.addEventListener('click', function () {
-				closeDialog(ModalTriggeringElement);
+				closeDialog(triggeringElementId);
 			});
 	
 			var addESC = function (e) {
 				if (e.key === 'Escape') {
-					closeDialog(ModalTriggeringElement);
+					closeDialog(triggeringElementId);
 				}
 			};
 	
-			function closeDialog(ModalTriggeringElement) {
+			function closeDialog(triggeringElementId) {
 				dialogElement.remove();
-				ModalTriggeringElement.focus();
+				document.querySelector('#' + triggeringElementId).focus();
 				document.removeEventListener('keydown', addESC);
 				focusTrap = null;
 			}
