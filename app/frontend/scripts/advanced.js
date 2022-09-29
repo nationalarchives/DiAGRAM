@@ -421,6 +421,7 @@
 			var headerText = headers[i];
 			if (typeof rows[0][i] === 'number') { headerText += ' (%)'; }
 			th.innerText = headerText;
+			th.setAttribute('id', 'column-' + (i + 1) + '-header');
 			tr.appendChild(th);
 		}
 		thead.appendChild(tr);
@@ -437,6 +438,8 @@
 				tr = document.createElement('tr');
 				th = document.createElement('th');
 				th.innerText = i + 1;
+				const rowLabel = 'row-' + (i+1) + '-header';
+				th.setAttribute('id', rowLabel);
 				tr.appendChild(th);
 				var row = rows[i];
 				for (var j = 0; j < row.length; j++) {
@@ -451,6 +454,8 @@
 						input.setAttribute('step', fixed(Math.pow(10, -decimalPlaces)));
 						input.setAttribute('max', 100);
 						input.setAttribute('value', fixed(value));
+						var columnLabel = 'column-' + (j + 1) + '-header';
+						input.setAttribute('aria-labelledby', rowLabel + ' ' + columnLabel);
 						td.appendChild(input);
 					}
 					else {
