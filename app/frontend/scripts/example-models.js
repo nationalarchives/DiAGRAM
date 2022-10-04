@@ -29,7 +29,7 @@
 					1: 100,
 					2: 'Not Applicable - we have copies offsite'
 				},
-				Physical_Disaster: Very Low,
+				Physical_Disaster: 'Very Low',
 				Checksum: [
 					0,
 					0,
