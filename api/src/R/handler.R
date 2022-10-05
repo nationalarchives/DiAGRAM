@@ -19,6 +19,7 @@ handler = function(event_content, context) {
     "model/score" = diagramLambda::score_model(request),
     "report/pdf" = diagramLambda::make_pdf_report(request),
     "report/csv" = diagramLambda::make_csv_report(request),
+    "validation/validate_json" = diagramLambda::validate_json(request),
     "test/is_alive" = diagramLambda::is_alive()
   )
 
