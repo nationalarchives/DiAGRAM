@@ -1,3 +1,7 @@
+# diagramLambda 0.1.0 *2022-10-05*
+
+- feat: Create `validation/validate_json` route
+
 # diagramLambda 0.0.1 *2022-07-26*
 
 - init: Adapt {diagramAPI} for use with AWS Lambda
