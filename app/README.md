@@ -20,4 +20,4 @@ To build for production run
 npm run build
 ```
 
-This will place the built files inside a "dist" directory.
+This will place the built files inside a `dist/` directory.
