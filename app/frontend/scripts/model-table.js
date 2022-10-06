@@ -445,23 +445,30 @@
 					else {
 						answer = nodeAnswers;
 					}
-					if (question.detail) {
-						if (question.detail.length > 1) {
-							question.detail.forEach(function (detail, i) {
-								outputArray.push({
-									text: question.text,
-									detail: detail,
-									answer: answer[i]
-								});
+					if (Array.isArray(question.text)) {
+						question.text.forEach(function (text, i) {
+							outputArray.push({
+								text: text,
+								detail: '',
+								answer: answer[i]
 							});
-						}
-						else {
+						});
+					}
+					else if (Array.isArray(question.detail)) {
+						question.detail.forEach(function (detail, i) {
 							outputArray.push({
 								text: question.text,
-								detail: question.detail,
-								answer: answer
+								detail: detail,
+								answer: answer[i]
 							});
-						}
+						});
+					}
+					else {
+						outputArray.push({
+							text: question.text,
+							detail: '',
+							answer: answer
+						});
 					}
 				}
 			);
