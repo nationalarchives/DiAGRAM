@@ -488,7 +488,7 @@
 			};
 	
 			function closeDialog(triggeringElementId) {
-				dialogElement.remove();
+				dialogElement.parentElement.removeChild(dialogElement);
 				document.querySelector('#' + triggeringElementId).focus();
 				document.removeEventListener('keydown', addESC);
 				focusTrap = null;
