@@ -1,4 +1,4 @@
-name: Update frontend application
+name: Update frontend
 
 on:
   push:

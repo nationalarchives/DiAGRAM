@@ -1,4 +1,4 @@
-name: Build Docker image, push to ECR, and update Lambda
+name: Update Backend
 
 on: 
   push:
