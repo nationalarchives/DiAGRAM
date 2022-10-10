@@ -70,7 +70,7 @@ if (is_advanced) {
       stringr::str_replace_all("_", " ") %>%
       stringr::str_to_title()
     knitr::kable(.x, format = "latex", longtable = TRUE, booktabs = TRUE) %>%
-    kableExtra::kable_styling(font_size = 7, full_width = TRUE) %>%
+    kableExtra::kable_styling(font_size = 7, full_width = TRUE, latex_options = c("repeat_header")) %>%
     cat()
   })
   # diagramLambda::join_questions_responses(question_data, simple_base)
@@ -78,7 +78,7 @@ if (is_advanced) {
   diagramLambda::join_questions_responses(question_data, base_model) %>%
     diagramLambda::pdf_table() %>%
     knitr::kable(format = "latex", longtable = TRUE, booktabs = TRUE) %>%
-    kableExtra::kable_styling(font_size = 7, full_width = TRUE) %>%
+    kableExtra::kable_styling(font_size = 7, full_width = TRUE, latex_options = c("repeat_header")) %>%
     cat()
 }
 
@@ -94,7 +94,7 @@ if (any_policies) {
       diagramLambda::join_questions_responses(question_data, x) %>%
         diagramLambda::diff_table() %>%
         knitr::kable(format = "latex", longtable = TRUE, booktabs = TRUE) %>%
-        kableExtra::kable_styling(font_size = 7, full_width = TRUE) %>%
+        kableExtra::kable_styling(font_size = 7, full_width = TRUE, latex_options = c("repeat_header")) %>%
         cat()
     }
   })
