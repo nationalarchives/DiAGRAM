@@ -6,7 +6,7 @@
 
 	var expiryTimestamp = storage.getItem('expiryTimestamp');
 
-	if (expiryTimestamp && Date.now() > expiryTimestamp) {
+	if (expiryTimestamp && (Date.now() > expiryTimestamp)) {
 		storage.removeItem('models');
 	}
 
