@@ -29,6 +29,7 @@
 
 	var unstart = function () {
 		showNode('#prequestions');
+		document.querySelector('#model-name').focus();
 	};
 
 	var end = function () {
@@ -60,6 +61,7 @@
 		hideNode('#models-section-container');
 		document.querySelector('#model-name').value = '';
 		document.querySelector('#questions-comments').value = '';
+		document.querySelector('#model-name').focus();
 	});
 
 	document.querySelector('#model-name').addEventListener('input', function () {
@@ -71,9 +73,17 @@
 		this.value.length && !validationErrors ? showNode(nextButton) : hideNode(nextButton);
 	});
 
+	var awaitingClick;
+
+	document.querySelector('#name-container .btn-next').addEventListener('mousedown', function () {
+		awaitingClick = true;
+	});
+
 	document.querySelector('#name-container .btn-next').addEventListener('click', function () {
 		hideNode('#prequestions');
 		modelBuilder.start(document.querySelector('#model-name').value);
+		if (!awaitingClick) { document.querySelector('#questions-comments').focus(); }
+		awaitingClick = false;
 	});
 
 

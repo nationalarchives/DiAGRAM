@@ -307,6 +307,23 @@ button:disabled, input[type=button]:disabled {
     pointer-events: none;
 }
 
+.skiplink {
+    font-weight: bold;
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+}
+
+.skiplink:focus-visible {
+    height: auto;
+    width: auto;
+    right: 10px;
+    top: 10px;
+    left: auto;
+}
+
 
 @media screen and (max-width: 800px) {
     .content {
@@ -323,5 +340,17 @@ button:disabled, input[type=button]:disabled {
     }
     .sidebar ul {
         margin-bottom: 5px;
+    }
+}
+
+@media screen and (max-width: 450px) {
+    .skiplink:focus-visible {
+        position: static;
+        display: block;
+        text-align: center;
+        margin-left: auto;
+        margin-right: auto;
+        width: max-content;
+        max-width: 100%;
     }
 }

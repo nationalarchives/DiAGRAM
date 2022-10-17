@@ -6,13 +6,7 @@
 
 	var expiryTimestamp = storage.getItem('expiryTimestamp');
 
-	if (expiryTimestamp && Date.now() > expiryTimestamp) {
-		// Move models to archivedModels
-		var modelsString = storage.getItem('models');
-		if (modelsString !== 'null') {
-			storage.setItem('archivedModels', modelsString);
-		}
-		// Delete the models item so the user won't see any saved models
+	if (expiryTimestamp && (Date.now() > expiryTimestamp)) {
 		storage.removeItem('models');
 	}
 

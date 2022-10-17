@@ -193,6 +193,7 @@
 			var editModal = document.createElement('div');
 			document.body.appendChild(editModal);
 			editModal.setAttribute('role', 'dialog');
+			editModal.setAttribute('aria-modal', 'true');
 			editModal.setAttribute('aria-labelledby', 'edit-modal-title');
 			editModal.setAttribute('aria-describedby', 'edit-modal-description');
 
@@ -256,7 +257,7 @@
 			focusTrap.push(saveButton);
 				
 			showDialog(editModal);
-			addCloseModalFunctionality(close, clicked, editModal);
+			addCloseModalFunctionality(close, clicked.getAttribute('id'), editModal);
 
 			initEditFormValues(editModal, selectedModel);
 			initEditFormFunctionality(editModal, selectedModel);
@@ -298,11 +299,13 @@
 		function trySaveModelDetails(modal, selectedModel) {
 			var modalAlert = modal.querySelector('#modal-alert');
 			var oldName = selectedModel.model_name;
-			var newName = modal.querySelector('#edit-modal-model-name').value;
+			var nameField = modal.querySelector('#edit-modal-model-name');
+			var newName = nameField.value;
 			var newNotes = modal.querySelector('#edit-modal-notes').value;
 			var modelValidationErrors = newName !== oldName ? getModelValidationErrors(newName, models) : '';
 			if (modelValidationErrors) {
 				modalAlert.innerText = 'Unable to save: ' + modelValidationErrors;
+				nameField.focus();
 			}
 			else {
 				updateAllModelsWithName(selectedModel, newName, newNotes);
@@ -313,11 +316,13 @@
 		function trySaveScenarioDetails(modal, selectedModel) {
 			var modalAlert = modal.querySelector('#modal-alert');
 			var oldName = selectedModel.scenario;
-			var newName = modal.querySelector('#edit-modal-scenario-name').value;
+			var nameField = modal.querySelector('#edit-modal-scenario-name');
+			var newName = nameField.value;
 			var newNotes = modal.querySelector('#edit-modal-notes').value;
 			var scenarioValidationErrors = newName !== oldName ? getScenarioValidationErrors(selectedModel, newName, models) : '';
 			if (scenarioValidationErrors) {
 				modalAlert.innerText = 'Unable to save: ' + scenarioValidationErrors;
+				nameField.focus();
 			}
 			else {
 				updateScenario(selectedModel, newName, newNotes);
@@ -362,6 +367,7 @@
 			var responsesModal = document.createElement('div');
 			document.body.appendChild(responsesModal);
 			responsesModal.setAttribute('role', 'dialog');
+			responsesModal.setAttribute('aria-modal', 'true');
 			responsesModal.setAttribute('aria-labelledby', 'responses-modal-title');
 			responsesModal.setAttribute('aria-describedby', 'responses-modal-description');
 
@@ -422,7 +428,7 @@
 			});
 
 			focusTrap = [close];
-			addCloseModalFunctionality(close, clicked, responsesModal);
+			addCloseModalFunctionality(close, clicked.getAttribute('id'), responsesModal);
 		}
 	
 		function generateQuestionData(questions, answers) {
@@ -439,44 +445,51 @@
 					else {
 						answer = nodeAnswers;
 					}
-					if (question.detail) {
-						if (question.detail.length > 1) {
-							question.detail.forEach(function (detail, i) {
-								outputArray.push({
-									text: question.text,
-									detail: detail,
-									answer: answer[i]
-								});
+					if (Array.isArray(question.text)) {
+						question.text.forEach(function (text, i) {
+							outputArray.push({
+								text: text,
+								detail: '',
+								answer: answer[i]
 							});
-						}
-						else {
+						});
+					}
+					else if (Array.isArray(question.detail)) {
+						question.detail.forEach(function (detail, i) {
 							outputArray.push({
 								text: question.text,
-								detail: question.detail,
-								answer: answer
+								detail: detail,
+								answer: answer[i]
 							});
-						}
+						});
+					}
+					else {
+						outputArray.push({
+							text: question.text,
+							detail: '',
+							answer: answer
+						});
 					}
 				}
 			);
 			return outputArray;
 		}
 	
-		function addCloseModalFunctionality(closeElement, ModalTriggeringElement, dialogElement) {
+		function addCloseModalFunctionality(closeElement, triggeringElementId, dialogElement) {
 			closeElement.focus();
 			closeElement.addEventListener('click', function () {
-				closeDialog(ModalTriggeringElement);
+				closeDialog(triggeringElementId);
 			});
 	
 			var addESC = function (e) {
 				if (e.key === 'Escape') {
-					closeDialog(ModalTriggeringElement);
+					closeDialog(triggeringElementId);
 				}
 			};
 	
-			function closeDialog(ModalTriggeringElement) {
-				dialogElement.remove();
-				ModalTriggeringElement.focus();
+			function closeDialog(triggeringElementId) {
+				dialogElement.parentElement.removeChild(dialogElement);
+				document.querySelector('#' + triggeringElementId).focus();
 				document.removeEventListener('keydown', addESC);
 				focusTrap = null;
 			}
@@ -559,11 +572,11 @@
 	
 		function createEditCell(props) {
 			var editCell = props.row.insertCell();
+			editCell.setAttribute('headers', 'column_header_edit ' + props.headers);
 			var editBtn = document.createElement('input');
 			editBtn.setAttribute('type', 'button');
 			editBtn.setAttribute('value', 'Edit');
 			editBtn.setAttribute('id', 'editBtn' + props.index);
-			editBtn.setAttribute('headers', 'column_header_edit ' + props.headers);
 			editBtn.setAttribute('data-index', props.index);
 			if (fixedModelNames.includes(props.data[modelNameKey])) { editBtn.setAttribute('disabled', true); }
 			editBtn.addEventListener('click', function () { editClick(this); });
@@ -572,11 +585,11 @@
 	
 		function createDeleteCell(props) {
 			var deleteCell = props.row.insertCell();
+			deleteCell.setAttribute('headers', 'column_header_delete ' + props.headers);
 			var delBtn = document.createElement('input');
 			delBtn.setAttribute('type', 'button');
 			delBtn.setAttribute('value', 'Delete');
 			delBtn.setAttribute('id', 'delBtn' + props.index);
-			delBtn.setAttribute('headers', 'column_header_delete ' + props.headers);
 			delBtn.setAttribute('data-index', props.index);
 			if (fixedModelNames.includes(props.data[modelNameKey])) { delBtn.setAttribute('disabled', true); }
 			delBtn.addEventListener('click', function () { deleteClick(this); });
@@ -593,12 +606,12 @@
 	
 		function createResponsesCell(props) {
 			var responseCell = props.row.insertCell();
+			responseCell.setAttribute('headers', 'column_header_delete ' + props.headers);
 			if (props.data['response'] !== null && !props.data.is_advanced) {
 				var resBtn = document.createElement('input');
 				resBtn.setAttribute('type', 'button');
 				resBtn.setAttribute('value', 'Responses');
 				resBtn.setAttribute('id', 'resBtn' + props.index);
-				resBtn.setAttribute('headers', 'column_header_delete ' + props.headers);
 				resBtn.setAttribute('data-index', props.index);
 				resBtn.addEventListener('click', function() { responsesClick(this); });
 				responseCell.appendChild(resBtn);
