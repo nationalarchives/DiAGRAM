@@ -109,12 +109,12 @@ docker run -p 9000:8080 --read-only=true --mount type=bind,source="/tmp/",target
 ```
 
 Note that this runs the container in `read-only` mode, but then mounts your local `/tmp/` directory
-onto the container. This simulates the fact that in AWS Lambda _`/tmp/` is the only writable
+into the container. This simulates the fact that in AWS Lambda _`/tmp/` is the only writable
 directory_.
 
-Now that the Lambda image is running locally, requests can be sent to it. When deployed, Lambda sits
-behind API Gateway, and as such expects its requests to be in a particular format. You can see an
-example of what this format looks like [here](./src/inst/extdata/test_data/api_gateway_format.json).
+Now that the Lambda container is running locally, requests can be sent to it. When deployed, Lambda
+sits behind API Gateway, and as such expects its requests to be in a particular format. You can see
+an example of what this format looks like [here](./src/inst/extdata/test_data/api_gateway_format.json).
 
 Requests can now be sent to your locally running container as, eg.:
 
