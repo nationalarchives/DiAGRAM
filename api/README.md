@@ -93,6 +93,35 @@ for {lambdr}'s serialiser allows multiple different object types to be returned 
 function, and for custom serialisers to be created for returning PDF documents, PNG images, and CSV
 data.
 
+## Testing Locally
+
+It is possible to test the DiAGRAM API locally. We can do so by building the Lambda container image.
+From the directory holding the `Dockerfile`:
+
+```sh
+docker build -t diagram:latest .
+```
+
+This image can then be run as:
+
+```sh
+docker run -p 9000:8080 --read-only=true --mount type=bind,source="/tmp/",target=/tmp diagram:latest
+```
+
+Note that this runs the container in `read-only` mode, but then mounts your local `/tmp/` directory
+onto the container. This simulates the fact that in AWS Lambda _`/tmp/` is the only writable
+directory_.
+
+Now that the Lambda image is running locally, requests can be sent to it. When deployed, Lambda sits
+behind API Gateway, and as such expects its requests to be in a particular format. You can see an
+example of what this format looks like [here](./src/inst/extdata/test_data/api_gateway_format.json).
+
+Requests can now be sent to your locally running container as, eg.:
+
+```
+curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d @src/inst/extdata/test_data/api_gateway_format.json
+```
+
 ## Deployment
 
 Updating of the Docker image used by AWS Lambda is performed _automatically_ by a GitHub Action when
