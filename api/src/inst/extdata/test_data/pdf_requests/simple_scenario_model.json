@@ -1,0 +1,184 @@
+{
+  "version": "1.0",
+  "resource": "/{proxy+}",
+  "path": "/report/pdf",
+  "httpMethod": "GET",
+  "headers": {
+    "Content-Length": "0",
+    "Host": "abcdefghij.execute-api.eu-west-2.amazonaws.com",
+    "User-Agent": "curl/7.81.0",
+    "X-Amzn-Trace-Id": "Root=1-62ea6d00-7e286d187f3e46be38057060",
+    "X-Forwarded-For": "92.28.144.83",
+    "X-Forwarded-Port": "443",
+    "X-Forwarded-Proto": "https",
+    "accept": "*/*"
+  },
+  "multiValueHeaders": {
+    "Content-Length": "0",
+    "Host": "abcdefghij.execute-api.eu-west-2.amazonaws.com",
+    "User-Agent": "curl/7.81.0",
+    "X-Amzn-Trace-Id": "Root=1-62ea6d00-7e286d187f3e46be38057060",
+    "X-Forwarded-For": "92.28.144.83",
+    "X-Forwarded-Port": "443",
+    "X-Forwarded-Proto": "https",
+    "accept": "*/*"
+  },
+  "queryStringParameters": null,
+  "multiValueQueryStringParameters": null,
+  "requestContext": {
+    "accountId": "123456789789",
+    "apiId": "abcdefghij",
+    "domainName": "abcdefghij.execute-api.eu-west-2.amazonaws.com",
+    "domainPrefix": "abcdefghij",
+    "extendedRequestId": "WSX4JhEmLPEEJPQ=",
+    "httpMethod": "GET",
+    "identity": {
+      "accessKey": null,
+      "accountId": null,
+      "caller": null,
+      "cognitoAmr": null,
+      "cognitoAuthenticationProvider": null,
+      "cognitoAuthenticationType": null,
+      "cognitoIdentityId": null,
+      "cognitoIdentityPoolId": null,
+      "principalOrgId": null,
+      "sourceIp": "92.28.144.83",
+      "user": null,
+      "userAgent": "curl/7.81.0",
+      "userArn": null
+    },
+    "path": "/report/pdf/",
+    "protocol": "HTTP/1.1",
+    "requestId": "WSX4JhEmLPEEJPQ=",
+    "requestTime": "03/Aug/2022:12:41:36 +0000",
+    "requestTimeEpoch": 1659530496768,
+    "resourceId": "GET /{proxy+}",
+    "resourcePath": "/{proxy+}",
+    "stage": "$default"
+  },
+  "pathParameters": {
+    "proxy": "report/pdf"
+  },
+  "stageVariables": null,
+  "body": "[{
+    \"model_name\": \"BINGO\",
+    \"scenario\": \"Base Model\",
+    \"notes\": \"\",
+    \"intellectual_control\": null,
+    \"renderability\": null,
+    \"response\": {
+      \"Digital_Object\": [
+        0,
+        0,
+        100
+      ],
+      \"Storage_Medium\": [
+        0,
+        0,
+        100
+      ],
+      \"Rep_and_Refresh\": {
+        \"1\": 0,
+        \"2\": 0
+      },
+      \"Op_Environment\": {
+        \"1\": 0,
+        \"2\": \"Not Applicable - we have copies offsite\"
+      },
+      \"Physical_Disaster\": \"High\",
+      \"Checksum\": [
+        0,
+        0,
+        100
+      ],
+      \"System_Security\": {
+        \"1\": \"ISO 27001\",
+        \"2\": \"None, or only minor issues outstanding\",
+        \"3\": \"Level 4\",
+        \"4\": \"Yes\"
+      },
+      \"Info_Management\": {
+        \"1\": \"Level 4\",
+        \"2\": \"Not achieved\",
+        \"3\": [
+          \"Minimal awareness\",
+          \"Optimized\"
+        ]
+      },
+      \"Technical_Skills\": [
+        \"None\",
+        \"None\",
+        \"Advanced\",
+        \"None\",
+        \"None\",
+        \"None\",
+        \"None\",
+        \"None\",
+        \"None\",
+        \"None\"
+      ]
+    },
+    \"advanced\": null
+  },
+  {
+    \"model_name\": \"BINGO\",
+    \"scenario\": \"low disaster\",
+    \"notes\": \"\",
+    \"intellectual_control\": null,
+    \"renderability\": null,
+    \"response\": {
+      \"Digital_Object\": [
+        0,
+        0,
+        100
+      ],
+      \"Storage_Medium\": [
+        0,
+        0,
+        100
+      ],
+      \"Rep_and_Refresh\": {
+        \"1\": 0,
+        \"2\": 0
+      },
+      \"Op_Environment\": {
+        \"1\": 0,
+        \"2\": \"Not Applicable - we have copies offsite\"
+      },
+      \"Physical_Disaster\": \"Low\",
+      \"Checksum\": [
+        0,
+        0,
+        100
+      ],
+      \"System_Security\": {
+        \"1\": \"ISO 27001\",
+        \"2\": \"None, or only minor issues outstanding\",
+        \"3\": \"Level 4\",
+        \"4\": \"Yes\"
+      },
+      \"Info_Management\": {
+        \"1\": \"Level 4\",
+        \"2\": \"Not achieved\",
+        \"3\": [
+          \"Minimal awareness\",
+          \"Optimized\"
+        ]
+      },
+      \"Technical_Skills\": [
+        \"None\",
+        \"None\",
+        \"Advanced\",
+        \"None\",
+        \"None\",
+        \"None\",
+        \"None\",
+        \"None\",
+        \"None\",
+        \"None\"
+      ]
+    },
+    \"advanced\": null
+  }]",
+  "isBase64Encoded": false
+}

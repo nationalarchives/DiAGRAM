@@ -259,9 +259,9 @@ diff_table_part = function(question, scenario, base_model, node) {
     }
     res = purrr::pmap_dfr(c(question, scenario, base_model), ~{
       tibble::tibble(
-        Topic = node, Question = .x,
-        "Scenario Response" = as.character(.y),
-        "Base Model Response" = as.character(.z)
+        Topic = node, Question = ..1,
+        "Scenario Response" = as.character(..2),
+        "Base Model Response" = as.character(..3)
       )
     })
   } else {
