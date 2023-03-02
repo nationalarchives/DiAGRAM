@@ -18,7 +18,7 @@ model_name = base_model$model_name
 
 ## Model: `r model_name`
 
-```{r}
+```{r plot-chunk}
 print_plot = function(model_name) {
   p = bar_chart(model_name)
   print(p)
@@ -29,7 +29,7 @@ print_plot(req)
 
 ### Comments
 
-```{r, results='asis'}
+```{r comment-chunk, results='asis'}
 no_comments_flag = sum(nchar(comments_data)) == 0
 cat("\n\n")
 if (no_comments_flag) {
@@ -47,7 +47,7 @@ cat("\n\n")
 
 ### Responses to Questions
 
-```{r, results='asis'}
+```{r response-chunk, results='asis'}
 any_policies = length(policies) > 0
 cat(glue::glue(
   "Here is a summary of the responses given for the model{if(any_policies) ' and each scenario.' else '.'}" # nolint
@@ -57,7 +57,7 @@ cat(glue::glue(
 ```{r, results = 'asis'}
 cat("\n\n### Baseline Model\n\n")
 ```
-```{r, results='asis'}
+```{r advanded-chunk, results='asis'}
 is_advanced = !is.null(base_model$data$advanced)
 if (is_advanced) {
   cat("**This is an advanced model**\n\n")
@@ -84,7 +84,7 @@ if (is_advanced) {
 
 ```
 
-```{r, results='asis'}
+```{r policy-chunk, results='asis'}
 if (any_policies) {
   purrr::walk(policies, function(x) {
     y = x$name
