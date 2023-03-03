@@ -72,6 +72,7 @@ if (is_advanced) {
     knitr::kable(.x, format = "latex", longtable = TRUE, booktabs = TRUE) %>%
     kableExtra::kable_styling(font_size = 7, full_width = TRUE, latex_options = c("repeat_header")) %>%
     cat()
+  cat("\n\n")
   })
   # diagramLambda::join_questions_responses(question_data, simple_base)
 } else {
@@ -80,6 +81,7 @@ if (is_advanced) {
     knitr::kable(format = "latex", longtable = TRUE, booktabs = TRUE) %>%
     kableExtra::kable_styling(font_size = 7, full_width = TRUE, latex_options = c("repeat_header")) %>%
     cat()
+  cat("\n\n")
 }
 
 ```
