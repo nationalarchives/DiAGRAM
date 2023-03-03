@@ -8,7 +8,7 @@ make_pdf_report = function(req) {
   parsed_json = jsonlite::parse_json(req$postBody)
   adv_flag = advanced_flags(parsed_json)
   tmp_file = with_log_handle(
-    write_temp_pdf(extract_responses(parsed_json[!adv_flag]))
+    write_temp_pdf(extract_responses(parsed_json))
   )
   on.exit(unlink(tmp_file))
   body = readBin(tmp_file, "raw", n = file.info(tmp_file)$size)
