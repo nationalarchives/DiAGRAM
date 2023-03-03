@@ -16,7 +16,7 @@ scenario_names = diagramLambda::get_scenario_names(req)
 model_name = base_model$model_name
 ```
 
-## Model: `r model_name`
+# Model: `r model_name`
 
 ```{r plot-chunk}
 print_plot = function(model_name) {
@@ -27,7 +27,7 @@ print_plot = function(model_name) {
 print_plot(req)
 ```
 
-### Comments
+## Comments
 
 ```{r comment-chunk, results='asis'}
 no_comments_flag = sum(nchar(comments_data)) == 0
@@ -45,7 +45,7 @@ cat("\n\n")
 ```
 
 
-### Responses to Questions
+## Responses to Questions
 
 ```{r response-chunk, results='asis'}
 any_policies = length(policies) > 0
@@ -55,7 +55,7 @@ cat(glue::glue(
 ```
 
 ```{r, results = 'asis'}
-cat("\n\n### Baseline Model\n\n")
+cat("\n\n## Baseline Model\n\n")
 ```
 ```{r advanded-chunk, results='asis'}
 is_advanced = !is.null(base_model$data$advanced)
@@ -65,7 +65,7 @@ if (is_advanced) {
   class(simple_base) = c("simple_responses", "list")
   purrr::iwalk(base_model$data$advanced, ~{
     name = .node_map[.y]
-    cat(glue::glue("\n\n#### {name}\n\n"))
+    cat(glue::glue("\n\n### {name}\n\n"))
     colnames(.x) = colnames(.x) %>%
       stringr::str_replace_all("_", " ") %>%
       stringr::str_to_title()
@@ -91,7 +91,7 @@ if (any_policies) {
   purrr::walk(policies, function(x) {
     y = x$name
     if (nrow(x$data) > 0) {
-      cat("### ", y, "\n\n")
+      cat("## ", y, "\n\n")
       cat(glue::glue("The following responses were changed for {y}."), "\n\n")
       diagramLambda::join_questions_responses(question_data, x) %>%
         diagramLambda::diff_table() %>%
