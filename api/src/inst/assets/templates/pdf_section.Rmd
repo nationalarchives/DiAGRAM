@@ -96,7 +96,7 @@ if (any_policies) {
         knitr::kable(format = "latex", longtable = TRUE, booktabs = TRUE) %>%
         kableExtra::kable_styling(font_size = 7, full_width = TRUE, latex_options = c("repeat_header")) %>%
         cat()
-      cat("\n")
+      cat("\n\n")
     }
   })
 }
