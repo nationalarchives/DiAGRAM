@@ -257,17 +257,15 @@ diff_table_part = function(question, scenario, base_model, node) {
     if (! q_length == r_length) {
       stop("List question length not equal to list response length")
     }
-    res = purrr::pmap_dfr(c(question, scenario, base_model), ~{
-      tibble::tibble(
-        Topic = node, Question = .x,
-        "Scenario Response" = as.character(.y),
-        "Base Model Response" = as.character(.z)
-      )
-    })
+    res = tibble::tibble(
+       Topic = node, Question = paste0("- ", question, collapse = "\n\n"),
+       "Scenario Response" = paste0("- ", scenario, collapse = "\n\n"),
+       "Base Model Response" = paste0("- ", base_model, collapse = "\n\n")
+     )
   } else {
     if (r_length > q_length) {
-      scenario = paste0("- ", scenario, collapse = "\n")
-      base_model = paste0("- ", base_model, collapse = "\n")
+      scenario = paste0("- ", scenario, collapse = "\n\n")
+      base_model = paste0("- ", base_model, collapse = "\n\n")
     }
     res = tibble::tibble(
       Topic = node,

@@ -16,7 +16,7 @@ scenario_names = diagramLambda::get_scenario_names(req)
 model_name = base_model$model_name
 ```
 
-## Model: `r model_name`
+# Model: `r model_name`
 
 ```{r}
 print_plot = function(model_name) {
@@ -27,9 +27,9 @@ print_plot = function(model_name) {
 print_plot(req)
 ```
 
-### Comments
+## Comments
 
-```{r, results='asis'}
+```{r results='asis'}
 no_comments_flag = sum(nchar(comments_data)) == 0
 cat("\n\n")
 if (no_comments_flag) {
@@ -45,19 +45,19 @@ cat("\n\n")
 ```
 
 
-### Responses to Questions
+## Responses to Questions
 
-```{r, results='asis'}
+```{r results='asis'}
 any_policies = length(policies) > 0
 cat(glue::glue(
   "Here is a summary of the responses given for the model{if(any_policies) ' and each scenario.' else '.'}" # nolint
 ))
 ```
 
-```{r, results = 'asis'}
-cat("\n\n### Baseline Model\n\n")
+```{r results = 'asis'}
+cat("\n\n## Baseline Model\n\n")
 ```
-```{r, results='asis'}
+```{r results='asis'}
 is_advanced = !is.null(base_model$data$advanced)
 if (is_advanced) {
   cat("**This is an advanced model**\n\n")
@@ -65,13 +65,14 @@ if (is_advanced) {
   class(simple_base) = c("simple_responses", "list")
   purrr::iwalk(base_model$data$advanced, ~{
     name = .node_map[.y]
-    cat(glue::glue("\n\n#### {name}\n\n"))
+    cat(glue::glue("\n\n### {name}\n\n"))
     colnames(.x) = colnames(.x) %>%
       stringr::str_replace_all("_", " ") %>%
       stringr::str_to_title()
     knitr::kable(.x, format = "latex", longtable = TRUE, booktabs = TRUE) %>%
     kableExtra::kable_styling(font_size = 7, full_width = TRUE, latex_options = c("repeat_header")) %>%
     cat()
+  cat("\n\n")
   })
   # diagramLambda::join_questions_responses(question_data, simple_base)
 } else {
@@ -80,22 +81,24 @@ if (is_advanced) {
     knitr::kable(format = "latex", longtable = TRUE, booktabs = TRUE) %>%
     kableExtra::kable_styling(font_size = 7, full_width = TRUE, latex_options = c("repeat_header")) %>%
     cat()
+  cat("\n\n")
 }
 
 ```
 
-```{r, results='asis'}
+```{r results='asis'}
 if (any_policies) {
   purrr::walk(policies, function(x) {
     y = x$name
     if (nrow(x$data) > 0) {
-      cat("### ", y, "\n\n")
+      cat("## ", y, "\n\n")
       cat(glue::glue("The following responses were changed for {y}."), "\n\n")
       diagramLambda::join_questions_responses(question_data, x) %>%
         diagramLambda::diff_table() %>%
         knitr::kable(format = "latex", longtable = TRUE, booktabs = TRUE) %>%
         kableExtra::kable_styling(font_size = 7, full_width = TRUE, latex_options = c("repeat_header")) %>%
         cat()
+      cat("\n\n")
     }
   })
 }
