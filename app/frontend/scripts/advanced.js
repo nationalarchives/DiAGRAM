@@ -438,7 +438,7 @@
 				tr = document.createElement('tr');
 				th = document.createElement('th');
 				th.innerText = i + 1;
-				const rowLabel = 'row-' + (i+1) + '-header';
+				var rowLabel = 'row-' + (i+1) + '-header';
 				th.setAttribute('id', rowLabel);
 				tr.appendChild(th);
 				var row = rows[i];
