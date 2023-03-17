@@ -1,0 +1,1041 @@
+/* Variables */
+:root {
+  --baseline: 1.6rem;
+  --grid: 5px;
+  --color-bkgd: #F6F5F4;
+  --color-primary: #420065;
+  --color-inclusive: #A900C0;
+  --color-efficient: #FF1958;
+  --color-ethical: #E100A0;
+  --color-safe: #F56F00;
+  --color-bkgd-texture: #fff;
+
+  --color-light-purple-gray: #B6A7BD;
+}
+
+/* TYPOGRAPHY */
+/* https://google-webfonts-helper.herokuapp.com/fonts */
+
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 400;
+  src: local(''),
+       url('../_assets/font/poppins-regular.woff2') format('woff2'),
+       url('../_assets/font/poppins-regular.woff') format('woff');
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  font-style: italic;
+  font-weight: 400;
+  src: local(''),
+       url('../_assets/font/poppins-italic.woff2') format('woff2'),
+       url('../_assets/font/poppins-italic.woff') format('woff');
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 500;
+  src: local(''),
+       url('../_assets/font/poppins-500.woff2') format('woff2'),
+       url('../_assets/font/poppins-500.woff') format('woff');
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  font-style: italic;
+  font-weight: 500;
+  src: local(''),
+       url('../_assets/font/poppins-500italic.woff2') format('woff2'),
+       url('../_assets/font/poppins-500italic.woff') format('woff');
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 600;
+  src: local(''),
+       url('../_assets/font/poppins-600.woff2') format('woff2'),
+       url('../_assets/font/poppins-600.woff') format('woff');
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  font-style: italic;
+  font-weight: 600;
+  src: local(''),
+       url('../_assets/font/poppins-600italic.woff2') format('woff2'),
+       url('../_assets/font/poppins-600italic.woff') format('woff');
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 700;
+  src: local(''),
+       url('../_assets/font/poppins-700.woff2') format('woff2'),
+       url('../_assets/font/poppins-700.woff') format('woff');
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  font-style: italic;
+  font-weight: 700;
+  src: local(''),
+       url('../_assets/font/poppins-700italic.woff2') format('woff2'),
+       url('../_assets/font/poppins-700italic.woff') format('woff');
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'Cousine';
+  font-style: normal;
+  font-weight: 400;
+  src: local(''),
+       url('../_assets/font/cousine-regular.woff2') format('woff2'),
+       url('../_assets/font/cousine-regular.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Cousine';
+  font-style: italic;
+  font-weight: 400;
+  src: local(''),
+       url('../_assets/font/cousine-italic.woff2') format('woff2'),
+       url('../_assets/font/cousine-italic.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Cousine';
+  font-style: normal;
+  font-weight: 700;
+  src: local(''),
+       url('../_assets/font/cousine-700.woff2') format('woff2'),
+       url('../_assets/font/cousine-700.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Cousine';
+  font-style: italic;
+  font-weight: 700;
+  src: local(''),
+       url('../_assets/font/cousine-700italic.woff2') format('woff2'),
+       url('../_assets/font/cousine-700italic.woff') format('woff');
+}
+
+/* Remove all default margins */
+*,
+*::before,
+*::after {
+  font-family: inherit;
+  color: inherit;
+  font-size: inherit;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  background-repeat: no-repeat;
+}
+
+html {
+  font-size: 1.11rem;
+  font-size: calc(1rem + 0.15vw);
+}
+
+body, * {
+  font-family: 'Poppins', sans-serif;
+  line-height: 1.6rem;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background: #F6F5F4;
+  color: #222;
+  padding: 1.5rem 1rem;
+}
+
+body * + * {
+  margin-top: 1.6rem;
+}
+
+/* Exceptions to the owl rule */
+li + li,
+#intro h2,
+h3 + p,
+h4 + p,
+body > footer div {
+  margin-top: 0;
+}
+
+a, strong {
+  font-weight: 600;
+}
+
+b {
+  font: inherit;
+  font-weight: bold;
+}
+
+h1, h2, h3, h4, h5, h6,
+h1 *, h2 *, h3 *, h4 *, h5 *, h6 * {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #420065;
+}
+
+h1 b, h2 b, h3 b, h4 b, h5 b, h6 b {
+  font-weight: inherit;
+  color: inherit;
+}
+
+h1 {
+  font-size: 2.5rem; /* 62px */
+  font-weight: bold;
+  line-height: calc(1.6rem * 1.8);
+  margin-top: 3.6rem;
+}
+
+* + h1 {
+  margin-top: 3.2rem;
+}
+
+h2 {
+  margin-top: 1.625rem;
+  margin-bottom: 1.625rem;
+  font-size: 1.625rem;
+  font-weight: bold;
+  line-height: 1.625rem;
+  color: #A900C0;
+}
+
+* + h2,
+* + section > h2 {
+  margin-top: 4.8rem;
+}
+
+h3 {
+  font-size: 1.2rem;
+}
+
+h4 {
+  font-size: 1rem;
+}
+
+hr {
+  overflow: visible;
+  margin-top: 4.8rem;
+  border: none;
+  border-top: 2.5px solid #B6A7BD;
+  text-align: center;
+}
+
+a {
+  color: #A900C0;
+}
+
+blockquote {
+  display: block;
+  margin: 1rem 2rem;
+  padding-left: 1rem;
+  border-left: 2.5px solid #b6a7bd;
+}
+
+dt {
+  font-weight: bold;
+}
+
+dd {
+  display: block;
+  margin: 0 0 0 1rem;
+}
+
+a:focus,
+a:hover {
+  color: #420065;
+}
+
+a:focus {
+  outline: 1px solid #420065;
+  outline-offset: 2px;
+}
+
+ul {
+  list-style-type: circle;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  header nav a::before {
+    transition: all 0.5s linear;
+  }
+
+  header a {
+    transition: none;
+  }
+
+  @keyframes flip {
+    0% {
+      transform: rotateX(180deg);
+    }
+  }
+
+  nav a:focus::before,
+  nav a:hover::before {
+      animation: flip 0.25s linear;
+  }
+}
+
+/* Site styles*/
+main,
+body > header,
+body > footer {
+  display: block;
+  width: 50rem;
+  max-width: 100%;
+  min-width: 17rem;
+  min-width: -moz-min-content;
+  min-width: min-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+main,
+body > footer {
+  margin-top: 2rem;
+  padding: 0 0 1.5rem 0;
+}
+
+body > header {
+  position: relative;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+}
+
+body > header > a {
+  position: relative;
+  width: 17rem;
+  /* min-width: 305px; */
+  max-width: 100%;
+  margin-right: 0.5rem;
+  margin-top: 0;
+}
+
+/* Skip link */
+body > header > a[href^="#"] {
+  position: absolute;
+  display: inline-block;
+  height: 1px;
+  width: 1px;
+  min-width: auto;
+  max-width: fit-content;
+  overflow: hidden;
+  clip: rect(1px 1px 1px 1px);
+  clip: rect(1px,1px,1px,1px);
+  z-index: 1;
+  right: 0;
+  top: -1rem;
+}
+
+body > header > a[href^="#"]:focus {
+  width: auto;
+  width: max-content;
+  height: auto;
+  clip: auto;
+}
+
+body > header a img {
+  display: block;
+}
+
+header nav {
+  flex-grow: 1;
+  position: relative;
+  align-self: flex-end;
+  justify-self: flex-end;
+  margin-top: 0.5rem;
+}
+
+header nav ul {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-end;
+  align-self: flex-end;
+}
+
+header nav ul,
+header nav li {
+  margin: 0;
+  padding: 0;
+}
+
+header nav li {
+  flex-grow: 1;
+  display: inline-block;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  margin-bottom: 0.9rem;
+  border-bottom: 3px solid #420065;
+  text-align: center;
+}
+
+header nav a {
+  position: relative;
+  bottom: auto;
+  width: auto;
+  max-width: auto;
+  display: inline-block;
+  text-decoration: none;
+  padding: 0.4rem 0.4rem;
+  margin: 0 0 0 0;
+}
+
+body > footer > div {
+  padding-top: 1rem;
+  border-top: 2.5px solid #B6A7BD;
+}
+
+body > footer a {
+  line-height: 1rem;
+  font-weight: normal;
+  text-decoration: none;
+}
+
+header nav a::before,
+header nav a::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  display: block;
+  border-radius: 50%;
+  background: #F6F5F4;
+}
+
+header nav a::before {
+  bottom: -8px;
+  width: 14px;
+  height: 14px;
+  margin-left: -7px;
+  border: 3px solid #420065;
+}
+
+header nav a::after {
+  bottom: -4px;
+  width: 6px;
+  height: 6px;
+  margin-left: -3px;
+  opacity: 0;
+}
+
+header nav :nth-child(1n) ::after {
+  background-color: #A900C0;
+}
+
+header nav :nth-child(2n) ::after {
+  background-color: #FF1958;
+}
+
+header nav :nth-child(3n) ::after {
+  background-color: #E100A0;
+}
+
+header nav :nth-child(4n) ::after {
+  background-color: #F56F00;
+}
+
+header nav a[aria-current]::after {
+  opacity: 100;
+}
+
+li {
+  margin-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.compact > li {
+  margin-bottom: 0;
+}
+
+:not(h2):not(a) > b,
+:not(h2):not(a) > strong {
+  color: #420065;
+}
+
+.grid-pull-aside {
+  text-align: center;
+}
+
+.grid-pull-aside a {
+  display: inline-block;
+}
+
+main:focus {
+  outline: unset;
+}
+
+main:focus-visible {
+  outline: auto;
+}
+
+main img:not([width]) {
+  max-width: 100%;
+}
+
+img + figcaption {
+  margin-top: 0;
+}
+
+table, th, td {
+  border: 1px #9985A3 solid;
+  border-collapse: collapse;
+}
+
+th {
+  background: #A900C0;
+  color: #fff;
+}
+
+th, td {
+  padding: 0.5rem;
+}
+
+/* CTA button-like style */
+
+.cta {
+  display: inline-block;
+  font-weight: 500;
+  background: #A900C0;
+  padding: 0.75rem 1.5rem;
+  color: #fff;
+  text-decoration: none;
+}
+
+.cta:focus,
+.cta:hover {
+  background: #420065;
+  color: #fff;
+}
+
+/* News and Blog list */
+
+.postlist {
+  list-style: none;
+}
+
+.postlist li {
+  position: relative;
+  margin: 0 0 1em 0;
+}
+
+.postlist li time {
+  display: block;
+  font-size: 0.85em;
+}
+
+.postlist-tag {
+  position: absolute;
+  left: -2rem;
+  display: block;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-top: 0;
+}
+
+.postlist-tag img {
+  max-width: 100%;
+}
+
+.pagination {
+  flex-grow: 1;
+  position: relative;
+  align-self: flex-end;
+  justify-self: flex-end;
+  margin-top: 2.4rem;
+}
+
+.pagination ol {
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+}
+
+.pagination li {
+  margin: 0.25rem 1.5rem 0 0
+}
+
+.pagination ol li a {
+  display: inline-block;
+  font-weight: 300;
+  background: #A900C0;
+  padding: 0.75rem 1.5rem;
+  color: #fff;
+  text-decoration: none;
+  opacity: 0.8;
+  min-width: 5em;
+}
+
+.pagination ol li a:focus,
+.pagination ol li a:hover {
+  background: #420065;
+}
+
+.pagination ol li a[aria-current] {
+  font-weight: 700;
+  opacity: 1;
+  background: #420065;
+}
+
+.moreposts {
+  text-decoration: none;
+}
+
+.moreposts span {
+  text-decoration: underline;
+}
+
+/* Blog index page */
+
+main section header {
+  margin-bottom: 1.6rem;
+}
+
+/* Blog bios */
+
+.bio {
+  border-top: 1px #B6A7BD solid;
+  padding-top: 1.6rem;
+}
+
+/* About page staff list */
+
+.aboutlist section {
+  border-bottom: 1px #B6A7BD solid;
+  padding-bottom: 1.6rem;
+}
+
+.aboutlist section a {
+  text-decoration: none;
+}
+
+.aboutlist section a span {
+  text-decoration: underline;
+}
+
+/* SVG icons */
+
+svg.icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  vertical-align: middle;
+  fill:currentColor;
+}
+
+/* Additional code rules */
+
+code, pre {
+  font-family: 'Cousine', monospace;
+}
+
+/* Skippy the skip link */
+
+a.skiplink:focus, a.skiplink:hover {
+  font-weight: 300;
+  background: #A900C0;
+  padding: 0.75rem 1.5rem;
+  color: #fff;
+  text-decoration: none;
+  margin-top: -1rem;
+}
+
+/* Responsive adaptations */
+
+@media all and (min-width: 750px) {
+  main,
+  body > footer {
+    padding-right: 2rem;
+    padding-left: 7rem;
+  }
+
+  /* Skip link */
+  body > header > a[href^="#"] {
+    top: 0;
+    left: 305px;
+    margin-left: 0.5rem;
+  }
+
+  section > h2,
+  header > h2 {
+    margin-top: 4.8rem;
+    margin-bottom: 0;
+  }
+
+  section > h3 ~ div {
+    margin-top: 0;
+  }
+
+  header > time,
+  header > p {
+    display: block;
+    margin-top: 0;
+  }
+
+  @supports (display: grid) {
+    /* Putting this here because IE11 doesn't like this! */
+    hr::after {
+      display: inline-block;
+      position: relative;
+      width: 10rem;
+      top: -1.15rem;
+      background: #F6F5F4;
+    }
+  }
+
+  @supports (display: grid) {
+    .grid {
+      display: grid;
+      grid-template-areas:
+        "heading heading"
+        "pull-main pull-aside"
+        "main main";
+      grid-column-gap: 2rem;
+    }
+
+    .grid > h1,
+    .grid > h2,
+    .grid > h3 {
+      grid-area: heading;
+    }
+
+    .grid > .grid-pull-main {
+      grid-area: pull-main;
+      width: auto;
+    }
+
+    .grid > .grid-pull-aside {
+      grid-area: pull-aside;
+      padding-left: 1rem;
+      border-left: 2.5px solid #B6A7BD;
+      width: min-content;
+    }
+
+    .grid > .grid-main {
+      grid-area: main;
+    }
+  }
+
+  .columns {
+    columns: 2;
+  }
+
+  @supports (display: flex) {
+    .flex {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .flex > section {
+      max-width: 45%;
+      margin-top: 0;
+    }
+
+    .flex > li {
+      list-style: none;
+      margin: 0;
+      padding-left: 1rem;
+    }
+
+    .flex > li:first-child {
+      padding-left: 0;
+    }
+  }
+}
+
+@media all and (max-width: 750px) {
+  body > header a {
+    width: 100%;
+    text-align: center;
+  }
+  body > header a img {
+    display: inline-block;
+    width: 17rem;
+    max-width: 100%;
+  }
+  .pagination li {
+    margin: 0.25rem 0.5rem 0 0;
+  }
+  .pagination ol li a {
+    padding: 0.5em 0.7em;
+  }
+}
+
+@media print {
+  body,
+  main,
+  h1 {
+    width: auto;
+    min-width: auto;
+    max-width: none;
+    background: #fff;
+  }
+  body > header,
+  h1,
+  b,
+  strong {
+    background: inherit;
+    color: inherit;
+  }
+  body > header a {
+    width: 100%;
+    text-align: center;
+  }
+  body > header a img {
+    display: inline-block;
+    width: 17rem;
+    max-width: 100%;
+  }
+  main {
+    padding: 0;
+  }
+  header nav {
+    display: none;
+  }
+}
+
+.blog-comments {
+  border-top: 1px #B6A7BD solid;
+  padding-top: 1.6rem;
+}
+
+/* Commento styles */
+
+#commento {
+  overflow: visible;
+}
+
+/* Unset the Commento font - this will set the font for all elements to Poppins,
+but can be expanded to set heading fonts as well */
+#commento.commento-root-font * {
+  font-family: inherit;
+}
+
+#commento * {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  text-rendering: inherit;
+}
+
+#commento.commento-root :focus {
+  outline: 1px solid currentColor;
+  outline-offset: 2px;
+}
+
+#commento.commento-root button:focus {
+  outline-color: #420065;
+}
+
+#commento.commento-root .commento-card :not(a).commento-name {
+  cursor: auto;
+}
+
+#commento .commento-textarea-container {
+  align-items: self-start;
+}
+
+/* Styles for the custom label for the comments textarea */
+#commento .commento-textarea-container label {
+  display: block;
+}
+
+#commento .commento-comments {
+  clear: both;
+}
+
+#commento .commento-comments > ul,
+#commento .commento-body,
+#commento .commento-card {
+  list-style: none;
+}
+
+#commento .commento-score,
+#commento .commento-timeago::before {
+  display: none;
+}
+
+#commento .commento-subtitle,
+#commento .commento-subtitle * {
+  margin-top: 0;
+  color: inherit;
+}
+
+#commento .commento-markdown-help th {
+  padding: 0 6px;
+  text-align: left;
+}
+
+/* #commento .commento-button-margin, */
+#commento .commento-button-margin textarea,
+#commento .commento-name,
+#commento .commento-avatar,
+#commento .commento-avatar-img {
+  margin-top: 0;
+}
+
+#commento .commento-name {
+  display: block;
+}
+
+#commento .commento-anonymous-checkbox-container {
+  float: left;
+}
+
+#commento .commento-anonymous-checkbox-container input,
+#commento .commento-anonymous-checkbox-container label {
+  display: inline;
+  text-transform: none;
+  font-weight: unset;
+}
+
+#commento .commento-anonymous-checkbox-container label {
+  padding-left: 0.5rem;
+}
+
+#commento .commento-round-check label:before,
+#commento .commento-round-check label:after {
+  display: none;
+}
+
+#commento .commento-markdown-button {
+  float: left;
+  clear: both;
+  color: inherit;
+}
+
+#commento .commento-markdown-help {
+  clear: both;
+}
+
+#commento .commento-button-margin {
+  overflow: hidden;
+  padding-bottom: 0.2rem;
+}
+
+#commento .commento-login-box {
+  border: 1px solid #A900C0;
+}
+
+#commento .commento-logout,
+#commento .commento-submit-button,
+#commento .commento-login-text,
+#commento .commento-email-button {
+  font-weight: 500;
+  background: #A900C0;
+  padding: 0.75rem 1.5rem;
+  color: #fff;
+  text-decoration: none;
+  height: auto;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  text-transform: none;
+}
+
+#commento .commento-email {
+  padding: 0.5rem;
+}
+
+#commento .commento-email .commento-input {
+  display: block;
+  height: auto;
+  background: #fff;
+  border: 1px solid;
+  outline: 0;
+  padding: 5px 5px 5px 10px;
+  width: 100%;
+  margin: 0;
+}
+
+#commento hr::after {
+  display: none;
+}
+
+#commento .commento-oauth-buttons button {
+  margin-top: 0;
+  width: auto;
+  min-width: 5rem;
+}
+
+#commento .commento-login-box-close {
+  opacity: 1;
+  width: 21px;
+  height: 21px;
+  top: -11px;
+}
+
+#commento .commento-login-box-close::before,
+#commento .commento-login-box-close::after {
+  top: 0;
+}
+
+#commento .commento-forgot-link,
+#commento .commento-login-link {
+  border: none;
+  color: inherit;
+}
+
+#commento .commento-login-box h1,
+#commento .commento-login-box h2 {
+  color: #420065;
+}
+
+#commento .commento-login-box h1 {
+  font-size: 1.4rem;
+  margin-top: 0;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+#commento .commento-google-button {
+  background-color: #CA4B39;
+}
+
+#commento .commento-twitter-button {
+  background-color: #1C7BC1;
+}
+
+#commento .commento-gitlab-button {
+  background-color: #E22E28;
+}
+
+#commento .commento-body a {
+  text-decoration: underline;
+  color: #A900C0;
+}
+
+#commento .commento-error-box {
+  color: #BA3E3E;
+}
+
+#commento .commento-logged-container {
+  height: auto;
+}
+
+#commento .commento-logged-in-as .commento-name {
+  position: unset;
+}
+
+[inert] {
+  opacity: 0.5;
+}
+
