@@ -9,7 +9,7 @@ RUN yum -y install yum-utils \
   && rm -rf /var/cache/yum
 
 # Fetch and install desired R version
-ENV R_VERSION=4.1.3
+ENV R_VERSION=4.3.2
 RUN curl -O https://cdn.rstudio.com/r/centos-7/pkgs/R-${R_VERSION}-1-1.x86_64.rpm \
   && yum -y install R-${R_VERSION}-1-1.x86_64.rpm \
   && rm R-${R_VERSION}-1-1.x86_64.rpm
