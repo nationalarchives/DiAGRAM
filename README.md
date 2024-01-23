@@ -1,5 +1,3 @@
-##Infra update 22/02/2024
-
 ## About
 
 This repository contains the frontend and backend code for the Digital Archiving Graphical Risk
