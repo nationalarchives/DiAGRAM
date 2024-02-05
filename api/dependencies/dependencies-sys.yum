@@ -6,3 +6,6 @@ perl
 perl-Digest-MD5
 tar
 libxml2-devel
+gfortran
+glpk-devel
+gmp-devel
