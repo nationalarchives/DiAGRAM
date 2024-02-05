@@ -5,3 +5,4 @@ pandoc
 perl
 perl-Digest-MD5
 tar
+libxml2-devel
