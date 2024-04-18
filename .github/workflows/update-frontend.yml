@@ -30,7 +30,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: arn:aws:iam::329739027390:role/Role_Diagram_Dev_GitHub_OICD
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_NUMBER }}:role/Role_Diagram_GitHub_OICD
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Install node dependencies
