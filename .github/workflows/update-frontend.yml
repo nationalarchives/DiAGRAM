@@ -9,7 +9,10 @@ on:
       - live
       - stage
       - dev
-
+      
+permissions:
+  id-token: write # This is required for requesting the JWT
+  
 jobs:
 
   update_site_env_matching_branch:
@@ -27,8 +30,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: arn:aws:iam::329739027390:role/Role_Diagram_Dev_GitHub_OICD
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Install node dependencies
