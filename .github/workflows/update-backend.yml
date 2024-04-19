@@ -4,11 +4,15 @@ on:
   push:
     paths:
       - api/**
+      - .github/workflow/update-backend.yml
     branches:
       - live
       - stage
       - dev
-
+      
+permissions:
+  id-token: write # This is required for requesting the JWT
+  
 jobs:
 
   push_to_env_matching_branch:
@@ -23,10 +27,8 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_NUMBER }}:role/Role_Diagram_GitHub_OICD
           aws-region: ${{ secrets.AWS_REGION }}
-
       - name: Login to ECR
         uses: docker/login-action@v2
         with:
