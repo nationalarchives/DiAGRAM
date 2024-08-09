@@ -1,7 +1,7 @@
 FROM public.ecr.aws/lambda/provided:al2
 
 # Enable the Extra Packages for Enterprise Linux (EPEL) repository
-RUN yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm --skip-broken
+RUN yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm --skip-broken
 # Enable the optional repository from Red Hat Update Infrastructure (RHUI)
 RUN yum -y install yum-utils \
   && yum-config-manager --enable "rhel-*-optional-rpms" \
@@ -14,7 +14,7 @@ RUN yum -y install $(cat /dependencies-sys.yum)
 
 # Fetch and install desired R version
 ENV R_VERSION=4.3.2
-RUN curl -O https://cdn.rstudio.com/r/centos-8/pkgs/R-${R_VERSION}-1-1.x86_64.rpm \
+RUN curl -O https://cdn.rstudio.com/r/centos-7/pkgs/R-${R_VERSION}-1-1.x86_64.rpm \
   && yum -y install R-${R_VERSION}-1-1.x86_64.rpm \
   && rm R-${R_VERSION}-1-1.x86_64.rpm
 ENV PATH="${PATH}:/opt/R/${R_VERSION}/bin/"
@@ -22,7 +22,7 @@ ENV PATH="${PATH}:/opt/R/${R_VERSION}/bin/"
 RUN echo '\
 options( \
   repos = c( \
-    RSPM = "https://packagemanager.rstudio.com/all/__linux__/centos8/latest", \
+    RSPM = "https://packagemanager.rstudio.com/all/__linux__/centos7/latest", \
     BioC = "http://www.bioconductor.org/packages/release/bioc" \
   ) \
 )' >> /opt/R/${R_VERSION}/lib/R/library/base/R/Rprofile
