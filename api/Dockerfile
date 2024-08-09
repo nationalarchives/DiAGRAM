@@ -8,6 +8,10 @@ RUN yum -y install yum-utils \
   && yum clean all \
   && rm -rf /var/cache/yum
 
+# System requirements for R packages
+COPY dependencies/dependencies-sys.yum /dependencies-sys.yum
+RUN yum -y install $(cat /dependencies-sys.yum)
+
 # Fetch and install desired R version
 ENV R_VERSION=4.3.2
 RUN curl -O https://cdn.rstudio.com/r/centos-7/pkgs/R-${R_VERSION}-1-1.x86_64.rpm \
@@ -22,10 +26,6 @@ options( \
     BioC = "http://www.bioconductor.org/packages/release/bioc" \
   ) \
 )' >> /opt/R/${R_VERSION}/lib/R/library/base/R/Rprofile
-
-# System requirements for R packages
-COPY dependencies/dependencies-sys.yum /dependencies-sys.yum
-RUN yum -y install $(cat /dependencies-sys.yum)
 
 # Install {diagramLambda}
 RUN Rscript -e 'install.packages("remotes")'
