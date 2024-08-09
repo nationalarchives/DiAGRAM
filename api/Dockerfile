@@ -1,7 +1,7 @@
 FROM public.ecr.aws/lambda/provided:al2
 
 # Enable the Extra Packages for Enterprise Linux (EPEL) repository
-RUN yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+RUN yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
 # Enable the optional repository from Red Hat Update Infrastructure (RHUI)
 RUN yum -y install yum-utils \
   && yum-config-manager --enable "rhel-*-optional-rpms" \
