@@ -21,13 +21,13 @@ RUN curl -O https://cdn.rstudio.com/r/ubuntu-2204/pkgs/r-${R_VERSION}_1_amd64.de
  && ln -s /opt/R/${R_VERSION}/bin/R /usr/local/bin/R \
  && ln -s /opt/R/${R_VERSION}/bin/Rscript /usr/local/bin/Rscript
 
-RUN echo "options(repos='https://packagemanager.posit.co/all/__linux__/jammy')" >> /opt/R/${R_VERSION}/lib/R/etc/Rprofile.site
+RUN echo "options(repos='https://packagemanager.posit.co/all/__linux__/jammy/latest')" >> /opt/R/${R_VERSION}/lib/R/etc/Rprofile.site
 
 # System requirements for R packages
 RUN apt -y install libssl-dev libcurl4-openssl-dev pandoc perl tar  gfortran 
   
 # Install {diagramLambda}
-RUN Rscript -e 'install.packages("remotes", dependencies = TRUE)'
+RUN Rscript -e 'install.packages("remotes")'
 COPY src /diagramLambda/
 RUN Rscript -e 'remotes::install_version("bnlearn", version = "4.9.0")'
 RUN Rscript -e 'remotes::install_local("/diagramLambda/", dependencies = TRUE)'
