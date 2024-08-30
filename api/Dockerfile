@@ -21,10 +21,10 @@ RUN curl -O https://cdn.rstudio.com/r/ubuntu-2204/pkgs/r-${R_VERSION}_1_amd64.de
  && ln -s /opt/R/${R_VERSION}/bin/R /usr/local/bin/R \
  && ln -s /opt/R/${R_VERSION}/bin/Rscript /usr/local/bin/Rscript
 
-RUN echo "options(repos='https://packagemanager.posit.co/all/__linux__/jammy/latest')" >> /opt/R/${R_VERSION}/lib/R/etc/Rprofile.site
+RUN echo "options(repos= c(RSPM = 'https://packagemanager.posit.co/all/__linux__/jammy/latest', BioC = 'http://www.bioconductor.org/packages/release/bioc'))" >> /opt/R/${R_VERSION}/lib/R/etc/Rprofile.site
 
 # System requirements for R packages
-RUN apt -y install libssl-dev libcurl4-openssl-dev pandoc perl tar  gfortran 
+RUN apt -y install libssl-dev libcurl4-openssl-dev pandoc perl tar gfortran libglpk-dev libxml2-dev libicu-dev libdigest-md5-file-perl
   
 # Install {diagramLambda}
 RUN Rscript -e 'install.packages("remotes")'
