@@ -1,36 +1,38 @@
-FROM public.ecr.aws/lambda/provided:al2
+FROM public.ecr.aws/lambda/python:3.8 AS lambda-image
 
-# Enable the Extra Packages for Enterprise Linux (EPEL) repository
-RUN yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm --skip-broken
-# Enable the optional repository from Red Hat Update Infrastructure (RHUI)
-RUN yum -y install yum-utils \
-  && yum-config-manager --enable "rhel-*-optional-rpms" \
-  && yum clean all \
-  && rm -rf /var/cache/yum
+FROM ubuntu:jammy
+
+ARG LAMBDA_TASK_ROOT=/var/task/
+USER root
+
+RUN mkdir /var/task
+WORKDIR /var/task
+
+COPY --from=lambda-image /var/runtime /var/runtime
 
 # System requirements for R packages
-COPY dependencies/dependencies-sys.yum /dependencies-sys.yum
-RUN yum -y install $(cat /dependencies-sys.yum)
+RUN apt update && apt -y install curl
 
-# Fetch and install desired R version
-ENV R_VERSION=4.3.2
-RUN curl -O https://cdn.rstudio.com/r/centos-7/pkgs/R-${R_VERSION}-1-1.x86_64.rpm \
-  && yum -y install R-${R_VERSION}-1-1.x86_64.rpm \
-  && rm R-${R_VERSION}-1-1.x86_64.rpm
-ENV PATH="${PATH}:/opt/R/${R_VERSION}/bin/"
-# Set repos for package installation
-RUN echo '\
-options( \
-  repos = c( \
-    RSPM = "https://packagemanager.rstudio.com/all/__linux__/centos7/latest", \
-    BioC = "http://www.bioconductor.org/packages/release/bioc" \
-  ) \
-)' >> /opt/R/${R_VERSION}/lib/R/library/base/R/Rprofile
+#RUN apt update && apt install -y r-base
+ARG R_VERSION=4.3.2
+RUN curl -O https://cdn.rstudio.com/r/ubuntu-2204/pkgs/r-${R_VERSION}_1_amd64.deb \
+ && apt-get update \
+ && apt-get install -y ./r-${R_VERSION}_1_amd64.deb \
+ && ln -s /opt/R/${R_VERSION}/bin/R /usr/local/bin/R \
+ && ln -s /opt/R/${R_VERSION}/bin/Rscript /usr/local/bin/Rscript
 
+RUN echo "options(repos='https://packagemanager.posit.co/all/__linux__/jammy/2023-02-01')" >> /opt/R/${R_VERSION}/lib/R/etc/Rprofile.site
+
+# System requirements for R packages
+RUN apt -y install libssl-dev libcurl4-openssl-dev pandoc perl tar  gfortran 
+  
 # Install {diagramLambda}
 RUN Rscript -e 'install.packages("remotes")'
 COPY src /diagramLambda/
+#RUN Rscript -e 'remotes::install_version("bnlearn", version = "4.9.0")'
 RUN Rscript -e 'remotes::install_local("/diagramLambda/", dependencies = TRUE)'
+
+RUN Rscript -e 'require("diagramLambda")'
 
 # Install TinyTeX with {tinytex}
 RUN Rscript -e 'tinytex::install_tinytex(force = TRUE, dir = "/opt/TinyTeX")'
@@ -57,7 +59,7 @@ file.copy( \
     "extdata", "runtime", "bootstrap.sh", package = "diagramLambda", \
     mustWork = TRUE \
   ), \
-  "/var/runtime/bootstrap" \
+  "/var/runtime/bootstrap", overwrite = TRUE \
 )'
 
 RUN Rscript -e '\
@@ -68,6 +70,14 @@ file.copy( \
   ), \
   Sys.getenv("LAMBDA_TASK_ROOT") \
 )'
+
+COPY --from=lambda-image /usr/local/bin/aws-lambda-rie /usr/local/bin/aws-lambda-rie
+ENV LAMBDA_TASK_ROOT=/var/task
+ENV LAMBDA_RUNTIME_DIR=/var/task
+ENTRYPOINT ["/var/runtime/bootstrap"]
+
 RUN chmod +x /var/runtime/bootstrap
 
 CMD ["handler"]
+
+
