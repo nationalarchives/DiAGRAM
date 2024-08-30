@@ -27,7 +27,7 @@ RUN echo "options(repos='https://packagemanager.posit.co/all/__linux__/jammy')" 
 RUN apt -y install libssl-dev libcurl4-openssl-dev pandoc perl tar  gfortran 
   
 # Install {diagramLambda}
-RUN Rscript -e 'install.packages("remotes")'
+RUN Rscript -e 'install.packages("remotes", dependencies = TRUE)'
 COPY src /diagramLambda/
 RUN Rscript -e 'remotes::install_version("bnlearn", version = "4.9.0")'
 RUN Rscript -e 'remotes::install_local("/diagramLambda/", dependencies = TRUE)'
