@@ -2,31 +2,30 @@ FROM public.ecr.aws/lambda/python:3.8 AS lambda-image
 
 FROM ubuntu:jammy
 
+ARG R_VERSION=4.3.2
 ARG LAMBDA_TASK_ROOT=/var/task/
+ARG DEBIAN_FRONTEND=noninteractive
+ENV LAMBDA_RUNTIME_DIR=/var/task
 USER root
 
 RUN mkdir /var/task
 WORKDIR /var/task
 
 COPY --from=lambda-image /var/runtime /var/runtime
+COPY --from=lambda-image /usr/local/bin/aws-lambda-rie /usr/local/bin/aws-lambda-rie
 
-# System requirements for R packages
-RUN apt update && apt -y install curl
+RUN apt update && apt -y install curl libssl-dev libcurl4-openssl-dev pandoc perl tar gfortran libglpk-dev libxml2-dev libicu-dev libdigest-md5-file-perl
 
 #RUN apt update && apt install -y r-base
-ARG R_VERSION=4.3.2
 RUN curl -O https://cdn.rstudio.com/r/ubuntu-2204/pkgs/r-${R_VERSION}_1_amd64.deb \
  && apt-get update \
  && apt-get install -y ./r-${R_VERSION}_1_amd64.deb \
  && ln -s /opt/R/${R_VERSION}/bin/R /usr/local/bin/R \
  && ln -s /opt/R/${R_VERSION}/bin/Rscript /usr/local/bin/Rscript
 
-# Setting repos with dates to freeze packages 
-RUN echo "options(repos= c(RSPM = 'https://packagemanager.posit.co/cran/__linux__/jammy/2023-02-02', BioC = 'https://packagemanager.posit.co/bioconductor/__linux__/jammy/2024-05-02'))" >> /opt/R/${R_VERSION}/lib/R/etc/Rprofile.site 
+# Setting repos with dates to freeze packages
+RUN echo "options(repos= c(RSPM = 'https://packagemanager.posit.co/cran/__linux__/jammy/2024-05-02', BioC = 'https://packagemanager.posit.co/bioconductor/__linux__/jammy/2024-05-02'))" >> /opt/R/${R_VERSION}/lib/R/etc/Rprofile.site
 
-# System requirements for R packages
-RUN apt -y install libssl-dev libcurl4-openssl-dev pandoc perl tar gfortran libglpk-dev libxml2-dev libicu-dev libdigest-md5-file-perl
-  
 # Install {diagramLambda}
 RUN Rscript -e 'install.packages("remotes", dependencies = TRUE)'
 COPY src /diagramLambda/
@@ -60,6 +59,8 @@ file.copy( \
   "/var/runtime/bootstrap", overwrite = TRUE \
 )'
 
+RUN chmod +x /var/runtime/bootstrap
+
 RUN Rscript -e '\
 file.copy( \
   system.file( \
@@ -69,12 +70,6 @@ file.copy( \
   Sys.getenv("LAMBDA_TASK_ROOT") \
 )'
 
-COPY --from=lambda-image /usr/local/bin/aws-lambda-rie /usr/local/bin/aws-lambda-rie
-ENV LAMBDA_TASK_ROOT=/var/task
-ENV LAMBDA_RUNTIME_DIR=/var/task
 ENTRYPOINT ["/var/runtime/bootstrap"]
 
-RUN chmod +x /var/runtime/bootstrap
-
 CMD ["handler"]
-
