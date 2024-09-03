@@ -1,34 +1,33 @@
-FROM public.ecr.aws/lambda/provided:al2
+FROM public.ecr.aws/lambda/python:3.8 AS lambda-image
 
-# Enable the Extra Packages for Enterprise Linux (EPEL) repository
-RUN yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-# Enable the optional repository from Red Hat Update Infrastructure (RHUI)
-RUN yum -y install yum-utils \
-  && yum-config-manager --enable "rhel-*-optional-rpms" \
-  && yum clean all \
-  && rm -rf /var/cache/yum
+FROM ubuntu:jammy
 
-# Fetch and install desired R version
-ENV R_VERSION=4.3.2
-RUN curl -O https://cdn.rstudio.com/r/centos-7/pkgs/R-${R_VERSION}-1-1.x86_64.rpm \
-  && yum -y install R-${R_VERSION}-1-1.x86_64.rpm \
-  && rm R-${R_VERSION}-1-1.x86_64.rpm
-ENV PATH="${PATH}:/opt/R/${R_VERSION}/bin/"
-# Set repos for package installation
-RUN echo '\
-options( \
-  repos = c( \
-    RSPM = "https://packagemanager.rstudio.com/all/__linux__/centos7/latest", \
-    BioC = "http://www.bioconductor.org/packages/release/bioc" \
-  ) \
-)' >> /opt/R/${R_VERSION}/lib/R/library/base/R/Rprofile
+ARG R_VERSION=4.3.2
+ARG LAMBDA_TASK_ROOT=/var/task/
+ARG DEBIAN_FRONTEND=noninteractive
+ENV LAMBDA_RUNTIME_DIR=/var/task
+USER root
 
-# System requirements for R packages
-COPY dependencies/dependencies-sys.yum /dependencies-sys.yum
-RUN yum -y install $(cat /dependencies-sys.yum)
+RUN mkdir /var/task
+WORKDIR /var/task
+
+COPY --from=lambda-image /var/runtime /var/runtime
+COPY --from=lambda-image /usr/local/bin/aws-lambda-rie /usr/local/bin/aws-lambda-rie
+
+RUN apt update && apt -y install curl libssl-dev libcurl4-openssl-dev pandoc perl tar gfortran libglpk-dev libxml2-dev libicu-dev libdigest-md5-file-perl
+
+#RUN apt update && apt install -y r-base
+RUN curl -O https://cdn.rstudio.com/r/ubuntu-2204/pkgs/r-${R_VERSION}_1_amd64.deb \
+ && apt-get update \
+ && apt-get install -y ./r-${R_VERSION}_1_amd64.deb \
+ && ln -s /opt/R/${R_VERSION}/bin/R /usr/local/bin/R \
+ && ln -s /opt/R/${R_VERSION}/bin/Rscript /usr/local/bin/Rscript
+
+# Setting repos with dates to freeze packages
+RUN echo "options(repos= c(RSPM = 'https://packagemanager.posit.co/cran/__linux__/jammy/2024-05-02', BioC = 'https://packagemanager.posit.co/bioconductor/__linux__/jammy/2024-05-02'))" >> /opt/R/${R_VERSION}/lib/R/etc/Rprofile.site
 
 # Install {diagramLambda}
-RUN Rscript -e 'install.packages("remotes")'
+RUN Rscript -e 'install.packages("remotes", dependencies = TRUE)'
 COPY src /diagramLambda/
 RUN Rscript -e 'remotes::install_local("/diagramLambda/", dependencies = TRUE)'
 
@@ -57,8 +56,10 @@ file.copy( \
     "extdata", "runtime", "bootstrap.sh", package = "diagramLambda", \
     mustWork = TRUE \
   ), \
-  "/var/runtime/bootstrap" \
+  "/var/runtime/bootstrap", overwrite = TRUE \
 )'
+
+RUN chmod +x /var/runtime/bootstrap
 
 RUN Rscript -e '\
 file.copy( \
@@ -68,6 +69,7 @@ file.copy( \
   ), \
   Sys.getenv("LAMBDA_TASK_ROOT") \
 )'
-RUN chmod +x /var/runtime/bootstrap
+
+ENTRYPOINT ["/var/runtime/bootstrap"]
 
 CMD ["handler"]
