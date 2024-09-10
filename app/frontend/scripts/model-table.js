@@ -55,9 +55,9 @@
 	}
 
 
-	var extractSavedModels = function () {
+	function extractSavedModels () {
 		return (JSON.parse(window.localStorage.getItem('models')) || []).concat(fixedModels);
-	};
+	}
 
 	var saveModels = function (models) {
 		var filteredModels = models.filter(function(m) { return !fixedModelNames.includes(m[modelNameKey]); });
