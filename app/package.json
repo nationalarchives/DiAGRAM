@@ -12,7 +12,7 @@
   },
   "scripts": {
     "start": "parcel frontend/index.html --dist-dir .dev-build",
-    "build": "parcel build frontend/index.html --public-url ./",
+    "build": "parcel build --no-optimize frontend/index.html --public-url ./",
     "lint": "eslint frontend/scripts/*.js",
     "fix-lint": "eslint frontend/scripts/*.js --fix",
     "prepare": "cd .. && husky install app/.husky",
