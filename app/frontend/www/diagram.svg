@@ -8,24 +8,6 @@
 			<v:ud v:nameU="msvNoAutoConnect" v:val="VT0(1):26"/>
 		</v:userDefs>
 	</v:documentProperties>
-
-	<style type="text/css">
-		.st1 {fill:#f9f6e2;stroke:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.75}
-		.st2 {fill:#48cd00;marker-end:url(#mrkr13-6);stroke:#000000;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.75}
-		.st3 {fill:#000000;fill-opacity:1;stroke:#000000;stroke-opacity:1;stroke-width:0.22935779816514}
-		.st4 {fill:#000000;font-family:Roboto Mono;font-size:1.5em}
-		.st5 {font-size:1em}
-		.st6 {fill:#48cd00;stroke:#000000;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.75}
-		.st7 {fill:#ffffff;stroke:#000000;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.75}
-		.st8 {marker-end:url(#mrkr13-6);stroke:#000000;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.75}
-		.st9 {fill:#ffffff;marker-end:url(#mrkr13-6);stroke:#000000;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.75}
-		.st10 {fill:#5400cd;marker-end:url(#mrkr13-6);stroke:#000000;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.75}
-		.st11 {fill:#ffffff;font-family:Roboto Mono;font-size:1.5em}
-		.st12 {fill:#ff6e3a;stroke:#000000;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.75}
-		.st13 {fill:none;fill-rule:evenodd;font-size:12px;overflow:visible;stroke-linecap:square;stroke-miterlimit:3}
-		text {user-select: none}
-	</style>
-
 	<defs id="Markers">
 		<g id="lend13">
 			<path d="M 3 1 L 0 0 L 3 -1 L 3 1 " style="stroke:none"/>
