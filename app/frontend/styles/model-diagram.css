@@ -1,0 +1,107 @@
+figure > svg#diagram-network .st1 {
+    fill: #f9f6e2;
+    stroke: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 0.75
+}
+
+figure > svg#diagram-network .st2 {
+    fill: #48cd00;
+    marker-end: url(#mrkr13-6);
+    stroke: #000000;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 0.75
+}
+
+figure > svg#diagram-network .st3 {
+    fill: #000000;
+    fill-opacity: 1;
+    stroke: #000000;
+    stroke-opacity: 1;
+    stroke-width: 0.22935779816514
+}
+
+figure > svg#diagram-network .st4 {
+    fill: #000000;
+    font-family: Roboto Mono;
+    font-size: 1.25em
+}
+
+figure > svg#diagram-network .st5 {
+    font-size: 1em
+}
+
+figure > svg#diagram-network .st6 {
+    fill: #48cd00;
+    stroke: #000000;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 0.75
+}
+
+figure > svg#diagram-network .st7 {
+    fill: #ffffff;
+    stroke: #000000;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 0.75
+}
+
+figure > svg#diagram-network .st8 {
+    marker-end: url(#mrkr13-6);
+    stroke: #000000;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 0.75
+}
+
+figure > svg#diagram-network .st9 {
+    fill: #ffffff;
+    marker-end: url(#mrkr13-6);
+    stroke: #000000;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 0.75
+}
+
+figure > svg#diagram-network .st10 {
+    fill: #5400cd;
+    marker-end: url(#mrkr13-6);
+    stroke: #000000;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 0.75
+}
+
+figure > svg#diagram-network .st11 {
+    fill: #ffffff;
+    font-family: Roboto Mono;
+    font-size: 1.25em
+}
+
+figure > svg#diagram-network .st12 {
+    fill: #ff6e3a;
+    stroke: #000000;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 0.75
+}
+
+figure > svg#diagram-network .st13 {
+    fill: none;
+    fill-rule: evenodd;
+    font-size: 12px;
+    overflow: visible;
+    stroke-linecap: square;
+    stroke-miterlimit: 3
+}
+
+figure > svg#diagram-network text {
+    user-select: none
+}
+
+figure > svg#diagram-network .noStroke {
+    stroke: none;
+}
