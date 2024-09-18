@@ -101,3 +101,7 @@ figure > svg#diagram-network .st13 {
 figure > svg#diagram-network text {
     user-select: none
 }
+
+figure > svg#diagram-network .noStroke {
+    stroke: none;
+}
