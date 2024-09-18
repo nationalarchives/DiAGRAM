@@ -23,6 +23,9 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: bold;
 }
 
+.text-center {
+    text-align: center;
+}
 
 .box-body h1,
 .box-body h2,
@@ -49,6 +52,7 @@ h1, h2, h3, h4, h5, h6 {
 
 h2.main-title {
     font-family: 'supria-sans-condensed', sans-serif;
+    font-weight: normal;
 }
 
 .outer-wrapper, .main-and-foot {
