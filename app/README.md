@@ -1,4 +1,4 @@
-#Update Infra 2nd Oct 2024
+#Update Infra 6th Nov 2024
 ## Frontend
 
 To run frontend code you must have node and npm installed. Then run
