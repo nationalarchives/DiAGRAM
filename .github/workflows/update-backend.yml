@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - api/**
-      - .github/workflow/update-backend.yml
+      - .github/workflows/update-backend.yml
     branches:
       - live
       - stage
