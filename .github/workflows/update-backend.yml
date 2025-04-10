@@ -49,7 +49,7 @@ jobs:
           tags: ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO_NAME }}:latest
       - name: Wiz Docker Scan
         run: |
-          ./wizcli docker scan --image ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO_NAME }}:latest
+          ./wizcli docker scan --image ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO_NAME }}:latest --project ${{ secrets.WIZ_PROJECT_DIAGRAMREPOSITORIES }}
       - name: Update Lambda to use the latest image push
         run: |
           aws lambda update-function-code --function-name ${{ secrets.LAMBDA_NAME }} --image-uri ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO_NAME }}@${{ steps.docker_build.outputs.digest }}
