@@ -33,7 +33,13 @@ jobs:
         uses: docker/login-action@v2
         with:
           registry: ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
-
+      - name: Download Wiz CLI
+        run: |
+          curl -o wizcli https://wizcli.app.wiz.io/wizcli
+          chmod +x wizcli
+      - name: Authenticate to Wiz API
+        run: |
+          ./wizcli auth --id ${{ secrets.WIZ_CLIENT_ID }} --secret ${{ secrets.WIZ_CLIENT_SECRET }}
       - name: Build docker image and push to ECR
         id: docker_build
         uses: docker/build-push-action@v3
@@ -41,8 +47,13 @@ jobs:
           context: api/
           push: true
           tags: ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO_NAME }}:latest
-
+      - name: Wiz Docker Scan
+        run: |
+          ./wizcli docker scan --image ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO_NAME }}:latest
       - name: Update Lambda to use the latest image push
         run: |
           aws lambda update-function-code --function-name ${{ secrets.LAMBDA_NAME }} --image-uri ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO_NAME }}@${{ steps.docker_build.outputs.digest }}
           aws lambda wait function-updated --function-name ${{ secrets.LAMBDA_NAME }}
+      - name: Wiz Docker Tag
+        run: |
+          ./wizcli docker tag --image ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO_NAME }}:latest         
