@@ -14,9 +14,6 @@ on:
           - staging
           - prod
         default: 'intg'
-      image-location:
-        description: 'Image location on ECR'
-        required: true
       to-deploy:
         description: 'Version to deploy'
         required: true
@@ -40,9 +37,9 @@ jobs:
           registry: ${{ secrets.MANAGEMENT_ACCOUNT }}.dkr.ecr.eu-west-2.amazonaws.com
       - name: Tag image
         run: |
-          docker pull ${{ github.event.inputs.image-location }}:${{ github.event.inputs.to-deploy }}
-          docker tag ${{ github.event.inputs.image-location }}:${{ github.event.inputs.to-deploy }} ${{ github.event.inputs.image-location }}:${{ github.event.inputs.environment }}
-          docker push ${{ github.event.inputs.image-location }}:${{ github.event.inputs.environment }}
+          docker pull ${{ secrets.MANAGEMENT_ACCOUNT }}.dkr.ecr.eu-west-2.amazonaws.com/diagram-backend-lambda-runtimes:${{ github.event.inputs.to-deploy }}
+          docker tag ${{ secrets.MANAGEMENT_ACCOUNT }}.dkr.ecr.eu-west-2.amazonaws.com/diagram-backend-lambda-runtimes:${{ github.event.inputs.to-deploy }} ${{ secrets.MANAGEMENT_ACCOUNT }}.dkr.ecr.eu-west-2.amazonaws.com/diagram-backend-lambda-runtimes:${{ github.event.inputs.environment }}
+          docker push ${{ secrets.MANAGEMENT_ACCOUNT }}.dkr.ecr.eu-west-2.amazonaws.com/diagram-backend-lambda-runtimes:${{ github.event.inputs.environment }}
           git branch -f release-${{ github.event.inputs.environment }} HEAD
           git push -f origin release-${{ github.event.inputs.environment }}
         env:

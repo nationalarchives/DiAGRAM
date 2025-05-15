@@ -19,8 +19,6 @@ jobs:
     environment: ${{ github.ref_name }}
     runs-on: ubuntu-latest
     if: "! contains(toJSON(github.event.commits.*.message), '[ci skip]')"
-    env:
-      dockerImageLoc: ${{ secrets.MANAGEMENT_ACCOUNT_NUMBER }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO_NAME }}
     steps:
       - uses: actions/checkout@v4
       - name: Configure AWS Credentials
@@ -42,10 +40,10 @@ jobs:
         with:
           context: api/
           push: true
-          tags: dockerImageLoc:${{ steps.next-tag.outputs.next-version }}
+          tags: ${{ secrets.MANAGEMENT_ACCOUNT }}.dkr.ecr.eu-west-2.amazonaws.com/diagram-backend-lambda-runtimes:${{ steps.next-tag.outputs.next-version }}
       - name: deploy
         run:
-          gh workflow run deploy.yml -f environment=intg -f to-deploy=${{ steps.next-tag.outputs.next-version }} -f image-location=dockerImageLoc
+          gh workflow run deploy.yml -f environment=intg -f to-deploy=${{ steps.next-tag.outputs.next-version }}
 
       - name: Update Lambda to use the latest image push
         run: |
