@@ -40,12 +40,7 @@ jobs:
           push: true
           tags: ${{ secrets.MANAGEMENT_ACCOUNT }}.dkr.ecr.eu-west-2.amazonaws.com/diagram-backend-lambda-runtimes:${{ steps.next-tag.outputs.next-version }}
       - name: deploy
-        run: gh workflow run deploy.yml -f environment=intg -f to-deploy=${{ steps.next-tag.outputs.next-version }}
+        run:
+          gh workflow run deploy.yml -f environment=dev -f to-deploy=${{ steps.next-tag.outputs.next-version }}
         env:
-          GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}    
-          
-
-      # - name: Update Lambda to use the latest image push
-      #   run: |
-      #     aws lambda update-function-code --function-name diagram-backend --image-uri ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO_NAME }}@${{ steps.docker_build.outputs.digest }}
-      #     aws lambda wait function-updated --function-name diagram-backend
+          GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}

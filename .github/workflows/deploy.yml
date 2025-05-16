@@ -48,6 +48,11 @@ jobs:
           MANAGEMENT_ACCOUNT_NUMBER: ${{ secrets.MANAGEMENT_ACCOUNT }}
           DOCKER_TAG: ${{ github.event.inputs.to-deploy }}
           ENVIRONMENT_TAG: ${{ github.event.inputs.environment }}
+
+      - name: Update Lambda to use the latest image push
+        run: |
+          aws lambda update-function-code --function-name ${{ secrets.LAMBDA_NAME }} --image-uri ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO_NAME }}@${{ steps.docker_build.outputs.digest }}
+          aws lambda wait function-updated --function-name ${{ secrets.LAMBDA_NAME }}
       - name: Send success message
         uses: nationalarchives/tdr-github-actions/.github/actions/slack-send@main
         with:
