@@ -1,11 +1,13 @@
 name: Update Backend
 
-
 on: 
   push:
+    paths:
+      - api/**
+      - .github/workflow/update-backend.yml
     branches:
-      - main
-      - DR2-2219_deployImageFromSingleManagementAccount
+      - live
+      - dev
       
 permissions:
   id-token: write # This is required for requesting the JWT
@@ -13,7 +15,7 @@ permissions:
 jobs:
 
   push_to_env_matching_branch:
-    environment: intg
+    environment: ${{ github.ref_name }}
     runs-on: ubuntu-latest
     if: "! contains(toJSON(github.event.commits.*.message), '[ci skip]')"
     steps:
