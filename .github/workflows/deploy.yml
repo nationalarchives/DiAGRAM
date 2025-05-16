@@ -12,7 +12,6 @@ on:
         required: true
         options:
           - intg
-          - staging
           - prod
         default: 'intg'
       to-deploy:
