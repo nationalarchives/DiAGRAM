@@ -21,6 +21,8 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
+          aws-region: eu-west-2
+          role-session-name: DiAGRAM_build
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_NUMBER }}:role/Role_Diagram_GitHub_OICD
       - name: Login to ECR
         uses: docker/login-action@v3
