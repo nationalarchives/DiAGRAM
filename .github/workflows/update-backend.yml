@@ -6,9 +6,8 @@ on:
       - api/**
       - .github/workflow/update-backend.yml
     branches:
-      - live
-      - stage
-      - dev
+      - main
+      - DR2-2219_deployImageFromSingleManagementAccount
       
 permissions:
   id-token: write # This is required for requesting the JWT
