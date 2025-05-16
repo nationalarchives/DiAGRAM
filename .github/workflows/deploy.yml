@@ -42,6 +42,8 @@ jobs:
           docker push ${{ secrets.MANAGEMENT_ACCOUNT }}.dkr.ecr.eu-west-2.amazonaws.com/diagram-backend-lambda-runtimes:${{ github.event.inputs.environment }}
           git branch -f release-${{ github.event.inputs.environment }} HEAD
           git push -f origin release-${{ github.event.inputs.environment }}
+          git tag ${{ steps.next-tag.outputs.next-version }}
+          git push origin ${{ steps.next-tag.outputs.next-version }}
         env:
           MANAGEMENT_ACCOUNT_NUMBER: ${{ secrets.MANAGEMENT_ACCOUNT }}
           DOCKER_TAG: ${{ github.event.inputs.to-deploy }}
