@@ -3,6 +3,17 @@ describe('DiAGRAM home page spec', () => {
     cy.visit('/')
   })
 
+  it('Should collapse and expand left hand navigation panel when clicked on the toggle navigation chevron', () => {
+    //Collapse
+    cy.get('.outer-wrapper .content .sidebar').parent().should('have.class', 'content')
+    cy.get('.outer-wrapper header #sidebar-toggle').click({force: true})
+    cy.get('.outer-wrapper .content .sidebar').parent().should('have.class', 'content sidebar-hidden')
+
+    //Expand
+    cy.get('.outer-wrapper header #sidebar-toggle').click({force: true})
+    cy.get('.outer-wrapper .content .sidebar').parent().should('have.class', 'content')
+  })
+
   it('Index page loads and has the relevant components', () => {
     cy.get('h3').contains('Version 1.0.0')
     cy.get('li').then($navLinks => {
