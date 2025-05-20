@@ -1,8 +1,9 @@
-
-describe('DiAGRAM spec', () => {
+describe('DiAGRAM home page spec', () => {
+  beforeEach(() => {
+    cy.visit('/')
+  })
 
   it('Index page loads and has the relevant components', () => {
-    cy.visit('/')
     cy.get('h3').contains('Version 1.0.0')
     cy.get('li').then($navLinks => {
       expect($navLinks[0]).to.contain.text('Home page');
@@ -23,7 +24,6 @@ describe('DiAGRAM spec', () => {
   })
 
   it('Home page should display the correct details', () => {
-    cy.visit('/')
     cy.contains('Home page').click({force: true})
     cy.get('.box-body p').then($paragraphs => {
       expect($paragraphs[8]).to.contain.text('DiAGRAM was built by The National Archives and the University of Warwick with support from the National Lottery Heritage Fund and the Engineering and Physical Sciences Research Council.')
@@ -31,7 +31,6 @@ describe('DiAGRAM spec', () => {
   })
 
   it('How to use the tool should display the correct details', () => {
-    cy.visit('/')
     cy.contains('How to use the tool').click({force: true})
     cy.get('.box-body h2').then($headers => {
       expect($headers[0]).to.contain.text('How to use the tool');
@@ -40,7 +39,6 @@ describe('DiAGRAM spec', () => {
   })
 
   it('Create a model page should display the correct details', () => {
-    cy.visit('/')
     cy.contains('Create a model').click({force: true})
     cy.get('.box-body section p').then($preamble => {
       expect($preamble[0]).to.contain.text('By creating a model, you will be able to see ');
@@ -48,7 +46,6 @@ describe('DiAGRAM spec', () => {
   })
 
   it('Create a scenario page should display the correct details', () => {
-    cy.visit('/')
     cy.contains('Create a scenario').click({force: true})
     cy.get('.box-body section p').then($preamble => {
       expect($preamble[0]).to.contain.text('By creating a scenario you will be able to change the answers you used to create your model ');
@@ -56,7 +53,6 @@ describe('DiAGRAM spec', () => {
   })
 
   it('View results page should display the correct details', () => {
-    cy.visit('/')
     cy.contains('View results').click({force: true})
     cy.get('.box-body h2').then($headers => {
       expect($headers[0]).to.contain.text('View Results');
@@ -67,7 +63,6 @@ describe('DiAGRAM spec', () => {
   })
 
   it('Download a report page should display the correct details', () => {
-    cy.visit('/')
     cy.contains('Download a report').click({force: true})
     cy.get('.box-body h2').then($headers => {
       expect($headers[0]).to.contain.text('Download a report');
@@ -75,7 +70,6 @@ describe('DiAGRAM spec', () => {
   })
 
   it('Upload previous model page should display the correct details', () => {
-    cy.visit('/')
     cy.contains('Upload previous models').click({force: true})
     cy.get('.box-body h2').then($headers => {
       expect($headers[0]).to.contain.text('Upload previous models');
@@ -83,7 +77,6 @@ describe('DiAGRAM spec', () => {
   })
 
   it('Using the reference models page should display the correct details', () => {
-    cy.visit('/')
     cy.contains('Using the reference models').click({force: true})
     cy.get('.box-body h2').then($headers => {
       expect($headers[0]).to.contain.text('Using the Reference Models');
@@ -94,7 +87,6 @@ describe('DiAGRAM spec', () => {
   })
 
   it('Learn about DiAGRAM page should display the correct details', () => {
-    cy.visit('/')
     cy.contains('Learn about DiAGRAM').click({force: true})
     cy.get('.box-body h2').then($headers => {
       expect($headers[0]).to.contain.text('Learn about DiAGRAM');
@@ -102,7 +94,6 @@ describe('DiAGRAM spec', () => {
   })
 
   it('Advanced customisation page should display the correct details', () => {
-    cy.visit('/')
     cy.contains('Advanced customisation').click({force: true})
     cy.get('.box-body h2').then($headers => {
       expect($headers[0]).to.contain.text('Advanced Customisation');
@@ -110,7 +101,6 @@ describe('DiAGRAM spec', () => {
   })
 
   it('Glossary page should display the correct details', () => {
-    cy.visit('/')
     cy.contains('Glossary').click({force: true})
     cy.get('.box-body h1').then($headers => {
       expect($headers[0]).to.contain.text('General terms');
