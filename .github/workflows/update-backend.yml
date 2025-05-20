@@ -7,7 +7,6 @@ on:
       - .github/workflow/update-backend.yml
     branches:
       - live
-      - stage
       - dev
       
 permissions:
@@ -19,30 +18,31 @@ jobs:
     environment: ${{ github.ref_name }}
     runs-on: ubuntu-latest
     if: "! contains(toJSON(github.event.commits.*.message), '[ci skip]')"
-
     steps:
-
-      - uses: actions/checkout@v3
-
+      - uses: actions/checkout@v4
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
+          aws-region: eu-west-2
+          role-session-name: DiAGRAM_build
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_NUMBER }}:role/Role_Diagram_GitHub_OICD
-          aws-region: ${{ secrets.AWS_REGION }}
       - name: Login to ECR
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
-          registry: ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
-
+          registry: ${{ secrets.MANAGEMENT_ACCOUNT }}.dkr.ecr.eu-west-2.amazonaws.com
+      - id: next-tag
+        uses: nationalarchives/dr2-github-actions/.github/actions/get-next-version@main
+        with:
+          repo-name: DiAGRAM
       - name: Build docker image and push to ECR
         id: docker_build
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v6
         with:
           context: api/
           push: true
-          tags: ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO_NAME }}:latest
-
-      - name: Update Lambda to use the latest image push
-        run: |
-          aws lambda update-function-code --function-name ${{ secrets.LAMBDA_NAME }} --image-uri ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO_NAME }}@${{ steps.docker_build.outputs.digest }}
-          aws lambda wait function-updated --function-name ${{ secrets.LAMBDA_NAME }}
+          tags: ${{ secrets.MANAGEMENT_ACCOUNT }}.dkr.ecr.eu-west-2.amazonaws.com/diagram-backend-lambda-runtimes:${{ steps.next-tag.outputs.next-version }}
+      - name: deploy
+        run:
+          gh workflow run deploy.yml -f environment=dev -f to-deploy=${{ steps.next-tag.outputs.next-version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
