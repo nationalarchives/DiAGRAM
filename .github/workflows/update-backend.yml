@@ -7,8 +7,7 @@ on:
       - .github/workflows/update-backend.yml
     branches:
       - live
-      - dev
-      
+
 permissions:
   id-token: write # This is required for requesting the JWT
   
