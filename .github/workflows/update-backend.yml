@@ -7,7 +7,6 @@ on:
       - .github/workflows/update-backend.yml
     branches:
       - live
-      - stage
       - dev
       
 permissions:
@@ -22,15 +21,15 @@ jobs:
 
     steps:
 
-      - uses: actions/checkout@v3
-
+      - uses: actions/checkout@v4
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_NUMBER }}:role/Role_Diagram_GitHub_OICD
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: eu-west-2
+          role-session-name: DiAGRAM_build
       - name: Login to ECR
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
       - name: Download Wiz CLI
@@ -40,13 +39,17 @@ jobs:
       - name: Authenticate to Wiz API
         run: |
           ./wizcli auth --id ${{ secrets.WIZ_CLIENT_ID }} --secret ${{ secrets.WIZ_CLIENT_SECRET }}
+      - id: next-tag
+        uses: nationalarchives/dr2-github-actions/.github/actions/get-next-version@main
+        with:
+          repo-name: DiAGRAM
       - name: Build docker image and push to ECR
         id: docker_build
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v6
         with:
           context: api/
           push: true
-          tags: ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO_NAME }}:latest
+          tags: ${{ secrets.MANAGEMENT_ACCOUNT }}.dkr.ecr.eu-west-2.amazonaws.com/diagram-backend-lambda-runtimes:${{ steps.next-tag.outputs.next-version }}
       - name: Wiz Docker Scan
         run: |
           ./wizcli docker scan --image ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO_NAME }}:latest --project ${{ secrets.WIZ_PROJECT_DIAGRAMREPOSITORIES }}
@@ -57,3 +60,8 @@ jobs:
       - name: Wiz Docker Tag
         run: |
           ./wizcli docker tag --image ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO_NAME }}:latest         
+      - name: deploy
+        run:
+          gh workflow run deploy.yml -f environment=dev -f to-deploy=${{ steps.next-tag.outputs.next-version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
