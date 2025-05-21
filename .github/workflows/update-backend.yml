@@ -17,20 +17,18 @@ jobs:
     environment: ${{ github.ref_name }}
     runs-on: ubuntu-latest
     if: "! contains(toJSON(github.event.commits.*.message), '[ci skip]')"
-
     steps:
-
       - uses: actions/checkout@v4
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_NUMBER }}:role/Role_Diagram_GitHub_OICD
           aws-region: eu-west-2
           role-session-name: DiAGRAM_build
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_NUMBER }}:role/Role_Diagram_GitHub_OICD
       - name: Login to ECR
         uses: docker/login-action@v3
         with:
-          registry: ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+          registry: ${{ secrets.MANAGEMENT_ACCOUNT }}.dkr.ecr.eu-west-2.amazonaws.com
       - name: Download Wiz CLI
         run: |
           curl -o wizcli https://wizcli.app.wiz.io/wizcli
@@ -52,10 +50,6 @@ jobs:
       - name: Wiz Docker Scan
         run: |
           ./wizcli docker scan --image ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO_NAME }}:latest --project ${{ secrets.WIZ_PROJECT_DIAGRAMREPOSITORIES }}
-      - name: Update Lambda to use the latest image push
-        run: |
-          aws lambda update-function-code --function-name ${{ secrets.LAMBDA_NAME }} --image-uri ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO_NAME }}@${{ steps.docker_build.outputs.digest }}
-          aws lambda wait function-updated --function-name ${{ secrets.LAMBDA_NAME }}
       - name: Wiz Docker Tag
         run: |
           ./wizcli docker tag --image ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO_NAME }}:latest         
