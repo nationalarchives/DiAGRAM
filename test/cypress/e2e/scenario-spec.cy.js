@@ -9,8 +9,9 @@ describe('DiAGRAM scenario creation spec', () => {
 
     it('should click through the scenario creation pages with default model and produce a scenario', () => {
         createDefaultModel('Model 1')
-        cy.wait(1000)
+        cy.get('#models-section #model-list', {timeout: 5000}).should('be.visible')
         cy.get('.content #sidebar-menu ul li a[data-page="scenario"]').click({force: true})
+        cy.get('#choose-model-container', {timeout: 5000}).should('be.visible')
         cy.get('.box-body #prequestions #choose-model-container .button-row .btn-next').should('be.visible')
         cy.get('.box-body #prequestions #choose-model-container .button-row .btn-next').click({force: true})
 
@@ -26,7 +27,7 @@ describe('DiAGRAM scenario creation spec', () => {
         cy.get('.box-body #questions-section #questions-buttons .button-row .btn-finish').should('be.visible')
         cy.get('.box-body #questions-section #questions-buttons .button-row .btn-finish').click({force: true})
 
-        cy.wait(1000)
+        cy.get('#postquestions', {timeout: 5000}).should('be.visible')
         cy.get('.box-body #postquestions').contains('Results').click({force: true})
         cy.get('#visualisation-box #image-container').should('be.visible')
     })
