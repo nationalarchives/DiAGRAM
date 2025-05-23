@@ -9,6 +9,7 @@ on:
         options:
           - live
           - dev
+          - DR2-2220-Write-DiAGRAM-tests
         default: 'dev'
 
 run-name: Running DiAGRAM tests for ${{ github.event.inputs.environment }} environment
