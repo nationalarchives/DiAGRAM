@@ -5,11 +5,21 @@ on:
       -  DR2-2220-Write-DiAGRAM-tests
 
   workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        description: 'Environment to run tests against'
+        required: true
+        options:
+          - dev
+          - live
+        default: 'dev'
 
+run-name: DiAGRAM e2e Tests - ${{ inputs.environment }}
 jobs:
   cypress-e2e:
     runs-on: ubuntu-latest
-
+    environment: ${{ github.events.inputs.environment }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
