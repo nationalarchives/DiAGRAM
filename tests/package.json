@@ -3,6 +3,6 @@
     "cypress": "^14.3.3"
   },
   "scripts": {
-    "cypress:ci": "cypress run --browser chrome --headless --e2e --spec 'cypress/e2e/**/*.cy.js'"
+    "test": "cypress run --browser chrome --headless --e2e --spec 'cypress/e2e/**/*.cy.js'"
   }
 }
