@@ -11,13 +11,14 @@ on:
           - live
         default: 'dev'
 
-run-name: DiAGRAM e2e Tests - ${{ inputs.environment }}
+run-name: DiAGRAM e2e Tests - ${{ github.event.inputs.environment }}
 jobs:
   cypress-e2e:
     runs-on: ubuntu-latest
-    environment: ${{ github.events.inputs.environment }}
+    environment: ${{ github.event.inputs.environment }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - run: npm --prefix tests cit
+      - env:
+          environmentPrefix: ${{ github.event.inputs.environment }}
