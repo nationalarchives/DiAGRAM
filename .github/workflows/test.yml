@@ -20,5 +20,3 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - run: npm --prefix tests cit
-      - env:
-          environmentPrefix: ${{ github.event.inputs.environment }}
