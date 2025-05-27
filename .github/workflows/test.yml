@@ -1,5 +1,8 @@
 name: DiAGRAM e2e Tests
 on:
+  push:
+    branches:
+      - DR2-2220-Write-DiAGRAM-tests
   workflow_dispatch:
     inputs:
       environment:
@@ -19,4 +22,5 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - run: npm --prefix tests cit
