@@ -1,26 +1,33 @@
-name: DiAGRAM e2e Tests
+name: DiAGRAM Tests
 on:
-  push:
-    branches:
-      - DR2-2220-Write-DiAGRAM-tests
-
   workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        description: 'Environment to run the tests in'
+        required: true
+        options:
+          - live
+          - dev
+        default: 'dev'
 
+run-name: Running DiAGRAM tests for ${{ github.event.inputs.environment }} environment
 jobs:
-  cypress-e2e:
+  deploy:
     runs-on: ubuntu-latest
-
+    environment: ${{ github.event.inputs.environment }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - run: npm --prefix test cit
+      - name: Send success message
+        uses: nationalarchives/dr2-github-actions/.github/actions/slack-send@main
         with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm --prefix test install
-
-      - run: npm --prefix test run cypress:ci
+          message: "DiAGRAM tests have been run successfully in the ${{ github.event.inputs.environment }} environment."
+          slack-url: ${{ secrets.SLACK_WEBHOOK_URL }}
+      - name: send failure message
+        uses: nationalarchives/dr2-github-actions/.github/actions/slack-send@main
+        if: failure()
+        with:
+          message: "DiAGRAM tests have failed in the ${{ github.event.inputs.environment }} environment."
+          slack-url: ${{ secrets.SLACK_WEBHOOK_URL }}
