@@ -1,4 +1,4 @@
-name: DiAGRAM Tests
+name: DiAGRAM e2e Tests
 on:
   workflow_dispatch:
     inputs:
