@@ -7,7 +7,7 @@ on:
     inputs:
       environment:
         type: choice
-        description: 'Environment to run tests against'
+        description: 'Environment'
         required: true
         options:
           - dev
@@ -24,3 +24,16 @@ jobs:
         uses: actions/checkout@v4
 
       - run: npm --prefix tests cit
+
+      - name: Send success message
+        uses: nationalarchives/dr2-github-actions/.github/actions/slack-send@main
+        with:
+          message: "*DiAGRAM* The e2e tests for environment: '${{ github.event.inputs.environment }}' finished successfully"
+          slack-url: ${{ secrets.SLACK_WEBHOOK }}
+
+      - name: Send failure message
+        uses: nationalarchives/dr2-github-actions/.github/actions/slack-send@main
+        if: failure()
+        with:
+          message: ":warning: e2e tests failed for DiAGRAM for environment: '${{ github.event.inputs.environment }}'"
+          slack-url: ${{ secrets.SLACK_WEBHOOK }}
