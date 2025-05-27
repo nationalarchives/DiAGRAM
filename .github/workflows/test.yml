@@ -1,9 +1,5 @@
 name: DiAGRAM e2e Tests
 on:
-  push:
-    branches:
-      -  DR2-2220-Write-DiAGRAM-tests
-
   workflow_dispatch:
     inputs:
       environment:
