@@ -21,6 +21,6 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm --prefix test install
+        run: npm --prefix tests install
 
-      - run: npm --prefix test run cypress:ci
+      - run: npm --prefix tests run cypress:ci
