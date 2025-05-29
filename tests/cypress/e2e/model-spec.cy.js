@@ -97,18 +97,18 @@ describe('DiAGRAM model creation spec', () => {
         cy.get('.box-body #questions-section #questions-buttons .button-row .btn-next').click({force: true})
 
         // Hide Information Management 2 and make Information Management 3 visible
-        cy.get(`.box-body #questions-section #questions .question .question-content .question-text #im-q2`)
+        cy.get('.box-body #questions-section #questions .question .question-content .question-text #im-q2')
             .parent().parent().parent().should('have.class', 'question hidden')
-        cy.get(`.box-body #questions-section #questions .question .question-content .question-text #im-q3a`).should('be.visible')
-        cy.get(`.box-body #questions-section #questions .question .question-content .question-text #im-q3a`)
+        cy.get('.box-body #questions-section #questions .question .question-content .question-text #im-q3a').should('be.visible')
+        cy.get('.box-body #questions-section #questions .question .question-content .question-text #im-q3a')
             .parent().parent().parent().parent().should('have.class', 'question')
         cy.get('.box-body #questions-section #questions-buttons .button-row .btn-next').click({force: true})
 
         // Hide Information Management 3 and make Technical Skills visible
-        cy.get(`.box-body #questions-section #questions .question .question-content .question-text #im-q3a`)
+        cy.get('.box-body #questions-section #questions .question .question-content .question-text #im-q3a')
             .parent().parent().parent().parent().should('have.class', 'question hidden')
-        cy.get(`.box-body #questions-section #questions .question .question-content .question-text #ts-q1a`).should('be.visible')
-        cy.get(`.box-body #questions-section #questions .question .question-content .question-text #ts-q1a`)
+        cy.get('.box-body #questions-section #questions .question .question-content .question-text #ts-q1a').should('be.visible')
+        cy.get('.box-body #questions-section #questions .question .question-content .question-text #ts-q1a')
             .parent().parent().parent().parent().should('have.class', 'question')
 
         //Finish button visible, click i
@@ -118,11 +118,11 @@ describe('DiAGRAM model creation spec', () => {
 
     })
 
-    function assertHiddenAndVisibleToggled(toHide, toShow) {
-        cy.get(`.box-body #questions-section #questions .question .question-content .question-text #${toHide}`)
+    function assertHiddenAndVisibleToggled(hidden, visible) {
+        cy.get(`.box-body #questions-section #questions .question .question-content .question-text #${hidden}`)
             .parent().parent().parent().should('have.class', 'question hidden')
-        cy.get(`.box-body #questions-section #questions .question .question-content .question-text #${toShow}`).should('be.visible')
-        cy.get(`.box-body #questions-section #questions .question .question-content .question-text #${toShow}`)
+        cy.get(`.box-body #questions-section #questions .question .question-content .question-text #${visible}`).should('be.visible')
+        cy.get(`.box-body #questions-section #questions .question .question-content .question-text #${visible}`)
             .parent().parent().parent().should('have.class', 'question')
     }
 })
