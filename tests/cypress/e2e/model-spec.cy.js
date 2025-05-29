@@ -29,7 +29,6 @@ describe('DiAGRAM model creation spec', () => {
         cy.get('#models-section-container').should('be.not.visible')
         cy.get('.box-body #model-start').click({force: true});
 
-        // Name container, give name to the model
         cy.get('.box-body #name-container #model-name').should('be.visible')
         cy.get('.box-body #name-container #model-name').type('Test Model')
         cy.get('.box-body #prequestions #name-container .button-row .btn-next').should('be.visible')
