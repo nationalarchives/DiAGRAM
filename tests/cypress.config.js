@@ -1,8 +1,7 @@
 const { defineConfig } = require("cypress");
 
-const defaultEnvUrl = `https://dev-diagram.nationalarchives.gov.uk`
-const envPrefix = process.env.environment || ''
-const executionEnvUrl = envPrefix ? `https://${envPrefix}-diagram.nationalarchives.gov.uk` : defaultEnvUrl
+const envPrefix = process.env.environment || 'dev'
+const executionEnvUrl = `https://${envPrefix}-diagram.nationalarchives.gov.uk`
 
 module.exports = defineConfig({
   e2e: {
