@@ -2,7 +2,8 @@ name: DiAGRAM release to live
 on:
   workflow_dispatch:
   push:
-
+permissions:
+  id-token: write
 run-name: DiAGRAM e2e Tests - dev
 jobs:
   create-environment:
