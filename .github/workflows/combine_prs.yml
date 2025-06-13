@@ -17,5 +17,5 @@ jobs:
         id: combine-prs
         uses: github/combine-prs@v5.2.0
         with:
-          branch_regex: '.*'
+          branch_prefix: 'test'
           ci_required: 'false'
