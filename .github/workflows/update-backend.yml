@@ -25,7 +25,7 @@ jobs:
         with:
           aws-region: eu-west-2
           role-session-name: DiAGRAM_build
-          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_NUMBER }}:role/DiagramPushToECRPolicy
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_NUMBER }}:role/DiagramPushToECRRole
       - name: Login to ECR
         uses: docker/login-action@v3
         with:
