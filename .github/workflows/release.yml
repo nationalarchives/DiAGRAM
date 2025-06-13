@@ -18,7 +18,7 @@ jobs:
           ref: DR2-2287-only-run-diagram-dev-for-testing
       - uses: aws-actions/configure-aws-credentials@v4.1.0
         with:
-          role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_NUMBER }}:role/DiagramTerraformRole
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_NUMBER }}:role/DiagramTerraformRole
           aws-region: eu-west-2
           role-session-name: TerraformRole
       - run: |
@@ -64,7 +64,7 @@ jobs:
           path: terraform
       - uses: aws-actions/configure-aws-credentials@v4.1.0
         with:
-          role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_NUMBER }}:role/DiagramTerraformRole
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_NUMBER }}:role/DiagramTerraformRole
           aws-region: eu-west-2
           role-session-name: TerraformRole
       - run: aws s3 rm --recursive s3://nata-dia3-dev-site
