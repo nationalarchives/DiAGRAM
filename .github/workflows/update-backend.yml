@@ -4,18 +4,17 @@ on:
   push:
     paths:
       - api/**
-      - .github/workflow/update-backend.yml
+      - .github/workflows/update-backend.yml
     branches:
       - live
-      - dev
-      
+
 permissions:
   id-token: write # This is required for requesting the JWT
   
 jobs:
 
   push_to_env_matching_branch:
-    environment: ${{ github.ref_name }}
+    environment: dev
     runs-on: ubuntu-latest
     if: "! contains(toJSON(github.event.commits.*.message), '[ci skip]')"
     steps:
@@ -30,6 +29,13 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: ${{ secrets.MANAGEMENT_ACCOUNT }}.dkr.ecr.eu-west-2.amazonaws.com
+      - name: Download Wiz CLI
+        run: |
+          curl -o wizcli https://wizcli.app.wiz.io/wizcli
+          chmod +x wizcli
+      - name: Authenticate to Wiz API
+        run: |
+          ./wizcli auth --id ${{ secrets.WIZ_CLIENT_ID }} --secret ${{ secrets.WIZ_CLIENT_SECRET }}
       - id: next-tag
         uses: nationalarchives/dr2-github-actions/.github/actions/get-next-version@main
         with:
@@ -41,6 +47,12 @@ jobs:
           context: api/
           push: true
           tags: ${{ secrets.MANAGEMENT_ACCOUNT }}.dkr.ecr.eu-west-2.amazonaws.com/diagram-backend-lambda-runtimes:${{ steps.next-tag.outputs.next-version }}
+      - name: Wiz Docker Scan
+        run: |
+          ./wizcli docker scan --image ${{ secrets.MANAGEMENT_ACCOUNT }}.dkr.ecr.eu-west-2.amazonaws.com/diagram-backend-lambda-runtimes:${{ steps.next-tag.outputs.next-version }} --project ${{ secrets.WIZ_PROJECT_DIAGRAMREPOSITORIES }}
+      - name: Wiz Docker Tag
+        run: |
+          ./wizcli docker tag --image ${{ secrets.MANAGEMENT_ACCOUNT }}.dkr.ecr.eu-west-2.amazonaws.com/diagram-backend-lambda-runtimes:${{ steps.next-tag.outputs.next-version }}
       - name: deploy
         run:
           gh workflow run deploy.yml -f environment=dev -f to-deploy=${{ steps.next-tag.outputs.next-version }}

@@ -1,6 +1,6 @@
 FROM public.ecr.aws/lambda/python:3.8 AS lambda-image
 
-FROM ubuntu:jammy
+FROM ubuntu:noble
 
 ARG R_VERSION=4.3.2
 ARG LAMBDA_TASK_ROOT=/var/task/
@@ -17,14 +17,14 @@ COPY --from=lambda-image /usr/local/bin/aws-lambda-rie /usr/local/bin/aws-lambda
 RUN apt update && apt -y install curl libssl-dev libcurl4-openssl-dev pandoc perl tar gfortran libglpk-dev libxml2-dev libicu-dev libdigest-md5-file-perl
 
 #RUN apt update && apt install -y r-base
-RUN curl -O https://cdn.rstudio.com/r/ubuntu-2204/pkgs/r-${R_VERSION}_1_amd64.deb \
+RUN curl -O https://cdn.rstudio.com/r/ubuntu-2404/pkgs/r-${R_VERSION}_1_amd64.deb \
  && apt-get update \
  && apt-get install -y ./r-${R_VERSION}_1_amd64.deb \
  && ln -s /opt/R/${R_VERSION}/bin/R /usr/local/bin/R \
  && ln -s /opt/R/${R_VERSION}/bin/Rscript /usr/local/bin/Rscript
 
 # Setting repos with dates to freeze packages
-RUN echo "options(repos= c(RSPM = 'https://packagemanager.posit.co/cran/__linux__/jammy/2024-05-02', BioC = 'https://packagemanager.posit.co/bioconductor/__linux__/jammy/2024-05-02'))" >> /opt/R/${R_VERSION}/lib/R/etc/Rprofile.site
+RUN echo "options(repos= c(RSPM = 'https://packagemanager.posit.co/cran/__linux__/noble/2024-05-02', BioC = 'https://packagemanager.posit.co/bioconductor/__linux__/noble/2024-05-02'))" >> /opt/R/${R_VERSION}/lib/R/etc/Rprofile.site
 
 # Install {diagramLambda}
 RUN Rscript -e 'install.packages("remotes", dependencies = TRUE)'
