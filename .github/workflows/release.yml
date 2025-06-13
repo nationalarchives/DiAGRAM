@@ -16,6 +16,9 @@ jobs:
           repository: 'nationalarchives/DiAGRAM-terraform'
           path: terraform
           ref: DR2-2287-only-run-diagram-dev-for-testing
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.12.2
       - uses: aws-actions/configure-aws-credentials@v4.1.0
         with:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_NUMBER }}:role/DiagramTerraformRole
@@ -62,6 +65,9 @@ jobs:
         with:
           repository: 'nationalarchives/DiAGRAM-terraform'
           path: terraform
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.12.2
       - uses: aws-actions/configure-aws-credentials@v4.1.0
         with:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_NUMBER }}:role/DiagramTerraformRole
