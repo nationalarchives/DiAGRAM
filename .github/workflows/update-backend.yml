@@ -2,14 +2,16 @@ name: Update Backend
 
 on: 
   push:
-    paths:
-      - api/**
-      - .github/workflows/update-backend.yml
+#    paths:
+#      - api/**
+#      - .github/workflows/update-backend.yml
     branches:
       - live
+      - DR2-2266-diagram-auto-update
 
 permissions:
   id-token: write # This is required for requesting the JWT
+  contents: write
   
 jobs:
 
@@ -24,7 +26,7 @@ jobs:
         with:
           aws-region: eu-west-2
           role-session-name: DiAGRAM_build
-          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_NUMBER }}:role/Role_Diagram_GitHub_OICD
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_NUMBER }}:role/DiagramPushToECRRole
       - name: Login to ECR
         uses: docker/login-action@v3
         with:
@@ -53,8 +55,17 @@ jobs:
       - name: Wiz Docker Tag
         run: |
           ./wizcli docker tag --image ${{ secrets.MANAGEMENT_ACCOUNT }}.dkr.ecr.eu-west-2.amazonaws.com/diagram-backend-lambda-runtimes:${{ steps.next-tag.outputs.next-version }}
-      - name: deploy
+      - name: Tag dev image
+        run: |
+          docker pull ${{ secrets.MANAGEMENT_ACCOUNT }}.dkr.ecr.eu-west-2.amazonaws.com/diagram-backend-lambda-runtimes:${{ steps.next-tag.outputs.next-version }}
+          docker tag ${{ secrets.MANAGEMENT_ACCOUNT }}.dkr.ecr.eu-west-2.amazonaws.com/diagram-backend-lambda-runtimes:${{ steps.next-tag.outputs.next-version }} ${{ secrets.MANAGEMENT_ACCOUNT }}.dkr.ecr.eu-west-2.amazonaws.com/diagram-backend-lambda-runtimes:dev
+          docker push ${{ secrets.MANAGEMENT_ACCOUNT }}.dkr.ecr.eu-west-2.amazonaws.com/diagram-backend-lambda-runtimes:dev
+          git branch -f release-dev HEAD
+          git push -f origin release-dev
+          git tag ${{ steps.next-tag.outputs.next-version }}
+          git push origin ${{ steps.next-tag.outputs.next-version }}
+      - name: release
         run:
-          gh workflow run deploy.yml -f environment=dev -f to-deploy=${{ steps.next-tag.outputs.next-version }}
+          gh workflow run release.yml --ref DR2-2266-diagram-auto-update
         env:
           GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
