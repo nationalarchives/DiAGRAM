@@ -19,7 +19,7 @@ on:
 run-name: Deploying DiAGRAM ${{inputs.to-deploy}} to ${{inputs.environment}}
 jobs:
   deploy:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.environment }}
     steps:
       - name: Checkout
@@ -27,7 +27,7 @@ jobs:
       - name: Configure AWS credentials for ECR
         uses: aws-actions/configure-aws-credentials@v4.0.2
         with:
-          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_NUMBER }}:role/Role_Diagram_GitHub_OICD
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_NUMBER }}:role/DiagramPushToECRPolicy
           aws-region: eu-west-2
           role-session-name: ECRLogin
       - name: Login to ECR
@@ -47,19 +47,8 @@ jobs:
           MANAGEMENT_ACCOUNT_NUMBER: ${{ secrets.MANAGEMENT_ACCOUNT }}
           DOCKER_TAG: ${{ github.event.inputs.to-deploy }}
           ENVIRONMENT_TAG: ${{ github.event.inputs.environment }}
-
-      - name: Update Lambda to use the latest image push
-        run: |
-          aws lambda update-function-code --function-name ${{ secrets.LAMBDA_NAME }} --image-uri ${{ secrets.MANAGEMENT_ACCOUNT }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO_NAME }}:${{ github.event.inputs.environment }}
-          aws lambda wait function-updated --function-name ${{ secrets.LAMBDA_NAME }}
-      - name: Send success message
-        uses: nationalarchives/tdr-github-actions/.github/actions/slack-send@main
-        with:
-          message: "*DiAGRAM* :whale: The '${{ github.event.inputs.to-deploy }}' image has been tagged with '${{ github.event.inputs.environment }}' in ECR"
-          slack-url: ${{ secrets.SLACK_WEBHOOK }}
-      - name: Send failure message
-        uses: nationalarchives/dr2-github-actions/.github/actions/slack-send@main
-        if: failure()
-        with:
-          message: ":warning: Build failed for DiAGRAM <https://github.com/nationalarchives/DiAGRAM/actions/runs/${{ github.run_id }}|View the failed workflow>"
-          slack-url: ${{ secrets.SLACK_WEBHOOK }}
+      - name: deploy
+        run:
+          gh workflow run test.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
