@@ -69,3 +69,4 @@ commercially, please contact Warwick Ventures ("WV"), the technology transfer
 company of the University, to negotiate a licence. Contact details are:
 ventures@warwick.ac.uk quoting reference Warwick DiAGRAM. If you are in any
 doubt if your use constitutes commercial use, contact WV.
+
