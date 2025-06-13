@@ -66,6 +66,6 @@ jobs:
           git push origin ${{ steps.next-tag.outputs.next-version }}
       - name: release
         run:
-          gh workflow run release.yml -ref DR2-2266-diagram-auto-update
+          gh workflow run release.yml --ref DR2-2266-diagram-auto-update
         env:
           GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
