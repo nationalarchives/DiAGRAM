@@ -101,3 +101,4 @@ jobs:
           terraform init
           terraform workspace select live
           terraform apply --target module.site -auto-approve
+        working-directory: terraform
