@@ -7,14 +7,12 @@ on:
 #      - .github/workflows/update-backend.yml
     branches:
       - live
-      - DR2-2266-diagram-auto-update
 
 permissions:
   id-token: write # This is required for requesting the JWT
   contents: write
   
 jobs:
-
   push_to_env_matching_branch:
     environment: dev
     runs-on: ubuntu-latest
@@ -66,6 +64,6 @@ jobs:
           git push origin ${{ steps.next-tag.outputs.next-version }}
       - name: release
         run:
-          gh workflow run release.yml --ref DR2-2266-diagram-auto-update
+          gh workflow run release.yml
         env:
           GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}

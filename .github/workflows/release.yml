@@ -14,7 +14,6 @@ jobs:
         with:
           repository: 'nationalarchives/DiAGRAM-terraform'
           path: terraform
-          ref: DR2-2287-only-run-diagram-dev-for-testing
       - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.12.2
@@ -62,7 +61,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: DR2-2287-only-run-diagram-dev-for-testing
           repository: 'nationalarchives/DiAGRAM-terraform'
           path: terraform
       - uses: hashicorp/setup-terraform@v3
@@ -88,7 +86,6 @@ jobs:
         with:
           repository: 'nationalarchives/DiAGRAM-terraform'
           path: terraform
-          ref: DR2-2287-only-run-diagram-dev-for-testing
       - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.12.2
