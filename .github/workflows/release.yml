@@ -1,0 +1,108 @@
+name: DiAGRAM release to live
+on:
+  workflow_dispatch:
+permissions:
+  id-token: write
+run-name: DiAGRAM e2e Tests - dev
+jobs:
+  create-environment:
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: 'nationalarchives/DiAGRAM-terraform'
+          path: terraform
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.12.2
+      - uses: aws-actions/configure-aws-credentials@v4.1.0
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_NUMBER }}:role/DiagramTerraformRole
+          aws-region: eu-west-2
+          role-session-name: TerraformRole
+      - run: |
+          terraform init
+          terraform workspace select dev
+          terraform apply --target module.site -auto-approve
+        working-directory: terraform
+      - run: |
+          npm ci
+          npm run build
+        working-directory: app
+      - run: aws s3 sync ./app/dist s3://nata-dia3-dev-site/ --delete
+  run-cypress-e2e-tests:
+    runs-on: ubuntu-latest
+    needs: create-environment
+    environment: dev
+    steps:
+      - name: Checkout and run e2e tests
+        uses: actions/checkout@v4
+
+      - run: npm --prefix tests cit
+
+      - name: Send success message
+        uses: nationalarchives/dr2-github-actions/.github/actions/slack-send@main
+        with:
+          message: "*DiAGRAM* The e2e tests for environment: 'dev' finished successfully"
+          slack-url: ${{ secrets.SLACK_WEBHOOK }}
+
+      - name: Send failure message
+        uses: nationalarchives/dr2-github-actions/.github/actions/slack-send@main
+        if: failure()
+        with:
+          message: ":warning: e2e tests failed for DiAGRAM for environment: 'dev'"
+          slack-url: ${{ secrets.SLACK_WEBHOOK }}
+  destroy-environment:
+    runs-on: ubuntu-latest
+    needs: run-cypress-e2e-tests
+    environment: dev
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: 'nationalarchives/DiAGRAM-terraform'
+          path: terraform
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.12.2
+      - uses: aws-actions/configure-aws-credentials@v4.1.0
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_NUMBER }}:role/DiagramTerraformRole
+          aws-region: eu-west-2
+          role-session-name: TerraformRole
+      - run: aws s3 rm --recursive s3://nata-dia3-dev-site
+      - run: |
+          terraform init
+          terraform workspace select dev
+          terraform destroy --target module.site -auto-approve
+        working-directory: terraform
+  deploy-to-live:
+    runs-on: ubuntu-latest
+    needs: destroy-environment
+    environment: live
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: 'nationalarchives/DiAGRAM-terraform'
+          path: terraform
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.12.2
+      - uses: aws-actions/configure-aws-credentials@v4.1.0
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_NUMBER }}:role/DiagramTerraformRole
+          aws-region: eu-west-2
+          role-session-name: TerraformRole
+      - name: Login to ECR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.MANAGEMENT_ACCOUNT }}.dkr.ecr.eu-west-2.amazonaws.com
+      - run: |
+          docker pull ${{ secrets.MANAGEMENT_ACCOUNT }}.dkr.ecr.eu-west-2.amazonaws.com/diagram-backend-lambda-runtimes:dev
+          docker tag ${{ secrets.MANAGEMENT_ACCOUNT }}.dkr.ecr.eu-west-2.amazonaws.com/diagram-backend-lambda-runtimes:dev ${{ secrets.MANAGEMENT_ACCOUNT }}.dkr.ecr.eu-west-2.amazonaws.com/diagram-backend-lambda-runtimes:prod
+          docker push ${{ secrets.MANAGEMENT_ACCOUNT }}.dkr.ecr.eu-west-2.amazonaws.com/diagram-backend-lambda-runtimes:prod
+          terraform init
+          terraform workspace select live
+          terraform apply --target module.site -auto-approve
+        working-directory: terraform

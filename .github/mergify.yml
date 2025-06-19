@@ -1,0 +1,14 @@
+pull_request_rules:
+  - name: Automatic PR merging for DiAGRAM
+    conditions:
+      - "head=combined-prs-branch"
+      - "check-success=Wiz Data Scanner"
+      - "check-success=Wiz IaC Scanner"
+      - "check-success=Wiz Secret Scanner"
+      - "check-success=Wiz Vulnerability Scanner"
+    actions:
+      review:
+        type: APPROVE
+        message: Automatically approving and merging DiAGRAM PRs
+      queue:
+        name: default

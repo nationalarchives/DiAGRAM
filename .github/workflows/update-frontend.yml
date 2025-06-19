@@ -5,40 +5,15 @@ on:
     paths:
       - app/**
       - .github/workflow/update-frontend.yml
-    branches:
-      - live
-      - stage
-      - dev
-      
-permissions:
-  id-token: write # This is required for requesting the JWT
-  
 jobs:
-
   update_site_env_matching_branch:
     environment: ${{ github.ref_name }}
     runs-on: ubuntu-latest
     if: "! contains(toJSON(github.event.commits.*.message), '[ci skip]')"
-
     steps:
       - uses: actions/checkout@v4
-
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_NUMBER }}:role/Role_Diagram_GitHub_OICD
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      - name: Install node dependencies
-        working-directory: ./app
-        run: npm ci
-
-      - name: Build static site 
-        working-directory: ./app
-        run: npm run build
-
-      - name: Update static site hosted in S3
-        run: aws s3 sync ./app/dist s3://${{ secrets.BUCKET_NAME }}/ --delete
+      - name: run-release-process
+        run:
+          gh workflow run release.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
