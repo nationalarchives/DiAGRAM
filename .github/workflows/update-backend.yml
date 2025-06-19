@@ -2,9 +2,9 @@ name: Update Backend
 
 on: 
   push:
-#    paths:
-#      - api/**
-#      - .github/workflows/update-backend.yml
+    paths:
+      - api/**
+      - .github/workflows/update-backend.yml
     branches:
       - live
 

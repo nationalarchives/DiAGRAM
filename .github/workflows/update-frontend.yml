@@ -12,7 +12,7 @@ jobs:
     if: "! contains(toJSON(github.event.commits.*.message), '[ci skip]')"
     steps:
       - uses: actions/checkout@v4
-      - name: deploy
+      - name: run-release-process
         run:
           gh workflow run release.yml
         env:
