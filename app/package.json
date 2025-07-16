@@ -7,7 +7,7 @@
     "@parcel/transformer-webmanifest": "^2.15.4",
     "eslint": "^9.31.0",
     "husky": "^8.0.1",
-    "parcel": "^2.0.0",
+    "parcel": "^2.15.4",
     "posthtml-include": "^2.0.1"
   },
   "scripts": {
