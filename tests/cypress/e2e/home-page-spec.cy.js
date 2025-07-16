@@ -66,7 +66,7 @@ describe('DiAGRAM home page spec', () => {
   it('View results page should display the correct details', () => {
     cy.contains('View results').click({force: true})
     cy.get('.box-body h2').then($headers => {
-      expect($headers[0]).to.contain.text('View Results');
+      expect($headers[0]).to.contain.text('View results');
     });
     cy.get('.box-body h3').then($headers => {
       expect($headers[0]).to.contain.text('Select the models and scenarios to visualise');
@@ -90,7 +90,7 @@ describe('DiAGRAM home page spec', () => {
   it('Using the reference models page should display the correct details', () => {
     cy.contains('Using the reference models').click({force: true})
     cy.get('.box-body h2').then($headers => {
-      expect($headers[0]).to.contain.text('Using the Reference Models');
+      expect($headers[0]).to.contain.text('Using the reference models');
     });
     cy.get('.box-body h3').then($headers => {
       expect($headers[0]).to.contain.text('How can I use these?');
@@ -107,7 +107,7 @@ describe('DiAGRAM home page spec', () => {
   it('Advanced customisation page should display the correct details', () => {
     cy.contains('Advanced customisation').click({force: true})
     cy.get('.box-body h2').then($headers => {
-      expect($headers[0]).to.contain.text('Advanced Customisation');
+      expect($headers[0]).to.contain.text('Advanced customisation');
     });
   })
 
