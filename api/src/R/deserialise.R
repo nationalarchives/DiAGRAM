@@ -19,6 +19,6 @@ gateway_payload_to_rook = function(event_content) {
   req$HTTP_CONTENT_TYPE = "application/json"
   req$postBody = body
   # Extract route, removing a trailing slash is there is one
-  req$route = sub("/$", "", parsed_event$pathParameters$proxy)
+  req$route = sub("/$", "", sub("^/api/", "", parsed_event$path))
   req
 }
