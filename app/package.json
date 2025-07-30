@@ -5,7 +5,7 @@
   "devDependencies": {
     "@parcel/packager-raw-url": "^2.15.4",
     "@parcel/transformer-webmanifest": "^2.15.4",
-    "eslint": "^9.31.0",
+    "eslint": "^9.32.0",
     "husky": "^9.1.7",
     "parcel": "^2.15.4",
     "posthtml-include": "^2.0.1"
