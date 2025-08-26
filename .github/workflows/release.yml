@@ -9,8 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: dev
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
+      - uses: actions/checkout@v5
         with:
           repository: 'nationalarchives/DiAGRAM-terraform'
           path: terraform
@@ -38,7 +38,7 @@ jobs:
     environment: dev
     steps:
       - name: Checkout and run e2e tests
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Wait for domain to be available
         run: while ! curl -s -o /dev/null -w "%{http_code}" https://dev-diagram.nationalarchives.gov.uk | grep -q "^200$"; do sleep 60; done
       - run: npm --prefix tests cit
@@ -60,7 +60,7 @@ jobs:
     needs: run-cypress-e2e-tests
     environment: dev
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           repository: 'nationalarchives/DiAGRAM-terraform'
           path: terraform
@@ -83,7 +83,7 @@ jobs:
     needs: destroy-environment
     environment: live
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           repository: 'nationalarchives/DiAGRAM-terraform'
           path: terraform
