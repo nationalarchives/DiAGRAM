@@ -1,4 +1,4 @@
-FROM public.ecr.aws/lambda/python:3.8 AS lambda-image
+FROM public.ecr.aws/lambda/provided AS lambda-image
 
 FROM ubuntu:noble
 
