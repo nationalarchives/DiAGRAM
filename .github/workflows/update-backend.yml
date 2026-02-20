@@ -48,9 +48,9 @@ jobs:
         with:
           context: api/
           push: true
-          load: true
+          platforms: linux/amd64
           sbom: false
-          provenance: true
+          provenance: false
           tags: ${{ secrets.MANAGEMENT_ACCOUNT }}.dkr.ecr.eu-west-2.amazonaws.com/diagram-backend-lambda-runtimes:${{ steps.next-tag.outputs.next-version }}
       - name: Wiz Docker Scan
         run: |
