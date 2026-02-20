@@ -7,6 +7,7 @@ on:
       - .github/workflows/update-backend.yml
     branches:
       - live
+      - fix-for-wiz-cli-scan
 
 permissions:
   id-token: write # This is required for requesting the JWT
@@ -47,8 +48,7 @@ jobs:
         with:
           context: api/
           push: true
-          load: true
-          sbom: false
+          sbom: true
           provenance: false
           tags: ${{ secrets.MANAGEMENT_ACCOUNT }}.dkr.ecr.eu-west-2.amazonaws.com/diagram-backend-lambda-runtimes:${{ steps.next-tag.outputs.next-version }}
       - name: Wiz Docker Scan
@@ -66,8 +66,8 @@ jobs:
           git push -f origin release-dev
           git tag ${{ steps.next-tag.outputs.next-version }}
           git push origin ${{ steps.next-tag.outputs.next-version }}
-      - name: release
-        run:
-          gh workflow run release.yml
-        env:
-          GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
+#      - name: release
+#        run:
+#          gh workflow run release.yml
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
