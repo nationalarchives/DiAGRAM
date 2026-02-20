@@ -48,6 +48,7 @@ jobs:
         with:
           context: api/
           push: true
+          load: true
           platforms: linux/amd64
           sbom: false
           provenance: false
