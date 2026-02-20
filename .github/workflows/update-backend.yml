@@ -67,8 +67,8 @@ jobs:
           git push -f origin release-dev
           git tag ${{ steps.next-tag.outputs.next-version }}
           git push origin ${{ steps.next-tag.outputs.next-version }}
-#      - name: release
-#        run:
-#          gh workflow run release.yml
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
+      - name: release
+        run:
+          echo ""
+        env:
+          GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
