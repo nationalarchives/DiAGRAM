@@ -47,14 +47,14 @@ jobs:
         uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 #v6.19.2
         with:
           context: api/
-          push: true
           platforms: linux/amd64
+          push: true
           sbom: false
           provenance: false
           tags: ${{ secrets.MANAGEMENT_ACCOUNT }}.dkr.ecr.eu-west-2.amazonaws.com/diagram-backend-lambda-runtimes:${{ steps.next-tag.outputs.next-version }}
       - name: Wiz Docker Scan
         run: |
-          docker push ${{ secrets.MANAGEMENT_ACCOUNT }}.dkr.ecr.eu-west-2.amazonaws.com/diagram-backend-lambda-runtimes:${{ steps.next-tag.outputs.next-version }}
+          docker pull ${{ secrets.MANAGEMENT_ACCOUNT }}.dkr.ecr.eu-west-2.amazonaws.com/diagram-backend-lambda-runtimes:${{ steps.next-tag.outputs.next-version }}
           ./wizcli docker scan --image ${{ secrets.MANAGEMENT_ACCOUNT }}.dkr.ecr.eu-west-2.amazonaws.com/diagram-backend-lambda-runtimes:${{ steps.next-tag.outputs.next-version }} --project ${{ secrets.WIZ_PROJECT_DIAGRAMREPOSITORIES }}
       - name: Wiz Docker Tag
         run: |
