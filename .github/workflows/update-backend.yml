@@ -46,6 +46,14 @@ jobs:
         id: docker_build
         run: |
           docker buildx build --platform linux/amd64 --attest type=provenance,disabled=true --attest type=sbom,disabled=true --tag ${{ secrets.MANAGEMENT_ACCOUNT }}.dkr.ecr.eu-west-2.amazonaws.com/diagram-backend-lambda-runtimes:v1.0.22 api/
+        with:
+          context: api/
+          platforms: linux/amd64
+          push: true
+          load: true
+          sbom: false
+          provenance: false
+          tags: ${{ secrets.MANAGEMENT_ACCOUNT }}.dkr.ecr.eu-west-2.amazonaws.com/diagram-backend-lambda-runtimes:${{ steps.next-tag.outputs.next-version }}
       - name: Wiz Docker Scan
         run: |
           docker images
