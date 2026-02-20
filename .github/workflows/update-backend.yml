@@ -44,14 +44,8 @@ jobs:
       - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f #v3.12.0
       - name: Build docker image and push to ECR
         id: docker_build
-        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 #v6.19.2
-        with:
-          context: api/
-          platforms: linux/amd64
-          push: true
-          sbom: false
-          provenance: false
-          tags: ${{ secrets.MANAGEMENT_ACCOUNT }}.dkr.ecr.eu-west-2.amazonaws.com/diagram-backend-lambda-runtimes:${{ steps.next-tag.outputs.next-version }}
+        run: |
+          docker buildx build --platform linux/amd64 --attest type=provenance,disabled=true --attest type=sbom,disabled=true --tag ${{ secrets.MANAGEMENT_ACCOUNT }}.dkr.ecr.eu-west-2.amazonaws.com/diagram-backend-lambda-runtimes:v1.0.22 api/
       - name: Wiz Docker Scan
         run: |
           docker images
