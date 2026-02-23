@@ -90,11 +90,11 @@ jobs:
 #      - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd #v3.1.2
 #        with:
 #          terraform_version: 1.12.2
-#      - uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7 #v6.0.0
-#        with:
-#          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_NUMBER }}:role/DiagramTerraformRole
-#          aws-region: eu-west-2
-#          role-session-name: TerraformRole
+      - uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7 #v6.0.0
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_NUMBER }}:role/DiagramTerraformRole
+          aws-region: eu-west-2
+          role-session-name: TerraformRole
 #      - name: Login to ECR
 #        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 #v3.7.0
 #        with:
@@ -108,11 +108,9 @@ jobs:
 #          terraform apply --target module.site -auto-approve
           pip install boto3
         working-directory: terraform
-      - run: | 
-          import boto3
-          client = boto3.client("lambda")
-          response = client.update_function_code(
-            FunctionName='diagram-backend',
-            ImageUri='${{ secrets.MANAGEMENT_ACCOUNT }}.dkr.ecr.eu-west-2.amazonaws.com/diagram-backend-lambda-runtimes:live'
-          )
-        shell: python
+      - name: Deploy Lambda function with container image
+        uses: aws-actions/aws-lambda-deploy@29ea35c124579506cf0475e20df36198eb670d89 #v1.1.0
+        with:
+          function-name: diagram-backend
+          package-type: Image
+          image-uri: ${{ secrets.MANAGEMENT_ACCOUNT }}.dkr.ecr.eu-west-2.amazonaws.com/diagram-backend-lambda-runtimes:live
