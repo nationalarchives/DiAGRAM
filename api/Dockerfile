@@ -14,7 +14,7 @@ WORKDIR /var/task
 COPY --from=lambda-image /var/runtime /var/runtime
 COPY --from=lambda-image /usr/local/bin/aws-lambda-rie /usr/local/bin/aws-lambda-rie
 
-RUN apt update && apt -y install curl libssl-dev libcurl4-openssl-dev pandoc perl tar gfortran libglpk-dev libxml2-dev libicu-dev libdigest-md5-file-perl
+RUN apt update && apt -y install curl libssl-dev libcurl4-openssl-dev pandoc perl tar gfortran libglpk-dev libxml2-dev libicu-dev libdigest-md5-file-perl xz-utils
 
 #RUN apt update && apt install -y r-base
 RUN curl -O https://cdn.rstudio.com/r/ubuntu-2404/pkgs/r-${R_VERSION}_1_amd64.deb \
