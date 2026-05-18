@@ -94,7 +94,7 @@ jobs:
           terraform workspace select live
           terraform apply --target module.site -auto-approve
         working-directory: terraform
-      - uses: aws-actions/aws-lambda-deploy@20039225425cbacb648cf1ffe08cc221f19b65a0 #v1.1.1
+      - uses: aws-actions/aws-lambda-deploy@d496277188b89f0be02d7a2216fc912c0427702a #v1.1.2
         with:
           function-name: diagram-backend
           package-type: Image
