@@ -30,3 +30,6 @@
 *.synctex.gz
 *.synctex.gz(busy)
 *.pdfsync
+
+node_modules
+dist

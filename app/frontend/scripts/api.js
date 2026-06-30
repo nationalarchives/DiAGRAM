@@ -4,12 +4,14 @@
 	var siteUrls = [
 		'https://diagram.nationalarchives.gov.uk',
 		'https://dev-diagram.nationalarchives.gov.uk',
-		'https://staging-diagram.nationalarchives.gov.uk'
+		'https://staging-diagram.nationalarchives.gov.uk',
 	];
 
 	var defaultUrl = siteUrls[0];
 
-	var BASEURL = (siteUrls[siteUrls.indexOf(window.location.origin)] || defaultUrl) + '/api/';
+	var BASEURL = siteUrls.includes(window.location.origin)
+		? window.location.origin + '/api/'
+		: '/api/';
 	var SCOREURL = BASEURL + 'model/score';
 	var VALIDATEURL = BASEURL + 'validation/validate_json';
 	var PDFURL = BASEURL + 'report/pdf';

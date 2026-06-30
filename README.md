@@ -70,7 +70,7 @@ flowchart TD
 - AWS Shield: DDoS protection for Route53 and CloudFront
 
 **Application Code:**
-- Backend: R in a Lambda container image (supports R Markdown and LaTeX for report generation)
+- Backend: Python in a Lambda
 - Frontend: Static HTML/JS
 
 ### How does the DNS work?

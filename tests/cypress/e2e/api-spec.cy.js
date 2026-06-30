@@ -63,7 +63,7 @@ describe('DiAGRAM API spec', () => {
                 expect(response.status).to.eq(200);
                 expect(response.body).to.include('name,scenario,notes,topic,question,part,response,intellectual_control,renderability');
                 expect(response.body).to.include('my_model,Base Model,,Digital Object,What proportion of your digital archive are the following?,Born Digital (Records were created in a digital format),0,0,45')
-                expect(response.body.trim().split('\n').length).to.eq(52);
+                expect(response.body.trim().split('\n').length).to.eq(53);
             });
         });
     });
