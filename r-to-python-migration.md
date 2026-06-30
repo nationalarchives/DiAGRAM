@@ -23,7 +23,7 @@ The Python rewrite addresses both problems. Python is a first-class Lambda runti
 | Bayesian network (inference) | `{bnlearn}` / `{gRain}` | Custom `bn_inference.py` | Dict-based factor arithmetic; no numpy/scipy required |
 | PDF generation | R Markdown + TinyTeX (LaTeX) | `reportlab` | Eliminates the ~500 MB LaTeX dependency |
 | Chart generation | `{ggplot2}` | `Pillow` | Image drawing with PIL; already needed by reportlab |
-| JSON validation | `{jsonvalidate}` | `jsonschema` (stdlib-compatible) | Standard Python approach |
+| JSON validation | `{jsonvalidate}` | Custom `validate.py` | Hand-rolled validator; no external library required |
 | HTTP routing | `diagramLambda::handler()` | `lambda_function.handler` | Simple path-based routing in plain Python |
 
 ### Dependencies: before and after
@@ -65,8 +65,8 @@ lambda_function.handler(event, context)
     ├── /api/model/score         → model.score_model_()
     ├── /api/chart/plot          → plot.render_chart_to_bytes()
     ├── /api/report/pdf          → pdf_report.generate_pdf()
-    ├── /api/report/csv          → csv_report.generate_csv()
-    └── /api/validation/validate_json → validate.validate_json()
+    ├── /api/report/csv          → csv_report.build_csv()
+    └── /api/validation/validate_json → validate.validate()
 ```
 
 The model is loaded once at module-load time (Lambda cold start) and reused across warm invocations.
@@ -82,7 +82,7 @@ The model is loaded once at module-load time (Lambda cold start) and reused acro
 | `to_probability.py` | Convert numerics to `Factor` objects for CPD replacement |
 | `nodes.py` | Node name constants, user-editable node list, state-name map |
 | `responses.py` | Parse API request bodies (simple and advanced model formats) |
-| `validate.py` | JSON schema validation |
+| `validate.py` | Custom request validation (no external library) |
 | `plot.py` | Horizontal bar chart generation (Pillow) |
 | `pdf_report.py` | PDF generation (reportlab, no LaTeX) |
 | `csv_report.py` | CSV report generation |

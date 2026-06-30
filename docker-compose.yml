@@ -19,7 +19,7 @@ services:
       - "8080:8080"
     healthcheck:
       test: ["CMD", "python", "-c",
-             "import urllib.request; urllib.request.urlopen('http://localhost:8080/api/test/is_alive')"]
+             "import urllib.request; urllib.request.urlopen('http://localhost:8080/api/test/is_alive', timeout=3)"]
       interval: 10s
       timeout: 5s
       retries: 5

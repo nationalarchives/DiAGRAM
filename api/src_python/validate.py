@@ -2,7 +2,7 @@
 Validate incoming JSON data against the expected DiAGRAM schema.
 """
 
-from nodes import USER_NODES, REVERSE_NODE_MAP, REVERSE_USER_NODE_MAP
+from nodes import REVERSE_NODE_MAP, REVERSE_USER_NODE_MAP
 
 _REQUIRED_KEYS = {
     "model_name", "scenario", "notes",

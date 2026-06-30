@@ -9,7 +9,7 @@ Graphical Risk Assessment Model) application.
 |---|---|---|
 | PDF generation | LaTeX / TinyTeX (≈500 MB) | reportlab (pure Python, ≈10 MB) |
 | Runtime | Custom R Lambda bootstrap | Standard AWS Python Lambda base image |
-| Cold-start | Slow (R + package load) | Faster (Python + pgmpy) |
+| Cold-start | Slow (R + package load) | Faster (Python + pure-Python BN engine) |
 | Package size | Exceeds standard Lambda limit; requires Docker | Fits in a standard Docker Lambda |
 
 ## Routes
@@ -68,12 +68,10 @@ base64-encoded body, which API Gateway will decode automatically.
 All dependencies are pure Python or have pre-compiled wheels — **no LaTeX,
 no system R, no pandoc required**.
 
-- **pgmpy** – Bayesian network inference (replaces bnlearn + gRain)
-- **matplotlib** – chart generation (replaces ggplot2)
 - **reportlab** – PDF generation (replaces rmarkdown + LaTeX)
-- **Pillow** – image processing
+- **Pillow** – chart generation and image processing (replaces ggplot2)
 - **PyYAML** – configuration files
-- **pandas / numpy / scipy / networkx** – supporting libraries for pgmpy
+- **bn_inference.py** – pure-Python Bayesian network engine (replaces bnlearn + gRain; no external library)
 
 ## Project structure
 
@@ -83,10 +81,10 @@ src_python/
 ├── model.py             # Bayesian-network loading, CPD modification, inference
 ├── nodes.py             # Node name constants
 ├── to_numeric.py        # User responses → numeric values
-├── to_probability.py    # Numeric values → pgmpy TabularCPDs
+├── to_probability.py    # Numeric values → Factor objects for CPD replacement
 ├── responses.py         # JSON request body parsing
-├── validate.py          # JSON schema validation
-├── plot.py              # Bar-chart generation (matplotlib)
+├── validate.py          # Custom request validation
+├── plot.py              # Bar-chart generation (Pillow)
 ├── pdf_report.py        # PDF report generation (reportlab)
 ├── csv_report.py        # CSV report generation
 ├── requirements.txt
