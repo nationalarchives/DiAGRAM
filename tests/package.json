@@ -1,6 +1,6 @@
 {
   "devDependencies": {
-    "cypress": "^15.18.0"
+    "cypress": "^15.18.1"
   },
   "scripts": {
     "test": "cypress run --browser chrome --headless --e2e --spec 'cypress/e2e/**/*.cy.js'"
