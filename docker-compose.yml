@@ -1,0 +1,35 @@
+# DiAGRAM – local development compose file
+#
+# Runs the frontend and Python API together.
+# Open http://localhost in your browser once both services are healthy.
+#
+# Usage:
+#   docker compose up --build
+#   docker compose down
+
+services:
+
+  api:
+    build:
+      context: api/src_python
+      dockerfile: Dockerfile.local
+    # Expose port 8080 for direct API testing if needed, e.g.:
+    #   curl -X POST http://localhost:8080/api/test/is_alive
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "python", "-c",
+             "import urllib.request; urllib.request.urlopen('http://localhost:8080/api/test/is_alive', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  frontend:
+    build:
+      context: app
+    ports:
+      - "3000:80"
+    depends_on:
+      api:
+        condition: service_healthy

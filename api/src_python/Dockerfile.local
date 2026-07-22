@@ -1,0 +1,20 @@
+# DiAGRAM Python API – local development image
+#
+# Used by docker-compose.yml for local development.
+# Runs a plain HTTP server wrapping the Lambda handler directly
+# (no Lambda RIE needed).
+#
+# For Lambda deployment use the main Dockerfile instead.
+
+FROM python:3.12-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY *.py .
+COPY assets/ ./assets/
+
+EXPOSE 8080
+CMD ["python", "local_server.py"]
