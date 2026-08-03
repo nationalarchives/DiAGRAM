@@ -9,6 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     environment: dev
     steps:
+      - name: Provision runner
+        uses: nationalarchives/org-actions-provision-runner@5657f48ecd0fd31bfe857919149f1fdc690d53ed # v1.0.1
+        with:
+          wiz-sensor-token: ${{ secrets.WIZ_SENSOR_TOKEN }}
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
         with:
@@ -37,6 +41,10 @@ jobs:
     needs: create-environment
     environment: dev
     steps:
+      - name: Provision runner
+        uses: nationalarchives/org-actions-provision-runner@5657f48ecd0fd31bfe857919149f1fdc690d53ed # v1.0.1
+        with:
+          wiz-sensor-token: ${{ secrets.WIZ_SENSOR_TOKEN }}
       - name: Checkout and run e2e tests
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
       - name: Wait for domain to be available
@@ -47,6 +55,10 @@ jobs:
     needs: run-cypress-e2e-tests
     environment: dev
     steps:
+      - name: Provision runner
+        uses: nationalarchives/org-actions-provision-runner@5657f48ecd0fd31bfe857919149f1fdc690d53ed # v1.0.1
+        with:
+          wiz-sensor-token: ${{ secrets.WIZ_SENSOR_TOKEN }}
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
         with:
           repository: 'nationalarchives/DiAGRAM-terraform'
@@ -70,6 +82,10 @@ jobs:
     needs: destroy-environment
     environment: live
     steps:
+      - name: Provision runner
+        uses: nationalarchives/org-actions-provision-runner@5657f48ecd0fd31bfe857919149f1fdc690d53ed # v1.0.1
+        with:
+          wiz-sensor-token: ${{ secrets.WIZ_SENSOR_TOKEN }}
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
         with:
           repository: 'nationalarchives/DiAGRAM-terraform'
