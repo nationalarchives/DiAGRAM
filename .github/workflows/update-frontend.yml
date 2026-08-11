@@ -6,13 +6,17 @@ on:
       - live
     paths:
       - app/**
-      - .github/workflow/update-frontend.yml
+      - .github/workflows/update-frontend.yml
 jobs:
   update_site_env_matching_branch:
     environment: ${{ github.ref_name }}
     runs-on: ubuntu-latest
     if: "! contains(toJSON(github.event.commits.*.message), '[ci skip]')"
     steps:
+      - name: Provision runner
+        uses: nationalarchives/org-actions-provision-runner@5657f48ecd0fd31bfe857919149f1fdc690d53ed # v1.0.1
+        with:
+          wiz-sensor-token: ${{ secrets.WIZ_SENSOR_TOKEN }}
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
       - name: run-release-process
         run:
