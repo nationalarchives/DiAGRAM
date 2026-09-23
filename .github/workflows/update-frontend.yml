@@ -9,6 +9,8 @@ on:
       - .github/workflows/update-frontend.yml
 jobs:
   update_site_env_matching_branch:
+    permissions:
+      actions: write
     environment: ${{ github.ref_name }}
     runs-on: ubuntu-latest
     if: "! contains(toJSON(github.event.commits.*.message), '[ci skip]')"
@@ -22,4 +24,4 @@ jobs:
         run:
           gh workflow run release.yml
         env:
-          GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
+          GH_TOKEN: ${{ github.token }}

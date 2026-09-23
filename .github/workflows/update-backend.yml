@@ -8,12 +8,12 @@ on:
     branches:
       - live
 
-permissions:
-  id-token: write # This is required for requesting the JWT
-  contents: write
-
 jobs:
   push_to_env_matching_branch:
+    permissions:
+      id-token: write
+      contents: write
+      actions: write
     environment: dev
     runs-on: ubuntu-latest
     if: "! contains(toJSON(github.event.commits.*.message), '[ci skip]')"
@@ -82,4 +82,4 @@ jobs:
       - name: release
         run: gh workflow run release.yml
         env:
-          GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
