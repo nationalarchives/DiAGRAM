@@ -1,6 +1,6 @@
-FROM public.ecr.aws/lambda/provided AS lambda-image
+FROM --platform=linux/amd64 public.ecr.aws/lambda/provided AS lambda-image
 
-FROM ubuntu:noble
+FROM --platform=linux/amd64 ubuntu:noble
 
 ARG R_VERSION=4.3.2
 ARG LAMBDA_TASK_ROOT=/var/task/
@@ -32,7 +32,8 @@ COPY src /diagramLambda/
 RUN Rscript -e 'remotes::install_local("/diagramLambda/", dependencies = TRUE)'
 
 # Install TinyTeX with {tinytex}
-RUN Rscript -e 'tinytex::install_tinytex(force = TRUE, dir = "/opt/TinyTeX")'
+RUN Rscript -e 'install.packages("tinytex", repos = "https://cloud.r-project.org")' \
+    && Rscript -e 'tinytex::install_tinytex(force = TRUE, dir = "/opt/TinyTeX")'
 # Make sure the TinyTeX install can be found
 ENV PATH="/opt/TinyTeX/bin/x86_64-linux:${PATH}"
 # Install required LaTeX packages
@@ -47,7 +48,7 @@ tinytex::tlmgr_install( \
 )'
 
 # (https://github.com/mdneuzerling/diamonds-via-lambda/blob/main/Dockerfile)
-ENV HOME $LAMBDA_TASK_ROOT
+ENV HOME=$LAMBDA_TASK_ROOT
 
 # Copy the bootstrap file from package into image
 RUN Rscript -e '\
