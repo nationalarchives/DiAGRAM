@@ -37,8 +37,20 @@
 \usepackage{etoolbox}
 
 % Tables
-\usepackage{longtable}[=v4.13]
-\usepackage{tabu,booktabs,cellspace,makecell}
+% `tabu`/`longtabu` is unmaintained and hangs (infinite loop) with `longtable`
+% v4.14+, which ships in current TeX Live. `xltabular` (the maintained
+% `longtable`+`tabularx` combination) does not work either: `tabularx`-based
+% packages measure `X` column widths by typesetting content in a box, which
+% is incompatible with `booktabs` rules (`\midrule` etc use `\noalign`, which
+% is invalid inside a box). Instead, tables use plain `longtable` with
+% explicit fixed-width `p{}` columns computed to fill the page (see
+% `stretch_longtable_columns()` in pdf.R), which works with both `booktabs`
+% and the current LaTeX kernel.
+% Note: kableExtra unconditionally loads `\usepackage{tabu}` itself (see
+% `kableExtra:::use_latex_packages()`), but as long as no `tabu`/`longtabu`
+% environment is actually used, loading the package alone is harmless.
+\usepackage{longtable}
+\usepackage{booktabs,cellspace,makecell}
 % Columns
 \usepackage{multicol}
 % Format captions of figures

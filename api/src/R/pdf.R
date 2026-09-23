@@ -132,6 +132,40 @@ pdf_table = function(obj) {
   purrr::pmap_dfr(obj, pdf_table_part)
 }
 
+#' Stretch a \code{longtable}'s columns to fill the page width
+#'
+#' \code{kableExtra::kable_styling(full_width = TRUE)} would normally do this
+#' by switching the table to a \code{tabu}/\code{longtabu} environment, but
+#' \code{tabu} is unmaintained and hangs (infinite loop) with \code{longtable}
+#' v4.14+, which ships in current TeX Live. Its maintained replacement,
+#' \code{xltabular}, does not work either: it measures column widths by
+#' typesetting content in a box, which is incompatible with \code{booktabs}
+#' rules (\code{\\midrule} etc use \code{\\noalign}, invalid inside a box).
+#'
+#' Instead, this rewrites a plain \code{longtable}'s column specifier (e.g.
+#' \code{lll}) to explicit fixed-width, ragged-right \code{p{}} columns sized
+#' to fill \code{\\linewidth}, which works with both \code{booktabs} and the
+#' current LaTeX kernel.
+#'
+#' @param x character LaTeX source, typically from a \code{knitr}/
+#' \code{kableExtra} pipeline using \code{longtable = TRUE}
+#' @export
+stretch_longtable_columns = function(x) {
+  m = regexpr("\\\\begin\\{longtable\\}\\{[a-zA-Z]+\\}", x)
+  if (m[1] == -1) {
+    return(x)
+  }
+  colspec = sub(".*\\{([a-zA-Z]+)\\}$", "\\1", regmatches(x, m))
+  n = nchar(colspec)
+  width = paste0("\\dimexpr(\\linewidth-", 2 * n, "\\tabcolsep)/", n, "\\relax")
+  col = paste0(">{\\raggedright\\arraybackslash}p{", width, "}")
+  # Use `regmatches<-` (literal replacement) rather than `sub()`'s
+  # replacement string, which treats `\d`, `\l`, `\t`, `\r`, `\a` as
+  # (invalid) backreferences and silently strips the backslash.
+  regmatches(x, m) = paste0("\\begin{longtable}{", strrep(col, n), "}")
+  x
+}
+
 # convenience wrappers to load question text from package
 get_questions = function() {
   f = system.file(
