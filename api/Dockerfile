@@ -32,7 +32,7 @@ COPY src /diagramLambda/
 RUN Rscript -e 'remotes::install_local("/diagramLambda/", dependencies = TRUE)'
 
 # Install TinyTeX with {tinytex}
-RUN Rscript -e 'install.packages("tinytex", repos = "https://cloud.r-project.org")' \
+RUN Rscript -e 'install.packages(c("tinytex", "knitr", "rmarkdown", "xfun"), repos = "https://cloud.r-project.org")' \
     && Rscript -e 'tinytex::install_tinytex(force = TRUE, dir = "/opt/TinyTeX")'
 # Make sure the TinyTeX install can be found
 ENV PATH="/opt/TinyTeX/bin/x86_64-linux:${PATH}"
