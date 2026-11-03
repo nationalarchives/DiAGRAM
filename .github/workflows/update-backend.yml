@@ -1,6 +1,7 @@
 name: Update Backend
 
 on:
+  workflow_dispatch: 
   push:
     paths:
       - api/**
